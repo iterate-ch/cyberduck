@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -33,13 +34,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
+import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
-import com.azure.core.http.rest.PagedIterable;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import com.azure.storage.file.datalake.DataLakeFileSystemClient;
+import com.azure.storage.file.datalake.DataLakeServiceClient;
+import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
+import com.azure.storage.file.datalake.models.ListPathsOptions;
+import com.azure.storage.file.datalake.models.PathItem;
 
 public class AzureObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(AzureObjectListService.class);
@@ -57,9 +64,8 @@ public class AzureObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
             final AttributedList<Path> children = new AttributedList<>();
-            PagedIterable<BlobItem> result;
+            final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
             String prefix = StringUtils.EMPTY;
             if(!containerService.isContainer(directory)) {
                 prefix = containerService.getKey(directory);

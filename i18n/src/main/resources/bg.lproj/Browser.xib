@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -58,21 +58,21 @@
                                             <rect key="frame" x="0.0" y="0.0" width="621" height="32"/>
                                             <subviews>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="11" userLabel="Add">
-                                                    <rect key="frame" x="20" y="6" width="23" height="19"/>
+                                                    <rect key="frame" x="20" y="4" width="37" height="24"/>
                                                     <buttonCell key="cell" type="recessed" bezelStyle="recessed" image="NSAddTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="12">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="systemBold" size="12"/>
                                                     </buttonCell>
                                                 </button>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9" userLabel="Edit">
-                                                    <rect key="frame" x="51" y="6" width="28" height="19"/>
+                                                    <rect key="frame" x="65" y="4" width="48" height="24"/>
                                                     <buttonCell key="cell" type="recessed" bezelStyle="recessed" image="pencil" catalog="system" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="10">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="systemBold" size="12"/>
                                                     </buttonCell>
                                                 </button>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="13" userLabel="Delete">
-                                                    <rect key="frame" x="87" y="6" width="23" height="19"/>
+                                                    <rect key="frame" x="121" y="4" width="37" height="24"/>
                                                     <buttonCell key="cell" type="recessed" bezelStyle="recessed" image="NSRemoveTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="14">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="systemBold" size="12"/>
@@ -117,7 +117,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
-                                        <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="28">
+                                        <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="28">
                                             <rect key="frame" x="295" y="210" width="32" height="32"/>
                                         </progressIndicator>
                                     </subviews>
@@ -148,11 +148,11 @@
                                         <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31">
                                             <rect key="frame" x="0.0" y="32" width="621" height="383"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
-                                                <rect key="frame" x="1" y="1" width="604" height="381"/>
+                                                <rect key="frame" x="1" y="1" width="602" height="381"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="604" height="364"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="602" height="364"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -168,11 +168,11 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="35">
-                                                <rect key="frame" x="605" y="18" width="15" height="364"/>
+                                                <rect key="frame" x="603" y="18" width="17" height="364"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" wantsLayer="YES" id="36">
-                                                <rect key="frame" x="0.0" y="0.0" width="604" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="602" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -182,7 +182,7 @@
                                                 <constraint firstAttribute="height" constant="32" id="sBq-Jh-fVz"/>
                                             </constraints>
                                         </customView>
-                                        <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="QsJ-nQ-rwf">
+                                        <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="QsJ-nQ-rwf">
                                             <rect key="frame" x="295" y="210" width="32" height="32"/>
                                         </progressIndicator>
                                     </subviews>
@@ -216,11 +216,11 @@
                                         <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="39">
                                             <rect key="frame" x="0.0" y="32" width="621" height="383"/>
                                             <clipView key="contentView" id="KUj-N5-PnR">
-                                                <rect key="frame" x="1" y="1" width="604" height="381"/>
+                                                <rect key="frame" x="1" y="1" width="602" height="381"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="604" height="364"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="602" height="364"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -237,11 +237,11 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="43">
-                                                <rect key="frame" x="605" y="18" width="15" height="364"/>
+                                                <rect key="frame" x="603" y="18" width="17" height="364"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" wantsLayer="YES" id="44">
-                                                <rect key="frame" x="0.0" y="0.0" width="604" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="602" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -251,7 +251,7 @@
                                                 <constraint firstAttribute="height" constant="32" id="Zrk-66-bQi"/>
                                             </constraints>
                                         </customView>
-                                        <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="4NY-kx-fXV">
+                                        <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="4NY-kx-fXV">
                                             <rect key="frame" x="295" y="210" width="32" height="32"/>
                                         </progressIndicator>
                                     </subviews>

@@ -304,6 +304,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(type == Versioning.class) {
             return (T) new GraphVersioningFeature(this, fileid);
         }
+        if(type == Thumbnail.class) {
+            return (T) new GraphThumbnailFeature(this, fileid);
+        }
         return super._getFeature(type);
     }
 

@@ -274,6 +274,37 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 }
             }
         }
+        if(failure instanceof ThumbnailV2ErrorException) {
+            final ThumbnailV2Error error = ((ThumbnailV2ErrorException) failure).errorValue;
+            if(error.isPath()) {
+                final LookupError lookup = error.getPathValue();
+                this.parse(buffer, lookup.toString());
+                switch(lookup.tag()) {
+                    case LOCKED:
+                        return new LockedException(buffer.toString(), failure);
+                    case NOT_FOUND:
+                    case NOT_FILE:
+                    case NOT_FOLDER:
+                        return new NotfoundException(buffer.toString(), failure);
+                    case MALFORMED_PATH:
+                    case RESTRICTED_CONTENT:
+                        return new AccessDeniedException(buffer.toString(), failure);
+                    case OTHER:
+                        return new InteroperabilityException(buffer.toString(), failure);
+                }
+            }
+            switch(error.tag()) {
+                case NOT_FOUND:
+                case UNSUPPORTED_EXTENSION:
+                case UNSUPPORTED_IMAGE:
+                case CONVERSION_ERROR:
+                    // No thumbnail available for file
+                    return new NotfoundException(buffer.toString(), failure);
+                case ENCRYPTED_CONTENT:
+                case ACCESS_DENIED:
+                    return new AccessDeniedException(buffer.toString(), failure);
+            }
+        }
         if(failure instanceof AccessErrorException) {
             final AccessError error = ((AccessErrorException) failure).getAccessError();
             this.parse(buffer, error.toString());

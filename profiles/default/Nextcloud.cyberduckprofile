@@ -41,10 +41,6 @@
         <false/>
         <key>Certificate Configurable</key>
         <true/>
-        <key>Properties</key>
-        <array>
-            <string>webdav.lock.enable=false</string>
-        </array>
         <key>Disk</key>
         <string>
             TU0AKgAAFqoABZADAAIAAAAUAAAASpAEAAIAAAAUAAAAXqABAAMAAAABAAEAAKACAAQAAA

@@ -55,6 +55,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
@@ -74,6 +75,7 @@ import com.azure.core.http.policy.UserAgentPolicy;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.AccountKind;
+import com.azure.storage.blob.models.StorageAccountInfo;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.common.implementation.Constants;
 import com.azure.storage.common.policy.MetadataValidationPolicy;
@@ -88,6 +90,9 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
 
     private final CredentialsHttpPipelinePolicy authenticator
             = new CredentialsHttpPipelinePolicy();
+
+    private final AtomicReference<StorageAccountInfo> storageAccountInfo
+            = new AtomicReference<>();
 
     public AzureSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -145,15 +150,23 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authenticator.setCredentials(host.getCredentials());
-        try {
-            final AccountKind kind = client.getAccountInfo().getAccountKind();
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Connected to account of kind %s", kind));
+        final StorageAccountInfo accountInfo = this.getStorageAccountInfo();
+        final AccountKind kind = accountInfo.getAccountKind();
+        if(log.isInfoEnabled()) {
+            log.info("Connected to account of kind {}", kind);
+        }
+    }
+
+    public StorageAccountInfo getStorageAccountInfo() throws BackgroundException {
+        if(null == storageAccountInfo.get()) {
+            try {
+                storageAccountInfo.set(client.getAccountInfo());
+            }
+            catch(HttpResponseException e) {
+                throw new AzureExceptionMappingService().map(e);
             }
         }
-        catch(HttpResponseException e) {
-            throw new AzureExceptionMappingService().map(e);
-        }
+        return storageAccountInfo.get();
     }
 
     @Override

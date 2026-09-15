@@ -220,6 +220,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             public B2UploadPartResponse call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
+                        .setSegment(true)
+                        .setParent(overall)
                         .setLength(length)
                         .setOffset(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
@@ -227,7 +229,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 status.setParameters(requestParameters);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
-                status.setSegment(true);
                 status.setPart(partNumber);
                 return (B2UploadPartResponse) B2LargeUploadService.this.upload(write, file, local, throttle, counter, status, overall, status, callback);
             }

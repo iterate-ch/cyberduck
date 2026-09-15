@@ -121,7 +121,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                                 throw new EueExceptionMappingService().map(response);
                             }
                             finally {
-                                EntityUtils.consume(response.getEntity());
+                                EntityUtils.consumeQuietly(response.getEntity());
                             }
                         }
                         catch(HttpResponseException e) {
@@ -158,7 +158,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
     public void cancel(final String uploadUri) throws BackgroundException {
         final HttpDelete request = new HttpDelete(uploadUri);
         try {
-            session.getClient().execute(request);
+            EntityUtils.consumeQuietly(session.getClient().execute(request).getEntity());
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);

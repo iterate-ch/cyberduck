@@ -20,8 +20,10 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -71,6 +73,22 @@ public class LocalAttributesFinderFeatureTest {
         assertEquals(posixAttributes.lastModifiedTime().toMillis(), finder.find(file).getModificationDate());
         assertEquals(posixAttributes.creationTime().toMillis(), finder.find(file).getCreationDate());
         assertEquals(posixAttributes.lastAccessTime().toMillis(), finder.find(file).getAccessedDate());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSerialize() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
+        final Path file = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
+        final PathAttributes attr = new LocalAttributesFinderFeature(session).find(file);
+        final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attr.serialize(SerializerFactory.get()));
+        assertEquals(attr.getSize(), deserialized.getSize());
+        assertEquals(attr.getModificationDate(), deserialized.getModificationDate());
+        assertEquals(attr.getCreationDate(), deserialized.getCreationDate());
+        assertEquals(attr.getPermission().getSymbol(), deserialized.getPermission().getSymbol());
         new LocalDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

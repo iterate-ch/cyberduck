@@ -59,11 +59,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -169,15 +171,18 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             final CloseableHttpResponse response = client.execute(request);
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
-                    final JsonElement element = JsonParser.parseReader(new InputStreamReader(response.getEntity().getContent()));
-                    if(element.isJsonObject()) {
-                        final JsonObject json = element.getAsJsonObject();
-                        final URI uri = URI.create(json.getAsJsonObject("serviceTarget").getAsJsonPrimitive("uri").getAsString());
-                        log.info("Set base path to {}", url);
-                        this.setBasePath(uri.toString());
+                    try(final Reader reader = new InputStreamReader(response.getEntity().getContent())) {
+                        final JsonElement element = JsonParser.parseReader(reader);
+                        if(element.isJsonObject()) {
+                            final JsonObject json = element.getAsJsonObject();
+                            final URI uri = URI.create(json.getAsJsonObject("serviceTarget").getAsJsonPrimitive("uri").getAsString());
+                            log.info("Set base path to {}", url);
+                            this.setBasePath(uri.toString());
+                        }
                     }
                     break;
                 default:
+                    EntityUtils.consumeQuietly(response.getEntity());
                     throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
@@ -185,7 +190,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     .userinfoGet(null, null).getAccount().getOsServiceId());
             if(StringUtils.isNotBlank(host.getProperty("pacs.url"))) {
                 try {
-                    client.execute(new HttpPost(host.getProperty("pacs.url")));
+                    EntityUtils.consumeQuietly(client.execute(new HttpPost(host.getProperty("pacs.url"))).getEntity());
                 }
                 catch(IOException e) {
                     log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e.getMessage());

@@ -41,6 +41,16 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
                 // Assume single chunk upload
                 .setOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
                 .setMime(null);
+        if(proxy.isSegment()) {
+            // Retrieve plaintext overall status
+            final TransferStatus plaintext = proxy.getParent();
+            // Set ciphertext overall status attached in CryptoUploadFeature
+            this.setParent(plaintext.getParent());
+        }
+        else {
+            // Ciphertext status is overall status
+            this.setParent(null);
+        }
     }
 
     @Override

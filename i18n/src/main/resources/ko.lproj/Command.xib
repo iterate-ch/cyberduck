@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -29,9 +29,9 @@
                         <rect key="frame" x="20" y="316" width="64" height="64"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="64" id="298-VT-E2e"/>
-                            <constraint firstAttribute="height" constant="64" id="FJp-DQ-ZM6"/>
-                            <constraint firstAttribute="width" constant="64" id="Sbw-Zg-lFg"/>
+                            <constraint firstAttribute="height" constant="64" id="8Fg-Yb-lc6"/>
                             <constraint firstAttribute="width" constant="64" id="lBt-6K-k8o"/>
+                            <constraint firstAttribute="width" constant="64" id="sW0-o8-nCN"/>
                         </constraints>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="8"/>
                     </imageView>
@@ -52,7 +52,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                        <rect key="frame" x="92" y="313" width="426" height="21"/>
+                        <rect key="frame" x="92" y="310" width="422" height="24"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="6">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -60,7 +60,7 @@
                         </textFieldCell>
                     </textField>
                     <button tag="1" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15">
-                        <rect key="frame" x="519" y="307" width="68" height="32"/>
+                        <rect key="frame" x="522" y="310" width="58" height="24"/>
                         <buttonCell key="cell" type="push" title="보내기" bezelStyle="rounded" alignment="center" borderStyle="border" tag="1" inset="2" id="16">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -73,17 +73,17 @@ DQ
                         </connections>
                     </button>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="17">
-                        <rect key="frame" x="92" y="44" width="488" height="250"/>
+                        <rect key="frame" x="92" y="44" width="488" height="246"/>
                         <clipView key="contentView" drawsBackground="NO" id="h3Z-kc-AIC">
-                            <rect key="frame" x="1" y="1" width="486" height="248"/>
+                            <rect key="frame" x="1" y="1" width="486" height="244"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" usesRuler="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="19">
-                                    <rect key="frame" x="0.0" y="0.0" width="486" height="248"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="486" height="244"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    <size key="minSize" width="486" height="248"/>
+                                    <size key="minSize" width="486" height="244"/>
                                     <size key="maxSize" width="553" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
@@ -91,7 +91,7 @@ DQ
                         </clipView>
                         <constraints>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="hpn-wC-GK4"/>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="nns-K1-VjL"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="whP-8U-h1z"/>
                         </constraints>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="20">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
@@ -102,17 +102,17 @@ DQ
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="22">
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="22">
                         <rect key="frame" x="92" y="20" width="16" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="1g9-3b-6Ur"/>
-                            <constraint firstAttribute="width" constant="16" id="2Da-Xy-yAM"/>
-                            <constraint firstAttribute="height" constant="16" id="RYx-mU-QKA"/>
+                            <constraint firstAttribute="height" constant="16" id="Hou-6M-jQg"/>
                             <constraint firstAttribute="width" constant="16" id="hZB-SJ-WoT"/>
+                            <constraint firstAttribute="width" constant="16" id="yD5-Z3-6PP"/>
                         </constraints>
                     </progressIndicator>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="11">
-                        <rect key="frame" x="530" y="13" width="57" height="16"/>
+                        <rect key="frame" x="533" y="20" width="47" height="4"/>
                         <buttonCell key="cell" type="push" title="닫기" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="12">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -128,49 +128,49 @@ Gw
                 <constraints>
                     <constraint firstItem="13" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="1Gt-BL-cLA"/>
                     <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="1gd-PG-Gfg"/>
+                    <constraint firstItem="17" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="20" symbolic="YES" id="4JV-fI-t0F"/>
+                    <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="20" symbolic="YES" id="5sn-hW-1YH"/>
                     <constraint firstItem="7" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="6BJ-QH-Jud"/>
-                    <constraint firstItem="5" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="7cI-oT-lHB"/>
-                    <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="8Xb-Ub-gRJ"/>
+                    <constraint firstItem="13" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="7Ca-Wt-8KS"/>
+                    <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="7IK-vS-SEL"/>
+                    <constraint firstItem="22" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="8" symbolic="YES" id="80S-P5-LRP"/>
                     <constraint firstAttribute="trailing" secondItem="11" secondAttribute="trailing" constant="20" symbolic="YES" id="9xF-yE-Y5R"/>
-                    <constraint firstItem="13" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="9yJ-vO-8It"/>
-                    <constraint firstItem="11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="22" secondAttribute="trailing" constant="8" symbolic="YES" id="D0C-dy-aVb"/>
-                    <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" constant="20" symbolic="YES" id="G3B-cD-brm"/>
-                    <constraint firstItem="15" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="Gy9-yi-nRI"/>
+                    <constraint firstAttribute="trailing" secondItem="11" secondAttribute="trailing" constant="20" symbolic="YES" id="BAu-Vw-lbs"/>
+                    <constraint firstItem="7" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="DPt-oJ-7Ic"/>
+                    <constraint firstItem="11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="22" secondAttribute="trailing" constant="8" symbolic="YES" id="F7h-Ow-vEb"/>
+                    <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="GEb-m0-YWV"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="I7R-OP-QyN"/>
-                    <constraint firstItem="7" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="JIT-mB-yAO"/>
                     <constraint firstItem="15" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="K2y-YG-cO7"/>
                     <constraint firstItem="22" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="8" symbolic="YES" id="KTz-Q7-HO5"/>
+                    <constraint firstItem="22" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="KhD-Ua-1H3"/>
                     <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" constant="20" symbolic="YES" id="Mb1-LJ-Hcw"/>
                     <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="PVy-cO-rDI"/>
-                    <constraint firstItem="11" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="20" symbolic="YES" id="UUi-4k-wuI"/>
+                    <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" constant="20" symbolic="YES" id="QRI-1C-LiV"/>
+                    <constraint firstItem="13" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="Sg2-Mw-mLp"/>
+                    <constraint firstItem="15" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="SnK-nZ-6Qu"/>
                     <constraint firstItem="11" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="20" symbolic="YES" id="VkW-8w-KHe"/>
+                    <constraint firstItem="17" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="W8w-ti-QRW"/>
+                    <constraint firstItem="15" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="WF9-vj-tEX"/>
                     <constraint firstItem="13" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="WHj-WU-jtg"/>
-                    <constraint firstItem="9" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="WUj-Ih-2aV"/>
                     <constraint firstAttribute="bottom" secondItem="11" secondAttribute="bottom" constant="20" symbolic="YES" id="WZ8-7J-yfC"/>
                     <constraint firstItem="9" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="XqT-oN-Vwn"/>
                     <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" constant="20" symbolic="YES" id="ZkW-dC-f2V"/>
                     <constraint firstItem="9" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="aKx-7c-HJV"/>
-                    <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="cWw-fU-wdR"/>
-                    <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="20" symbolic="YES" id="dSe-78-fPe"/>
-                    <constraint firstAttribute="trailing" secondItem="11" secondAttribute="trailing" constant="20" symbolic="YES" id="eXP-1T-Cb6"/>
-                    <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="fvL-q0-kG8"/>
+                    <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="cCE-mR-sDT"/>
                     <constraint firstItem="22" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="gA8-Q2-VDB"/>
+                    <constraint firstItem="9" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="gFq-qd-4Mt"/>
                     <constraint firstItem="7" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="jA8-sD-XoK"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="jUM-gq-gYF"/>
-                    <constraint firstItem="17" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="20" symbolic="YES" id="l22-3e-4dl"/>
-                    <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" constant="20" symbolic="YES" id="l61-mE-ohR"/>
-                    <constraint firstItem="13" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="lbw-1i-Jh9"/>
-                    <constraint firstAttribute="bottom" secondItem="11" secondAttribute="bottom" constant="20" symbolic="YES" id="nwd-XA-rsK"/>
-                    <constraint firstItem="17" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="oHA-nJ-evc"/>
                     <constraint firstItem="17" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="phw-G1-QHl"/>
-                    <constraint firstItem="15" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="plU-Aw-8eY"/>
+                    <constraint firstItem="9" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="qVd-7r-T71"/>
                     <constraint firstItem="11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="22" secondAttribute="trailing" constant="8" symbolic="YES" id="rD9-ku-b84"/>
-                    <constraint firstItem="22" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="sCQ-Dx-bLa"/>
-                    <constraint firstItem="22" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="8" symbolic="YES" id="soh-x6-fhh"/>
-                    <constraint firstItem="7" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="uPf-Xq-0Il"/>
+                    <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" constant="20" symbolic="YES" id="tex-i4-3h5"/>
+                    <constraint firstItem="7" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="utS-gw-nSf"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="vBK-C8-fRZ"/>
                     <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="20" symbolic="YES" id="xGG-Rf-va6"/>
-                    <constraint firstItem="9" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="zQt-Fy-9Mx"/>
+                    <constraint firstItem="5" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="yTY-Tm-Wni"/>
+                    <constraint firstItem="11" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="20" symbolic="YES" id="zE3-1R-sAb"/>
+                    <constraint firstAttribute="bottom" secondItem="11" secondAttribute="bottom" constant="20" symbolic="YES" id="zjH-8K-frh"/>
                     <constraint firstItem="17" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="20" symbolic="YES" id="zjr-1c-xzx"/>
                 </constraints>
             </view>

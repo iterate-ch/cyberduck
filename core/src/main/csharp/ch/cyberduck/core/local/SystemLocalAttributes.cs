@@ -183,28 +183,38 @@ namespace Ch.Cyberduck.Core.Local
                 var fileInfo = new FileInfo(local.PlatformPath());
                 var security = fileInfo.GetAccessControl();
                 var rules = security.GetAccessRules(true, true, typeof(SecurityIdentifier));
+                FileSystemRights allowed = 0;
+                FileSystemRights denied = 0;
                 foreach (FileSystemAccessRule rule in rules)
                 {
-                    if (rule.AccessControlType == AccessControlType.Allow)
+                    // Match entries for the user itself as well as any group in the access token
+                    if (currentUser.User?.Equals(rule.IdentityReference) == true ||
+                        currentUser.Groups?.Contains(rule.IdentityReference) == true)
                     {
-                        if (currentUser.User?.Equals(rule.IdentityReference) == true)
+                        if (rule.AccessControlType == AccessControlType.Allow)
                         {
-                            if (rule.FileSystemRights.HasFlag(FileSystemRights.ReadData))
-                            {
-                                actions = actions.or(Permission.Action.read);
-                            }
-
-                            if (rule.FileSystemRights.HasFlag(FileSystemRights.WriteData))
-                            {
-                                actions = actions.or(Permission.Action.write);
-                            }
-
-                            if (rule.FileSystemRights.HasFlag(FileSystemRights.ExecuteFile))
-                            {
-                                actions = actions.or(Permission.Action.execute);
-                            }
+                            allowed |= rule.FileSystemRights;
+                        }
+                        else
+                        {
+                            denied |= rule.FileSystemRights;
                         }
                     }
+                }
+                var effective = allowed & ~denied;
+                if (effective.HasFlag(FileSystemRights.ReadData))
+                {
+                    actions = actions.or(Permission.Action.read);
+                }
+
+                if (effective.HasFlag(FileSystemRights.WriteData))
+                {
+                    actions = actions.or(Permission.Action.write);
+                }
+
+                if (effective.HasFlag(FileSystemRights.ExecuteFile))
+                {
+                    actions = actions.or(Permission.Action.execute);
                 }
 
                 if (fileInfo.IsReadOnly)

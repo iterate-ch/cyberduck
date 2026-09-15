@@ -83,8 +83,6 @@
             <classpath path="${lib.ext}/xmltask.jar"/>
         </taskdef>
 
-        <mkdir dir="${build}/update"/>
-
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
             <arg value="-o"/>
@@ -98,20 +96,20 @@
         <xmltask source="${www.update}/changelog.rss" destbuffer="xmltaskbuffer">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="xmltaskbuffer" dest="${build}/update/changelog.rss">
+        <xmltask sourcebuffer="xmltaskbuffer" dest="${build.deploy}/changelog.rss">
             <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive InstallBonjour=0 Autostart=1"/>
         </xmltask>
-        <copy todir="${build}/update" overwrite="true">
+        <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.html"/>
             </fileset>
         </copy>
-        <replace dir="${build}/update" summary="true" encoding="UTF-8">
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+                           value="https://update.cyberduck.io/${env.SPARKLE_FEED}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${env.SPARKLE_FEED}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${HASH}" value="${hash}"/>
@@ -138,8 +136,8 @@
             <include name="tools/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
-            <replacefilter token="${FEED}" value="${sparkle.feed}"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${FEED}" value="${env.SPARKLE_FEED}"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${env.SPARKLE_FEED}/changelog.html"/>
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>

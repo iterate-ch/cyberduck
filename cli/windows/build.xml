@@ -63,12 +63,21 @@
                 <include name="*/**"/>
             </fileset>
         </copy>
+        <!-- The installer is uploaded to dist.duck.sh under a per-feed prefix; release
+             is served from the container root. -->
+        <condition property="archive.feed.path" value="nightly/">
+            <equals arg1="${env.SPARKLE_FEED}" arg2="nightly"/>
+        </condition>
+        <condition property="archive.feed.path" value="beta/">
+            <equals arg1="${env.SPARKLE_FEED}" arg2="beta"/>
+        </condition>
+        <property name="archive.feed.path" value=""/>
         <replace dir="${chocolatey.target}" summary="true" encoding="UTF-8">
             <include name="*.nuspec"/>
             <include name="tools/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
-            <replacefilter token="${FEED}" value="${sparkle.feed}"/>
+            <replacefilter token="${FEED}" value="${archive.feed.path}"/>
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>

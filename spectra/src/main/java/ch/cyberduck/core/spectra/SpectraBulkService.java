@@ -40,6 +40,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -235,7 +236,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             // from the list of job chunks returned and repeat this process until all chunks are transferred
 
             final GetJobChunksReadyForClientProcessingSpectraS3Response response = client.getJobChunksReadyForClientProcessingSpectraS3(
-                new GetJobChunksReadyForClientProcessingSpectraS3Request(UUID.fromString(job)).withPreferredNumberOfChunks(Integer.MAX_VALUE));
+                    new GetJobChunksReadyForClientProcessingSpectraS3Request(UUID.fromString(job)).withPreferredNumberOfChunks(Integer.MAX_VALUE));
             log.info("Job status {} for job {}", response.getStatus(), job);
             switch(response.getStatus()) {
                 case RETRYLATER: {
@@ -334,14 +335,12 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             // Clear cache
             final RequestEntityRestStorageService client = session.getClient();
             final HttpPut request = new HttpPut(String.format("%s://%s:%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(),
-                session.getHost().getHostname(), session.getHost().getPort()));
+                    session.getHost().getHostname(), session.getHost().getPort()));
             final HttpResponse response = client.getHttpClient().execute(request);
             if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
-                throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                EntityUtils.consumeQuietly(response.getEntity());
+                throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
-        }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

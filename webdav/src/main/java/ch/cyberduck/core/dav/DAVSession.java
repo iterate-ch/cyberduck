@@ -70,6 +70,7 @@ import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.Configurable;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -145,7 +146,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(host.getProtocol().isTokenConfigurable()) {
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
-                log.debug("Set credentials {} for {}", credentials, scheme);
+                log.debug("Set {} credentials {} for {}", CurrentWindowsCredentials.INSTANCE, credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         CurrentWindowsCredentials.INSTANCE
@@ -164,7 +165,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 domain = preferences.getProperty("webdav.ntlm.domain");
             }
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
-                log.debug("Set credentials {} for {}", credentials, scheme);
+                log.debug("Set NT credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         new NTCredentials(username, credentials.getPassword(),
@@ -173,7 +174,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 );
             }
             for(String scheme : Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST, AuthSchemes.KERBEROS)) {
-                log.debug("Set credentials {} for {}", credentials, scheme);
+                log.debug("Set username/password credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         new UsernamePasswordCredentials(username, credentials.getPassword()));
@@ -250,9 +251,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             // Propose protocol change if HEAD request redirects to HTTPS
             final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
             try {
-                final RequestConfig context = client.getContext().getRequestConfig();
+                // Request configuration replaces client defaults. Copy from client to retain connect and pool timeouts
+                final RequestConfig defaults = ((Configurable) client.getClient()).getConfig();
                 final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));
-                request.setConfig(RequestConfig.copy(context).setRedirectsEnabled(false).build());
+                request.setConfig(RequestConfig.copy(defaults).setRedirectsEnabled(false).build());
                 final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
                     @Override
                     public Header handleResponse(final HttpResponse response) {
@@ -262,8 +264,6 @@ public class DAVSession extends HttpSession<DAVClient> {
                         return null;
                     }
                 });
-                // Reset default redirect configuration in context
-                client.getContext().setRequestConfig(RequestConfig.copy(context).setRedirectsEnabled(true).build());
                 if(null != location) {
                     final URL url = new URL(location.getValue());
                     if(StringUtils.equals(Scheme.https.name(), url.getProtocol())) {

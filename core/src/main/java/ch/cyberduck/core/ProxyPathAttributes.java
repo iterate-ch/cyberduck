@@ -328,6 +328,7 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public <T> T serialize(final Serializer<T> dict) {
-        return proxy.serialize(dict);
+        // Copy to read values from possibly overridden getters prior serialization
+        return new DefaultPathAttributes(this).serialize(dict);
     }
 }

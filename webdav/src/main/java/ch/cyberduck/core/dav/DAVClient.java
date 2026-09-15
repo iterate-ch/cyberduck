@@ -155,10 +155,6 @@ public class DAVClient extends SardineImpl {
         return resources;
     }
 
-    public HttpClientContext getContext() {
-        return context;
-    }
-
     public HttpClient getClient() {
         return client;
     }

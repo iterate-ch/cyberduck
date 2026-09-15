@@ -142,6 +142,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                                 status.setChecksum(sha256.compute(new ByteArrayInputStream(content, off, len), status));
                                 break;
                         }
+                        status.setParent(overall);
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);
                         part.addMetadata(HttpHeaders.CONTENT_MD5, md5.compute(new ByteArrayInputStream(content, off, len), status).base64);

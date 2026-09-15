@@ -200,11 +200,12 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             public StorageObject call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
+                        .setSegment(true)
+                        .setParent(overall)
                         .setLength(length)
                         .setOffset(offset);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
-                status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.this.upload(
                         write, segment, local, throttle, counter, status, overall, status, callback);
             }

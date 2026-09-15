@@ -37,6 +37,7 @@ import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,7 +99,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             try {
                 log.debug("Configure SSL parameters with protocols {}", Arrays.toString(protocols));
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
-                final List<String> ciphers = Arrays.asList(((SSLSocket) socket).getEnabledCipherSuites());
+                final List<String> ciphers = new ArrayList<>(Arrays.asList(((SSLSocket) socket).getEnabledCipherSuites()));
                 final List<String> blacklist = preferences.getList("connection.ssl.cipher.blacklist");
                 if(!blacklist.isEmpty()) {
                     ciphers.removeIf(blacklist::contains);

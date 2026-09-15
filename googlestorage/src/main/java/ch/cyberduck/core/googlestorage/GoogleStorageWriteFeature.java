@@ -149,7 +149,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                         }
                     }
                     finally {
-                        EntityUtils.consume(response.getEntity());
+                        EntityUtils.consumeQuietly(response.getEntity());
                     }
                     if(response.containsHeader(HttpHeaders.LOCATION)) {
                         final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
@@ -170,7 +170,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                             }
                         }
                         finally {
-                            EntityUtils.consume(putResponse.getEntity());
+                            EntityUtils.consumeQuietly(putResponse.getEntity());
                         }
                     }
                     else {
