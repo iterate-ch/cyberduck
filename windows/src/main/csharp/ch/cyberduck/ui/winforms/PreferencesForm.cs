@@ -131,7 +131,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             var profilesViewModel = ObjectFactory.GetInstance<ProfilesViewModel>();
             var profilesPage = ObjectFactory.GetInstance<ProfilesPage>();
-            profilesPage.IconProvider = ObjectFactory.GetInstance<Cyberduck.Core.Refresh.Services.WpfIconProvider>();
             profilesPage.ViewModel = profilesViewModel;
             profilesPageHost.Child = profilesPage;
 

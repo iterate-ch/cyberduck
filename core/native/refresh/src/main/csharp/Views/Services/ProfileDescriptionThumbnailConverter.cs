@@ -2,34 +2,43 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core.Refresh.Services;
+using CommunityToolkit.Mvvm.DependencyInjection;
 
 namespace Ch.Cyberduck.Core.Refresh.Views.Services;
 
-public class ProfileDescriptionThumbnailConverter : DependencyObject, IValueConverter
+[ValueConversion(typeof(ProfileDescription), typeof(BitmapSource), ParameterType = typeof(int))]
+public class ProfileDescriptionThumbnailConverter : IValueConverter
 {
-    public static readonly DependencyProperty IconProviderProperty = DependencyProperty.Register(nameof(IconProvider), typeof(WpfIconProvider), typeof(ProfileDescriptionThumbnailConverter));
-
-    public WpfIconProvider IconProvider
-    {
-        get { return (WpfIconProvider)GetValue(IconProviderProperty); }
-        set { SetValue(IconProviderProperty, value); }
-    }
+    private WpfIconProvider iconProvider;
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is not ProfileDescription profile)
         {
-            return null;
+            return DependencyProperty.UnsetValue;
         }
 
         if (parameter is not int size)
         {
-            return null;
+            if (parameter is IConvertible convertible)
+            {
+                size = convertible.ToInt32(culture);
+            }
+            else
+            {
+                return DependencyProperty.UnsetValue;
+            }
         }
 
-        return IconProvider?.GetThumbnail(profile, size);
+        if ((iconProvider ??= Ioc.Default.GetService<WpfIconProvider>()) is null)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+
+        return iconProvider.GetThumbnail(profile, size);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();

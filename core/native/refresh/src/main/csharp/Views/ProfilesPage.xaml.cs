@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Reactive.Linq;
-using System.Windows;
-using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using ReactiveUI;
 
@@ -9,14 +7,6 @@ namespace Ch.Cyberduck.Core.Refresh.Views
 {
     public partial class ProfilesPage
     {
-        public static readonly DependencyProperty IconProviderProperty = DependencyProperty.Register(nameof(IconProvider), typeof(WpfIconProvider), typeof(ProfilesPage));
-
-        public WpfIconProvider IconProvider
-        {
-            get { return (WpfIconProvider)GetValue(IconProviderProperty); }
-            set { SetValue(IconProviderProperty, value); }
-        }
-
         public ProfilesPage()
         {
             InitializeComponent();

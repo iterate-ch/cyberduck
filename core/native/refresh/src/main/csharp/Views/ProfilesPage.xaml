@@ -13,9 +13,7 @@
                         d:DesignHeight="450"
                         d:DesignWidth="800">
     <local:ProfilesPageBase.Resources>
-        <sys:Int32 x:Key="ThumbnailSize">32</sys:Int32>
-        <viewServices:ProfileDescriptionThumbnailConverter x:Key="ProfileThumbnails"
-                                                           IconProvider="{Binding IconProvider,RelativeSource={RelativeSource AncestorType=local:ProfilesPage}}" />
+        <viewServices:ProfileDescriptionThumbnailConverter x:Key="ProfileThumbnails" />
     </local:ProfilesPageBase.Resources>
 
     <Grid>
@@ -96,7 +94,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Image Source="{Binding ProfileDescription,Converter={StaticResource ProfileThumbnails},ConverterParameter={StaticResource ThumbnailSize}}"
+                                    <Image Source="{Binding ProfileDescription,Converter={StaticResource ProfileThumbnails},ConverterParameter=32}"
                                            Margin="{StaticResource UIItemSpacing}"
                                            Grid.Column="0" />
 
