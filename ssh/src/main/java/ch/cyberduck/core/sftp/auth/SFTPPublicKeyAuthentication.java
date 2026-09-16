@@ -25,8 +25,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
+import ch.cyberduck.core.ssl.PKCS11KeyStore;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,13 +38,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.hierynomus.sshj.userauth.fido.SecurityKeyPrivateKey;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyFileUtil;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
@@ -112,38 +118,38 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 provider.init(new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8),
                         pubKey != null ? new InputStreamReader(pubKey.getInputStream(), StandardCharsets.UTF_8) : null,
                         new PasswordFinder() {
-                    @Override
-                    public char[] reqPassword(Resource<?> resource) {
-                        if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
-                            try {
-                                // Use password prompt
-                                final Credentials input = prompt.prompt(bookmark,
-                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                        String.format("%s (%s)",
-                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                                privKey.getAbbreviatedPath()),
-                                        new LoginOptions()
-                                                .icon(bookmark.getProtocol().disk())
-                                                .user(false).password(true)
-                                );
-                                credentials.setSaved(input.isSaved());
-                                credentials.setIdentityPassphrase(input.getPassword());
+                            @Override
+                            public char[] reqPassword(Resource<?> resource) {
+                                if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
+                                    try {
+                                        // Use password prompt
+                                        final Credentials input = prompt.prompt(bookmark,
+                                                LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                                String.format("%s (%s)",
+                                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                                        privKey.getAbbreviatedPath()),
+                                                new LoginOptions()
+                                                        .icon(bookmark.getProtocol().disk())
+                                                        .user(false).password(true)
+                                        );
+                                        credentials.setSaved(input.isSaved());
+                                        credentials.setIdentityPassphrase(input.getPassword());
+                                    }
+                                    catch(LoginCanceledException e) {
+                                        canceled.set(true);
+                                        // Return null if user cancels
+                                        return StringUtils.EMPTY.toCharArray();
+                                    }
+                                }
+                                return credentials.getIdentityPassphrase().toCharArray();
                             }
-                            catch(LoginCanceledException e) {
-                                canceled.set(true);
-                                // Return null if user cancels
-                                return StringUtils.EMPTY.toCharArray();
-                            }
-                        }
-                        return credentials.getIdentityPassphrase().toCharArray();
-                    }
 
-                    @Override
-                    public boolean shouldRetry(Resource<?> resource) {
-                        return false;
-                    }
-                });
-                client.auth(credentials.getUsername(), new AuthPublickey(provider));
+                            @Override
+                            public boolean shouldRetry(Resource<?> resource) {
+                                return false;
+                            }
+                        });
+                client.auth(credentials.getUsername(), new AuthPublickey(new PKCS11KeyProvider(provider, bookmark, prompt)));
                 return client.isAuthenticated();
             }
             catch(IOException e) {
@@ -159,5 +165,48 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
     @Override
     public String getMethod() {
         return "publickey";
+    }
+
+    /**
+     * Wraps {@code provider} so that when the loaded private key is a {@link SecurityKeyPrivateKey}
+     * with no signer attached (i.e. an {@code sk-*} key loaded from a file), a
+     * {@link PKCS11SecurityKeySigner} is injected to drive the PKCS#11 hardware token.
+     */
+    private static final class PKCS11KeyProvider implements KeyProvider {
+        private final FileKeyProvider provider;
+        private final Host bookmark;
+        private final LoginCallback prompt;
+
+        public PKCS11KeyProvider(final FileKeyProvider provider, final Host bookmark, final LoginCallback prompt) {
+            this.provider = provider;
+            this.bookmark = bookmark;
+            this.prompt = prompt;
+        }
+
+        @Override
+        public PrivateKey getPrivate() throws IOException {
+            final PrivateKey pk = provider.getPrivate();
+            if(pk instanceof SecurityKeyPrivateKey) {
+                final SecurityKeyPrivateKey sk = (SecurityKeyPrivateKey) pk;
+                if(sk.getSigner() == null) {
+                    log.debug("Attaching PKCS11 signer to security key {}", sk.getKeyTypeName());
+                    return new SecurityKeyPrivateKey(sk.getKeyTypeName(), sk.getPublicKey(), sk.getFlags(), sk.getKeyHandle(),
+                            new PKCS11SecurityKeySigner(sk.getPublicKey().getDelegate(),
+                                    PKCS11KeyStore.build(
+                                            HostPreferencesFactory.get(bookmark).getProperty("ssh.authentication.pkcs11.library"), bookmark, prompt)));
+                }
+            }
+            return pk;
+        }
+
+        @Override
+        public PublicKey getPublic() throws IOException {
+            return provider.getPublic();
+        }
+
+        @Override
+        public KeyType getType() throws IOException {
+            return provider.getType();
+        }
     }
 }

@@ -63,15 +63,14 @@ public final class Native {
     }
 
     /**
-     * @param name Library name
+     * @param library Library name
      * @return Path in application bundle
      */
-    protected static String getPath(final String name) {
-        return new File(String.format("%s/%s", System.getProperty("java.library.path"), getName(name)))
-                .getAbsolutePath();
+    public static String getPath(final String library) {
+        return new File(String.format("%s/%s", System.getProperty("java.library.path"), getName(library))).getAbsolutePath();
     }
 
-    protected static String getName(final String name) {
+    public static String getName(final String name) {
         return System.mapLibraryName(name);
     }
 }
