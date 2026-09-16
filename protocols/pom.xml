@@ -14,7 +14,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
@@ -41,136 +42,163 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>ftp</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>ssh</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>s3</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>googlestorage</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>openstack</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>azure</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>webdav</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>smb</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>irods</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>spectra</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>backblaze</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>googledrive</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>hubic</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>dropbox</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>onedrive</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>nio</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>dracoon</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>manta</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>storegate</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>brick</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>nextcloud</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>owncloud</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>ctera</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>freenet</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>eue</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>box</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>deepbox</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
