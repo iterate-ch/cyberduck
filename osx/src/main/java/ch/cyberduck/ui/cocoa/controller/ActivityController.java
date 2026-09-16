@@ -63,7 +63,7 @@ public class ActivityController extends WindowController {
     public void awakeFromNib() {
         super.awakeFromNib();
         // Initialize to listen for background tasks
-        registry.addListener(backgroundActionListener);
+        registry.addListener(listener);
         // Add already running background actions
         final BackgroundAction<?>[] actions = registry.toArray(
                 new BackgroundAction<?>[registry.size()]);
@@ -75,13 +75,13 @@ public class ActivityController extends WindowController {
 
     @Override
     public void invalidate() {
-        registry.removeListener(backgroundActionListener);
+        registry.removeListener(listener);
         table.setDataSource(null);
         table.setDelegate(null);
         super.invalidate();
     }
 
-    private final AbstractCollectionListener<BackgroundAction<?>> backgroundActionListener
+    private final AbstractCollectionListener<BackgroundAction<?>> listener
             = new AbstractCollectionListener<BackgroundAction<?>>() {
 
         @Override
