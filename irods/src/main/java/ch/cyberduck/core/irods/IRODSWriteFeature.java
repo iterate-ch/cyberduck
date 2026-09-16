@@ -20,6 +20,9 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -28,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
+import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.IOException;
@@ -49,7 +53,16 @@ public class IRODSWriteFeature implements Write<Void> {
             final IRODSConnection conn = session.getClient();
             boolean append = status.isAppend();
             boolean truncate = !append;
-            final OutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(), truncate, append);
+            // Instruct the server to compute and register a checksum for the replica on close
+            final boolean computeChecksum = IRODSUploadFeature.hasChecksum(status);
+            final OutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(), truncate, append) {
+                @Override
+                public void close() {
+                    final IRODSDataObjectStream.OnCloseSuccess instructions = new IRODSDataObjectStream.OnCloseSuccess();
+                    instructions.computeChecksum = computeChecksum;
+                    this.close(instructions);
+                }
+            };
             return new VoidStatusOutputStream(out);
         }
         catch(IRODSException e) {
@@ -58,5 +71,14 @@ public class IRODSWriteFeature implements Write<Void> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Uploading {0} failed", e, file);
         }
+    }
+
+    /**
+     * Compute local checksum with the default hash scheme of iRODS to allow verification against the
+     * checksum registered by the server after the upload
+     */
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }
