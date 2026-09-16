@@ -116,7 +116,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setDefaultTimeout(timeout);
         client.setDataTimeout(Duration.ofMillis(timeout));
         client.setControlKeepAliveTimeout(Duration.ofMillis(timeout));
-        client.setControlKeepAliveReplyTimeout(Duration.ofMillis(timeout));
+        client.setControlKeepAliveReplyTimeout(Duration.ofMillis(preferences.getInteger("ftp.controlchannel.keepalive.ms")));
         client.setUseEPSVwithIPv4(preferences.getBoolean("ftp.datachannel.epsv"));
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
