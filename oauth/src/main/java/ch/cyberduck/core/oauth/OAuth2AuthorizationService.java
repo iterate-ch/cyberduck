@@ -27,6 +27,7 @@ import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -40,11 +41,17 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -250,6 +257,8 @@ public class OAuth2AuthorizationService {
         }
         final AuthorizationCodeFlow flow = flowBuilder.build();
         final AuthorizationCodeRequestUrl authorizationCodeUrlBuilder = flow.newAuthorizationUrl();
+        // Must use same redirect URI for authorization and token request
+        final String redirectUri = toRedirectUri(this.redirectUri);
         authorizationCodeUrlBuilder.setRedirectUri(URIEncoder.decode(redirectUri));
         final String state = new AlphanumericRandomStringService().random();
         authorizationCodeUrlBuilder.setState(state);
@@ -264,13 +273,63 @@ public class OAuth2AuthorizationService {
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
-        return this.exchangeToken(flow, authorizationCode);
+        return this.exchangeToken(flow, authorizationCode, redirectUri);
+    }
+
+    /**
+     * Assign random port to loopback redirect URI with no port set. The port is allocated before
+     * the authorization request is made to allow the callback server to listen on the same port.
+     *
+     * @param redirectUri Redirect URI from configuration
+     * @return Redirect URI with port number set for loopback address or original redirect URI
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc8252#section-7.3">Loopback Interface Redirection</a>
+     */
+    protected static String toRedirectUri(final String redirectUri) throws BackgroundException {
+        final URI uri;
+        try {
+            uri = new URI(URIEncoder.decode(redirectUri));
+        }
+        catch(URISyntaxException e) {
+            log.warn("Invalid redirect URI {}", redirectUri);
+            return redirectUri;
+        }
+        if(!StringUtils.equalsAnyIgnoreCase(uri.getScheme(), Scheme.http.name(), Scheme.https.name())) {
+            return redirectUri;
+        }
+        if(null == uri.getHost() || -1 != uri.getPort()) {
+            return redirectUri;
+        }
+        final InetAddress address;
+        try {
+            address = InetAddress.getByName(uri.getHost());
+        }
+        catch(UnknownHostException e) {
+            log.warn("Unknown host in redirect URI {}", redirectUri);
+            return redirectUri;
+        }
+        if(!address.isLoopbackAddress()) {
+            return redirectUri;
+        }
+        try(ServerSocket socket = new ServerSocket(0, 0, address)) {
+            final String loopback = new URIBuilder(uri).setPort(socket.getLocalPort()).build().toString();
+            log.debug("Assigned random port to loopback redirect URI {}", loopback);
+            return loopback;
+        }
+        catch(URISyntaxException e) {
+            log.warn("Failure {} assigning port to redirect URI {}", e, redirectUri);
+            return redirectUri;
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     /**
      * Exchanges authorization code for access and refresh tokens
+     *
+     * @param redirectUri Redirect URI used in authorization request
      */
-    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode) throws BackgroundException {
+    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode, final String redirectUri) throws BackgroundException {
         try {
             log.debug("Request tokens for authentication code {}", authorizationCode);
             // Swap the given authorization token for access/refresh tokens

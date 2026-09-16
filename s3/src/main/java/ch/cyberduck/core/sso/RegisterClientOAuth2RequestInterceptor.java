@@ -40,7 +40,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Inet4Address;
-import java.net.ServerSocket;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.ssooidc.AWSSSOOIDC;
@@ -100,31 +99,27 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         final AWSSSOOIDC client = configuration.build();
         log.debug("Registering client with issuer {}", issuerUrl);
         try {
-            try(ServerSocket temp = new ServerSocket(0)) {
-                final String redirectUri = String.format("http://%s:%d/oauth/callback",
-                        Inet4Address.getLoopbackAddress().getHostAddress(), temp.getLocalPort());
-                final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
-                        // The friendly name of the client.
-                        .withClientName(PreferencesFactory.get().getProperty("application.name"))
-                        // The service supports only public as a client type.
-                        .withClientType("public")
-                        .withIssuerUrl(issuerUrl)
-                        .withGrantTypes("authorization_code", "refresh_token")
-                        // SSO registration scopes
-                        .withScopes(host.getProtocol().getOAuthScopes())
-                        .withRedirectUris(redirectUri));
-                log.debug("Client registered with {}", registration);
-                this.setClientid(registration.getClientId());
-                this.setClientsecret(registration.getClientSecret());
-                this.setParameter("start_url", startUrl);
-                this.setAuthorizationServerUrl(String.format("%s/authorize", endpoint));
-                this.setTokenServerUrl(String.format("%s/token", endpoint));
-                this.setRedirectUri(redirectUri);
-                this.clientIdExpiry = registration.getClientSecretExpiresAt() * 1000;
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            // Register loopback redirect URI without port. Random port is assigned for each authorization request
+            final String redirectUri = String.format("http://%s/oauth/callback",
+                    Inet4Address.getLoopbackAddress().getHostAddress());
+            final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
+                    // The friendly name of the client.
+                    .withClientName(PreferencesFactory.get().getProperty("application.name"))
+                    // The service supports only public as a client type.
+                    .withClientType("public")
+                    .withIssuerUrl(issuerUrl)
+                    .withGrantTypes("authorization_code", "refresh_token")
+                    // SSO registration scopes
+                    .withScopes(host.getProtocol().getOAuthScopes())
+                    .withRedirectUris(redirectUri));
+            log.debug("Client registered with {}", registration);
+            this.setClientid(registration.getClientId());
+            this.setClientsecret(registration.getClientSecret());
+            this.setParameter("start_url", startUrl);
+            this.setAuthorizationServerUrl(String.format("%s/authorize", endpoint));
+            this.setTokenServerUrl(String.format("%s/token", endpoint));
+            this.setRedirectUri(redirectUri);
+            this.clientIdExpiry = registration.getClientSecretExpiresAt() * 1000;
         }
         catch(AWSSSOOIDCException e) {
             throw new AmazonSSOOIDCExceptionMappingService().map(e);
@@ -164,7 +159,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
      * Send token request as application/json instead of default application/x-www-form-urlencoded
      */
     @Override
-    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode) throws BackgroundException {
+    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode, final String redirectUri) throws BackgroundException {
         final AWSSSOOIDCClientBuilder configuration = AWSSSOOIDCClientBuilder.standard()
                 .withRegion(region)
                 .withClientConfiguration(new CustomClientConfiguration(host,
@@ -184,7 +179,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                     .withClientSecret(this.getClientsecret())
                     .withGrantType(this.getFlowType().toString())
                     .withCode(authorizationCode)
-                    .withRedirectUri(this.getRedirectUri())
+                    .withRedirectUri(redirectUri)
                     .withCodeVerifier(codeVerifier);
             final CreateTokenResult tokenResponse = client.createToken(tokenRequest);
             return new IdTokenResponse()
