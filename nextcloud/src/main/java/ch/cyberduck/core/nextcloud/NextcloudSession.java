@@ -15,6 +15,7 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -42,6 +43,8 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
+import ch.cyberduck.core.ocs.OcsUserRequest;
+import ch.cyberduck.core.ocs.OcsUserResponseHandler;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -49,6 +52,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,6 +76,25 @@ public class NextcloudSession extends DAVSession {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         super.login(prompt, cancel);
+        if(host.getProtocol().isOAuthConfigurable()) {
+            // Username set from ID token claims does not necessarily match the user identifier known to the server
+            final Credentials credentials = host.getCredentials();
+            try {
+                final OcsUserRequest request = new OcsUserRequest(host);
+                log.debug("Query OCS user at {}", request);
+                final String id = client.execute(request, new OcsUserResponseHandler());
+                if(StringUtils.isNotBlank(id) && !StringUtils.equals(credentials.getUsername(), id)) {
+                    log.debug("Set username to {} from server", id);
+                    credentials.setUsername(id);
+                }
+            }
+            catch(HttpResponseException e) {
+                log.warn("Failure {} querying user. Retain username {}", e.getMessage(), credentials.getUsername());
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+        }
         try {
             final OcsCapabilitiesRequest request = new OcsCapabilitiesRequest(host);
             log.debug("Query OCS capabilities at {}", request);
