@@ -36,6 +36,13 @@ import java.util.List;
 public class OpenSSHProxyCommandConnector implements Closeable {
     private static final Logger log = LogManager.getLogger(OpenSSHProxyCommandConnector.class);
 
+    /**
+     * Placeholder for an escaped percent sign (%%) while token substitution is in progress. An ASCII control
+     * character built from its code point rather than a source-level escape sequence, chosen because it cannot
+     * legitimately appear in a configured command.
+     */
+    private static final String ESCAPED_PERCENT_PLACEHOLDER = String.valueOf((char) 1);
+
     private Process process;
 
     /**
@@ -48,14 +55,15 @@ public class OpenSSHProxyCommandConnector implements Closeable {
      * @return Command line to pass to the user's shell
      */
     protected static String substitute(final String command, final String hostname, final int port, final String username) {
-        String substituted = command;
+        // Protect escaped percent signs first so a sequence such as %%h is not misread as the %h token
+        String substituted = StringUtils.replace(command, "%%", ESCAPED_PERCENT_PLACEHOLDER);
         substituted = StringUtils.replace(substituted, "%h", hostname);
         substituted = StringUtils.replace(substituted, "%p", String.valueOf(port));
         if(StringUtils.isNotBlank(username)) {
             substituted = StringUtils.replace(substituted, "%r", username);
         }
-        // Literal percent sign
-        substituted = StringUtils.replace(substituted, "%%", "%");
+        // Restore the literal percent sign
+        substituted = StringUtils.replace(substituted, ESCAPED_PERCENT_PLACEHOLDER, "%");
         return substituted;
     }
 

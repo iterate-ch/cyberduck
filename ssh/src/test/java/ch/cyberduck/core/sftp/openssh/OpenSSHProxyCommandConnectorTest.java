@@ -50,6 +50,15 @@ public class OpenSSHProxyCommandConnectorTest {
     }
 
     @Test
+    public void testSubstituteEscapedPercentBeforeToken() {
+        // %%h/%%p/%%r are an escaped percent sign followed by a literal h/p/r, not the %h/%p/%r token
+        assertEquals("%h %p %r",
+                OpenSSHProxyCommandConnector.substitute("%%h %%p %%r", "host", 22, "fred"));
+        assertEquals("literal %h not host",
+                OpenSSHProxyCommandConnector.substitute("literal %%h not %h", "host", 22, "fred"));
+    }
+
+    @Test
     public void testConnectReadsProcessOutput() throws IOException {
         assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
         final OpenSSHProxyCommandConnector connector = new OpenSSHProxyCommandConnector();

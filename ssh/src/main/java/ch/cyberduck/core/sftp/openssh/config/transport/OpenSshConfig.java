@@ -282,8 +282,10 @@ public class OpenSshConfig {
             else if("ProxyCommand".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.proxyCommand == null) {
-                        // The whole argument is passed to the user's shell, do not strip embedded quotes
-                        c.proxyCommand = none(argValue);
+                        // The whole argument is passed to the user's shell, do not strip embedded quotes.
+                        // An explicit `none` is kept as an empty string rather than null so that a wildcard
+                        // Host block parsed later cannot re-populate a disabled proxy command through #copyFrom
+                        c.proxyCommand = "none".equalsIgnoreCase(argValue) ? StringUtils.EMPTY : argValue;
                     }
                 }
             }
@@ -548,10 +550,12 @@ public class OpenSshConfig {
 
         /**
          * @return the command to use to connect to the server, or null if a direct connection or {@code ProxyJump}
-         * should be used. The returned value may still contain the tokens {@code %h}, {@code %p} and {@code %r}.
+         * should be used, or if disabled with {@code ProxyCommand none}. The returned value may still contain the
+         * tokens {@code %h}, {@code %p} and {@code %r}.
          */
         public String getProxyCommand() {
-            return proxyCommand;
+            // Normalize the `none` sentinel (empty string) back to null for callers
+            return StringUtils.isEmpty(proxyCommand) ? null : proxyCommand;
         }
 
         /**
