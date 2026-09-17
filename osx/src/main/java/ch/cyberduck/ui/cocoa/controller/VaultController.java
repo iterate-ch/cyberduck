@@ -146,7 +146,7 @@ public class VaultController extends FolderController {
                 credentials = new VaultCredentials(passwordField.stringValue()).setSaved(this.isSuppressed());
                 break;
             default:
-                credentials = new VaultCredentials().setSaved(false);
+                credentials = new VaultCredentials(StringUtils.EMPTY).setSaved(false);
                 break;
         }
         callback.callback(file, this.getLocation(), credentials);
