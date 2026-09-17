@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 VaultCredentials credentials = VaultVersion.Type.V8 == _version.type
                     ? new VaultCredentials(_view.Passphrase).setSaved(false)
-                    : new VaultCredentials().setSaved(false);
+                    : new VaultCredentials(string.Empty).setSaved(false);
                 BrowserController.background(new CreateVaultAction(BrowserController,
                     new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath), View.InputText,
                     HasLocation() ? _view.Region : null, credentials, _version));
