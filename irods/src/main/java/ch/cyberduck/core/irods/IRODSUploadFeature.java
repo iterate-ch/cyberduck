@@ -16,7 +16,6 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -58,7 +57,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 
-public class IRODSUploadFeature implements Upload<Void> {
+public class IRODSUploadFeature implements Upload<List<String>> {
 
     private static final Logger log = LogManager.getLogger(IRODSUploadFeature.class);
 
@@ -68,10 +67,15 @@ public class IRODSUploadFeature implements Upload<Void> {
         this.session = session;
     }
 
+    /**
+     * @return Attributes of the data object registered by the server after the transfer or null if the transfer was
+     * cancelled
+     * @see IRODSAttributesFinderFeature#toAttributes(List)
+     */
     @Override
-    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                       final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
-                       final ConnectionCallback callback) throws BackgroundException {
+    public List<String> upload(final Write<List<String>> write, final Path file, final Local local, final BandwidthThrottle throttle,
+                               final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
+                               final ConnectionCallback callback) throws BackgroundException {
         try {
             final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
 
@@ -153,10 +157,8 @@ public class IRODSUploadFeature implements Upload<Void> {
                     }
                 }
 
-                if(setCompletionFlag) {
-                    this.verifyChecksum(file, status);
-                }
-                return null;
+                // Only reached when the transfer completed. Cancellation returns early and any failure propagates.
+                return this.complete(file, status);
             }
 
             //
@@ -272,7 +274,7 @@ public class IRODSUploadFeature implements Upload<Void> {
             log.debug("done.");
 
             if(status.isComplete()) {
-                this.verifyChecksum(file, status);
+                return this.complete(file, status);
             }
             return null;
         }
@@ -292,30 +294,53 @@ public class IRODSUploadFeature implements Upload<Void> {
         return new Write.Append(status.isExists()).withStatus(status);
     }
 
+    /**
+     * @return True if a checksum of the local file has been computed prior to the transfer
+     */
     static boolean hasChecksum(final TransferStatus status) {
-        final Checksum checksum = status.getChecksum();
+        return isValid(status.getChecksum());
+    }
+
+    private static boolean isValid(final Checksum checksum) {
         return null != checksum && null != checksum.algorithm;
     }
 
-    private static IRODSDataObjectStream.OnCloseSuccess closeInstructions(final boolean computeChecksum) {
+    static IRODSDataObjectStream.OnCloseSuccess closeInstructions(final boolean computeChecksum) {
         final IRODSDataObjectStream.OnCloseSuccess instructions = new IRODSDataObjectStream.OnCloseSuccess();
         instructions.computeChecksum = computeChecksum;
         return instructions;
     }
 
     /**
-     * Compare the checksum registered by the server with the checksum of the local file
-     * computed prior to the transfer, if any.
+     * Set the latest attributes of the data object registered by the server as response and verify the checksum of
+     * the local file computed prior to the transfer, if any.
+     *
+     * @return Attributes of the data object as returned by the catalog
      */
-    private void verifyChecksum(final Path file, final TransferStatus status) throws BackgroundException {
-        if(!hasChecksum(status)) {
+    private List<String> complete(final Path file, final TransferStatus status) throws BackgroundException, IOException, IRODSException {
+        final List<String> row = IRODSAttributesFinderFeature.query(session.getClient().getRcComm(), file.getAbsolute());
+        if(row.isEmpty()) {
+            log.warn("no replica found for [{}] after upload.", file);
+            return row;
+        }
+        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).toAttributes(row);
+        status.setResponse(attributes);
+        this.verify(file, status.getChecksum(), attributes.getChecksum());
+        return row;
+    }
+
+    /**
+     * Compare the checksum registered by the server with the checksum of the local file computed prior to the transfer
+     *
+     * @param expected Checksum of local file or null if not computed
+     * @param actual   Checksum registered by the server
+     */
+    private void verify(final Path file, final Checksum expected, final Checksum actual) throws ChecksumException {
+        if(!isValid(expected)) {
             log.debug("no local checksum available for [{}]. skipping verification.", file);
             return;
         }
-        final Checksum expected = status.getChecksum();
-        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
-        final Checksum actual = attributes.getChecksum();
-        if(null == actual || null == actual.algorithm) {
+        if(!isValid(actual)) {
             log.warn("server did not register a checksum for [{}]. skipping verification.", file);
             return;
         }
@@ -326,9 +351,9 @@ public class IRODSUploadFeature implements Upload<Void> {
         if(!actual.equals(expected)) {
             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                     MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and checksum {2} registered by the server",
-                            expected.algorithm, expected.hash, actual.hash));
+                            expected.algorithm, expected.hex, actual.hex));
         }
-        log.debug("checksum [{}] of [{}] verified.", actual.hash, file);
+        log.debug("checksum [{}] of [{}] verified.", actual.hex, file);
     }
 
     private static boolean closeOutputStreams(List<IRODSDataObjectOutputStream> streams, final boolean computeChecksum) {

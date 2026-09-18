@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -242,14 +243,21 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
 
             assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<Void> out = feature.write(test, status, ConnectionCallback.noop);
+            final StatusOutputStream<List<String>> out = feature.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             assertTrue(session.getFeature(Find.class).find(test));
 
+            final List<String> reply = out.getStatus();
+            assertNotNull(reply);
+            assertFalse(reply.isEmpty());
+            assertEquals(content.length, new IRODSAttributesFinderFeature(session).toAttributes(reply).getSize());
+            assertEquals(content.length, status.getResponse().getSize());
+
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(content.length, attributes.getSize());
+            assertEquals(attributes.getModificationDate(), status.getResponse().getModificationDate());
 
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), ConnectionCallback.noop);
             final byte[] buffer = new byte[content.length];
@@ -269,11 +277,12 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             assertTrue(new IRODSUploadFeature(session).append(test, status).append);
             assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<Void> out = feature.write(test, status, ConnectionCallback.noop);
+            final StatusOutputStream<List<String>> out = feature.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));
+            assertEquals(newcontent.length, status.getResponse().getSize());
 
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
