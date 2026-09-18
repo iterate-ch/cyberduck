@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -50,6 +51,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -124,17 +126,61 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         out.close();
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
+        // Request checksum registration on the server and verification against local file
+        status.setChecksum(new IRODSWriteFeature(session).checksum(test, status).compute(local.getInputStream(), new TransferStatus()));
+        assertEquals(HashAlgorithm.sha256, status.getChecksum().algorithm);
         final BytecountStreamListener count = new BytecountStreamListener();
-        new IRODSUploadFeature(session).upload(
+        final List<String> reply = new IRODSUploadFeature(session).upload(
                 new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertTrue(status.isComplete());
         assertEquals(content.length, count.getSent());
+        assertNotNull(reply);
+        assertEquals(content.length, new IRODSAttributesFinderFeature(session).toAttributes(reply).getSize());
+        assertEquals(content.length, status.getResponse().getSize());
+        assertEquals(status.getChecksum(), status.getResponse().getChecksum());
+        assertEquals(status.getChecksum(), new IRODSAttributesFinderFeature(session).find(test).getChecksum());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
         new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testWriteLargeFile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
+        ));
+
+        final IRODSSession session = new IRODSSession(host);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final int length = 33 * 1024 * 1024; // Triggers parallel transfer
+        final byte[] content = RandomUtils.nextBytes(length);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        // Request checksum registration on the server and verification against local file
+        status.setChecksum(new IRODSWriteFeature(session).checksum(test, status).compute(local.getInputStream(), new TransferStatus()));
+        final BytecountStreamListener count = new BytecountStreamListener();
+        final List<String> reply = new IRODSUploadFeature(session).upload(
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
+        assertTrue(status.isComplete());
+        assertEquals(content.length, count.getSent());
+        assertNotNull(reply);
+        assertEquals(content.length, status.getResponse().getSize());
+        assertEquals(status.getChecksum(), status.getResponse().getChecksum());
+        assertEquals(status.getChecksum(), new IRODSAttributesFinderFeature(session).find(test).getChecksum());
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
         session.close();
     }
 
