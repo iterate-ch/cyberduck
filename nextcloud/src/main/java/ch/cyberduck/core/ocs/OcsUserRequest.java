@@ -16,6 +16,7 @@ package ch.cyberduck.core.ocs;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 
@@ -29,8 +30,9 @@ import org.apache.http.entity.ContentType;
 public class OcsUserRequest extends HttpGet {
 
     public OcsUserRequest(final Host host) throws BackgroundException {
-        super(String.format("https://%s%s/cloud/user",
-                host.getHostname(), new NextcloudHomeFeature(host).find(NextcloudHomeFeature.Context.ocs).getAbsolute()
+        super(String.format("%s%s/cloud/user",
+                new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                new NextcloudHomeFeature(host).find(NextcloudHomeFeature.Context.ocs).getAbsolute()
         ));
         this.setHeader("OCS-APIRequest", "true");
         this.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());

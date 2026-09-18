@@ -143,6 +143,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isOAuthConfigurable()) {
             credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+            this.authorized();
         }
         if(host.getProtocol().isTokenConfigurable()) {
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
@@ -243,6 +244,13 @@ public class DAVSession extends HttpSession<DAVClient> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
+    }
+
+    /**
+     * Invoked with OAuth tokens retrieved prior to verifying login with request for home folder
+     */
+    protected void authorized() throws BackgroundException {
+        //
     }
 
     @Override

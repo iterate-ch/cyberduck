@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
@@ -74,27 +75,26 @@ public class NextcloudSession extends DAVSession {
     }
 
     @Override
-    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        super.login(prompt, cancel);
-        if(host.getProtocol().isOAuthConfigurable()) {
-            // Username set from ID token claims does not necessarily match the user identifier known to the server
-            final Credentials credentials = host.getCredentials();
-            try {
-                final OcsUserRequest request = new OcsUserRequest(host);
-                log.debug("Query OCS user at {}", request);
-                final String id = client.execute(request, new OcsUserResponseHandler());
-                if(StringUtils.isNotBlank(id) && !StringUtils.equals(credentials.getUsername(), id)) {
-                    log.debug("Set username to {} from server", id);
-                    credentials.setUsername(id);
-                }
-            }
-            catch(HttpResponseException e) {
-                log.warn("Failure {} querying user. Retain username {}", e.getMessage(), credentials.getUsername());
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+    protected void authorized() throws BackgroundException {
+        // Username set from ID token claims does not necessarily match the user identifier known to the server
+        final Credentials credentials = host.getCredentials();
+        try {
+            final OcsUserRequest request = new OcsUserRequest(host);
+            log.debug("Query OCS user at {}", request);
+            final String id = client.execute(request, new OcsUserResponseHandler());
+            if(StringUtils.isNotBlank(id) && !StringUtils.equals(credentials.getUsername(), id)) {
+                log.debug("Set username to {} from server", id);
+                credentials.setUsername(id);
             }
         }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        super.login(prompt, cancel);
         try {
             final OcsCapabilitiesRequest request = new OcsCapabilitiesRequest(host);
             log.debug("Query OCS capabilities at {}", request);
