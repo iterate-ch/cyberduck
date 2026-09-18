@@ -85,41 +85,78 @@ public class FTPClient extends FTPSClient {
             if(socket instanceof SSLSocket) {
                 // Control socket is SSL
                 final SSLSession session = ((SSLSocket) _socket_).getSession();
-                if(session.isValid()) {
-                    final SSLSessionContext context = session.getSessionContext();
-                    context.setSessionCacheSize(preferences.getInteger("ftp.ssl.session.cache.size"));
-                    try {
-                        final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
-                        sessionHostPortCache.setAccessible(true);
-                        final Object cache = sessionHostPortCache.get(context);
+                final SSLSessionContext context = session.getSessionContext();
+                if(null == context) {
+                    log.warn("No session context for session {} of control connection", session);
+                    return;
+                }
+                context.setSessionCacheSize(preferences.getInteger("ftp.ssl.session.cache.size"));
+                try {
+                    final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
+                    sessionHostPortCache.setAccessible(true);
+                    final Object cache = sessionHostPortCache.get(context);
+                    // Prefer the session from the cache. The pre shared key received with the session ticket and
+                    // required to resume in TLS 1.3 is set on the copy in the cache and not on the session of the
+                    // control socket
+                    final SSLSession resume = this.resumable(cache, session);
+                    if(resume.isValid()) {
                         final Method putMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
                         putMethod.setAccessible(true);
-                        Method getHostMethod;
-                        try {
-                            getHostMethod = socket.getClass().getMethod("getPeerHost");
-                        }
-                        catch(NoSuchMethodException e) {
-                            // Running in IKVM
-                            getHostMethod = socket.getClass().getDeclaredMethod("getHost");
-                        }
-                        getHostMethod.setAccessible(true);
-                        Object peerHost = getHostMethod.invoke(socket);
-                        putMethod.invoke(cache, String.format("%s:%s", peerHost, socket.getPort()).toLowerCase(Locale.ROOT), session);
+                        putMethod.invoke(cache, this.key(socket), resume);
                     }
-                    catch(NoSuchFieldException e) {
-                        // Not running in expected JRE
-                        log.warn("No field sessionHostPortCache in SSLSessionContext", e);
-                    }
-                    catch(Exception e) {
-                        // Not running in expected JRE
-                        log.warn(e.getMessage());
+                    else {
+                        log.warn("SSL session {} for socket {} is not rejoinable", resume, socket);
                     }
                 }
-                else {
-                    log.warn("SSL session {} for socket {} is not rejoinable", session, socket);
+                catch(NoSuchFieldException e) {
+                    // Not running in expected JRE
+                    log.warn("No field sessionHostPortCache in SSLSessionContext", e);
+                }
+                catch(Exception e) {
+                    // Not running in expected JRE
+                    log.warn(e.getMessage());
                 }
             }
         }
+    }
+
+    /**
+     * @param cache   Session cache of client
+     * @param session Session of control socket used as fallback
+     * @return Session of control connection in cache to resume for data connection
+     */
+    private SSLSession resumable(final Object cache, final SSLSession session) {
+        try {
+            final Method getMethod = cache.getClass().getDeclaredMethod("get", Object.class);
+            getMethod.setAccessible(true);
+            final Object cached = getMethod.invoke(cache, this.key(_socket_));
+            if(cached instanceof SSLSession) {
+                return (SSLSession) cached;
+            }
+            log.warn("No session in cache for control connection {}", _socket_);
+        }
+        catch(Exception e) {
+            // Not running in expected JRE
+            log.warn(e.getMessage());
+        }
+        return session;
+    }
+
+    /**
+     * @param socket SSL socket
+     * @return Key of socket in session cache of client
+     */
+    private String key(final Socket socket) throws ReflectiveOperationException {
+        Method getHostMethod;
+        try {
+            getHostMethod = socket.getClass().getMethod("getPeerHost");
+        }
+        catch(NoSuchMethodException e) {
+            // Running in IKVM
+            getHostMethod = socket.getClass().getDeclaredMethod("getHost");
+        }
+        getHostMethod.setAccessible(true);
+        return String.format("%s:%s", getHostMethod.invoke(socket), socket.getPort()).toLowerCase(Locale.ROOT);
     }
 
     @Override
