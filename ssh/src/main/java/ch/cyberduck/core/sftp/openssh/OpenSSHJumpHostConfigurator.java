@@ -75,6 +75,20 @@ public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
     }
 
     @Override
+    public String getProxyCommand(final String alias) {
+        if(StringUtils.isBlank(alias)) {
+            return null;
+        }
+        final String proxyCommand = configuration.lookup(alias).getProxyCommand();
+        if(StringUtils.isBlank(proxyCommand)) {
+            log.debug("No proxy command for alias {}", alias);
+            return null;
+        }
+        log.info("Found proxy command configuration {} from {}", proxyCommand, configuration);
+        return proxyCommand;
+    }
+
+    @Override
     public JumphostConfigurator reload() throws LoginCanceledException {
         hostname.reload();
         credentials.reload();

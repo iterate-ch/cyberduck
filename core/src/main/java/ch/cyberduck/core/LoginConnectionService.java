@@ -124,7 +124,9 @@ public class LoginConnectionService implements ConnectionService {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"), hostname));
         if(proxy.find(new ProxyHostUrlProvider().get(bookmark)) == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
-            if(null == JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname())) {
+            final JumphostConfigurator jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol());
+            if(null == jumphost.getJumphost(bookmark.getHostname())
+                    && null == jumphost.getProxyCommand(bookmark.getHostname())) {
                 // Do not attempt to resolve hostname that may only be reachable in internal network from jump host
                 try {
                     resolver.resolve(hostname, cancel);
