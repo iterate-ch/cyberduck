@@ -56,6 +56,10 @@ jobs:
       checks: write
       contents: read
       packages: read
+      # Build provenance attestations
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     runs-on: [ self-hosted, "${{ inputs.RUNNER_OS }}", "${{ inputs.RUNNER_ARCH }}" ]
     steps:
       - uses: actions/checkout@v7
@@ -219,7 +223,7 @@ jobs:
         with:
           archive: false
           path: |-
-            cli/windows/target/release/duck-*-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' || runner.arch }}.msi
+            cli/windows/target/release/duck-*.msi
       - name: Archive CLI NUPKG (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
@@ -240,6 +244,37 @@ jobs:
         with:
           archive: false
           path: |-
+            cli/linux/target/release/*.rpm
+
+      # Sign SLSA build provenance for the distributed files so downloads can be
+      # checked with `gh attestation verify <file> --repo iterate-ch/cyberduck`.
+      - name: Attest Build Provenance (macOS)
+        if: runner.os == 'macos'
+        uses: actions/attest@v4
+        with:
+          subject-path: |-
+            osx/target/release/*.zip
+            osx/target/release/*.pkg
+            cli/osx/target/release/*.pkg
+            cli/osx/target/release/*.tar.gz
+      - name: Attest Build Provenance (Windows)
+        if: runner.os == 'windows'
+        uses: actions/attest@v4
+        with:
+          subject-path: |-
+            windows/target/release/*.exe
+            windows/target/release/*.appx
+            windows/target/release/*.msi
+            windows/target/release/*.nupkg
+            cli/windows/target/release/*.exe
+            cli/windows/target/release/duck-*.msi
+            cli/windows/target/release/*.nupkg
+      - name: Attest Build Provenance (Linux)
+        if: runner.os == 'linux'
+        uses: actions/attest@v4
+        with:
+          subject-path: |-
+            cli/linux/target/release/*.deb
             cli/linux/target/release/*.rpm
 
       - name: Cleanup Developer ID certificate

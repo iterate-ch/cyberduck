@@ -16,6 +16,13 @@ jobs:
           - { os: windows, arch: x64, goal: deploy }
           - { os: linux, arch: x64, goal: deploy }
           - { os: linux, arch: arm64, goal: deploy }
+    permissions:
+      checks: write
+      contents: read
+      packages: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     uses: ./.github/workflows/deploy.yml
     with:
       SPARKLE_FEED: release
@@ -38,6 +45,9 @@ jobs:
   source:
     permissions:
       contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     runs-on: [ linux, x64 ]
     steps:
       - uses: actions/checkout@v7
@@ -54,6 +64,11 @@ jobs:
           name="duck-src-${version}.${revision}"
           git archive --format=tar --prefix="${name}/" HEAD | gzip -9n > "${name}.tar.gz"
           sha256sum "${name}.tar.gz"
+
+      - name: Attest Build Provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: duck-src-*.tar.gz
 
       - name: Archive Artifacts
         uses: actions/upload-artifact@v7
