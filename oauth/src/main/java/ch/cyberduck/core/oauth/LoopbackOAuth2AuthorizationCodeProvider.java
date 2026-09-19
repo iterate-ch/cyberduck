@@ -34,17 +34,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2AuthorizationCodeProvider {
@@ -52,59 +52,79 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
 
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
+        return this.prompt(bookmark, prompt, ignored -> authorizationCodeUrl, redirectUri, state);
+    }
+
+    public String prompt(final Host bookmark, final LoginCallback prompt,
+                         final Function<String, String> authorizationCodeUrl, final String state) throws BackgroundException {
+        return this.prompt(bookmark, prompt, authorizationCodeUrl, null, state);
+    }
+
+    private String prompt(final Host bookmark, final LoginCallback prompt,
+                          final Function<String, String> authorizationCodeUrl,
+                          final String requestedRedirectUri, final String expectedState) throws BackgroundException {
         final CountDownLatch signal = new CountDownLatch(1);
-        final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
         final AtomicReference<String> authenticationCode = new AtomicReference<>();
-        registry.register(state, new OAuth2TokenListener() {
-            @Override
-            public void callback(final String code) {
-                log.info("Callback with code {}", code);
-                if(!StringUtils.isBlank(code)) {
-                    authenticationCode.set(code);
-                }
+        OAuth2TokenListenerRegistry.get().register(expectedState, code -> {
+            if(StringUtils.isBlank(code)) {
                 signal.countDown();
+            }
+            else {
+                authenticationCode.set(code);
             }
         });
         try {
-            final HttpServer server = HttpServer.create(new InetSocketAddress(
-                    URI.create(redirectUri).getHost(), -1 == URI.create(redirectUri).getPort() ? 0 : URI.create(redirectUri).getPort()), 0);
+            final URI requested = null == requestedRedirectUri ? null : URI.create(requestedRedirectUri);
+            final HttpServer server = HttpServer.create(null == requested ?
+                    new InetSocketAddress(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}), 0) :
+                    new InetSocketAddress(requested.getHost(), -1 == requested.getPort() ? 0 : requested.getPort()), 0);
+            final String redirectUri = null == requested ? String.format("http://127.0.0.1:%d/oauth/callback", server.getAddress().getPort()) : requestedRedirectUri;
             final ExecutorService executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("oauth"));
             // Create handler for OAuth callback
             server.createContext(StringUtils.isBlank(URI.create(redirectUri).getRawPath()) ?
-                    String.valueOf(Path.DELIMITER) : URI.create(redirectUri).getRawPath(), new HttpHandler() {
-                @Override
-                public void handle(final HttpExchange exchange) throws IOException {
-                    log.debug("Received callback with query {}", exchange.getRequestURI().getQuery());
-                    final List<NameValuePair> pairs = URLEncodedUtils.parse(exchange.getRequestURI(), Charset.defaultCharset());
+                    String.valueOf(Path.DELIMITER) : URI.create(redirectUri).getRawPath(), exchange -> {
+                    final List<NameValuePair> pairs = URLEncodedUtils.parse(exchange.getRequestURI(), StandardCharsets.UTF_8);
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
                         if(StringUtils.equals(pair.getName(), "state")) {
-                            state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                            state = pair.getValue();
                         }
                         if(StringUtils.equals(pair.getName(), "code")) {
-                            code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
+                            code = pair.getValue();
                         }
                     }
-                    final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                    if(oauth.notify(state, code)) {
-                        exchange.getResponseHeaders().add(HttpHeaders.LOCATION, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
-                        exchange.sendResponseHeaders(302, 0L);
+                    final boolean accepted = StringUtils.equals(expectedState, state) && OAuth2TokenListenerRegistry.get().notify(state, code);
+                    try {
+                        if(!accepted) {
+                            exchange.sendResponseHeaders(400, 0);
+                        }
+                        else if(null == requested) {
+                            final byte[] response = LocaleFactory.localizedString("Login successful", "Credentials").getBytes(StandardCharsets.UTF_8);
+                            exchange.getResponseHeaders().add(HttpHeaders.CONTENT_TYPE, "text/plain; charset=utf-8");
+                            exchange.sendResponseHeaders(200, response.length);
+                            exchange.getResponseBody().write(response);
+                        }
+                        else {
+                            exchange.getResponseHeaders().add(HttpHeaders.LOCATION, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                            exchange.sendResponseHeaders(302, 0L);
+                        }
                     }
-                    else {
-                        exchange.sendResponseHeaders(400, 0);
+                    finally {
+                        IOUtils.close(exchange.getResponseBody());
+                        if(accepted) {
+                            signal.countDown();
+                        }
                     }
-                    IOUtils.close(exchange.getResponseBody());
-                }
             });
             server.setExecutor(executor);
             server.start();
             log.info("Started OAuth callback server {}", server);
             try {
                 // Open browser with authorization URL
-                this.open(authorizationCodeUrl);
+                this.open(authorizationCodeUrl.apply(redirectUri));
                 // Wait for callback
-                log.info("Await callback from custom scheme {} and state {}", redirectUri, state);
+                log.info("Await callback from custom scheme {} and state {}", redirectUri, expectedState);
                 prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
                         LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
                 bookmark.getCredentials().setSaved(new LoginOptions().save);

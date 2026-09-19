@@ -57,6 +57,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sso.IdentityCenterAuthorizationService;
 import ch.cyberduck.core.sso.IdentityCenterCredentialsStrategy;
 import ch.cyberduck.core.sso.RegisterClientOAuth2RequestInterceptor;
+import ch.cyberduck.core.signin.AWSConsoleLoginCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
@@ -266,6 +267,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws BackgroundException {
+        if(preferences.getBoolean("s3.login.enable")) {
+            log.debug("Configure AWS Console Sign-In");
+            return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt);
+        }
         if(host.getProtocol().isOAuthConfigurable()) {
             if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
                 log.debug("Configure SSO");

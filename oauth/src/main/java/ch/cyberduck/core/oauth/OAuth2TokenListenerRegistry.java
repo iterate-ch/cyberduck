@@ -47,7 +47,7 @@ public class OAuth2TokenListenerRegistry {
             return false;
         }
         listeners.remove(state);
-        log.debug("Notify listener for state {} with token {}", state, token);
+        log.debug("Notify listener for state {}", state);
         listener.callback(token);
         return true;
     }
