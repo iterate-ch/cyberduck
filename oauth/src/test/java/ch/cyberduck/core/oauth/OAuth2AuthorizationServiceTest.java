@@ -23,9 +23,12 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -94,6 +97,71 @@ public class OAuth2AuthorizationServiceTest {
         finally {
             PreferencesFactory.get().setProperty(property, previous);
         }
+    }
+
+    @Test
+    public void testSaveUsernameFromClaims() throws Exception {
+        final Host host = new Host(new TestProtocol());
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), host,
+                "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
+                new DisabledLoginCallback());
+        service.save(new OAuthTokens("a", "r", Long.MAX_VALUE,
+                idToken("{\"sub\":\"00000000-1111-2222-3333-444444444444\",\"preferred_username\":\"jane.doe@example.com\",\"oid\":\"11111111-2222-3333-4444-555555555555\"}")));
+        assertEquals("jane.doe@example.com", host.getCredentials().getUsername());
+    }
+
+    @Test
+    public void testSaveUsernameFromClaimsCustomOrder() throws Exception {
+        final Host host = new Host(new TestProtocol());
+        host.setProperty("oauth.username.claims", "oid preferred_username");
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), host,
+                "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
+                new DisabledLoginCallback());
+        service.save(new OAuthTokens("a", "r", Long.MAX_VALUE,
+                idToken("{\"sub\":\"00000000-1111-2222-3333-444444444444\",\"preferred_username\":\"jane.doe@example.com\",\"oid\":\"11111111-2222-3333-4444-555555555555\"}")));
+        assertEquals("11111111-2222-3333-4444-555555555555", host.getCredentials().getUsername());
+        // First claim not found in token
+        service.save(new OAuthTokens("a", "r", Long.MAX_VALUE,
+                idToken("{\"sub\":\"s\",\"preferred_username\":\"u\"}")));
+        assertEquals("11111111-2222-3333-4444-555555555555", host.getCredentials().getUsername());
+        host.getCredentials().setUsername(null);
+        service.save(new OAuthTokens("a", "r", Long.MAX_VALUE,
+                idToken("{\"sub\":\"s\",\"preferred_username\":\"u\"}")));
+        assertEquals("u", host.getCredentials().getUsername());
+    }
+
+    @Test
+    public void testSaveUsernameFromClaimsDisabled() throws Exception {
+        final Host host = new Host(new TestProtocol());
+        host.setProperty("oauth.username.claims.enable", String.valueOf(false));
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), host,
+                "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
+                new DisabledLoginCallback());
+        service.save(new OAuthTokens("a", "r", Long.MAX_VALUE,
+                idToken("{\"sub\":\"s\",\"preferred_username\":\"u\"}")));
+        assertTrue(StringUtils.isBlank(host.getCredentials().getUsername()));
+    }
+
+    @Test
+    public void testSaveUsernameConfiguredNotReplaced() throws Exception {
+        final Host host = new Host(new TestProtocol());
+        host.getCredentials().setUsername("configured");
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), host,
+                "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
+                new DisabledLoginCallback());
+        service.save(new OAuthTokens("a", "r", Long.MAX_VALUE,
+                idToken("{\"sub\":\"s\",\"preferred_username\":\"u\"}")));
+        assertEquals("configured", host.getCredentials().getUsername());
+    }
+
+    /**
+     * @return Unsigned ID token with payload
+     */
+    private static String idToken(final String payload) {
+        final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+        return String.format("%s.%s.",
+                encoder.encodeToString("{\"alg\":\"none\",\"typ\":\"JWT\"}".getBytes(StandardCharsets.UTF_8)),
+                encoder.encodeToString(payload.getBytes(StandardCharsets.UTF_8)));
     }
 
     public static final class CapturingAuthorizationCodeProvider implements OAuth2AuthorizationCodeProvider {
