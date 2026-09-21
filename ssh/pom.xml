@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.41.0</version>
+            <version>0.41.1</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
