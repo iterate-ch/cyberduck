@@ -15,6 +15,7 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
 import ch.cyberduck.core.nextcloud.NextcloudListService;
@@ -47,6 +49,8 @@ import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
+import ch.cyberduck.core.ocs.OcsUserRequest;
+import ch.cyberduck.core.ocs.OcsUserResponseHandler;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -59,6 +63,7 @@ import ch.cyberduck.core.tus.TusCapabilitiesResponseHandler;
 import ch.cyberduck.core.tus.TusWriteFeature;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -92,6 +97,23 @@ public class OwncloudSession extends DAVSession {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         return client;
+    }
+
+    @Override
+    protected void authorized() throws BackgroundException {
+        final Credentials credentials = host.getCredentials();
+        try {
+            final OcsUserRequest request = new OcsUserRequest(host);
+            log.debug("Query OCS user at {}", request);
+            final String id = client.execute(request, new OcsUserResponseHandler());
+            if(StringUtils.isNotBlank(id) && !StringUtils.equals(credentials.getUsername(), id)) {
+                log.debug("Set username to {} from server", id);
+                credentials.setUsername(id);
+            }
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
     }
 
     @Override

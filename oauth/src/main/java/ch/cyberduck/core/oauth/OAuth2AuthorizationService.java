@@ -15,27 +15,14 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -179,21 +166,24 @@ public class OAuth2AuthorizationService {
                 break;
             default:
                 if(StringUtils.isBlank(credentials.getUsername())) {
-                    if(null != tokens.getIdToken()) {
-                        try {
-                            final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
-                            // Standard claims
-                            for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
-                                final String value = jwt.getClaim(claim).asString();
-                                if(StringUtils.isNotBlank(value)) {
-                                    log.debug("Set username to {} from claim {}", value, claim);
-                                    credentials.setUsername(value);
-                                    break;
+                    final HostPreferences preferences = HostPreferencesFactory.get(host);
+                    if(preferences.getBoolean("oauth.username.claims.enable")) {
+                        if(null != tokens.getIdToken()) {
+                            try {
+                                final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
+                                // Claims in order of preference
+                                for(String claim : preferences.getList("oauth.username.claims")) {
+                                    final String value = jwt.getClaim(claim).asString();
+                                    if(StringUtils.isNotBlank(value)) {
+                                        log.debug("Set username to {} from claim {}", value, claim);
+                                        credentials.setUsername(value);
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        catch(JWTDecodeException e) {
-                            log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+                            catch(JWTDecodeException e) {
+                                log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+                            }
                         }
                     }
                 }
