@@ -19,6 +19,11 @@ on:
       RUNNER_ARCH:
         required: true
         type: string
+      # GitHub-hosted runner label (e.g. ubuntu-26.04-arm). When empty, the job is
+      # scheduled on a self-hosted runner matching RUNNER_OS and RUNNER_ARCH.
+      RUNNER:
+        required: false
+        type: string
       DEVELOPER_DIR:
         required: false
         type: string
@@ -60,7 +65,7 @@ jobs:
       id-token: write
       attestations: write
       artifact-metadata: write
-    runs-on: [ self-hosted, "${{ inputs.RUNNER_OS }}", "${{ inputs.RUNNER_ARCH }}" ]
+    runs-on: ${{ inputs.RUNNER || fromJSON(format('["self-hosted","{0}","{1}"]', inputs.RUNNER_OS, inputs.RUNNER_ARCH)) }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -71,6 +76,11 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: maven
+      # jpackage needs rpmbuild (--type rpm) and fakeroot (--type deb), which the
+      # GitHub-hosted Ubuntu images do not ship.
+      - name: Install packaging tools (Linux)
+        if: runner.os == 'linux' && runner.environment == 'github-hosted'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends rpm fakeroot
       - name: Add msbuild to PATH
         if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v3
