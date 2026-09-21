@@ -54,30 +54,19 @@ public class SFTPWriteFeature implements Write<Void> {
         try {
             final EnumSet<OpenMode> flags;
             if(status.isAppend()) {
-                if(status.isExists()) {
-                    // No append flag. Otherwise the offset field of SSH_FXP_WRITE requests is ignored.
-                    flags = EnumSet.of(OpenMode.WRITE);
-                }
-                else {
-                    // Allocate offset
-                    flags = EnumSet.of(OpenMode.CREAT, OpenMode.WRITE);
-                }
+                // No TRUNC flag. For an existing file also no APPEND flag, otherwise the offset field of SSH_FXP_WRITE
+                // requests is ignored. CREAT to allocate the offset when the file does not exist yet.
+                flags = status.isExists() ? EnumSet.of(OpenMode.WRITE) : EnumSet.of(OpenMode.CREAT, OpenMode.WRITE);
             }
             else {
-                // A new file is created; if the file already exists, it is opened and truncated to preserve ownership of file.
-                if(status.isExists()) {
-                    if(file.isSymbolicLink()) {
-                        // Workaround for #7327
-                        session.sftp().remove(file.getAbsolute());
-                        flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
-                    }
-                    else {
-                        flags = EnumSet.of(OpenMode.TRUNC, OpenMode.WRITE);
-                    }
+                if(status.isExists() && file.isSymbolicLink()) {
+                    // Workaround for #7327
+                    session.sftp().remove(file.getAbsolute());
                 }
-                else {
-                    flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
-                }
+                // A new file is created; if the file already exists, it is opened and truncated to preserve ownership of
+                // file. CREAT must be specified along with TRUNC. Servers strictly following the SFTP draft ignore TRUNC
+                // without CREAT and open the existing file for writing without truncating it (#18335, #4419).
+                flags = EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE);
             }
             final RemoteFile handle = session.sftp().open(file.getAbsolute(), flags);
             final int maxUnconfirmedWrites = this.getMaxUnconfirmedWrites(status);

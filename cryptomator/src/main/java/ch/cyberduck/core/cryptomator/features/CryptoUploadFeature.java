@@ -43,12 +43,12 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, file, status).getLength()), callback);
+        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setParent(new CryptoTransferStatus(vault, file, status)), callback);
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return proxy.append(vault.encrypt(session, file), status.setDestinationLength(new CryptoTransferStatus(vault, file, status).getLength()));
+        return proxy.append(vault.encrypt(session, file), status.setParent(new CryptoTransferStatus(vault, file, status)));
     }
 
     @Override

@@ -19,3 +19,12 @@ Host bastion-host-nickname
 Host remote-host-nickname
     HostName remote-hostname
     ProxyJump bastion-host-nickname
+
+Host proxycommand-host
+    HostName internal-hostname
+    User fred
+    ProxyCommand ssh -W %h:%p bastion.example.org
+
+Host proxycommand-none
+    HostName another-hostname
+    ProxyCommand none

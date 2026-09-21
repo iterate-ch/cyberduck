@@ -91,7 +91,7 @@
         <jackson-annotations-version>2.22</jackson-annotations-version>
         <slf4j-version>2.0.0</slf4j-version>
         <log4j-version>2.26.1</log4j-version>
-        <bouncycastle-version>1.85</bouncycastle-version>
+        <bouncycastle-version>1.86</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>2.2.0</google-http-client.version>
         <jwt.version>4.6.1</jwt.version>
@@ -123,7 +123,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.13</version>
+                <version>1.18.14</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -451,7 +451,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -488,7 +488,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -498,7 +498,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.1</version>
+                    <version>3.6.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -818,7 +818,7 @@
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.12.0</version>
+                        <version>1.12.1</version>
                     </dependency>
                 </dependencies>
             </plugin>

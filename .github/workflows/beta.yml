@@ -15,6 +15,13 @@ jobs:
           - { os: windows, arch: x64, goal: deploy }
           - { os: linux, arch: x64, goal: deploy }
           - { os: linux, arch: arm64, goal: deploy }
+    permissions:
+      checks: write
+      contents: read
+      packages: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     uses: ./.github/workflows/deploy.yml
     with:
       SPARKLE_FEED: beta

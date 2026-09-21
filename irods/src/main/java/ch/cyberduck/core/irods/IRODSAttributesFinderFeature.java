@@ -32,9 +32,11 @@ import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
 import org.irods.irods4j.high_level.vfs.LogicalPath;
 import org.irods.irods4j.high_level.vfs.ObjectStatus;
+import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class IRODSAttributesFinderFeature implements AttributesFinder, AttributesAdapter<List<String>> {
@@ -62,17 +64,11 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
 
             if(IRODSFilesystem.isDataObject(status)) {
                 log.debug("data object exists in iRODS. fetching data using GenQuery2.");
-                String query = String.format(
-                        "select DATA_CREATE_TIME, DATA_MODIFY_TIME, DATA_SIZE, DATA_CHECKSUM, DATA_REPL_STATUS where COLL_NAME = '%s' and DATA_NAME = '%s' order by DATA_REPL_STATUS desc, DATA_MODIFY_TIME desc",
-                        LogicalPath.parentPath(logicalPath),
-                        LogicalPath.objectName(logicalPath));
-                log.debug("query = [{}]", query);
-                List<List<String>> rows = IRODSQuery.executeGenQuery2(conn.getRcComm(), query);
+                List<String> row = query(conn.getRcComm(), logicalPath);
 
                 PathAttributes attrs = new DefaultPathAttributes();
 
-                if(!rows.isEmpty()) {
-                    List<String> row = rows.get(0);
+                if(!row.isEmpty()) {
                     if(REPLICA_STATUS_STALE.equals(row.get(4)) || REPLICA_STATUS_GOOD.equals(row.get(4))) {
                         setAttributes(attrs, row);
                     }
@@ -110,6 +106,26 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    /**
+     * Query the catalog for the most recently modified replica of a data object
+     *
+     * @param logicalPath Absolute path of data object
+     * @return Row with create time, modify time, size, checksum and replica status or empty list if no replica is found
+     * @see #toAttributes(List)
+     */
+    static List<String> query(final RcComm comm, final String logicalPath) throws IOException, IRODSException {
+        String query = String.format(
+                "select DATA_CREATE_TIME, DATA_MODIFY_TIME, DATA_SIZE, DATA_CHECKSUM, DATA_REPL_STATUS where COLL_NAME = '%s' and DATA_NAME = '%s' order by DATA_REPL_STATUS desc, DATA_MODIFY_TIME desc",
+                LogicalPath.parentPath(logicalPath),
+                LogicalPath.objectName(logicalPath));
+        log.debug("query = [{}]", query);
+        List<List<String>> rows = IRODSQuery.executeGenQuery2(comm, query);
+        if(rows.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return rows.get(0);
     }
 
     @Override
