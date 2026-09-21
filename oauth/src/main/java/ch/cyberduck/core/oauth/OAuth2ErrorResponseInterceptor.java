@@ -20,6 +20,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
+import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
@@ -31,10 +33,12 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
 
     private final Credentials credentials;
     private final OAuth2RequestInterceptor service;
+    private final CancelCallback cancel;
 
-    public OAuth2ErrorResponseInterceptor(final Host host, final OAuth2RequestInterceptor service) {
+    public OAuth2ErrorResponseInterceptor(final Host host, final OAuth2RequestInterceptor service, final CancelCallback cancel) {
         this.credentials = host.getCredentials();
         this.service = service;
+        this.cancel = cancel;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 try {
                     log.warn("Attempt to refresh OAuth tokens for failure {}", response);
-                    service.save(service.authorizeWithRefreshToken(credentials.getOauth()));
+                    service.save(service.authorizeWithRefreshToken(credentials.getOauth(), cancel));
                     // Try again
                     return true;
                 }

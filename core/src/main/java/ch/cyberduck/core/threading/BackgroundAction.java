@@ -61,6 +61,8 @@ public interface BackgroundAction<T> extends BackgroundActionState {
      */
     void cancel();
 
+    Context getContext();
+
     /**
      * @return The name of the activity to display in the activity window
      */
@@ -81,4 +83,9 @@ public interface BackgroundAction<T> extends BackgroundActionState {
      * @return True to retry
      */
     boolean alert(BackgroundException e);
+
+    enum Context {
+        interactive,
+        scheduled
+    }
 }

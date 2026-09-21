@@ -196,7 +196,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authentication = this.configureCredentialsStrategy(configuration, prompt);
+        authentication = this.configureCredentialsStrategy(configuration, prompt, cancel);
         log.debug("Configured authentication strategy {}", authentication);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new S3AuthenticationResponseInterceptor(authentication)));
@@ -265,7 +265,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
-                                                                 final LoginCallback prompt) throws BackgroundException {
+                                                                 final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
             if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
                 log.debug("Configure SSO");
@@ -289,7 +289,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                         host.setCredentials(configurator.configure(host));
                     }
                 }
-                final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt)
+                final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt, cancel)
                         .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
                 log.debug("Add interceptor {}", oauth);
                 configuration.addInterceptorLast(oauth);
@@ -298,7 +298,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 log.debug("Return authenticator {}", strategy);
                 return strategy;
             }
-            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+            final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                     .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
                 oauth.setFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));

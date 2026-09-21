@@ -25,6 +25,7 @@ import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -99,10 +100,17 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Get password from the password store or prompt
         synchronized(login) {
-            login.validate(bookmark, session.getFeature(X509KeyManager.class), prompt, new LoginOptions(bookmark.getProtocol()));
+            login.validate(bookmark, session.getFeature(X509KeyManager.class), this.prompt(callback), new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, callback);
         return true;
+    }
+
+    /**
+     * @return No user visible prompts for scheduled actions
+     */
+    private LoginCallback prompt(final CancelCallback cancel) {
+        return cancel.getContext() == BackgroundAction.Context.scheduled ? LoginCallback.noop : prompt;
     }
 
     @Override
@@ -119,6 +127,7 @@ public class LoginConnectionService implements ConnectionService {
             this.close(session);
         }
         final Host bookmark = session.getHost();
+        final LoginCallback prompt = this.prompt(cancel);
         // Try to resolve the hostname first
         final String hostname = HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"), hostname));
@@ -159,7 +168,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Login
         try {
-            this.authenticate(session, cancel);
+            this.authenticate(session, prompt, cancel);
         }
         catch(BackgroundException e) {
             this.close(session);
@@ -167,11 +176,11 @@ public class LoginConnectionService implements ConnectionService {
         }
     }
 
-    private void authenticate(final Session<?> session, final CancelCallback callback) throws BackgroundException {
+    private void authenticate(final Session<?> session, final LoginCallback prompt, final CancelCallback callback) throws BackgroundException {
         if(!login.authenticate(session, listener, prompt, callback)) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials but cancel when the prompt is dismissed
-                this.authenticate(session, callback);
+                this.authenticate(session, prompt, callback);
             }
             else {
                 // Reconnect and next attempt with updated credentials

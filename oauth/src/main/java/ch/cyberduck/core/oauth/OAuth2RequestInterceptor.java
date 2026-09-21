@@ -25,6 +25,8 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
+import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
@@ -47,8 +49,9 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
 
     private final ReentrantLock lock = new ReentrantLock();
     private final Host host;
+    private final CancelCallback cancel;
 
-    public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
+    public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt, final CancelCallback cancel) throws LoginCanceledException {
         this(client, host,
                 Scheme.isURL(host.getProtocol().getOAuthTokenUrl()) ? host.getProtocol().getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
@@ -61,13 +64,14 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                                 Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"),
                         null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY)),
                 host.getProtocol().getOAuthScopes(),
-                host.getProtocol().isOAuthPKCE(), prompt);
+                host.getProtocol().isOAuthPKCE(), prompt, cancel);
     }
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
-                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt, final CancelCallback cancel) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
         this.host = host;
+        this.cancel = cancel;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             OAuthTokens tokens = host.getCredentials().getOauth();
             if(tokens.isExpired()) {
                 try {
-                    tokens = this.save(this.authorizeWithRefreshToken(tokens));
+                    tokens = this.save(this.authorizeWithRefreshToken(tokens, cancel));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing OAuth tokens {}", e, tokens);
