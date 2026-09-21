@@ -44,9 +44,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.ssh</groupId>
+            <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.40.1</version>
+            <version>0.41.0</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
@@ -57,12 +57,6 @@
             <groupId>ch.iterate.ssh</groupId>
             <artifactId>jsch.agentproxy.sshj</artifactId>
             <version>${jsch-agentproxy-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.hierynomus</groupId>
-                    <artifactId>sshj</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.iterate.ssh</groupId>
