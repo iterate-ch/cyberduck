@@ -66,7 +66,6 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session<?>> {
     public void activateObject(final PooledObject<Session<?>> p) throws BackgroundException {
         final Session<?> session = p.getObject();
         log.debug("Activate session {}", session);
-        connect.check(session, CancelCallback.noop);
     }
 
     @Override

@@ -21,6 +21,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 
+import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
@@ -31,12 +33,12 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
     private static final Logger log = LogManager.getLogger(PreconditionFailedResponseInterceptor.class);
 
     private final OAuth2RequestInterceptor service;
+    private final CancelCallback cancel;
 
-    public PreconditionFailedResponseInterceptor(final Host bookmark,
-                                                 final OAuth2RequestInterceptor service,
-                                                 final LoginCallback prompt) {
-        super(bookmark, service);
+    public PreconditionFailedResponseInterceptor(final Host bookmark, final OAuth2RequestInterceptor service, final CancelCallback cancel) {
+        super(bookmark, service, cancel);
         this.service = service;
+        this.cancel = cancel;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
             case HttpStatus.SC_PRECONDITION_FAILED:
                 try {
                     log.warn("Invalidate OAuth tokens due to failed precondition {}", response);
-                    service.save(service.authorize());
+                    service.save(service.authorize(cancel));
                     // Try again
                     return true;
                 }

@@ -75,12 +75,12 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     @Override
     protected CustomDbxRawClientV2 connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                 .setRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                 .setParameter("token_access_type", "offline");
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         if(preferences.getBoolean("dropbox.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
                     preferences.getInteger("dropbox.limit.requests.second")
@@ -96,7 +96,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+        credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
         try {
             final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
             log.debug("Authenticated as user {}", account);

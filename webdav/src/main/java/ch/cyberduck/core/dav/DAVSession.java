@@ -106,21 +106,21 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final HttpClientBuilder configuration = this.getConfiguration(proxy, prompt);
+        final HttpClientBuilder configuration = this.getConfiguration(proxy, prompt, cancel);
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
-    protected HttpClientBuilder getConfiguration(final ProxyFinder proxy, final LoginCallback prompt) throws ConnectionCanceledException {
+    protected HttpClientBuilder getConfiguration(final ProxyFinder proxy, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                     .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
                 authorizationService.setFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                    new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         }
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         configuration.addInterceptorLast(new MicrosoftIISPersistentAuthResponseInterceptor());
@@ -142,7 +142,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isOAuthConfigurable()) {
-            credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+            credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
             this.authorized();
         }
         if(host.getProtocol().isTokenConfigurable()) {

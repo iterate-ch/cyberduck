@@ -30,4 +30,9 @@ public class BackgroundActionStateCancelCallback implements CancelCallback {
             throw new ConnectionCanceledException();
         }
     }
+
+    @Override
+    public BackgroundAction.Context getContext() {
+        return action.getContext();
+    }
 }
