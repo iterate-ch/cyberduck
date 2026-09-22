@@ -35,6 +35,11 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
     private final OAuth2RequestInterceptor service;
     private final CancelCallback cancel;
 
+    @Deprecated
+    public OAuth2ErrorResponseInterceptor(final Host host, final OAuth2RequestInterceptor service) {
+        this(host, service, CancelCallback.noop);
+    }
+
     public OAuth2ErrorResponseInterceptor(final Host host, final OAuth2RequestInterceptor service, final CancelCallback cancel) {
         this.credentials = host.getCredentials();
         this.service = service;

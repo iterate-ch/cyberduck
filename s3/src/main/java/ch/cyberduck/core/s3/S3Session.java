@@ -264,6 +264,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return client;
     }
 
+    @Deprecated
+    protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
+                                                                 final LoginCallback prompt) throws BackgroundException {
+        return this.configureCredentialsStrategy(configuration, prompt, CancelCallback.noop);
+    }
+
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
