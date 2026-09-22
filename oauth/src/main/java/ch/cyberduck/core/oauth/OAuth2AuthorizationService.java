@@ -19,14 +19,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -126,6 +126,7 @@ public class OAuth2AuthorizationService {
      *
      * @return Tokens retrieved
      */
+    @Deprecated
     public OAuthTokens validate(final OAuthTokens saved) throws BackgroundException {
         return this.validate(saved, CancelCallback.noop);
     }
@@ -205,6 +206,11 @@ public class OAuth2AuthorizationService {
             store.save(host);
         }
         return tokens;
+    }
+
+    @Deprecated
+    public OAuthTokens authorize() throws BackgroundException {
+        return this.authorize(CancelCallback.noop);
     }
 
     /**

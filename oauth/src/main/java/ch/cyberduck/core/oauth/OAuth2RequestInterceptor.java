@@ -67,6 +67,12 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 host.getProtocol().isOAuthPKCE(), prompt, cancel);
     }
 
+    @Deprecated
+    public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
+        this(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt, CancelCallback.noop);
+    }
+
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt, final CancelCallback cancel) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
