@@ -1377,15 +1377,17 @@ public class PreferencesController extends ToolbarWindowController {
         this.downloadPathPopup.setTarget(this.id());
         this.downloadPathPopup.setAction(Foundation.selector("downloadPathPopupClicked:"));
         this.downloadPathPopup.removeAllItems();
-        // Default download folder
-        this.addDownloadPath(DEFAULT_DOWNLOAD_FOLDER);
-        this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        // Shortcut to the Desktop
-        this.addDownloadPath(LocalFactory.get("~/Desktop"));
-        // Shortcut to user home
-        this.addDownloadPath(LocalFactory.get("~"));
-        // Shortcut to user downloads for 10.5
-        this.addDownloadPath(LocalFactory.get("~/Downloads"));
+        if(preferences.getBoolean(String.format("preferences.%s.enable", PreferencesToolbarItem.queue.name()))) {
+            // Default download folder
+            this.addDownloadPath(DEFAULT_DOWNLOAD_FOLDER);
+            this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
+            // Shortcut to the Desktop
+            this.addDownloadPath(LocalFactory.get("~/Desktop"));
+            // Shortcut to user home
+            this.addDownloadPath(LocalFactory.get("~"));
+            // Shortcut to user downloads for 10.5
+            this.addDownloadPath(LocalFactory.get("~/Downloads"));
+        }
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         this.downloadPathPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
