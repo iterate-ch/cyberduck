@@ -26,7 +26,7 @@ public class CustomTrustSSLProtocolSocketFactoryTest {
 
     @Test
     public void testConfigureCipherBlacklist() throws Exception {
-        final CustomTrustSSLProtocolSocketFactory factory = new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
+        final CustomTrustSSLProtocolSocketFactory factory = new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new DefaultCertificateStoreX509KeyManager(
                 new DisabledCertificateIdentityCallback(),
                 new Host(new TestProtocol()), new DisabledCertificateStore()
         ));
