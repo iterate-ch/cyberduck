@@ -25,11 +25,9 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.Identity;
 
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 

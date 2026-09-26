@@ -15,9 +15,9 @@ package ch.cyberduck.core.freenet;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateTrustCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -80,7 +80,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                 final Host target = new Host(new DAVSSLProtocol(), "oauth.freenet.de");
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
                         new DefaultTrustManagerHostnameCallback(target), CertificateStoreFactory.get());
-                final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), target,
+                final X509KeyManager key = new KeychainX509KeyManager(CertificateIdentityCallback.noop, target,
                         CertificateStoreFactory.get());
                 final CloseableHttpClient client = new HttpConnectionPoolBuilder(
                         target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()

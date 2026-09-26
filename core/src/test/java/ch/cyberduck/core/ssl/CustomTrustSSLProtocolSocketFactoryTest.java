@@ -18,15 +18,15 @@ public class CustomTrustSSLProtocolSocketFactoryTest {
 
     @Test
     public void testGetSSLContext() {
-        assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
-            new DisabledCertificateIdentityCallback(),
-            new Host(new TestProtocol()), new DisabledCertificateStore()
+        assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new DefaultCertificateStoreX509KeyManager(
+                new DisabledCertificateIdentityCallback(),
+                new Host(new TestProtocol()), new DisabledCertificateStore()
         )).getSSLContext());
     }
 
     @Test
     public void testConfigureCipherBlacklist() throws Exception {
-        final CustomTrustSSLProtocolSocketFactory factory = new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
+        final CustomTrustSSLProtocolSocketFactory factory = new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new DefaultCertificateStoreX509KeyManager(
                 new DisabledCertificateIdentityCallback(),
                 new Host(new TestProtocol()), new DisabledCertificateStore()
         ));

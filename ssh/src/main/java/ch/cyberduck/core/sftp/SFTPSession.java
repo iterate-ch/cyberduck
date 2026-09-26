@@ -34,6 +34,7 @@ import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPNoneAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPPKCS11Authentication;
 import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.compression.JcraftDelayedZlibCompression;
@@ -42,6 +43,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPKCS11ProviderConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
@@ -309,6 +311,17 @@ public class SFTPSession extends Session<SSHClient> {
                         defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
                         break;
                 }
+            }
+        }
+        if(preferences.getBoolean("ssh.authentication.pkcs11.enable")) {
+            // Equivalent to PKCS11Provider in ssh_config respectively ssh -I
+            String library = new OpenSSHPKCS11ProviderConfigurator().getProvider(host.getHostname());
+            if(null == library) {
+                library = preferences.getProperty("ssh.authentication.pkcs11.library");
+            }
+            if(StringUtils.isNotBlank(library)) {
+                log.debug("Determined PKCS11 library {} for {}", library, host.getHostname());
+                defaultMethods.add(new SFTPPKCS11Authentication(client, library));
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));

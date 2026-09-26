@@ -1,0 +1,6 @@
+Host token.example.com
+	PKCS11Provider /opt/homebrew/lib/opensc-pkcs11.so
+	User token
+
+Host *
+	PKCS11Provider /usr/lib/ssh-keychain.dylib
