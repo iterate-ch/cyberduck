@@ -12,6 +12,8 @@
 * [Feature] Use regional endpoints for public URLs (S3) ([#17301](https://trac.cyberduck.io/ticket/17301))
 * [Feature] Preserve modification date of downloaded folders ([#10854](https://trac.cyberduck.io/ticket/10854))
 * [Feature] Remove deprecated Shared folder (OneDrive) ([#17890](https://trac.cyberduck.io/ticket/17890))
+* [Feature] Support authentication with client certificate from PKCS11 hardware token (WebDAV, macOS)
+* [Feature] Support public key authentication with key from PKCS11 hardware token (SFTP)
 * [Bugfix] Switch default type for uploads to block blob (Azure) ([#18386](https://trac.cyberduck.io/ticket/18386))
 * [Bugfix] Application hangs with large selection of files in browser ([#18438](https://trac.cyberduck.io/ticket/18438))
 * [Bugfix] Overwriting files appends to existing file (SFTP) ([#18335](https://trac.cyberduck.io/ticket/18335))
@@ -84,7 +86,6 @@
 * [Feature] Display progress indicator in browser view (macOS)
 * [Feature] Display progress indicator in bookmark view (macOS)
 * [Feature] Index of connection profiles allows instant display in Preferences → Profiles
-* [Feature] Support authentication with client certificate from PKCS11 hardware token (WebDAV, macOS)
 * [Bugfix] Error downloading file from unlocked vault (Cryptomator) ([#17935](https://trac.cyberduck.io/ticket/17935))
 * [Bugfix] No trailing delimiter for path style requests with bucket name only ([#17901](https://trac.cyberduck.io/ticket/17901))
 * [Bugfix] Repeating file transfer in vault fails after restart (Cryptomator) ([#17974](https://trac.cyberduck.io/ticket/17974))
