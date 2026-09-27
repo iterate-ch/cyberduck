@@ -20,9 +20,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ietf.jgss.Oid;
@@ -119,6 +121,11 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                     options.put("renewTGT", "true");
                     options.put("doNotPrompt", "true");
                     options.put("refreshKrb5Config", "true");
+                    final String ticketCache = HostPreferencesFactory.get(bookmark)
+                            .getProperty("ssh.authentication.gssapi.ticketcache");
+                    if(StringUtils.isNotBlank(ticketCache)) {
+                        options.put("ticketCache", ticketCache);
+                    }
                     return new AppConfigurationEntry[]{
                         new AppConfigurationEntry(
                             "com.sun.security.auth.module.Krb5LoginModule",
