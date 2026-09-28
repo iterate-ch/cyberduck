@@ -44,5 +44,7 @@
             <string>/.ssh/</string>
             <string>/.aws/</string>
         </array>
+        <key>com.apple.security.smartcard</key>
+        <true/>
     </dict>
 </plist>
