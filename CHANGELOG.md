@@ -58,6 +58,7 @@
 * [Feature] Display progress indicator in browser view (macOS)
 * [Feature] Display progress indicator in bookmark view (macOS)
 * [Feature] Index of connection profiles allows instant display in Preferences → Profiles
+* [Feature] Support public key authentication with FIDO/U2F security key including Touch ID (SFTP)
 * [Bugfix] Error downloading file from unlocked vault (Cryptomator) ([#17935](https://trac.cyberduck.io/ticket/17935))
 * [Bugfix] No trailing delimiter for path style requests with bucket name only ([#17901](https://trac.cyberduck.io/ticket/17901))
 * [Bugfix] Repeating file transfer in vault fails after restart (Cryptomator) ([#17974](https://trac.cyberduck.io/ticket/17974))

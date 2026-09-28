@@ -26,7 +26,9 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
+import ch.cyberduck.core.sftp.openssh.OpenSSHSecurityKeyProviderConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyFileUtil;
@@ -143,6 +146,24 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         return false;
                     }
                 });
+                switch(provider.getType()) {
+                    case SK_ECDSA:
+                    case SK_ED25519: {
+                        // The private key is on the authenticator and not in the key file. Signing is delegated to the
+                        // middleware of the security key, the equivalent of SecurityKeyProvider in ssh_config
+                        final SecurityKeyMiddleware middleware;
+                        try {
+                            middleware = this.middleware(bookmark);
+                        }
+                        catch(IOException e) {
+                            log.warn("Failure {} loading middleware for security key {}", e, privKey);
+                            throw new LoginFailureException(e.getMessage(), e);
+                        }
+                        client.auth(credentials.getUsername(),
+                                new AuthSecurityKeyPublickey(provider, middleware, bookmark, prompt));
+                        return client.isAuthenticated();
+                    }
+                }
                 client.auth(credentials.getUsername(), new AuthPublickey(provider));
                 return client.isAuthenticated();
             }
@@ -160,4 +181,34 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
     public String getMethod() {
         return "publickey";
     }
+
+    /**
+     * @return Middleware library of the security key to sign with
+     * @throws IOException Middleware library not found or not implementing the expected API version
+     */
+    protected SecurityKeyMiddleware middleware(final Host bookmark) throws IOException {
+        final String library = this.provider(bookmark);
+        log.debug("Load middleware {} for security key", library);
+        return new NativeSecurityKeyMiddleware(library);
+    }
+
+    /**
+     * Middleware library of the security key, read from <code>SecurityKeyProvider</code> in <code>ssh_config</code>,
+     * the <code>SSH_SK_PROVIDER</code> environment variable as read by OpenSSH or the host preference.
+     *
+     * @return Path to shared library implementing the OpenSSH security key API
+     */
+    protected String provider(final Host bookmark) {
+        final String configuration = new OpenSSHSecurityKeyProviderConfigurator().getProvider(bookmark.getHostname());
+        if(StringUtils.isNotBlank(configuration)) {
+            return configuration;
+        }
+        final String environment = System.getenv("SSH_SK_PROVIDER");
+        if(StringUtils.isNotBlank(environment)) {
+            log.debug("Determined security key provider {} from environment", environment);
+            return environment;
+        }
+        return HostPreferencesFactory.get(bookmark).getProperty("ssh.authentication.securitykey.provider");
+    }
+
 }

@@ -323,6 +323,13 @@ public class OpenSshConfig {
                     }
                 }
             }
+            else if("SecurityKeyProvider".equalsIgnoreCase(keyword)) {
+                for(final Host c : current) {
+                    if(c.securityKeyProvider == null) {
+                        c.securityKeyProvider = none(dequote(argValue));
+                    }
+                }
+            }
             else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.preferredAuthentications == null) {
@@ -499,6 +506,7 @@ public class OpenSshConfig {
         int port;
         String identityFile;
         String identityAgent;
+        String securityKeyProvider;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -522,6 +530,9 @@ public class OpenSshConfig {
             }
             if(identityAgent == null) {
                 identityAgent = src.identityAgent;
+            }
+            if(securityKeyProvider == null) {
+                securityKeyProvider = src.securityKeyProvider;
             }
             if(user == null) {
                 user = src.user;
@@ -581,6 +592,14 @@ public class OpenSshConfig {
         }
 
         /**
+         * @return Specifies the shared library implementing the OpenSSH security key API used to authenticate with a
+         * FIDO/U2F security key.
+         */
+        public String getSecurityKeyProvider() {
+            return securityKeyProvider;
+        }
+
+        /**
          * @return the real user name to connect as; never null.
          */
         public String getUser() {
@@ -619,6 +638,7 @@ public class OpenSshConfig {
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", identityAgent=").append(identityAgent);
+            sb.append(", securityKeyProvider=").append(securityKeyProvider);
             sb.append(", user='").append(user).append('\'');
             sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');
             sb.append(", identitiesOnly=").append(identitiesOnly);
