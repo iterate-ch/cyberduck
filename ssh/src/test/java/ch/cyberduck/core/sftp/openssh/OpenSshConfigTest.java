@@ -95,6 +95,46 @@ public class OpenSshConfigTest {
     }
 
     @Test
+    public void testIncludePrecedence() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-precedence"));
+        final OpenSshConfig.Host host = config.lookup("include-host-a");
+        // Main config definition must take precedence over included file
+        assertEquals("override", host.getUser());
+    }
+
+    @Test
+    public void testIncludeMissingFileIsIgnored() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-missing"));
+        // Missing include must be silently ignored; remaining hosts are still loaded
+        final OpenSshConfig.Host host = config.lookup("main-host");
+        assertEquals("main.example.com", host.getHostName());
+    }
+
+    @Test
+    public void testCircularIncludeDoesNotLoop() {
+        // A config that includes itself must not cause infinite recursion
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-circular"));
+        final OpenSshConfig.Host host = config.lookup("circular-host");
+        assertEquals("circular.example.com", host.getHostName());
+    }
+
+    @Test
+    public void testSecurityKeyProvider() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-securitykey"));
+        assertEquals("/opt/homebrew/lib/libsk-libfido2.dylib", config.lookup("token.example.com").getSecurityKeyProvider());
+        // Inherited from wildcard host
+        assertEquals("/usr/lib/ssh-keychain.dylib", config.lookup("other.example.com").getSecurityKeyProvider());
+    }
+
+    @Test
+    public void testMatchHostGlobPattern() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        final OpenSshConfig.Host host = config.lookup("foo.example.com");
+        assertEquals("matchuser", host.getUser());
+        assertEquals(2222, host.getPort());
+    }
+
+    @Test
     public void testIncludeWithinBlock() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-block"));
         // First appearance takes precedence. Host block in main config before include
