@@ -18,9 +18,12 @@ package ch.cyberduck.core.sftp.auth;
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -34,9 +37,7 @@ import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
      * with <code>GSSAPIAuthentication yes</code>.
      */
     private static final Oid KRB5_MECH;
+
     static {
         try {
             KRB5_MECH = new Oid("1.2.840.113554.1.2.2");
@@ -75,44 +77,26 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         final Credentials credentials = bookmark.getCredentials();
         log.debug("Login using GSS-API/Kerberos authentication with credentials {}", credentials);
 
-        // Derive realm from the target hostname before login so the temp krb5.conf is ready
-        // when Krb5LoginModule calls Config.refresh() via refreshKrb5Config=true below.
-        // Config.getDefaultRealm() reads only from the parsed krb5.conf file — the
-        // java.security.krb5.realm system property feeds a different code path and never
-        // reaches getDefaultRealm().
-        final String hostname = bookmark.getHostname();
-        final String[] parts = hostname.split("\\.");
-        final String savedKrb5Conf = System.getProperty("java.security.krb5.conf");
-        final String savedSubjectCredsOnly = System.getProperty("javax.security.auth.useSubjectCredsOnly");
-        File krb5conf = null;
-        if(savedKrb5Conf == null && parts.length >= 2) {
-            // Only apply the macOS workaround when no explicit krb5.conf is already configured.
-            // If the user or system has set java.security.krb5.conf we leave it untouched so
-            // that working Linux/macOS environments with a real KDC configuration are unaffected.
-            final String realm = (parts[parts.length - 2] + "." + parts[parts.length - 1]).toUpperCase(java.util.Locale.ROOT);
-            log.debug("Derived Kerberos realm {} from hostname {}", realm, hostname);
-            try {
-                krb5conf = File.createTempFile("cyberduck-krb5-", ".conf");
-                krb5conf.deleteOnExit();
-                try(PrintWriter w = new PrintWriter(krb5conf)) {
-                    w.println("[libdefaults]");
-                    w.println("    default_realm = " + realm);
-                    w.println("    dns_lookup_kdc = true");
-                }
-                System.setProperty("java.security.krb5.conf", krb5conf.getAbsolutePath());
-            }
-            catch(IOException e) {
-                log.warn("Failed to write temporary krb5.conf for realm {}: {}", realm, e.getMessage());
-            }
+        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
+        // JVM wide settings read by Krb5LoginModule with refreshKrb5Config
+        final String conf = preferences.getProperty("java.security.krb5.conf");
+        if(StringUtils.isNotBlank(conf)) {
+            final String path = LocalFactory.get(conf).getAbsolute();
+            log.debug("Use Kerberos configuration {}", path);
+            System.setProperty("java.security.krb5.conf", path);
         }
-
-        LoginContext loginContext = null;
-        boolean loggedIn = false;
+        final String realm = preferences.getProperty("java.security.krb5.realm");
+        final String kdc = preferences.getProperty("java.security.krb5.kdc");
+        if(StringUtils.isNotBlank(realm) && StringUtils.isNotBlank(kdc)) {
+            log.debug("Use Kerberos realm {} with KDC {}", realm, kdc);
+            System.setProperty("java.security.krb5.realm", realm);
+            System.setProperty("java.security.krb5.kdc", kdc);
+        }
+        else if(StringUtils.isNotBlank(realm) || StringUtils.isNotBlank(kdc)) {
+            log.warn("Ignore Kerberos realm {} and KDC {} not both set", realm, kdc);
+        }
+        LoginContext loginContext;
         try {
-            // refreshKrb5Config=true tells Krb5LoginModule to call Config.refresh() at the
-            // start of login(). Since the module runs inside java.security.jgss it can access
-            // sun.security.krb5.Config directly, bypassing the module encapsulation that blocks
-            // our own reflection calls.
             final Configuration jaasConfig = new Configuration() {
                 @Override
                 public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
@@ -120,26 +104,33 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                     options.put("useTicketCache", "true");
                     options.put("renewTGT", "true");
                     options.put("doNotPrompt", "true");
+                    // Pick up changes to krb5.conf or its location without restarting
                     options.put("refreshKrb5Config", "true");
-                    final String ticketCache = HostPreferencesFactory.get(bookmark)
-                            .getProperty("ssh.authentication.gssapi.ticketcache");
+                    final String ticketCache = preferences.getProperty("ssh.authentication.gssapi.ticketcache");
                     if(StringUtils.isNotBlank(ticketCache)) {
                         options.put("ticketCache", ticketCache);
                     }
                     return new AppConfigurationEntry[]{
-                        new AppConfigurationEntry(
-                            "com.sun.security.auth.module.Krb5LoginModule",
-                            AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                            options)
+                            new AppConfigurationEntry(
+                                    "com.sun.security.auth.module.Krb5LoginModule",
+                                    AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+                                    options)
                     };
                 }
             };
-            loginContext = new LoginContext("cyberduck-sftp", new Subject(), null, jaasConfig);
+            loginContext = new LoginContext(PreferencesFactory.get().getProperty("application.name"),
+                    new Subject(), null, jaasConfig);
             loginContext.login();
-            loggedIn = true;
             log.debug("Kerberos TGT acquired for principals {}", loginContext.getSubject().getPrincipals());
+        }
+        catch(LoginException e) {
+            // No TGT in cache or Kerberos not configured. Fall through to the next auth method.
+            log.warn("GSS-API login failed for {}: {}", bookmark.getHostname(), e.getMessage());
+            return false;
+        }
+        try {
             final List<Oid> mechanisms = Collections.singletonList(KRB5_MECH);
-            System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+            // Security context is established with the credentials of the subject of the login context
             client.auth(credentials.getUsername(), new AuthGssApiWithMic(loginContext, mechanisms));
             final boolean authenticated = client.isAuthenticated();
             log.debug("GSS-API authentication result: authenticated={}, partialSuccess={}", authenticated,
@@ -150,36 +141,12 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
             log.warn("GSS-API authentication failed for {}", bookmark.getHostname(), e);
             throw new SFTPExceptionMappingService().map(e);
         }
-        catch(LoginException e) {
-            // No TGT in cache or Kerberos not configured. Fall through to next auth method.
-            log.warn("GSS-API login failed for {}: {}", bookmark.getHostname(), e.getMessage());
-            return false;
-        }
         finally {
-            // Always restore system properties and delete the temp file regardless of how we exit —
-            // including the LoginException path where client.auth() is never reached.
-            if(savedKrb5Conf != null) {
-                System.setProperty("java.security.krb5.conf", savedKrb5Conf);
+            try {
+                loginContext.logout();
             }
-            else {
-                System.clearProperty("java.security.krb5.conf");
-            }
-            if(savedSubjectCredsOnly != null) {
-                System.setProperty("javax.security.auth.useSubjectCredsOnly", savedSubjectCredsOnly);
-            }
-            else {
-                System.clearProperty("javax.security.auth.useSubjectCredsOnly");
-            }
-            if(krb5conf != null) {
-                krb5conf.delete();
-            }
-            if(loggedIn) {
-                try {
-                    loginContext.logout();
-                }
-                catch(LoginException e) {
-                    log.warn("Failed to logout GSS context: {}", e.getMessage());
-                }
+            catch(LoginException e) {
+                log.warn("Failed to logout GSS context: {}", e.getMessage());
             }
         }
     }
