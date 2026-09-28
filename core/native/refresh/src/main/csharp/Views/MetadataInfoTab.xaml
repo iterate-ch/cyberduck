@@ -17,8 +17,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{xaml:Text 'Headers',Table=Info}"
-                   x:Name="HeadersTitle"
+        <TextBlock Text="{xaml:Text 'Metadata',Table=Info}"
+                   x:Name="MetadataTitle"
                    Style="{StaticResource SubtitleTextBlockStyle}"
                    Margin="{StaticResource CardSpacing}"
                    Grid.Row="0" />
@@ -35,7 +35,7 @@
                       CanUserResizeRows="False"
                       SelectionMode="Single"
                       SelectionUnit="FullRow"
-                      AutomationProperties.LabeledBy="{Binding ElementName=HeadersTitle}"
+                      AutomationProperties.LabeledBy="{Binding ElementName=MetadataTitle}"
                       Grid.Row="0">
                 <DataGrid.Columns>
                     <DataGridTextColumn x:Name="KeyColumn"
