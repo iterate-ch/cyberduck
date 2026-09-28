@@ -7,73 +7,66 @@
                               xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
                               xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
                               mc:Ignorable="d"
-                              Height="175"
                               Icon="{xaml:Icon 'cyberduck-application'}"
                               ResizeMode="NoResize"
                               Title="{xaml:Text 'Create Download Share', Table=Share}"
-                              Width="450"
+                              SizeToContent="WidthAndHeight"
                               WindowStartupLocation="CenterScreen">
-    <DockPanel>
-        <Border BorderThickness="0,1,0,0"
-                BorderBrush="{x:Static SystemColors.ControlDarkBrush}"
-                Background="{x:Static SystemColors.ControlLightBrush}"
-                Padding="5.5,5.5"
-                DockPanel.Dock="Bottom"
-                KeyboardNavigation.TabIndex="1"
-                KeyboardNavigation.TabNavigation="Local">
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                <Button Content="{xaml:Text 'Create', Table=Share}"
-                        Height="23"
-                        IsDefault="true"
-                        Margin="5.5"
-                        MinWidth="75"
-                        Name="chooseButton"
-                        Padding="11,0" />
-                <Button Content="{xaml:Text Cancel, Table=Share}"
-                        Height="23"
-                        IsCancel="true"
-                        Margin="5.5"
-                        MinWidth="75"
-                        Name="cancelButton"
-                        Padding="11,0" />
-            </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Margin="{StaticResource ControlSpacing}"
+                Grid.Row="0">
+            <Grid Margin="{StaticResource ControlItemNegativeSpacing}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition MinWidth="280" />
+                </Grid.ColumnDefinitions>
+
+                <Image Name="protocolImage"
+                       Height="48"
+                       Width="48"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Left"
+                       Grid.Column="0"
+                       Margin="{StaticResource ControlItemSpacing}" />
+
+                <HeaderedContentControl Style="{StaticResource LabeledControlStyle}"
+                                        Grid.Column="1"
+                                        Margin="{StaticResource ControlItemSpacing}">
+                    <HeaderedContentControl.Header>
+                        <TextBlock Name="shareesLabel"
+                                   Text="{xaml:Text 'Send share to:', Table=Share}"
+                                   Style="{StaticResource SubtitleTextBlockStyle}" />
+                    </HeaderedContentControl.Header>
+
+                    <ComboBox Name="sharees"
+                              DisplayMemberPath="Description"
+                              AutomationProperties.LabeledBy="{Binding ElementName=shareesLabel}"
+                              MinWidth="{StaticResource TextControlThemeMinWidth}" />
+                </HeaderedContentControl>
+            </Grid>
         </Border>
 
-        <Grid Margin="5.5"
-              KeyboardNavigation.TabIndex="0"
-              KeyboardNavigation.TabNavigation="Local">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Image Name="protocolImage"
-                   Height="64"
-                   HorizontalAlignment="Left"
-                   Margin="5.5"
-                   VerticalAlignment="Top"
-                   Width="64"
-                   Grid.Column="0"
-                   Grid.Row="0" />
-
-            <HeaderedContentControl IsTabStop="False"
-                                    Margin="5.5"
-                                    Grid.Column="1"
-                                    Grid.Row="0">
-                <HeaderedContentControl.Header>
-                    <TextBlock Name="shareesLabel"
-                               Text="{xaml:Text 'Send share to:', Table=Share}" />
-                </HeaderedContentControl.Header>
-
-                <ComboBox Name="sharees"
-                          DisplayMemberPath="Description"
-                          AutomationProperties.LabeledBy="{Binding ElementName=shareesLabel}" />
-            </HeaderedContentControl>
-        </Grid>
-    </DockPanel>
+        <Border Style="{StaticResource DialogBorderStyle}"
+                Grid.Row="1">
+            <UniformGrid Columns="2"
+                         Margin="{StaticResource ControlItemNegativeSpacing}">
+                <Button Content="{xaml:Text 'Create', Table=Share}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        IsDefault="true"
+                        Name="chooseButton"
+                        Margin="{StaticResource ControlItemSpacing}"
+                        HorizontalAlignment="Stretch" />
+                <Button Content="{xaml:Text Cancel, Table=Share}"
+                        IsCancel="true"
+                        Name="cancelButton"
+                        Margin="{StaticResource ControlItemSpacing}"
+                        HorizontalAlignment="Stretch" />
+            </UniformGrid>
+        </Border>
+    </Grid>
 </local:PromptShareeWindowBase>

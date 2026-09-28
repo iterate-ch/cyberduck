@@ -39,6 +39,18 @@
                 Value="0" />
     </Style>
 
+    <Style x:Key="DialogBorderStyle"
+           TargetType="Border">
+        <Setter Property="Background"
+                Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness"
+                Value="0,1,0,0" />
+        <Setter Property="Padding"
+                Value="24" />
+    </Style>
+
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="AppStyles.Base.xaml" />
     </ResourceDictionary.MergedDictionaries>
