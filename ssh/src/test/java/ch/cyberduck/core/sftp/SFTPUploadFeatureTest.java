@@ -21,13 +21,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import ch.cyberduck.test.IntegrationTest;
+
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class SFTPUploadFeatureTest extends AbstractSFTPTest {
 
     @Test
@@ -38,5 +42,4 @@ public class SFTPUploadFeatureTest extends AbstractSFTPTest {
         assertTrue(new SFTPUploadFeature(session).append(test, new TransferStatus().setExists(true).setLength(1L).setRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
-
 }
