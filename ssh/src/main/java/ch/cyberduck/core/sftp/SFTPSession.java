@@ -288,22 +288,24 @@ public class SFTPSession extends Session<SSHClient> {
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
-            if(null == configuration) {
-                configuration = System.getenv("SSH_AUTH_SOCK");
-            }
-            if(null == configuration && Platform.Name.windows == Platform.getDefault()) {
-                configuration = WindowsOpenSSHAgentAuthenticator.SSH_AGENT_PIPE;
-            }
-            if(configuration != null) {
-                final String identityAgent = LocalFactory.get(configuration).getAbsolute();
-                log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
-                switch(Platform.getDefault()) {
-                    case windows:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator(identityAgent)));
-                        break;
-                    default:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
-                        break;
+            if(!"none".equalsIgnoreCase(configuration)) {
+                if(null == configuration) {
+                    configuration = System.getenv("SSH_AUTH_SOCK");
+                }
+                if(null == configuration && Platform.Name.windows == Platform.getDefault()) {
+                    configuration = WindowsOpenSSHAgentAuthenticator.SSH_AGENT_PIPE;
+                }
+                if(configuration != null) {
+                    final String identityAgent = LocalFactory.get(configuration).getAbsolute();
+                    log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
+                    switch(Platform.getDefault()) {
+                        case windows:
+                            defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator(identityAgent)));
+                            break;
+                        default:
+                            defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
+                            break;
+                    }
                 }
             }
         }
