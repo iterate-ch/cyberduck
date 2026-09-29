@@ -231,4 +231,11 @@ public class OpenSshConfigTest {
         assertNull(sshConfig.lookup("disabled-proxy-command").getProxyCommand());
         config.delete();
     }
+
+    @Test
+    public void testIdentityAgentFromInclude() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-embedded"));
+        final OpenSshConfig.Host host = config.lookup("test-wildcard");
+        assertEquals("/run/ssh-agent.sock", host.getIdentityAgent());
+    }
 }
