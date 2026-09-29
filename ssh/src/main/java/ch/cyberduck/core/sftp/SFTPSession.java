@@ -44,7 +44,6 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
-import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -290,7 +289,6 @@ public class SFTPSession extends Session<SSHClient> {
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             switch(Platform.getDefault()) {
                 case windows:
-                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                     defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
                     break;
             }
