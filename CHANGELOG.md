@@ -2,6 +2,7 @@
 
 [9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
 * [Feature] Upgrade runtime (macOS) ([#17509](https://trac.cyberduck.io/ticket/17509))
+* [Feature] Support public key authentication with FIDO/U2F security key including Touch ID (SFTP)
 * [Bugfix] Switch default type for uploads to block blob (Azure) ([#18386](https://trac.cyberduck.io/ticket/18386))
 * [Bugfix] Application hangs with large selection of files in browser ([#18438](https://trac.cyberduck.io/ticket/18438))
 * [Bugfix] Overwriting files appends to existing file (SFTP) ([#18335](https://trac.cyberduck.io/ticket/18335))
@@ -58,7 +59,6 @@
 * [Feature] Display progress indicator in browser view (macOS)
 * [Feature] Display progress indicator in bookmark view (macOS)
 * [Feature] Index of connection profiles allows instant display in Preferences → Profiles
-* [Feature] Support public key authentication with FIDO/U2F security key including Touch ID (SFTP)
 * [Bugfix] Error downloading file from unlocked vault (Cryptomator) ([#17935](https://trac.cyberduck.io/ticket/17935))
 * [Bugfix] No trailing delimiter for path style requests with bucket name only ([#17901](https://trac.cyberduck.io/ticket/17901))
 * [Bugfix] Repeating file transfer in vault fails after restart (Cryptomator) ([#17974](https://trac.cyberduck.io/ticket/17974))
