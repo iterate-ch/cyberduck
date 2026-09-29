@@ -15,6 +15,7 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -174,10 +175,10 @@ public class SFTPSecurityKeyFileAuthenticationTest {
     }
 
     private Host bookmark(final Local key) {
-        final Host bookmark = new Host(new TestProtocol(), "localhost");
-        bookmark.getCredentials().setUsername("test");
-        bookmark.getCredentials().setIdentity(key);
-        return bookmark;
+        return new Host(new TestProtocol(), "localhost",
+                new Credentials()
+                        .setUsername("test")
+                        .setIdentity(key));
     }
 
     private void delete(final Local key) throws Exception {
