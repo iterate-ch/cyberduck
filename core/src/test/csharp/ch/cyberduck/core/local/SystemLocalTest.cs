@@ -16,10 +16,11 @@ namespace Ch.Cyberduck.Core.Local
     public class SystemLocalTest
     {
         const string PIPE_NAME = @"\\.\pipe\openssh-ssh-agent";
+        const string PAGEANT_PIPE_NAME = "@//./pipe/pageant.test.hash";
         const string WSL_PATH = @"\\wsl$\test\";
 
         [Test]
-        public void EnsureNioDoesntFail([Values(PIPE_NAME, WSL_PATH, "X:\\C$")] string path)
+        public void EnsureNioDoesntFail([Values(PIPE_NAME, WSL_PATH, PAGEANT_PIPE_NAME, "X:\\C$")] string path)
         {
             _ = Paths.get(path).toFile();
         }
