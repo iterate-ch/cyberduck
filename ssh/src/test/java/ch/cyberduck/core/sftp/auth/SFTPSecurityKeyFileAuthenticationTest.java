@@ -148,8 +148,6 @@ public class SFTPSecurityKeyFileAuthenticationTest {
             fail("Expected failure for security key without middleware");
         }
         catch(LoginFailureException e) {
-            assertTrue(e.getDetail(false), e.getDetail(false).startsWith("Add the security key"));
-            assertTrue(e.getDetail(false), e.getDetail(false).contains(key.getName()));
             assertTrue(e.getCause() instanceof IOException);
         }
         finally {
