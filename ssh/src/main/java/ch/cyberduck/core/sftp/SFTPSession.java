@@ -308,6 +308,9 @@ public class SFTPSession extends Session<SSHClient> {
                     }
                 }
             }
+            else if(log.isDebugEnabled()) {
+                log.debug("Skip identity agent for {} by user configuration", host.getHostname());
+            }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
         if(credentials.isPasswordAuthentication()) {
