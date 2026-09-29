@@ -30,7 +30,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -62,15 +61,13 @@ public class CreateDirectoryWorker extends Worker<Path> {
             status.setEncryption(encryption.getDefault(container));
         }
         status.setModified(System.currentTimeMillis());
-        if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
-            final UnixPermission permission = session.getFeature(UnixPermission.class);
-            if(permission != null) {
-                status.setPermission(permission.getDefault(folder.getParent(), EnumSet.of(Path.Type.directory)));
-            }
-            final AclPermission acl = session.getFeature(AclPermission.class);
-            if(acl != null) {
-                status.setAcl(acl.getDefault(container));
-            }
+        final UnixPermission permission = session.getFeature(UnixPermission.class);
+        if(permission != null) {
+            status.setPermission(permission.getDefault(folder.getParent(), EnumSet.of(Path.Type.directory)));
+        }
+        final AclPermission acl = session.getFeature(AclPermission.class);
+        if(acl != null) {
+            status.setAcl(acl.getDefault(container));
         }
         status.setRegion(region);
         final Path result = feature.mkdir(session.getFeature(Write.class), folder, status);
@@ -88,7 +85,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-            folder.getName());
+                folder.getName());
     }
 
 
