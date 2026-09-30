@@ -17,7 +17,7 @@ jobs:
           - { os: macos, arch: arm64, goal: deploy }
           - { os: windows, arch: x64, goal: deploy }
           - { os: linux, arch: x64, goal: deploy }
-          - { os: linux, arch: arm64, goal: deploy }
+          - { os: linux, arch: arm64, goal: deploy, runner: ubuntu-26.04-arm }
     permissions:
       checks: write
       contents: read
@@ -30,6 +30,7 @@ jobs:
       SPARKLE_FEED: nightly
       RUNNER_OS: ${{ matrix.os }}
       RUNNER_ARCH: ${{ matrix.arch }}
+      RUNNER: ${{ matrix.runner }}
       MAVEN_GOAL: ${{ matrix.goal }}
       DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
       SIGNTOOL_CSP: 'Google Cloud KMS Provider'

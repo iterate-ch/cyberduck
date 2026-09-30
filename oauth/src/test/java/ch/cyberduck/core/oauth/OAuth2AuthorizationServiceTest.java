@@ -21,7 +21,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -84,7 +87,7 @@ public class OAuth2AuthorizationServiceTest {
                     return new IdTokenResponse().setAccessToken("a").setRefreshToken("r").setExpiresInSeconds(3600L);
                 }
             }.setRedirectUri("http://localhost/");
-            final OAuthTokens tokens = service.authorize();
+            final OAuthTokens tokens = service.authorize(CancelCallback.noop);
             assertEquals("a", tokens.getAccessToken());
             final String redirectUri = CapturingAuthorizationCodeProvider.redirectUri.get();
             assertNotNull(redirectUri);
@@ -97,6 +100,24 @@ public class OAuth2AuthorizationServiceTest {
         finally {
             PreferencesFactory.get().setProperty(property, previous);
         }
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testAuthorizeScheduledDoesNotOpenBrowser() throws Exception {
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), new Host(new TestProtocol()),
+                "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
+                new DisabledLoginCallback());
+        service.setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode).authorize(new CancelCallback() {
+            @Override
+            public void verify() {
+                //
+            }
+
+            @Override
+            public BackgroundAction.Context getContext() {
+                return BackgroundAction.Context.scheduled;
+            }
+        });
     }
 
     @Test

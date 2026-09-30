@@ -145,7 +145,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request instanceof HttpRequestWrapper) {
@@ -173,8 +173,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new PreconditionFailedResponseInterceptor(host, authorizationService, prompt),
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new PreconditionFailedResponseInterceptor(host, authorizationService, cancel),
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         if(HostPreferencesFactory.get(host).getBoolean("sds.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
                     HostPreferencesFactory.get(host).getInteger("sds.limit.requests.second")
@@ -215,7 +215,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
             case password:
-                credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+                credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
                 break;
         }
         final UserAccount account;

@@ -141,7 +141,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
                 HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop);
-        final DefaultSessionPool pool = new DefaultSessionPool(
+        final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {

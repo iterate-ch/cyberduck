@@ -19,6 +19,11 @@ on:
       RUNNER_ARCH:
         required: true
         type: string
+      # GitHub-hosted runner label (e.g. ubuntu-26.04-arm). When empty, the job is
+      # scheduled on a self-hosted runner matching RUNNER_OS and RUNNER_ARCH.
+      RUNNER:
+        required: false
+        type: string
       DEVELOPER_DIR:
         required: false
         type: string
@@ -60,7 +65,7 @@ jobs:
       id-token: write
       attestations: write
       artifact-metadata: write
-    runs-on: [ self-hosted, "${{ inputs.RUNNER_OS }}", "${{ inputs.RUNNER_ARCH }}" ]
+    runs-on: ${{ inputs.RUNNER || fromJSON(format('["self-hosted","{0}","{1}"]', inputs.RUNNER_OS, inputs.RUNNER_ARCH)) }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -71,6 +76,11 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: maven
+      # jpackage needs rpmbuild (--type rpm) and fakeroot (--type deb), which the
+      # GitHub-hosted Ubuntu images do not ship.
+      - name: Install packaging tools (Linux)
+        if: runner.os == 'linux' && runner.environment == 'github-hosted'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends rpm fakeroot
       - name: Add msbuild to PATH
         if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v3
@@ -108,12 +118,14 @@ jobs:
       # from macOS. Each platform-native module lives in exactly one closure, so its
       # pom and its .nupkg/.dylib are always deployed together by the same runner.
       # cli/<os> is selected next to the app so the "Archive CLI ..." steps find it.
+      # i18n and profiles are only consumed through dependency:unpack artifactItems,
+      # which --also-make does not follow, so they are always selected explicitly.
       - name: Build with Maven
         run: >-
           mvn --settings .github/maven-settings.xml --batch-mode
           ${{ inputs.MAVEN_GOAL }}
           -DskipTests -DskipITs -P"${{ inputs['MAVEN_PROFILES'] }}"
-          --also-make --projects ${{ fromJSON('{"Linux":"cli/linux","Windows":"windows,cli/windows","macOS":"osx,cli/osx"}')[runner.os] }}
+          --also-make --projects ${{ fromJSON('{"Linux":"i18n,profiles,cli/linux","Windows":"i18n,profiles,windows,cli/windows","macOS":"i18n,profiles,osx,cli/osx"}')[runner.os] }}
         env:
           MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
           MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}

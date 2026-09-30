@@ -32,6 +32,8 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
@@ -71,8 +73,8 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     private Long clientIdExpiry = -1L;
 
     public RegisterClientOAuth2RequestInterceptor(final HttpClient client, final Host host,
-                                                  final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
-        super(client, host, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt);
+                                                  final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
+        super(client, host, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt, cancel);
         this.host = host;
         this.trust = trust;
         this.key = key;
@@ -133,21 +135,21 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     }
 
     @Override
-    public OAuthTokens authorize() throws BackgroundException {
+    public OAuthTokens authorize(final CancelCallback cancel) throws BackgroundException {
         if(-1L == clientIdExpiry) {
             this.registerClient(startUrl, issuerUrl);
         }
-        return super.authorize();
+        return super.authorize(cancel);
     }
 
     @Override
-    public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
+    public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens, final CancelCallback cancel) throws BackgroundException {
         // Registers client if missing; persists registration details
         if(System.currentTimeMillis() >= clientIdExpiry) {
             log.warn("Client registration expired for {} at {}", host, clientIdExpiry);
             this.registerClient(startUrl, issuerUrl);
         }
-        return super.authorizeWithRefreshToken(tokens);
+        return super.authorizeWithRefreshToken(tokens, cancel);
     }
 
     @Override

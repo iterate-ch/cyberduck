@@ -25,6 +25,8 @@ import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -124,14 +126,25 @@ public class OAuth2AuthorizationService {
      *
      * @return Tokens retrieved
      */
+    @Deprecated
     public OAuthTokens validate(final OAuthTokens saved) throws BackgroundException {
+        return this.validate(saved, CancelCallback.noop);
+    }
+
+    /**
+     * Authorize when cached tokens expired otherwise return
+     *
+     * @param cancel Context of the action. No interactive authorization flow for scheduled actions
+     * @return Tokens retrieved
+     */
+    public OAuthTokens validate(final OAuthTokens saved, final CancelCallback cancel) throws BackgroundException {
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
                 log.warn("Refresh expired tokens {}", saved);
                 // Refresh expired tokens
                 try {
-                    final OAuthTokens refreshed = this.authorizeWithRefreshToken(saved);
+                    final OAuthTokens refreshed = this.authorizeWithRefreshToken(saved, cancel);
                     log.debug("Refreshed tokens {} for {}", refreshed, host);
                     return this.save(refreshed);
                 }
@@ -146,7 +159,7 @@ public class OAuth2AuthorizationService {
             }
         }
         log.warn("Missing tokens {} for {}", saved, host);
-        final OAuthTokens tokens = this.authorize();
+        final OAuthTokens tokens = this.authorize(cancel);
         log.debug("Retrieved tokens {} for {}", tokens, host);
         return tokens;
     }
@@ -195,17 +208,22 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
+    @Deprecated
+    public OAuthTokens authorize() throws BackgroundException {
+        return this.authorize(CancelCallback.noop);
+    }
 
     /**
+     * @param cancel Context of the action. No interactive authorization flow for scheduled actions
      * @return Tokens retrieved
      */
-    public OAuthTokens authorize() throws BackgroundException {
+    public OAuthTokens authorize(final CancelCallback cancel) throws BackgroundException {
         log.debug("Start new OAuth flow for {} with missing access token", host);
         final IdTokenResponse response;
         // Save access token, refresh token and id token
         switch(flowType) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(prompt);
+                response = this.authorizeWithCode(prompt, cancel);
                 break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(host.getCredentials());
@@ -219,7 +237,12 @@ public class OAuth2AuthorizationService {
                         System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken());
     }
 
-    private IdTokenResponse authorizeWithCode(final LoginCallback prompt) throws BackgroundException {
+    private IdTokenResponse authorizeWithCode(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if(cancel.getContext() == BackgroundAction.Context.scheduled) {
+            // Do not open web browser when user interaction is not possible
+            log.warn("Skip interactive OAuth flow for {} from scheduled action", host);
+            throw new LoginCanceledException();
+        }
         log.debug("Request tokens with code");
         if(HostPreferencesFactory.get(host).getBoolean("oauth.browser.open.warn")) {
             prompt.warn(host,
@@ -366,10 +389,10 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
+    public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens, final CancelCallback cancel) throws BackgroundException {
         if(StringUtils.isBlank(tokens.getRefreshToken())) {
             log.warn("Missing refresh token in {}", tokens);
-            return this.authorize();
+            return this.authorize(cancel);
         }
         log.debug("Refresh expired tokens {}", tokens);
         try {
