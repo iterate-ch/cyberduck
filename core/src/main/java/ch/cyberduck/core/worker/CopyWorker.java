@@ -177,7 +177,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CopyWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(abbreviate(files.entrySet()));
         sb.append('}');
         return sb.toString();
     }

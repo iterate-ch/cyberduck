@@ -91,7 +91,7 @@ public class RestoreWorker extends Worker<List<Path>> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("RestoreWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(abbreviate(files));
         sb.append(", prompt=").append(prompt);
         sb.append('}');
         return sb.toString();

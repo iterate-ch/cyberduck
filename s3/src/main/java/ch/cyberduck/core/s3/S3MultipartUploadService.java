@@ -218,6 +218,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             public MultipartPart call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
+                        .setParent(overall)
+                        .setSegment(true)
                         .setLength(length)
                         .setOffset(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
@@ -232,7 +234,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.sha256)).findFirst().ifPresent(status::setChecksum);
                         break;
                 }
-                status.setSegment(true);
                 final Optional<Checksum> md5 = checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.md5)).findFirst();
                 if(md5.isPresent()) {
                     final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());

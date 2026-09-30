@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -119,7 +120,7 @@ public class BookmarkCollectionTest {
         os.write(bookmark.getBytes(StandardCharsets.UTF_8));
         os.close();
         assertTrue(source.exists());
-        wait.await();
+        assertTrue(wait.await(1, TimeUnit.MINUTES));
         assertFalse(collection.isEmpty());
         assertEquals(1, collection.size());
         assertEquals(uid, collection.get(0).getUuid());

@@ -136,7 +136,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                         }
                     }
                     finally {
-                        EntityUtils.consume(postResponse.getEntity());
+                        EntityUtils.consumeQuietly(postResponse.getEntity());
                     }
                     if(!status.isExists()) {
                         if(postResponse.containsHeader(HttpHeaders.LOCATION)) {
@@ -159,7 +159,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                 }
                             }
                             finally {
-                                EntityUtils.consume(putResponse.getEntity());
+                                EntityUtils.consumeQuietly(putResponse.getEntity());
                             }
                         }
                         else {

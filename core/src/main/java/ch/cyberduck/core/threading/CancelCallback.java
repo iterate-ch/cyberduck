@@ -20,5 +20,9 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 public interface CancelCallback {
     void verify() throws ConnectionCanceledException;
 
+    default BackgroundAction.Context getContext() {
+        return BackgroundAction.Context.interactive;
+    }
+
     CancelCallback noop = new DisabledCancelCallback();
 }

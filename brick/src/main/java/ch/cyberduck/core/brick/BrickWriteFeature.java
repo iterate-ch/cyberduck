@@ -115,7 +115,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                         }
                     }
                     finally {
-                        EntityUtils.consume(response.getEntity());
+                        EntityUtils.consumeQuietly(response.getEntity());
                     }
                 }
                 catch(HttpResponseException e) {

@@ -102,7 +102,7 @@ public class WriteLifecycleWorker extends Worker<Boolean> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteLifecycleWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(abbreviate(files));
         sb.append('}');
         return sb.toString();
     }

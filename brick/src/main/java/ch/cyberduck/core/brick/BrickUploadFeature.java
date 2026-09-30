@@ -161,6 +161,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
             public TransferStatus call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
+                        .setParent(overall)
                         .setSegment(true)
                         .setLength(length)
                         .setOffset(offset);

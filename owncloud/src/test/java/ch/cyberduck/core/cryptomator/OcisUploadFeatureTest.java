@@ -95,7 +95,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, counter, writeStatus, ConnectionCallback.noop);
+        service.upload(new TusWriteFeature(session, capabilities), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, counter, writeStatus, ConnectionCallback.noop);
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));

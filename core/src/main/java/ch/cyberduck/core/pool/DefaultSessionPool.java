@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -55,6 +56,7 @@ public class DefaultSessionPool implements SessionPool {
 
     private final VaultRegistry registry;
 
+    private final ConnectionService connect;
     private final GenericObjectPool<Session<?>> pool;
 
     private static final GenericObjectPoolConfig<Session<?>> configuration = new GenericObjectPoolConfig<>();
@@ -74,12 +76,13 @@ public class DefaultSessionPool implements SessionPool {
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final VaultRegistry registry, final TranscriptListener transcript, final Host bookmark) {
-        this(registry, transcript, bookmark,
+        this(connect, registry, transcript, bookmark,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration, abandon));
     }
 
-    public DefaultSessionPool(final VaultRegistry registry, final TranscriptListener transcript,
+    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry, final TranscriptListener transcript,
                               final Host bookmark, final GenericObjectPool<Session<?>> pool) {
+        this.connect = connect;
         this.transcript = transcript;
         this.bookmark = bookmark;
         this.registry = registry;
@@ -128,10 +131,26 @@ public class DefaultSessionPool implements SessionPool {
                     log.info("Borrow session from pool {}", this);
                     final Session<?> session = pool.borrowObject();
                     log.info("Borrowed session {} from pool {}", session, this);
+                    try {
+                        // Connect with context of the action to suppress user visible prompts when scheduled
+                        connect.check(session, new BackgroundActionStateCancelCallback(callback));
+                    }
+                    catch(BackgroundException | RuntimeException e) {
+                        try {
+                            pool.invalidateObject(session);
+                        }
+                        catch(Exception x) {
+                            log.warn("Failure invalidating session {} in pool. {}", session, x.getMessage());
+                        }
+                        throw e;
+                    }
                     return session.withListener(transcript);
                 }
                 catch(IllegalStateException e) {
                     throw new ConnectionCanceledException(e);
+                }
+                catch(BackgroundException failure) {
+                    throw this.failure(failure);
                 }
                 catch(NoSuchElementException e) {
                     if(pool.isClosed()) {
@@ -144,16 +163,7 @@ public class DefaultSessionPool implements SessionPool {
                         continue;
                     }
                     if(cause instanceof BackgroundException) {
-                        final BackgroundException failure = (BackgroundException) cause;
-                        log.warn("Failure {} obtaining connection for {}", failure, this);
-                        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                            final int max = Math.max(1, pool.getMaxTotal() - 1);
-                            log.warn("Lower maximum total pool size to {} connections.", max);
-                            pool.setMaxTotal(max);
-                            // Clear pool from idle connections
-                            pool.clear();
-                        }
-                        throw failure;
+                        throw this.failure((BackgroundException) cause);
                     }
                     log.error("Borrowing session from pool {} failed with {}", this, e);
                     throw new DefaultExceptionMappingService().map(cause);
@@ -170,6 +180,18 @@ public class DefaultSessionPool implements SessionPool {
             }
             throw new BackgroundException(e.getMessage(), e);
         }
+    }
+
+    private BackgroundException failure(final BackgroundException failure) {
+        log.warn("Failure {} obtaining connection for {}", failure, this);
+        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            final int max = Math.max(1, pool.getMaxTotal() - 1);
+            log.warn("Lower maximum total pool size to {} connections.", max);
+            pool.setMaxTotal(max);
+            // Clear pool from idle connections
+            pool.clear();
+        }
+        return failure;
     }
 
     @Override

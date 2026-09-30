@@ -52,6 +52,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -135,7 +136,7 @@ public class IRODSReadFeatureTest extends IRODSDockerComposeManager {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(session).upload(
+        new DefaultUploadFeature<List<String>>(session).upload(
                 new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);

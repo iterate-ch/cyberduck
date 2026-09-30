@@ -66,7 +66,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
@@ -94,7 +94,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length - 1).setOffset(1L);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setLength(content.length - 1).setOffset(1L);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
@@ -122,7 +122,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
@@ -150,7 +150,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(1L).setOffset(content.length - 1L);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setLength(1L).setOffset(content.length - 1L);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
@@ -178,7 +178,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
@@ -206,7 +206,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
@@ -234,7 +234,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true).setOffset(4194304L).setLength(content.length - 4194304);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setParent(status).setOffset(4194304L).setLength(content.length - 4194304);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
         new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);

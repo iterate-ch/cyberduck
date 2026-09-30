@@ -69,7 +69,7 @@ public class StoregateDeleteFeature implements Delete {
                     }
                 }
                 finally {
-                    EntityUtils.consume(response.getEntity());
+                    EntityUtils.consumeQuietly(response.getEntity());
                 }
                 fileid.cache(file.getKey(), null);
             }

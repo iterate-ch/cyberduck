@@ -86,7 +86,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
                         }
                     }
                     finally {
-                        EntityUtils.consume(response.getEntity());
+                        EntityUtils.consumeQuietly(response.getEntity());
                     }
                 }
                 catch(HttpResponseException e) {

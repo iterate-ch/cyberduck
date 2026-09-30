@@ -126,6 +126,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                             final TransferStatus status = new TransferStatus().setLength(len);
                             status.setChecksum(writer.checksum(file, status).compute(new ByteArrayInputStream(b, off, len), status));
                             status.setUrl(uploadPartEntity.getUploadUri());
+                            status.setParent(overall);
                             status.setSegment(true);
                             final HttpResponseOutputStream<FileEntity> proxy = writer.write(file, status, ConnectionCallback.noop);
                             final byte[] content = Arrays.copyOfRange(b, off, len);

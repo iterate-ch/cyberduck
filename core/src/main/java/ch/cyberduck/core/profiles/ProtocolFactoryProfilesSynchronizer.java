@@ -90,7 +90,7 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
                 if(latest.isPresent()) {
                     // Installed version is not latest
                     if(!latest.get().equals(match.get())) {
-                        log.warn("Override {} with latest profile verison {}", l, latest.get());
+                        log.warn("Override {} with latest profile version {}", l, latest.get());
                         // Remove previous version
                         l.getProfile().ifPresent(registry::unregister);
                         // Register updated profile by copying temporary file to application support

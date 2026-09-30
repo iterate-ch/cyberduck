@@ -161,6 +161,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 parameters.put(EueWriteFeature.RESOURCE_ID, resourceId);
                 final TransferStatus status = new TransferStatus()
                         .setSegment(true)
+                        .setParent(overall)
                         .setOffset(offset)
                         .setLength(length)
                         .setParameters(parameters);

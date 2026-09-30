@@ -27,8 +27,9 @@ import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
 import org.irods.irods4j.high_level.vfs.IRODSFilesystemException;
 
 import java.io.IOException;
+import java.util.List;
 
-public class IRODSDirectoryFeature implements Directory<Void> {
+public class IRODSDirectoryFeature implements Directory<List<String>> {
 
     private final IRODSSession session;
 
@@ -37,7 +38,7 @@ public class IRODSDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<List<String>> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final IRODSConnection conn = session.getClient();
             IRODSFilesystem.createCollection(conn.getRcComm(), folder.getAbsolute());

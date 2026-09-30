@@ -93,8 +93,15 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window = window;
         this.window.setFrameAutosaveName(StringUtils.EMPTY);
         this.window.recalculateKeyViewLoop();
-        this.window.setReleasedWhenClosed(true);
+        this.window.setReleasedWhenClosed(this.isReleasedWhenClosed());
         this.window.setDelegate(this.id());
+    }
+
+    /**
+     * @return False if window is reused after being closed and controller is not invalidated
+     */
+    protected boolean isReleasedWhenClosed() {
+        return true;
     }
 
     public NSWindow window() {
@@ -217,7 +224,9 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * Override this method if the controller should not be invalidated after its window closes
+     * Invalidates controller unless window is reused after being closed
+     *
+     * @see #isReleasedWhenClosed()
      */
     @Override
     @Delegate
@@ -235,7 +244,9 @@ public abstract class WindowController extends BundleController implements NSWin
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
         }
-        this.invalidate();
+        if(this.isReleasedWhenClosed()) {
+            this.invalidate();
+        }
     }
 
     /**

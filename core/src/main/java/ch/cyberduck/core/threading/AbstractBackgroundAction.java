@@ -131,6 +131,11 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
+    public Context getContext() {
+        return Context.interactive;
+    }
+
+    @Override
     public String getActivity() {
         return LocaleFactory.localizedString("Unknown");
     }

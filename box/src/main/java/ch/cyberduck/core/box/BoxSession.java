@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Share;
+import ch.cyberduck.core.features.Thumbnail;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -66,18 +67,18 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
     @Override
     public CloseableHttpClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                 .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         return configuration.build();
     }
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+        credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
         try {
             credentials.setUsername(new UsersApi(new BoxApiClient(client)).getUsersMe(Collections.emptyList()).getLogin());
         }
@@ -141,6 +142,9 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Share.class) {
             return (T) new BoxShareFeature(this, fileid);
+        }
+        if(type == Thumbnail.class) {
+            return (T) new BoxThumbnailFeature(this, fileid);
         }
         return super._getFeature(type);
     }
