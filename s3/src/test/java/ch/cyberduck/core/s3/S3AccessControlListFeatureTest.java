@@ -130,10 +130,11 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path(String.format("cd-%s", new AlphanumericRandomStringService().random().toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3BucketCreateService(session).create(container, null);
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        new S3DirectoryFeature(session, f).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)),
+                container, new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
-        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         {
             final Acl acl = new Acl();
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));

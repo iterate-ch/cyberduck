@@ -31,7 +31,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -48,26 +47,15 @@ import static org.junit.Assert.*;
 public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
-    @Ignore
     public void testCreateBucket() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, acl);
-        for(Location.Name region : session.getHost().getProtocol().getRegions()) {
-            switch(region.getIdentifier()) {
-                case "me-south-1":
-                case "ap-east-1":
-                    // Not enabled for account
-                    break;
-                default:
-                    final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                    assertTrue(feature.isSupported(test.getParent(), Optional.of(test.getName())));
-                    test.attributes().setRegion(region.getIdentifier());
-                    feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
-                    assertTrue(new S3FindFeature(session, acl).find(test));
-                    assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
-                    new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-            }
-        }
+        final Path bucket = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        feature.mkdir(new S3WriteFeature(session, acl), bucket, new TransferStatus()
+                .setAcl(Acl.CANNED_PRIVATE)
+                .setRegion("eu-central-1"));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(bucket));
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
