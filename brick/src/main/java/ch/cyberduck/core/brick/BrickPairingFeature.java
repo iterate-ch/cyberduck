@@ -15,9 +15,9 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateTrustCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -66,7 +66,7 @@ public class BrickPairingFeature implements Pairing {
                 log.warn("Delete pairing for {}", bookmark);
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
                         new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get());
-                final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
+                final X509KeyManager key = new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark,
                         CertificateStoreFactory.get());
                 final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, ProxyFactory.get());

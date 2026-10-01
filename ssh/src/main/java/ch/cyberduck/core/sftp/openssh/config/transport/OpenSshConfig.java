@@ -40,7 +40,6 @@ package ch.cyberduck.core.sftp.openssh.config.transport;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
@@ -323,6 +322,13 @@ public class OpenSshConfig {
                     }
                 }
             }
+            else if("PKCS11Provider".equalsIgnoreCase(keyword)) {
+                for(final Host c : current) {
+                    if(c.pkcs11Provider == null) {
+                        c.pkcs11Provider = none(dequote(argValue));
+                    }
+                }
+            }
             else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.preferredAuthentications == null) {
@@ -499,6 +505,7 @@ public class OpenSshConfig {
         int port;
         String identityFile;
         String identityAgent;
+        String pkcs11Provider;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -522,6 +529,9 @@ public class OpenSshConfig {
             }
             if(identityAgent == null) {
                 identityAgent = src.identityAgent;
+            }
+            if(pkcs11Provider == null) {
+                pkcs11Provider = src.pkcs11Provider;
             }
             if(user == null) {
                 user = src.user;
@@ -581,6 +591,13 @@ public class OpenSshConfig {
         }
 
         /**
+         * @return Specifies the PKCS#11 shared library to use for authentication with a hardware token.
+         */
+        public String getPKCS11Provider() {
+            return pkcs11Provider;
+        }
+
+        /**
          * @return the real user name to connect as; never null.
          */
         public String getUser() {
@@ -619,6 +636,7 @@ public class OpenSshConfig {
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", identityAgent=").append(identityAgent);
+            sb.append(", pkcs11Provider=").append(pkcs11Provider);
             sb.append(", user='").append(user).append('\'');
             sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');
             sb.append(", identitiesOnly=").append(identitiesOnly);
