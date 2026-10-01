@@ -1,0 +1,6 @@
+Host token.example.com
+	SecurityKeyProvider /opt/homebrew/lib/libsk-libfido2.dylib
+	User token
+
+Host *
+	SecurityKeyProvider /usr/lib/ssh-keychain.dylib
