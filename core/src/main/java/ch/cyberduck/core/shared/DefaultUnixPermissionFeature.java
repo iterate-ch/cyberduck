@@ -41,14 +41,11 @@ public abstract class DefaultUnixPermissionFeature implements UnixPermission {
     @Override
     public Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
         final HostPreferences preferences = HostPreferencesFactory.get(host);
-        if(preferences.getBoolean("queue.upload.permissions.default")) {
-            if(type.contains(Path.Type.file)) {
-                return new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default"));
-            }
-            else {
-                return new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default"));
-            }
+        if(type.contains(Path.Type.file)) {
+            return new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default"));
         }
-        return Permission.EMPTY;
+        else {
+            return new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default"));
+        }
     }
 }

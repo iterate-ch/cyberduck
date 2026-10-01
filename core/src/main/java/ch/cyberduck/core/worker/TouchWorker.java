@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
@@ -72,13 +73,15 @@ public class TouchWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault(container));
         }
         status.setModified(System.currentTimeMillis());
-        final UnixPermission permission = session.getFeature(UnixPermission.class);
-        if(permission != null) {
-            status.setPermission(permission.getDefault(file.getParent(), EnumSet.of(Path.Type.file)));
-        }
-        final AclPermission acl = session.getFeature(AclPermission.class);
-        if(acl != null) {
-            status.setAcl(acl.getDefault(container));
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
+            final UnixPermission permission = session.getFeature(UnixPermission.class);
+            if(permission != null) {
+                status.setPermission(permission.getDefault(file.getParent(), EnumSet.of(Path.Type.file)));
+            }
+            final AclPermission acl = session.getFeature(AclPermission.class);
+            if(acl != null) {
+                status.setAcl(acl.getDefault(container));
+            }
         }
         Write writer = session.getFeature(MultipartWrite.class);
         if(null == writer) {

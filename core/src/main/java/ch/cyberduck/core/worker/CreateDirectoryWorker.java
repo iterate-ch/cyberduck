@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -61,13 +62,15 @@ public class CreateDirectoryWorker extends Worker<Path> {
             status.setEncryption(encryption.getDefault(container));
         }
         status.setModified(System.currentTimeMillis());
-        final UnixPermission permission = session.getFeature(UnixPermission.class);
-        if(permission != null) {
-            status.setPermission(permission.getDefault(folder.getParent(), EnumSet.of(Path.Type.directory)));
-        }
-        final AclPermission acl = session.getFeature(AclPermission.class);
-        if(acl != null) {
-            status.setAcl(acl.getDefault(container));
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
+            final UnixPermission permission = session.getFeature(UnixPermission.class);
+            if(permission != null) {
+                status.setPermission(permission.getDefault(folder.getParent(), EnumSet.of(Path.Type.directory)));
+            }
+            final AclPermission acl = session.getFeature(AclPermission.class);
+            if(acl != null) {
+                status.setAcl(acl.getDefault(container));
+            }
         }
         status.setRegion(region);
         final Path result = feature.mkdir(session.getFeature(Write.class), folder, status);
