@@ -59,8 +59,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
@@ -69,6 +71,11 @@ public abstract class BookmarkController extends SheetController implements NSTa
     private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
+    /**
+     * Bookmark specific default realm for GSS-API authentication
+     */
+    private static final String KERBEROS_REALM_PROPERTY = "ssh.authentication.gssapi.realm";
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
             "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
@@ -131,6 +138,8 @@ public abstract class BookmarkController extends SheetController implements NSTa
     private NSTextField webURLField;
     @Outlet
     private NSButton webUrlImage;
+    @Outlet
+    private NSTextField kerberosRealmField;
 
     public BookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
         this.bookmark = bookmark;
@@ -759,6 +768,33 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Action
     public void webURLInputDidChange(final NSNotification sender) {
         bookmark.setWebURL(webURLField.stringValue());
+        this.update();
+    }
+
+    @Outlet
+    public void setKerberosRealmField(final NSTextField field) {
+        this.kerberosRealmField = field;
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("kerberosRealmInputDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                field.id());
+        this.addObserver(bookmark -> {
+            kerberosRealmField.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp);
+            updateField(kerberosRealmField, StringUtils.defaultString(bookmark.getCustom().get(KERBEROS_REALM_PROPERTY)));
+        });
+    }
+
+    @Action
+    public void kerberosRealmInputDidChange(final NSNotification sender) {
+        final Map<String, String> custom = new HashMap<>(bookmark.getCustom());
+        final String realm = StringUtils.trim(kerberosRealmField.stringValue());
+        if(StringUtils.isBlank(realm)) {
+            custom.remove(KERBEROS_REALM_PROPERTY);
+        }
+        else {
+            custom.put(KERBEROS_REALM_PROPERTY, realm);
+        }
+        bookmark.setCustom(custom);
         this.update();
     }
 
