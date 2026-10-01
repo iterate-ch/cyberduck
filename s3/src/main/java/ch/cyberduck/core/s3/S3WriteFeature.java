@@ -138,13 +138,11 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
         }
-        if(!Acl.EMPTY.equals(status.getAcl())) {
-            if(status.getAcl().isCanned()) {
-                log.debug("Set canned ACL {} for {}", status.getAcl(), file);
-                object.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
-                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
-                status.setAcl(Acl.EMPTY);
-            }
+        if(status.getAcl().isCanned()) {
+            log.debug("Set canned ACL {} for {}", status.getAcl(), file);
+            object.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
+            // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+            status.setAcl(Acl.EMPTY);
         }
         if(status.getModified() != null) {
             // Interoperable with rsync
