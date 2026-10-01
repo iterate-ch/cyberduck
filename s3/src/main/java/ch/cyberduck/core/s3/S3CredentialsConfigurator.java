@@ -88,7 +88,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 return true;
             }
             return false;
-        }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername()) ? profiles.get("default") : null);
+        }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername())
+                && S3Session.isAwsHostname(StringUtils.defaultString(host.getHostname())) ? profiles.get("default") : null);
         if(null != profile) {
             if(profile.isProcessBasedProfile()) {
                 // Uses external process to retrieve temporary credentials
@@ -177,7 +178,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         else {
-            log.warn("No matching configuration for profile {} in {}", profile, profiles);
+            log.warn("No matching configuration for username {} in {}", credentials.getUsername(), profiles.keySet());
         }
         return credentials;
     }
