@@ -175,16 +175,16 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         try {
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(status.getAcl());
+                final List<BucketAccessControl> controls = toBucketAccessControl(status.getAcl());
                 status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(
                         session.getClient().buckets().update(bucket.getName(),
-                                new Bucket().setAcl(bucketAccessControls)).execute()
+                                new Bucket().setAcl(controls.isEmpty() ? null : controls)).execute()
                 ));
             }
             else {
-                final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(status.getAcl());
+                final List<ObjectAccessControl> controls = this.toObjectAccessControl(status.getAcl());
                 final Storage.Objects.Update request = session.getClient().objects().update(bucket.getName(), containerService.getKey(file),
-                        new StorageObject().setAcl(objectAccessControls));
+                        new StorageObject().setAcl(controls));
                 if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
@@ -206,7 +206,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         }
     }
 
-    protected List<BucketAccessControl> toBucketAccessControl(final Acl acl) {
+    public static List<BucketAccessControl> toBucketAccessControl(final Acl acl) {
         final List<BucketAccessControl> list = new ArrayList<>();
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
