@@ -56,6 +56,10 @@ namespace Ch.Cyberduck.Ui.Controller
         protected readonly Host _host;
         protected readonly LoginOptions _options;
         protected readonly LoginInputValidator _validator;
+        /// <summary>
+        /// Bookmark specific default realm for GSS-API authentication
+        /// </summary>
+        private const string KerberosRealmProperty = "ssh.authentication.gssapi.realm";
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = LogManager.getLogger(typeof(BookmarkController<>).FullName);
@@ -127,6 +131,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
             View.ChangedNicknameEvent += View_ChangedNicknameEvent;
             View.ChangedWebURLEvent += View_ChangedWebURLEvent;
+            View.ChangedKerberosRealmEvent += View_ChangedKerberosRealmEvent;
             View.ChangedCommentEvent += View_ChangedCommentEvent;
             View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
             View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
@@ -313,6 +318,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.WebUrlButtonToolTip = new DefaultWebUrlProvider().toUrl(_host).getUrl();
             View.WebURL = _host.getWebURL();
+            View.KerberosRealmFieldEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
+            View.KerberosRealm = (string)_host.getCustom().get(KerberosRealmProperty) ?? string.Empty;
             View.Notes = _host.getComment();
             View.TimezoneFieldEnabled = !_host.getProtocol().isUTCTimezone();
             if (null == _host.getTimezone())
@@ -655,6 +662,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _host.setWebURL(View.WebURL);
             UpdateFavicon();
+            ItemChanged();
+        }
+
+        private void View_ChangedKerberosRealmEvent()
+        {
+            java.util.HashMap custom = new java.util.HashMap(_host.getCustom());
+            string realm = View.KerberosRealm?.Trim();
+            if (string.IsNullOrEmpty(realm))
+            {
+                custom.remove(KerberosRealmProperty);
+            }
+            else
+            {
+                custom.put(KerberosRealmProperty, realm);
+            }
+            _host.setCustom(custom);
             ItemChanged();
         }
 
