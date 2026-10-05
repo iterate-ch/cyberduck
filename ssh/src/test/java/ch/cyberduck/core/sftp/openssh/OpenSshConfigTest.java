@@ -45,7 +45,6 @@ public class OpenSshConfigTest {
         assertEquals("host-a.example.com", host.getHostName());
         assertEquals("auser", host.getUser());
         assertEquals(2222, host.getPort());
-        config.delete();
     }
 
     @Test
