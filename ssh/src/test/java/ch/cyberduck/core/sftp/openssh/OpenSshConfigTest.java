@@ -64,20 +64,20 @@ public class OpenSshConfigTest {
     }
 
     @Test
-    public void testIncludeSpecificFile() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-specific"));
+    public void testInclude() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include"));
         final OpenSshConfig.Host host = config.lookup("include-host-a");
         assertEquals("host-a.example.com", host.getHostName());
+        // First-match-wins: User from the included Host block takes precedence over Match host block
         assertEquals("auser", host.getUser());
         assertEquals(2222, host.getPort());
-    }
-
-    @Test
-    public void testIncludeHostFromMainConfigAlsoAvailable() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-specific"));
-        final OpenSshConfig.Host host = config.lookup("main-host");
-        assertEquals("main.example.com", host.getHostName());
-        assertEquals("mainuser", host.getUser());
+        // Match host applies to the HostName from the included file and sets IdentityFile
+        assertEquals("~/.ssh/match-key", host.getIdentityFile());
+        // Hosts from the main config are available after missing and recursive includes
+        final OpenSshConfig.Host main = config.lookup("main-host");
+        assertEquals("main.example.com", main.getHostName());
+        assertEquals("mainuser", main.getUser());
+        assertNull(main.getIdentityFile());
     }
 
     @Test
@@ -86,129 +86,82 @@ public class OpenSshConfigTest {
         final OpenSshConfig.Host hostA = config.lookup("include-host-a");
         assertEquals("host-a.example.com", hostA.getHostName());
         assertEquals("auser", hostA.getUser());
+        // Global option from include-identityagent matched by the wildcard
+        assertEquals("/run/ssh-agent.sock", hostA.getIdentityAgent());
         final OpenSshConfig.Host hostB = config.lookup("include-host-b");
         assertEquals("host-b.example.com", hostB.getHostName());
         assertEquals("buser", hostB.getUser());
+        assertEquals("/run/ssh-agent.sock", hostB.getIdentityAgent());
     }
 
     @Test
-    public void testIncludePrecedence() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-precedence"));
+    public void testIncludeWithinBlock() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-block"));
         // First appearance takes precedence. Host block in main config before include
         final OpenSshConfig.Host mainHost = config.lookup("include-host-b");
         assertEquals("override", mainHost.getUser());
         assertEquals("host-b.example.com", mainHost.getHostName());
-        // Host block in main config after include
+        // Include is within the Host include-host-b block, blocks from included files never apply to other hosts
         final OpenSshConfig.Host includedHost = config.lookup("include-host-a");
         assertEquals("override", includedHost.getUser());
         assertEquals("include-host-a", includedHost.getHostName());
         assertEquals("SSH2", includedHost.getIdentityAgent());
+        // Options from a file included in a Host block apply to that host
+        assertEquals("/run/ssh-agent.sock", config.lookup("first").getIdentityAgent());
+        assertEquals("SSH_AUTH_SOCK", config.lookup("with-agent").getIdentityAgent());
+        assertEquals("/run/ssh-agent.sock", config.lookup("test-wildcard").getIdentityAgent());
+        // Host * with include precedes Host second
+        assertEquals("/run/ssh-agent.sock", config.lookup("second").getIdentityAgent());
+        // Options following an Include directive apply after the blocks from the included file
+        assertEquals("included", config.lookup("foo").getUser());
+        assertEquals("main", config.lookup("bar").getUser());
     }
 
     @Test
-    public void testIncludeMissingFileIsIgnored() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-missing"));
-        // Missing include must be silently ignored; remaining hosts are still loaded
-        final OpenSshConfig.Host host = config.lookup("main-host");
-        assertEquals("main.example.com", host.getHostName());
-    }
-
-    @Test
-    public void testCircularIncludeDoesNotLoop() {
-        // A config that includes itself must not cause infinite recursion
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-circular"));
-        final OpenSshConfig.Host host = config.lookup("circular-host");
-        assertEquals("circular.example.com", host.getHostName());
-    }
-
-    @Test
-    public void testMatchHostGlobPattern() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
-        final OpenSshConfig.Host host = config.lookup("foo.example.com");
-        assertEquals("matchuser", host.getUser());
-        assertEquals(2222, host.getPort());
-    }
-
-    @Test
-    public void testMatchHostExactPattern() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
-        final OpenSshConfig.Host host = config.lookup("exact.example.com");
-        // Exact pattern block sets IdentityFile
-        assertEquals("~/.ssh/exact-key", host.getIdentityFile());
-    }
-
-    @Test
-    public void testMatchHostNegationExcludesHost() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+    public void testMatchHost() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match"));
+        // Glob pattern
+        final OpenSshConfig.Host glob = config.lookup("foo.example.com");
+        assertEquals("matchuser", glob.getUser());
+        assertEquals(2222, glob.getPort());
+        assertNull(glob.getIdentityFile());
+        // Exact pattern
+        assertEquals("~/.ssh/exact-key", config.lookup("exact.example.com").getIdentityFile());
         // excluded.example.com matches *.example.com but is negated in the third block
-        final OpenSshConfig.Host excluded = config.lookup("excluded.example.com");
-        assertNull(excluded.getIdentityAgent());
-        // other.example.com is not excluded so it should get the IdentityAgent
-        final OpenSshConfig.Host other = config.lookup("other.example.com");
-        assertEquals("~/.ssh/agent.sock", other.getIdentityAgent());
-    }
-
-    @Test
-    public void testMatchHostNoMatchForUnrelatedHost() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        assertNull(config.lookup("excluded.example.com").getIdentityAgent());
+        assertEquals("~/.ssh/agent.sock", config.lookup("other.example.com").getIdentityAgent());
         // Host outside *.example.com should not pick up any Match host settings
-        final OpenSshConfig.Host host = config.lookup("unrelated.org");
-        assertNull(host.getUser());
-        assertEquals(-1, host.getPort());
+        final OpenSshConfig.Host unrelated = config.lookup("unrelated.org");
+        assertNull(unrelated.getUser());
+        assertEquals(-1, unrelated.getPort());
+        // Original host criteria are matched against the name given, not after substitution by the Hostname option
+        assertEquals("orig", config.lookup("original").getUser());
+        assertNull(config.lookup("original.example.org").getUser());
+        // A pattern list with only negated patterns never matches
+        final OpenSshConfig.Host negated = config.lookup("bar", "bob");
+        assertNull(negated.getUser());
+        assertEquals(-1, negated.getPort());
+        assertNull(negated.getIdentityAgent());
     }
 
     @Test
-    public void testMatchUserCriteriaNotEvaluatedWithoutUser() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
-        // Without a user, Match user blocks cannot be evaluated and must be skipped
-        final OpenSshConfig.Host host = config.lookup("foo.example.com");
-        assertEquals(2222, host.getPort());
+    public void testMatchUser() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match"));
+        assertEquals(9999, config.lookup("any.host", "alice").getPort());
+        assertEquals(-1, config.lookup("any.host", "bob").getPort());
+        // Without a user given, Match user is evaluated against the user configured by preceding blocks
+        assertEquals(9999, config.lookup("configured").getPort());
+        // Without a user given or configured, Match user is evaluated against the local user
+        assertEquals(-1, config.lookup("unconfigured").getPort());
     }
 
     @Test
-    public void testMatchUserCriteriaMatchesUser() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
-        final OpenSshConfig.Host host = config.lookup("any.host", "alice");
-        assertEquals(9999, host.getPort());
-    }
-
-    @Test
-    public void testMatchUserCriteriaNoMatchForOtherUser() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
-        final OpenSshConfig.Host host = config.lookup("any.host", "bob");
-        assertEquals(-1, host.getPort());
-    }
-
-    @Test
-    public void testMatchHostAndUserCombinedBothMatch() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
-        final OpenSshConfig.Host host = config.lookup("foo.example.com", "alice");
-        assertEquals("~/.ssh/combined-key", host.getIdentityFile());
-    }
-
-    @Test
-    public void testMatchHostAndUserCombinedHostMismatch() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
-        final OpenSshConfig.Host host = config.lookup("unrelated.org", "alice");
-        assertNull(host.getIdentityFile());
-    }
-
-    @Test
-    public void testMatchHostAndUserCombinedUserMismatch() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
-        final OpenSshConfig.Host host = config.lookup("foo.example.com", "bob");
-        assertNull(host.getIdentityFile());
-    }
-
-    @Test
-    public void testMatchHostFromIncludePrecedence() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-match-host"));
-        final OpenSshConfig.Host host = config.lookup("include-host-a");
-        assertEquals("host-a.example.com", host.getHostName());
-        // First-match-wins: User from the Host block takes precedence over Match host block
-        assertEquals("auser", host.getUser());
-        // IdentityFile is only set by the Match block, so it must be applied
-        assertEquals("~/.ssh/match-key", host.getIdentityFile());
+    public void testMatchHostAndUser() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match"));
+        // All criteria must match
+        assertEquals("~/.ssh/combined-key", config.lookup("foo.example.com", "alice").getIdentityFile());
+        assertNull(config.lookup("unrelated.org", "alice").getIdentityFile());
+        assertNull(config.lookup("foo.example.com", "bob").getIdentityFile());
     }
 
     @Test
@@ -221,41 +174,46 @@ public class OpenSshConfigTest {
     }
 
     @Test
-    public void testProxyCommandNoneNotOverriddenByWildcard() throws Exception {
-        final File config = tmp.newFile("config-proxycommand-none-wildcard");
-        try(final FileWriter w = new FileWriter(config)) {
-            w.write("Host disabled-proxy-command\n");
-            w.write("    HostName internal.example.org\n");
-            w.write("    ProxyCommand none\n");
-            w.write("\n");
-            w.write("Host *\n");
-            w.write("    ProxyCommand ssh -W %h:%p bastion.example.org\n");
-        }
-        final OpenSshConfig sshConfig = new OpenSshConfig(new Local(config.getAbsolutePath()));
-        // The explicit `none` must not be overridden by the wildcard block matched afterward
-        assertNull(sshConfig.lookup("disabled-proxy-command").getProxyCommand());
-        config.delete();
-    }
-
-    @Test
-    public void testIdentityAgentFromInclude() {
-        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-embedded"));
-        final OpenSshConfig.Host hostFirst = config.lookup("first");
-        assertEquals("/run/ssh-agent.sock", hostFirst.getIdentityAgent());
-        final OpenSshConfig.Host hostAgent = config.lookup("with-agent");
-        assertEquals("SSH_AUTH_SOCK", hostAgent.getIdentityAgent());
-        final OpenSshConfig.Host hostWildcard = config.lookup("test-wildcard");
-        assertEquals("/run/ssh-agent.sock", hostWildcard.getIdentityAgent());
-        final OpenSshConfig.Host hostSecond = config.lookup("second");
-        assertEquals("/run/ssh-agent.sock", hostSecond.getIdentityAgent());
-    }
-
-    @Test
-    public void testConfigWildcard() {
+    public void testWildcard() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-wildcard"));
-        final OpenSshConfig.Host host = config.lookup("one");
-        assertEquals("one", host.getUser());
-        final OpenSshConfig.Host host2 = config.lookup("two");
-        assertEquals("wildcard", host2.getUser());
+        assertEquals("one", config.lookup("one").getUser());
+        // First appearance takes precedence over the later Host two block
+        assertEquals("wildcard", config.lookup("two").getUser());
+        // Explicit `none` is not overridden by the wildcard block
+        final OpenSshConfig.Host disabled = config.lookup("x");
+        assertNull(disabled.getIdentityAgent());
+        assertNull(disabled.getProxyJump());
+        assertNull(disabled.getProxyCommand());
+        final OpenSshConfig.Host other = config.lookup("y");
+        assertEquals("/other.sock", other.getIdentityAgent());
+        assertEquals("bastion", other.getProxyJump());
+        assertEquals("ssh -W %h:%p bastion.example.org", other.getProxyCommand());
+    }
+
+    @Test
+    public void testGlobalOptions() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-global"));
+        final OpenSshConfig.Host host = config.lookup("x");
+        // Options before the first Host or Match block apply to all hosts
+        assertEquals("global", host.getUser());
+        assertEquals("/global.sock", host.getIdentityAgent());
+        // Option before the first Host block in an included file
+        assertEquals(2201, host.getPort());
+        // Match all
+        assertEquals("publickey", host.getPreferredAuthentications());
+        // Options following an Include directive apply after the blocks from the included file
+        assertEquals("included", config.lookup("foo").getUser());
+        assertEquals("global", config.lookup("bar").getUser());
+    }
+
+    @Test
+    public void testTrailingComment() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config"));
+        final OpenSshConfig.Host host = config.lookup("comment");
+        assertEquals("alice", host.getUser());
+        // Quoted arguments are not truncated
+        assertEquals("/tmp/a # b", host.getIdentityAgent());
+        // The command is passed to the user's shell unmodified
+        assertEquals("nc %h %p # passed to the shell", host.getProxyCommand());
     }
 }

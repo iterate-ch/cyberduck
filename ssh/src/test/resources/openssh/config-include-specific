@@ -1,5 +1,0 @@
-Include include-a
-
-Host main-host
-    HostName main.example.com
-    User mainuser

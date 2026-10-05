@@ -1,0 +1,34 @@
+Match host *.example.com
+    User matchuser
+    Port 2222
+
+Match host exact.example.com
+    IdentityFile ~/.ssh/exact-key
+
+Match host *.example.com,!excluded.example.com
+    IdentityAgent ~/.ssh/agent.sock
+
+Host original
+    HostName original.example.org
+
+Match originalhost original
+    User orig
+
+Host configured
+    User alice
+
+Match user alice
+    Port 9999
+
+Match host *.example.com user alice
+    IdentityFile ~/.ssh/combined-key
+
+# Negated patterns only, never match
+Host !foo
+    User negated
+
+Match host !foo
+    Port 1234
+
+Match user !nobody
+    IdentityAgent /negated.sock
