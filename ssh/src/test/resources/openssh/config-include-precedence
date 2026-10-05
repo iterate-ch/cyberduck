@@ -1,4 +1,12 @@
-Host include-host-a
+Host include-host-b
     User override
 
-Include include-a
+Include include-a include-b
+
+Host include-host-a
+    User override
+    IdentityAgent SSH2
+
+Host host-a.example.com
+    User override
+    IdentityAgent SSH3

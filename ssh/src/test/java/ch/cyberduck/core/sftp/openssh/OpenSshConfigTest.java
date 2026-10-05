@@ -95,9 +95,15 @@ public class OpenSshConfigTest {
     @Test
     public void testIncludePrecedence() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-precedence"));
-        final OpenSshConfig.Host host = config.lookup("include-host-a");
-        // Main config definition must take precedence over included file
-        assertEquals("override", host.getUser());
+        // First appearance takes precedence. Host block in main config before include
+        final OpenSshConfig.Host mainHost = config.lookup("include-host-b");
+        assertEquals("override", mainHost.getUser());
+        assertEquals("host-b.example.com", mainHost.getHostName());
+        // Host block in main config after include
+        final OpenSshConfig.Host includedHost = config.lookup("include-host-a");
+        assertEquals("override", includedHost.getUser());
+        assertEquals("include-host-a", includedHost.getHostName());
+        assertEquals("SSH2", includedHost.getIdentityAgent());
     }
 
     @Test
