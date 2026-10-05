@@ -235,7 +235,22 @@ public class OpenSshConfigTest {
     @Test
     public void testIdentityAgentFromInclude() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-embedded"));
-        final OpenSshConfig.Host host = config.lookup("test-wildcard");
-        assertEquals("/run/ssh-agent.sock", host.getIdentityAgent());
+        final OpenSshConfig.Host hostFirst = config.lookup("first");
+        assertEquals("/run/ssh-agent.sock", hostFirst.getIdentityAgent());
+        final OpenSshConfig.Host hostAgent = config.lookup("with-agent");
+        assertEquals("SSH_AUTH_SOCK", hostAgent.getIdentityAgent());
+        final OpenSshConfig.Host hostWildcard = config.lookup("test-wildcard");
+        assertEquals("/run/ssh-agent.sock", hostWildcard.getIdentityAgent());
+        final OpenSshConfig.Host hostSecond = config.lookup("second");
+        assertEquals("/run/ssh-agent.sock", hostSecond.getIdentityAgent());
+    }
+
+    @Test
+    public void testConfigWildcard() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-wildcard"));
+        final OpenSshConfig.Host host = config.lookup("one");
+        assertEquals("one", host.getUser());
+        final OpenSshConfig.Host host2 = config.lookup("two");
+        assertEquals("wildcard", host2.getUser());
     }
 }

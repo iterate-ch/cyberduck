@@ -1,0 +1,8 @@
+Host one
+  User one
+
+Host *
+  User wildcard
+
+Host two
+  User two
