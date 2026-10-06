@@ -151,8 +151,14 @@ namespace Ch.Cyberduck.Core.Local
                 return "";
             }
 
+            bool deviceSyntax = name.Length > 3
+                && name[2] is '?' or '.'
+                && IsDirectorySeparator(name[0])
+                && IsDirectorySeparator(name[1])
+                && IsDirectorySeparator(name[3]);
+
             int start = 0;
-            if (name[0] is '/')
+            if (!deviceSyntax && name[0] is '/')
             {
                 // LocalFactory.get(Path.getAbsolute()) always retains '/' at the beginning.
                 // Need a Path-Local translation, which removes this.
@@ -167,11 +173,6 @@ namespace Ch.Cyberduck.Core.Local
                 PathRoot(name.Substring(start));
 #endif
 
-            bool deviceSyntax = pathRoot.Length > 3
-                && pathRoot[2] is '?' or '.'
-                && IsDirectorySeparator(pathRoot[0])
-                && IsDirectorySeparator(pathRoot[1])
-                && IsDirectorySeparator(pathRoot[3]);
             bool deviceUnc = deviceSyntax && pathRoot.Length > 7
                 && pathRoot[4] is 'U'
                 && pathRoot[5] is 'N'
