@@ -32,3 +32,13 @@ Match host !foo
 
 Match user !nobody
     IdentityAgent /negated.sock
+
+# Invalid patterns never match
+Host [[:invalid:]] invalid-pattern
+    User invalid
+
+Match host [[:invalid:]]
+    Port 4321
+
+Match host invalid-pattern,![[:invalid:]]
+    IdentityFile ~/.ssh/invalid-key

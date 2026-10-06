@@ -207,6 +207,26 @@ public class OpenSshConfigTest {
     }
 
     @Test
+    public void testLoneQuote() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config"));
+        assertEquals("\"", config.lookup("quote").getUser());
+        // Parsing continues after the lone quote
+        assertEquals("alice", config.lookup("comment").getUser());
+    }
+
+    @Test
+    public void testInvalidPattern() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match"));
+        // Invalid patterns never match, remaining patterns of the list are evaluated
+        final OpenSshConfig.Host host = config.lookup("invalid-pattern");
+        assertEquals("invalid", host.getUser());
+        assertEquals(-1, host.getPort());
+        // A negated invalid pattern does not exclude
+        assertEquals("~/.ssh/invalid-key", host.getIdentityFile());
+        assertNull(config.lookup("[[:invalid:]]").getUser());
+    }
+
+    @Test
     public void testTrailingComment() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config"));
         final OpenSshConfig.Host host = config.lookup("comment");

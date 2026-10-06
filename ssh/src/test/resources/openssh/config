@@ -29,6 +29,9 @@ Host proxycommand-none
     HostName another-hostname
     ProxyCommand none
 
+Host quote
+    User "
+
 Host comment # comment
     User alice # comment
     IdentityAgent "/tmp/a # b"
