@@ -288,7 +288,8 @@ public class SFTPSession extends Session<SSHClient> {
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
-            if(!"none".equalsIgnoreCase(configuration)) {
+            if (configuration != "")
+            {
                 if(null == configuration) {
                     configuration = System.getenv("SSH_AUTH_SOCK");
                 }
