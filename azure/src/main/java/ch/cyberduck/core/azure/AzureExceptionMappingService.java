@@ -33,24 +33,23 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
     @Override
     public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
-        switch(failure.getResponse().getStatusCode()) {
-            case 403:
-                if(failure.getValue() instanceof Map) {
-                    final Map messages = (Map) failure.getValue();
-                    if(messages.containsKey("Message")) {
-                        this.append(buffer, messages.get("Message").toString());
-                    }
-                }
-                else {
-                    this.append(buffer, failure.getMessage());
-                }
-                return new LoginFailureException(buffer.toString(), failure);
+        if(failure.getValue() instanceof Map) {
+            final Map<?, ?> messages = (Map<?, ?>) failure.getValue();
+            if(messages.containsKey("Message")) {
+                this.append(buffer, messages.get("Message").toString());
+            }
         }
-        this.append(buffer, failure.getMessage());
+        else {
+            this.append(buffer, failure.getMessage());
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
                 return new SSLExceptionMappingService().map(buffer.toString(), (SSLException) cause);
             }
+        }
+        switch(failure.getResponse().getStatusCode()) {
+            case 403:
+                return new LoginFailureException(buffer.toString(), failure);
         }
         return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getResponse().getStatusCode());
     }
