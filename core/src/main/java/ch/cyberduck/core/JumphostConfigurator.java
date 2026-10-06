@@ -27,6 +27,16 @@ public interface JumphostConfigurator {
 
     Host getJumphost(String alias);
 
+    /**
+     * @param alias Hostname of bookmark used as alias in configuration
+     * @return Command to execute to connect to the server through a proxy such as an OpenSSH {@code ProxyCommand}
+     * directive. The returned value may still contain unresolved tokens such as {@code %h}, {@code %p} and {@code %r}.
+     * Null if no proxy command is configured.
+     */
+    default String getProxyCommand(String alias) {
+        return null;
+    }
+
     JumphostConfigurator reload() throws LoginCanceledException;
 
     JumphostConfigurator DISABLED = new JumphostConfigurator() {

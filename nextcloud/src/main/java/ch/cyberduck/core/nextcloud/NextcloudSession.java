@@ -15,6 +15,7 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -38,10 +39,13 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
+import ch.cyberduck.core.ocs.OcsUserRequest;
+import ch.cyberduck.core.ocs.OcsUserResponseHandler;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -49,6 +53,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,6 +72,24 @@ public class NextcloudSession extends DAVSession {
     @Override
     protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         return super.connect(proxy, key, prompt, cancel);
+    }
+
+    @Override
+    protected void authorized() throws BackgroundException {
+        // Username set from ID token claims does not necessarily match the user identifier known to the server
+        final Credentials credentials = host.getCredentials();
+        try {
+            final OcsUserRequest request = new OcsUserRequest(host);
+            log.debug("Query OCS user at {}", request);
+            final String id = client.execute(request, new OcsUserResponseHandler());
+            if(StringUtils.isNotBlank(id) && !StringUtils.equals(credentials.getUsername(), id)) {
+                log.debug("Set username to {} from server", id);
+                credentials.setUsername(id);
+            }
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
     }
 
     @Override

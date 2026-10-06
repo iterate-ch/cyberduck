@@ -20,6 +20,10 @@ public interface BackgroundActionState {
 
     boolean isRunning();
 
+    default BackgroundAction.Context getContext() {
+        return BackgroundAction.Context.interactive;
+    }
+
     BackgroundActionState running = new BackgroundActionState() {
         @Override
         public boolean isCanceled() {

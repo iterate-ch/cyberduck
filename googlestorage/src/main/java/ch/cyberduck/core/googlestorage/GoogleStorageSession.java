@@ -62,11 +62,11 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     @Override
     protected Storage connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                 .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
         return new Storage.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))
@@ -77,7 +77,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+        credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
     }
 
     @Override

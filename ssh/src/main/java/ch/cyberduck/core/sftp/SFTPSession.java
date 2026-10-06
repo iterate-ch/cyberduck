@@ -41,6 +41,7 @@ import ch.cyberduck.core.sftp.compression.JcraftZlibCompression;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
@@ -95,6 +96,7 @@ public class SFTPSession extends Session<SSHClient> {
     private SFTPEngine sftp;
     private StateDisconnectListener disconnectListener;
     private NegotiatedAlgorithms algorithms;
+    private OpenSSHProxyCommandConnector proxycommand;
 
     private final X509TrustManager trust;
     private final X509KeyManager key;
@@ -156,11 +158,26 @@ public class SFTPSession extends Session<SSHClient> {
                 connection.connectVia(tunnel);
             }
             else {
-                connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
+                // Look for proxy command configuration (OpenSSH ProxyCommand)
+                final String command = JumpHostConfiguratorFactory.get(host.getProtocol()).getProxyCommand(host.getHostname());
+                if(null != command) {
+                    log.info("Connect using proxy command {}", command);
+                    proxycommand = new OpenSSHProxyCommandConnector().connect(command,
+                            new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort(),
+                            host.getCredentials().getUsername());
+                    // Tunnel the transport through the standard streams of the helper process
+                    connection.connectVia(proxycommand.getInputStream(), proxycommand.getOutputStream());
+                }
+                else {
+                    connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
+                }
             }
             return connection;
         }
         catch(IOException e) {
+            if(null != proxycommand) {
+                proxycommand.close();
+            }
             throw new SFTPExceptionMappingService().map(e);
         }
     }
@@ -416,6 +433,9 @@ public class SFTPSession extends Session<SSHClient> {
         }
         catch(IOException e) {
             log.warn("Ignore disconnect failure {}", e.getMessage());
+        }
+        if(null != proxycommand) {
+            proxycommand.close();
         }
         super.disconnect();
     }

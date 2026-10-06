@@ -22,6 +22,7 @@ import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class OpenSSHJumpHostConfiguratorTest {
 
@@ -43,6 +44,16 @@ public class OpenSSHJumpHostConfiguratorTest {
         assertEquals("jumphost1.example.org", jumpHost.getHostname());
         assertEquals("user1", jumpHost.getCredentials().getUsername());
         assertEquals(22, jumpHost.getPort());
+    }
+
+    @Test
+    public void testProxyCommand() {
+        OpenSSHJumpHostConfigurator c = new OpenSSHJumpHostConfigurator(new OpenSshConfig(
+            new Local("src/test/resources", "openssh/config")));
+        assertEquals("ssh -W %h:%p bastion.example.org", c.getProxyCommand("proxycommand-host"));
+        assertNull(c.getProxyCommand("proxycommand-none"));
+        assertNull(c.getProxyCommand("server2"));
+        assertNull(c.getProxyCommand(null));
     }
 
 }

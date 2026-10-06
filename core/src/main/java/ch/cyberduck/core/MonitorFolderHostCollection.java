@@ -75,6 +75,10 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
                         this.set(index, bookmark);
                     }
                 }
+                else {
+                    // Missed or failed to parse file on creation when content was not yet written
+                    this.added(bookmark);
+                }
             }
             catch(AccessDeniedException e) {
                 log.warn("Failure {} reading file {}", e, file);
@@ -128,17 +132,20 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
         }
         else {
             try {
-                final Host bookmark = HostReaderFactory.get().read(file);
-                if(!this.contains(bookmark)) {
-                    log.warn("Add bookmark {}", bookmark);
-                    this.add(bookmark);
-                    for(HostFileListener listener : listeners) {
-                        listener.fileCreated(bookmark);
-                    }
-                }
+                this.added(HostReaderFactory.get().read(file));
             }
             catch(AccessDeniedException e) {
                 log.warn("Failure {} reading file {}", e, file);
+            }
+        }
+    }
+
+    private void added(final Host bookmark) {
+        if(!this.contains(bookmark)) {
+            log.warn("Add bookmark {}", bookmark);
+            this.add(bookmark);
+            for(HostFileListener listener : listeners) {
+                listener.fileCreated(bookmark);
             }
         }
     }

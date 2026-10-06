@@ -29,13 +29,20 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public abstract class Worker<T> {
     private static final Logger log = LogManager.getLogger(Worker.class);
+
+    /**
+     * Maximum number of elements printed in log output
+     */
+    private static final int ABBREVIATE_LIMIT = 10;
 
     private final AtomicBoolean canceled
             = new AtomicBoolean();
@@ -49,6 +56,18 @@ public abstract class Worker<T> {
             return String.format("%s… (%s) (%d)", name, LocaleFactory.localizedString("Multiple files"), files.size());
         }
         return String.format("%s…", name);
+    }
+
+    /**
+     * @param files Files
+     * @return String representation for logging limited to first elements with total count
+     */
+    protected static String abbreviate(final Collection<?> files) {
+        if(files.size() <= ABBREVIATE_LIMIT) {
+            return files.toString();
+        }
+        return files.stream().limit(ABBREVIATE_LIMIT).map(String::valueOf)
+                .collect(Collectors.joining(", ", "[", String.format(", … (%d total)]", files.size())));
     }
 
     protected Set<Path> getContainers(final PathContainerService containerService, final List<Path> files) {

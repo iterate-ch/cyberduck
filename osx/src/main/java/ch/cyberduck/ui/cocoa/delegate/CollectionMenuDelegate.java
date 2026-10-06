@@ -45,7 +45,7 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        if(collection.size() > 0) {
+        if(!collection.isEmpty()) {
             // The number of history plus a delimiter and the 'Clear' menu
             return new NSInteger(collection.size());
         }
@@ -78,7 +78,7 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
 
     @Override
     public void invalidate() {
-        this.collection.removeListener(this);
+        collection.removeListener(this);
         super.invalidate();
     }
 }

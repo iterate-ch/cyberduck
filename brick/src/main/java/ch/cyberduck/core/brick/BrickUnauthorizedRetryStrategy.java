@@ -122,5 +122,10 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                 new BackgroundActionStateCancelCallback(action).verify();
             }
         }
+
+        @Override
+        public BackgroundAction.Context getContext() {
+            return delegate.getContext();
+        }
     }
 }

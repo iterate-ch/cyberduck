@@ -48,16 +48,26 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TransferTableDataSource extends ListDataSource {
     private static final Logger log = LogManager.getLogger(TransferTableDataSource.class);
 
     private final Map<Transfer, ProgressController> controllers
-            = new HashMap<>();
+            = new ConcurrentHashMap<>();
+
+    private final AbstractCollectionListener<Transfer> listener = new AbstractCollectionListener<Transfer>() {
+        @Override
+        public void collectionItemRemoved(final Transfer item) {
+            final ProgressController controller = controllers.remove(item);
+            if(controller != null) {
+                controller.invalidate();
+            }
+        }
+    };
 
     private TransferFilter filter
             = new NullTransferFilter();
@@ -66,15 +76,13 @@ public class TransferTableDataSource extends ListDataSource {
         = TransferCollection.defaultCollection();
 
     public TransferTableDataSource() {
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionItemRemoved(final Transfer item) {
-                final ProgressController controller = controllers.remove(item);
-                if(controller != null) {
-                    controller.invalidate();
-                }
-            }
-        });
+        collection.addListener(listener);
+    }
+
+    @Override
+    public void invalidate() {
+        collection.removeListener(listener);
+        super.invalidate();
     }
 
     /**

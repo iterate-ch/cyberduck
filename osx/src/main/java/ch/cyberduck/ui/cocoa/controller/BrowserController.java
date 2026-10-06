@@ -214,6 +214,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private PathPasteboard pasteboard = PathPasteboard.EMPTY;
 
+    /**
+     * Selected files in browser view. Invalidated on selection change and when rendering browser
+     */
+    private volatile Selection selection;
+
     private final ListProgressListener listener
             = new PromptLimitedListProgressListener(this);
     /**
@@ -722,6 +727,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void reload(final NSTableView browser, final BrowserTableDataSource model, final List<Path> selected, final List<Path> folders) {
         this.setNavigation();
         model.render(browser, folders);
+        // Rows may have changed without selection change notification
+        this.invalidateSelection();
         this.setStatus();
         this.select(selected);
     }
@@ -732,6 +739,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         final NSTableView browser = this.getSelectedBrowserView();
         browser.deselectAll(null);
+        this.invalidateSelection();
         for(Path path : selected) {
             this.select(path);
         }
@@ -751,6 +759,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         final NSInteger index = new NSInteger(row);
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), true);
+        this.invalidateSelection();
         browser.scrollRowToVisible(index);
     }
 
@@ -781,19 +790,29 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return The first selected path found or null if there is no selection
      */
     public Path getSelectedPath() {
-        final List<Path> s = this.getSelectedPaths();
-        if(!s.isEmpty()) {
-            return s.get(0);
+        final NSTableView view = this.getSelectedBrowserView();
+        final Selection cached = selection;
+        if(null != cached && cached.view == view) {
+            return cached.files.isEmpty() ? null : cached.files.get(0);
         }
-        return null;
+        // Only lookup first selected row
+        final NSUInteger index = view.selectedRowIndexes().firstIndex();
+        if(index.equals(NSIndexSet.NSNotFound)) {
+            return null;
+        }
+        return this.getSelectedBrowserDelegate().pathAtRow(index.intValue());
     }
 
     /**
      * @return All selected paths or an empty list if there is no selection
      */
     public List<Path> getSelectedPaths() {
-        final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
         final NSTableView view = this.getSelectedBrowserView();
+        final Selection cached = selection;
+        if(null != cached && cached.view == view) {
+            return new ArrayList<>(cached.files);
+        }
+        final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
         final NSIndexSet iterator = view.selectedRowIndexes();
         final List<Path> selected = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
@@ -803,7 +822,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             selected.add(file);
         }
-        return selected;
+        selection = new Selection(view, selected);
+        return new ArrayList<>(selected);
+    }
+
+    /**
+     * Discard cached selected files
+     */
+    private void invalidateSelection() {
+        selection = null;
+    }
+
+    private static final class Selection {
+        private final NSTableView view;
+        private final List<Path> files;
+
+        private Selection(final NSTableView view, final List<Path> files) {
+            this.view = view;
+            this.files = files;
+        }
     }
 
     public int getSelectionCount() {
@@ -1417,6 +1454,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              */
             @Override
             public void outlineViewItemDidExpand(final NSNotification notification) {
+                invalidateSelection();
                 setStatus();
             }
 
@@ -1430,6 +1468,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              */
             @Override
             public void outlineViewItemDidCollapse(final NSNotification notification) {
+                invalidateSelection();
                 setStatus();
             }
 
@@ -3891,6 +3930,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         @Override
         public void selectionDidChange(final NSNotification notification) {
+            invalidateSelection();
             if(quicklook.isOpen()) {
                 updateQuickLookSelection(getSelectedPaths());
             }
@@ -3932,6 +3972,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
                         NSIndexSet.indexSetWithIndex(next), false);
+                invalidateSelection();
             }
             else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
                 NSInteger row = getSelectedBrowserView().selectedRow();
@@ -3945,6 +3986,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
                         NSIndexSet.indexSetWithIndex(next), false);
+                invalidateSelection();
             }
         }
     }

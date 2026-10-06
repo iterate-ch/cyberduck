@@ -91,7 +91,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @Override
     protected DeepboxApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request instanceof HttpRequestWrapper) {
@@ -111,7 +111,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 .setRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         configuration.addInterceptorLast(authorizationService);
         final String locale = this.pinLocalization();
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", locale));
@@ -166,7 +166,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+        credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
         try {
             final Me me = new UserRestControllerApi(client).usersMe(null, null);
             log.debug("Authenticated for user {}", me);

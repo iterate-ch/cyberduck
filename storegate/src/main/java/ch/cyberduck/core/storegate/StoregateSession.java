@@ -92,7 +92,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     protected StoregateApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                 .setRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
                         Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                                 host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
@@ -101,7 +101,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         // Force login even if browser session already exists
         authorizationService.setParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
@@ -123,7 +123,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     public void login(final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+        credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
         try {
             final HttpRequestBase request = new HttpPost(
                     new HostUrlProvider().withUsername(false).withPath(true).get(

@@ -76,7 +76,6 @@ import org.apache.logging.log4j.core.appender.NullAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.appender.rolling.action.AbstractAction;
 import org.apache.logging.log4j.core.appender.rolling.action.Action;
 import org.apache.logging.log4j.core.appender.rolling.action.DeleteAction;
 import org.apache.logging.log4j.core.appender.rolling.action.IfAccumulatedFileCount;
@@ -458,8 +457,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
                     .setPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
                     .setStrategy(DefaultRolloverStrategy.newBuilder().
                             setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                            setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
-                    .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
+                            setCustomActions(new Action[]{deleteAction}).build())
+                    .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n")
+                            .setHeader(String.format("Running version %s on %s%%n", this.getVersion(), this.getSystem()))
+                            .setCharset(StandardCharsets.UTF_8).build())
                     .build();
         }
         catch(IllegalStateException e) {
@@ -487,8 +488,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
                     .setPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
                     .setStrategy(DefaultRolloverStrategy.newBuilder().
                             setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                            setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
-                    .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
+                            setCustomActions(new Action[]{deleteAction}).build())
+                    .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n")
+                            .setHeader(String.format("Running version %s on %s%%n", this.getVersion(), this.getSystem()))
+                            .setCharset(StandardCharsets.UTF_8).build())
                     .build();
         }
         catch(IllegalStateException e) {
@@ -624,19 +627,5 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 this.getProperty("os.name"),
                 this.getProperty("os.version"),
                 this.getProperty("os.arch"));
-    }
-
-    private static final class ApplicationVersionAction extends AbstractAction {
-        private final Preferences preferences;
-
-        public ApplicationVersionAction(final Preferences preferences) {
-            this.preferences = preferences;
-        }
-
-        @Override
-        public boolean execute() {
-            log.info("Running version {} on {}", preferences.getVersion(), preferences.getSystem());
-            return true;
-        }
     }
 }

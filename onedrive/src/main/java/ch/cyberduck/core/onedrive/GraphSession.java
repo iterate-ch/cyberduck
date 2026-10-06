@@ -153,7 +153,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     @Override
     protected OneDriveAPI connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException, ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
@@ -171,7 +171,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request
                 .addHeader(new BasicHeader("Prefer", "Include-Feature=AddToOneDrive")));
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
@@ -217,7 +217,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
+        credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
         try {
             user = Users.get(User.getCurrent(client), new ODataQuery().select(User.Select.values()));
             final String account = user.getUserPrincipalName();

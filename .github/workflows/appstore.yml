@@ -8,6 +8,13 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
+    permissions:
+      checks: write
+      contents: read
+      packages: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     uses: ./.github/workflows/deploy.yml
     with:
       MAVEN_PROFILES: 'appstore'

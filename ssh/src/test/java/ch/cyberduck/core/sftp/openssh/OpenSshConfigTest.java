@@ -205,4 +205,30 @@ public class OpenSshConfigTest {
         // IdentityFile is only set by the Match block, so it must be applied
         assertEquals("~/.ssh/match-key", host.getIdentityFile());
     }
+
+    @Test
+    public void testProxyCommand() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config"));
+        assertEquals("ssh -W %h:%p bastion.example.org", config.lookup("proxycommand-host").getProxyCommand());
+        // ProxyCommand none disables any inherited proxy command
+        assertNull(config.lookup("proxycommand-none").getProxyCommand());
+        assertNull(config.lookup("server2").getProxyCommand());
+    }
+
+    @Test
+    public void testProxyCommandNoneNotOverriddenByWildcard() throws Exception {
+        final File config = tmp.newFile("config-proxycommand-none-wildcard");
+        try(final FileWriter w = new FileWriter(config)) {
+            w.write("Host disabled-proxy-command\n");
+            w.write("    HostName internal.example.org\n");
+            w.write("    ProxyCommand none\n");
+            w.write("\n");
+            w.write("Host *\n");
+            w.write("    ProxyCommand ssh -W %h:%p bastion.example.org\n");
+        }
+        final OpenSshConfig sshConfig = new OpenSshConfig(new Local(config.getAbsolutePath()));
+        // The explicit `none` must not be overridden by the wildcard block matched afterward
+        assertNull(sshConfig.lookup("disabled-proxy-command").getProxyCommand());
+        config.delete();
+    }
 }

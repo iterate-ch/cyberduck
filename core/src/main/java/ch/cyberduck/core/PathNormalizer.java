@@ -17,12 +17,21 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
+
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class PathNormalizer {
+
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
 
     private PathNormalizer() {
         //
@@ -146,21 +155,39 @@ public final class PathNormalizer {
      * @return Normalized
      */
     public static List<Path> normalize(final List<Path> selected) {
-        final List<Path> normalized = new Collection<>();
+        // Skip duplicates preserving order
+        final Set<Path> normalized = new LinkedHashSet<>();
+        // Absolute paths of directories already included
+        final Set<String> directories = new HashSet<>();
         for(Path f : selected) {
-            boolean duplicate = false;
-            for(Path n : normalized) {
-                if(f.isChild(n)) {
-                    // The selected file is a child of a directory already included
-                    duplicate = true;
-                    break;
-                }
+            final String absolute = normalizer.normalize(f.getAbsolute()).toString();
+            if(isChild(directories, absolute)) {
+                // The selected file is a child of a directory already included
+                continue;
             }
-            if(!duplicate) {
-                normalized.add(f);
+            normalized.add(f);
+            if(!f.isFile()) {
+                directories.add(absolute);
             }
         }
-        return normalized;
+        return new ArrayList<>(normalized);
+    }
+
+    /**
+     * @param directories Absolute paths of directories
+     * @param absolute    Absolute path of file
+     * @return True if any parent of the file is contained in directories
+     */
+    private static boolean isChild(final Set<String> directories, final String absolute) {
+        if(directories.isEmpty()) {
+            return false;
+        }
+        for(String parent = parent(absolute, Path.DELIMITER); parent != null; parent = parent(parent, Path.DELIMITER)) {
+            if(directories.contains(parent)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

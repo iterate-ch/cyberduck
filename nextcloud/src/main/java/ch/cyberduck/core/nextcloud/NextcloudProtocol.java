@@ -25,6 +25,9 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
 
+import java.util.Collections;
+import java.util.Map;
+
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
@@ -73,6 +76,12 @@ public class NextcloudProtocol extends AbstractProtocol {
     @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.storage;
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        // Username is resolved from server after authentication instead of ID token claims
+        return Collections.singletonMap("oauth.username.claims.enable", String.valueOf(false));
     }
 
     @Override

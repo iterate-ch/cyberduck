@@ -1,5 +1,15 @@
 # Changelog
 
+[9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
+* [Feature] Upgrade runtime (macOS) ([#17509](https://trac.cyberduck.io/ticket/17509))
+* [Bugfix] Switch default type for uploads to block blob (Azure) ([#18386](https://trac.cyberduck.io/ticket/18386))
+* [Bugfix] Application hangs with large selection of files in browser ([#18438](https://trac.cyberduck.io/ticket/18438))
+* [Bugfix] Overwriting files appends to existing file (SFTP) ([#18335](https://trac.cyberduck.io/ticket/18335))
+* [Bugfix] Read timeout deleting many files with bulk delete (OpenStack Swift) ([#18439](https://trac.cyberduck.io/ticket/18439))
+* [Bugfix] OAuth login fails with loopback redirect URI without port (ownCloud) ([#18447](https://trac.cyberduck.io/ticket/18447))
+* [Bugfix] Handle timeout during resumable file upload finalization (ownCloud)
+* [Bugfix] Error on startup after installing from website (CLI, Windows) ([#18408](https://trac.cyberduck.io/ticket/18408))
+
 [9.5.4](https://github.com/iterate-ch/cyberduck/compare/release-9-5-3...release-9-5-4)
 * [Feature] Suppress sleep mode during file transfers (Windows)
 * [Feature] Resolve *.localhost hostnames to loopback address
@@ -19,7 +29,7 @@
 * [Bugfix] Metadata tab in Info window never populates (Windows) ([#18332](https://trac.cyberduck.io/ticket/18332))
 
 [9.5.2](https://github.com/iterate-ch/cyberduck/compare/release-9-5-1...release-9-5-2)
-* [Feature] Upgrade Runtime to .NET 10 (Windows)
+* [Feature] Upgrade runtime to .NET 10 (Windows)
 * [Bugfix] Attempt to change to working directory of previous connection on connect to new bookmark (macOS) ([#18213](https://trac.cyberduck.io/ticket/18213))
 * [Bugfix] Crash opening folder prefixed with dot in filename (macOS) ([#18208](https://trac.cyberduck.io/ticket/18208))
 * [Bugfix] Connection profiles not updated with the latest version available

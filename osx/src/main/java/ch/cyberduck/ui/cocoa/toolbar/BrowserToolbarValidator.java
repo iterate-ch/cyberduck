@@ -181,6 +181,10 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(edit.action())) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                if(this.isLargeSelection()) {
+                    // Do not open editors for large selection
+                    return false;
+                }
                 for(Path s : controller.getSelectedPaths()) {
                     if(!controller.isEditable(s)) {
                         return false;
@@ -196,6 +200,10 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(Foundation.selector("editMenuClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                if(this.isLargeSelection()) {
+                    // Do not open editors for large selection
+                    return false;
+                }
                 for(Path s : controller.getSelectedPaths()) {
                     if(!controller.isEditable(s)) {
                         return false;
@@ -281,8 +289,13 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(delete.action())) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                if(this.isLargeSelection()) {
+                    // Skip validating individual files. Failures are reported when deleting
+                    return true;
+                }
+                final Delete feature = controller.getSession().getFeature(Delete.class);
                 for(Path selected : controller.getSelectedPaths()) {
-                    if(!controller.getSession().getFeature(Delete.class).isSupported(selected)) {
+                    if(!feature.isSupported(selected)) {
                         return false;
                     }
                 }
@@ -308,11 +321,15 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                final Versioning versioning = controller.getSession().getFeature(Versioning.class);
+                if(null == versioning) {
+                    return false;
+                }
+                if(this.isLargeSelection()) {
+                    // Skip validating individual files
+                    return true;
+                }
                 for(Path selected : controller.getSelectedPaths()) {
-                    final Versioning versioning = controller.getSession().getFeature(Versioning.class);
-                    if(null == versioning) {
-                        return false;
-                    }
                     if(!versioning.isRevertable(selected)) {
                         return false;
                     }
@@ -323,11 +340,16 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(Foundation.selector("restoreFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                final Restore feature = controller.getSession().getFeature(Restore.class);
+                if(null == feature) {
+                    return false;
+                }
+                if(this.isLargeSelection()) {
+                    // Skip validating individual files
+                    return true;
+                }
                 for(Path selected : controller.getSelectedPaths()) {
-                    if(null == controller.getSession().getFeature(Restore.class)) {
-                        return false;
-                    }
-                    if(!controller.getSession().getFeature(Restore.class).isRestorable(selected)) {
+                    if(!feature.isRestorable(selected)) {
                         return false;
                     }
                 }
@@ -382,6 +404,10 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     return false;
                 }
                 if(controller.getSelectionCount() > 0) {
+                    if(this.isLargeSelection()) {
+                        // Skip validating individual files
+                        return true;
+                    }
                     for(Path s : controller.getSelectedPaths()) {
                         if(s.isFile() && Archive.isArchive(s.getName())) {
                             // At least one file selected is already an archive. No distinct action possible
@@ -399,6 +425,10 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     return false;
                 }
                 if(controller.getSelectionCount() > 0) {
+                    if(this.isLargeSelection()) {
+                        // Skip validating individual files
+                        return true;
+                    }
                     for(Path s : controller.getSelectedPaths()) {
                         if(s.isDirectory()) {
                             return false;
@@ -428,6 +458,13 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         return true; // by default everything is enabled
+    }
+
+    /**
+     * @return True if too many files are selected to validate each file individually
+     */
+    protected boolean isLargeSelection() {
+        return controller.getSelectionCount() > PreferencesFactory.get().getInteger("browser.validate.selection.limit");
     }
 
     /**
