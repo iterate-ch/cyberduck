@@ -71,11 +71,6 @@
         </dependency>
         <dependency>
             <groupId>ch.iterate.ssh</groupId>
-            <artifactId>jsch.agentproxy.pageant</artifactId>
-            <version>${jsch-agentproxy-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.iterate.ssh</groupId>
             <artifactId>jsch.agentproxy.usocket-jna</artifactId>
             <version>${jsch-agentproxy-version}</version>
         </dependency>
