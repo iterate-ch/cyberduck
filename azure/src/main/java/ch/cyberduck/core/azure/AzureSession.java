@@ -127,8 +127,10 @@ public class AzureSession extends HttpSession<AzureClient> {
                 )
                 .build();
         return new AzureClient(
-                new BlobServiceClientBuilder().endpoint(endpoint).pipeline(pipeline).buildClient(),
-                new DataLakeServiceClientBuilder().endpoint(endpoint).pipeline(pipeline).buildClient());
+                new BlobServiceClientBuilder()
+                        .endpoint(endpoint).pipeline(pipeline).buildClient(),
+                new DataLakeServiceClientBuilder()
+                        .endpoint(endpoint).pipeline(pipeline).credential(new AzureSasCredential("?")).buildClient());
     }
 
     private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
