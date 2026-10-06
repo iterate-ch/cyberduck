@@ -27,12 +27,22 @@ import javax.net.ssl.SSLException;
 import java.util.Map;
 
 import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.implementation.models.BlobStorageError;
+import com.azure.storage.file.datalake.implementation.models.DataLakeStorageError;
 
 public class AzureExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
     @Override
     public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
+        if(failure.getValue() instanceof BlobStorageError) {
+            final BlobStorageError error = (BlobStorageError) failure.getValue();
+            this.append(buffer, error.getMessage());
+        }
+        if(failure.getValue() instanceof DataLakeStorageError) {
+            final DataLakeStorageError error = (DataLakeStorageError) failure.getValue();
+            this.append(buffer, error.getMessage());
+        }
         if(failure.getValue() instanceof Map) {
             final Map<?, ?> messages = (Map<?, ?>) failure.getValue();
             if(messages.containsKey("Message")) {
