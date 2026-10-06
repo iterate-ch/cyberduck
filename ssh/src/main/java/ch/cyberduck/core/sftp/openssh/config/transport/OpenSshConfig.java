@@ -39,7 +39,6 @@ package ch.cyberduck.core.sftp.openssh.config.transport;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
@@ -134,7 +133,7 @@ public class OpenSshConfig {
             blocks = newBlocks;
         }
         catch(AccessDeniedException | IOException e) {
-            log.warn("Failure reading {}", configuration);
+            log.warn("Failure reading {}. {}", configuration, e.getMessage());
             blocks = Collections.emptyList();
         }
     }
@@ -222,8 +221,8 @@ public class OpenSshConfig {
                                 // included file only match if the enclosing block matches.
                                 this.parse(included, including, blocks, block);
                             }
-                            catch(AccessDeniedException e) {
-                                log.warn("Failure reading included SSH config {}", included);
+                            catch(AccessDeniedException | IOException e) {
+                                log.warn("Failure reading included SSH config {}. {}", included, e.getMessage());
                                 // Ignore and skip
                             }
                         }
@@ -239,11 +238,11 @@ public class OpenSshConfig {
                     option.hostName = dequote(argValue);
                 }
                 else if("ProxyJump".equalsIgnoreCase(keyword)) {
-                    option.proxyJump = disabled(dequote(argValue));
+                    option.proxyJump = noneToDisabled(dequote(argValue));
                 }
                 else if("ProxyCommand".equalsIgnoreCase(keyword)) {
                     // The whole argument is passed to the user's shell, do not strip embedded quotes.
-                    option.proxyCommand = disabled(argValue);
+                    option.proxyCommand = noneToDisabled(argValue);
                 }
                 else if("User".equalsIgnoreCase(keyword)) {
                     option.user = dequote(argValue);
@@ -257,13 +256,13 @@ public class OpenSshConfig {
                     }
                 }
                 else if("IdentityFile".equalsIgnoreCase(keyword)) {
-                    option.identityFile = none(dequote(argValue));
+                    option.identityFile = noneToNull(dequote(argValue));
                 }
                 else if("IdentityAgent".equalsIgnoreCase(keyword)) {
-                    option.identityAgent = disabled(dequote(argValue));
+                    option.identityAgent = noneToDisabled(dequote(argValue));
                 }
                 else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
-                    option.preferredAuthentications = none(StringUtils.deleteWhitespace(dequote(argValue)));
+                    option.preferredAuthentications = noneToNull(StringUtils.deleteWhitespace(dequote(argValue)));
                 }
                 else if("IdentitiesOnly".equalsIgnoreCase(keyword)) {
                     option.identitiesOnly = yesno(dequote(argValue));
@@ -280,7 +279,7 @@ public class OpenSshConfig {
      * Add comma-separated patterns to the given list
      */
     private static void patterns(final String value, final List<String> patterns) {
-        for(final String p : value.split(",")) {
+        for(final String p : StringUtils.split(value, ',')) {
             final String trimmed = dequote(p.trim());
             if(!trimmed.isEmpty()) {
                 patterns.add(trimmed);
@@ -300,31 +299,27 @@ public class OpenSshConfig {
         else {
             parent = directory;
         }
+        final String name = FilenameUtils.getName(pattern);
         // Include accepts the tokens %%, %C, %d, %h, %i, %j, %k, %L, %l, %n, %p, %r, and %u.
         if(StringUtils.containsAny(pattern, '*', '?')) {
             // Each pathname may contain glob(7) wildcards
             if(parent.isDirectory()) {
-                log.debug("Resolve files in {} matching {}", parent, FilenameUtils.getName(pattern));
+                log.debug("Resolve files in {} matching {}", parent, name);
                 try {
-                    for(Local l : parent.list(new NullFilter<String>() {
-                        @Override
-                        public boolean accept(final String file) {
-                            return FilenameUtils.wildcardMatch(file, FilenameUtils.getName(pattern));
-                        }
-                    })) {
+                    for(Local l : parent.list(file -> FilenameUtils.wildcardMatch(file, name))) {
                         result.add(l);
                     }
                 }
                 catch(AccessDeniedException e) {
                     log.warn("Failure reading directory {}", parent);
                 }
+                // Wildcards will be expanded and processed in lexical order
+                result.sort(Comparator.comparing(Local::getAbsolute));
             }
         }
         else {
-            result.add(LocalFactory.get(parent, FilenameUtils.getName(pattern)));
+            result.add(LocalFactory.get(parent, name));
         }
-        // Wildcards will be expanded and processed in lexical order
-        result.sort(Comparator.comparing(Local::getAbsolute));
         return result;
     }
 
@@ -389,7 +384,7 @@ public class OpenSshConfig {
     }
 
     private static String dequote(final String value) {
-        if(value.startsWith("\"") && value.endsWith("\"")) {
+        if(value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
             return value.substring(1, value.length() - 1);
         }
         return value;
@@ -418,7 +413,7 @@ public class OpenSshConfig {
      *
      * @return Empty string for {@code none} so a value obtained later cannot override the disabled option
      */
-    private static String disabled(final String value) {
+    private static String noneToDisabled(final String value) {
         if("none".equalsIgnoreCase(value)) {
             return StringUtils.EMPTY;
         }
@@ -432,7 +427,10 @@ public class OpenSshConfig {
         return Boolean.FALSE;
     }
 
-    private static String none(final String value) {
+    /**
+     * @return Null for {@code none}, leaving the option unset
+     */
+    private static String noneToNull(final String value) {
         if("none".equalsIgnoreCase(value)) {
             return null;
         }
