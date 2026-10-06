@@ -112,4 +112,31 @@
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="TitledTabTemplate"
+                     TargetType="HeaderedContentControl">
+        <Border Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Padding="{TemplateBinding Padding}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ContentPresenter ContentSource="Header"
+                                  Margin="{DynamicResource TitledTabHeaderSpacing}"
+                                  Grid.Row="0" />
+
+                <ContentPresenter ContentSource="Content"
+                                  Margin="{DynamicResource TitledTabContentSpacing}"
+                                  Grid.Row="1" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+    <Style x:Key="TitledTabStyle"
+           TargetType="HeaderedContentControl"
+           BasedOn="{StaticResource {x:Type HeaderedContentControl}}">
+        <Setter Property="Template"
+                Value="{StaticResource TitledTabTemplate}" />
+    </Style>
 </ResourceDictionary>

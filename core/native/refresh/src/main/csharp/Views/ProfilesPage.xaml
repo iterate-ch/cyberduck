@@ -16,26 +16,20 @@
         <viewServices:ProfileDescriptionThumbnailConverter x:Key="ProfileThumbnails" />
     </local:ProfilesPageBase.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <HeaderedContentControl Style="{DynamicResource TitledTabStyle}">
+        <HeaderedContentControl.Header>
+            <StackPanel>
+                <TextBlock Text="{xaml:Text 'Connection Profiles',Table=Profiles}"
+                           Focusable="True"
+                           x:Name="ConnectionProfilesTitle"
+                           Style="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBlock Text="{xaml:Text 'Install additional connection profiles from different service providers.',Table=Profiles}"
+                           x:Name="TitleDescription"
+                           Style="{StaticResource CaptionTextBlockStyle}" />
+            </StackPanel>
+        </HeaderedContentControl.Header>
 
-        <StackPanel Margin="{StaticResource PageTitleCardItemCompactItemSpacing}"
-                    Grid.Row="0">
-            <TextBlock Text="{xaml:Text 'Connection Profiles',Table=Profiles}"
-                       Focusable="True"
-                       x:Name="ConnectionProfilesTitle"
-                       Style="{StaticResource SubtitleTextBlockStyle}"
-                       Margin="{StaticResource CompactItemSpacing}" />
-            <TextBlock Text="{xaml:Text 'Install additional connection profiles from different service providers.',Table=Profiles}"
-                       x:Name="TitleDescription"
-                       Style="{StaticResource CaptionTextBlockStyle}"
-                       Margin="{StaticResource CompactItemSpacing}" />
-        </StackPanel>
-
-        <Grid Grid.Row="1">
+        <Grid Margin="{DynamicResource TabContentPadding}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -43,16 +37,16 @@
 
             <StackPanel HorizontalAlignment="Right"
                         Orientation="Horizontal"
-                        Grid.Row="0"
-                        Margin="{StaticResource ControlCompactItemSpacing}">
+                        Margin="{DynamicResource UIItemNegativeSpacing}"
+                        Grid.Row="0">
                 <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
                            Text="&#xE721;"
-                           VerticalAlignment="Center"
-                           Margin="{StaticResource CompactItemSpacing}" />
+                           VerticalAlignment="Center" 
+                           Margin="{DynamicResource UIItemSpacing}" />
 
                 <TextBox Name="Search"
                          Width="260"
-                         Margin="{StaticResource CompactItemSpacing}"
+                         Margin="{DynamicResource UIItemSpacing}"
                          AutomationProperties.Name="{xaml:Text 'Search…',Table=Main}" />
             </StackPanel>
 
@@ -62,6 +56,7 @@
                       SelectionMode="Single"
                       SelectionUnit="FullRow"
                       VerticalGridLinesBrush="{x:Null}"
+                      Margin="0,8"
                       AutomationProperties.LabeledBy="{Binding ElementName=ConnectionProfilesTitle}"
                       AutomationProperties.HelpText="{Binding Text,ElementName=TitleDescription}"
                       Grid.Row="1">
@@ -127,10 +122,10 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-        </Grid>
 
-        <xctk:BusyIndicator x:Name="Status"
-                            BusyContent="{x:Null}"
-                            Grid.RowSpan="2" />
-    </Grid>
+            <xctk:BusyIndicator x:Name="Status"
+                                BusyContent="{x:Null}"
+                                Grid.RowSpan="2" />
+        </Grid>
+    </HeaderedContentControl>
 </local:ProfilesPageBase>

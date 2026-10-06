@@ -11,52 +11,52 @@
              d:DesignHeight="450"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance vm:MetadataViewModel}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <HeaderedContentControl Style="{DynamicResource TitledTabStyle}">
+        <HeaderedContentControl.Header>
+            <TextBlock Text="{xaml:Text 'Metadata',Table=Info}"
+                       x:Name="MetadataTitle"
+                       Style="{StaticResource SubtitleTextBlockStyle}" />
+        </HeaderedContentControl.Header>
 
-        <TextBlock Text="{xaml:Text 'Metadata',Table=Info}"
-                   x:Name="MetadataTitle"
-                   Style="{StaticResource SubtitleTextBlockStyle}"
-                   Margin="{StaticResource CardSpacing}"
-                   Grid.Row="0" />
-
-        <Grid Grid.Row="1">
+        <Grid Margin="{DynamicResource UIItemNegativeSpacing}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DataGrid x:Name="VersionGrid"
-                      ItemsSource="{Binding Metadata}"
-                      AutoGenerateColumns="False"
-                      CanUserResizeRows="False"
-                      SelectionMode="Single"
-                      SelectionUnit="FullRow"
-                      AutomationProperties.LabeledBy="{Binding ElementName=MetadataTitle}"
-                      Grid.Row="0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn x:Name="KeyColumn"
-                                        Header="{xaml:Text Name, Table=Info}"
-                                        Binding="{Binding Key}"
-                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
-                                        EditingElementStyle="{StaticResource DataGridTextColumnEditingElementAppStyle}"
-                                        Width="*" />
-                    <DataGridTextColumn x:Name="ValueColumn"
-                                        Header="{xaml:Text Value, Table=Info}"
-                                        Binding="{Binding Display}"
-                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
-                                        EditingElementStyle="{StaticResource DataGridTextColumnEditingElementAppStyle}"
-                                        Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <Border Margin="{DynamicResource UIItemSpacing}"
+                    Grid.Row="0">
+                <DataGrid x:Name="HeadersGrid"
+                          ItemsSource="{Binding Metadata}"
+                          AutoGenerateColumns="False"
+                          CanUserResizeRows="False"
+                          SelectionMode="Single"
+                          SelectionUnit="FullRow"
+                          Margin="{DynamicResource TabContentPadding}"
+                          AutomationProperties.LabeledBy="{Binding ElementName=MetadataTitle}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn x:Name="KeyColumn"
+                                            Header="{xaml:Text Name, Table=Info}"
+                                            Binding="{Binding Key}"
+                                            ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                            EditingElementStyle="{StaticResource DataGridTextColumnEditingElementAppStyle}"
+                                            Width="*" />
+                        <DataGridTextColumn x:Name="ValueColumn"
+                                            Header="{xaml:Text Value, Table=Info}"
+                                            Binding="{Binding Display}"
+                                            ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                            EditingElementStyle="{StaticResource DataGridTextColumnEditingElementAppStyle}"
+                                            Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
 
             <Menu Style="{StaticResource DialogMenuStyle}"
+                  Margin="{DynamicResource UIItemSpacing}"
                   Grid.Row="1">
                 <MenuItem x:Name="AddNewMetadataButton"
                           ItemsSource="{Binding MetadataMenuItems}"
+                          Style="{DynamicResource DialogMenuItemStyle}"
                           AutomationProperties.Name="{xaml:Text 'Custom Header',Table=S3}">
                     <MenuItem.Header>
                         <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -64,11 +64,11 @@
                     </MenuItem.Header>
                 </MenuItem>
             </Menu>
-        </Grid>
 
-        <tk:BusyIndicator x:Name="Status"
-                          IsBusy="{Binding Busy}"
-                          BusyContent="{x:Null}"
-                          Grid.RowSpan="2" />
-    </Grid>
+            <tk:BusyIndicator x:Name="Status"
+                              IsBusy="{Binding Busy}"
+                              BusyContent="{x:Null}"
+                              Grid.RowSpan="2" />
+        </Grid>
+    </HeaderedContentControl>
 </UserControl>

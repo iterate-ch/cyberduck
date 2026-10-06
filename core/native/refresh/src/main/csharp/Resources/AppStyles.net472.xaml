@@ -4,11 +4,9 @@
     <FontFamily x:Key="SymbolThemeFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <sys:Double x:Key="CaptionTextBlockFontSize">12</sys:Double>
-    <sys:Double x:Key="BodyTextBlockFontSize">14</sys:Double>
-    <sys:Double x:Key="SubtitleTextBlockFontSize">20</sys:Double>
-    <sys:Double x:Key="TitleTextBlockFontSize">28</sys:Double>
-    <sys:Double x:Key="TitleLargeTextBlockFontSize">40</sys:Double>
-    <sys:Double x:Key="DisplayTextBlockFontSize">68</sys:Double>
+    <sys:Double x:Key="BodyTextBlockFontSize">12</sys:Double>
+    <sys:Double x:Key="SubtitleTextBlockFontSize">16</sys:Double>
+    <sys:Double x:Key="TitleTextBlockFontSize">22</sys:Double>
     <sys:Double x:Key="TextControlThemeMinHeight">24</sys:Double>
     <sys:Double x:Key="TextControlThemeMinWidth">0</sys:Double>
     <Thickness x:Key="TextControlThemePadding">10,5,6,6</Thickness>
@@ -57,18 +55,6 @@
         <Setter Property="FontSize"
                 Value="{StaticResource TitleTextBlockFontSize}" />
     </Style>
-    <Style x:Key="TitleLargeTextBlockStyle"
-           TargetType="TextBlock"
-           BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize"
-                Value="{StaticResource TitleLargeTextBlockFontSize}" />
-    </Style>
-    <Style x:Key="DisplayTextBlockStyle"
-           TargetType="TextBlock"
-           BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize"
-                Value="{StaticResource DisplayTextBlockFontSize}" />
-    </Style>
     <Style x:Key="DefaultTextBoxStyle"
            TargetType="TextBox"
            BasedOn="{StaticResource {x:Type TextBox}}">
@@ -109,15 +95,26 @@
            BasedOn="{StaticResource DefaultButtonStyle}" />
 
     <Style x:Key="DialogMenuStyle"
-           TargetType="Menu">
-        <Setter Property="TextElement.FontSize"
-                Value="{StaticResource BodyTextBlockFontSize}" />
+           TargetType="Menu"
+           BasedOn="{StaticResource {x:Type Menu}}">
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
         <Setter Property="Padding"
                 Value="{StaticResource UISpacing}" />
     </Style>
-    <Style TargetType="MenuItem">
-        <Setter Property="Padding"
-                Value="{StaticResource ButtonPadding}" />
+    <Style x:Key="DialogMenuItemStyle"
+           TargetType="MenuItem"
+           BasedOn="{StaticResource {x:Type MenuItem}}" >
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+        <Style.Triggers>
+            <Trigger Property="Role" Value="TopLevelHeader">
+                <Setter Property="Padding" Value="{DynamicResource ButtonPadding}" />
+            </Trigger>
+            <Trigger Property="Role" Value="TopLevelItem">
+                <Setter Property="Padding" Value="{DynamicResource ButtonPadding}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="DataGridCellAppStyle"
@@ -165,6 +162,10 @@
     </Style>
     <Style TargetType="ComboBox"
            BasedOn="{StaticResource DefaultComboBoxStyle}" />
+
+    <Thickness x:Key="TitledTabHeaderSpacing">11,11,11,5.5</Thickness>
+    <Thickness x:Key="TitledTabContentSpacing">0,5.5,0,0</Thickness>
+    <Thickness x:Key="TabContentPadding">11,0</Thickness>
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="AppStyles.Base.xaml" />
