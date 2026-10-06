@@ -93,7 +93,7 @@ public class AzureObjectListService implements ListService {
                     final EnumSet<Path.Type> types;
                     if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
                         // Directory in hierarchical namespace is a blob with metadata flag and no delimiter in name
-                        if(Boolean.parseBoolean(item.getMetadata().get(Constants.HeaderConstants.DIRECTORY_METADATA_KEY))) {
+                        if(null != item.getMetadata() && Boolean.parseBoolean(item.getMetadata().get(Constants.HeaderConstants.DIRECTORY_METADATA_KEY))) {
                             types = EnumSet.of(Path.Type.directory);
                         }
                         else {
