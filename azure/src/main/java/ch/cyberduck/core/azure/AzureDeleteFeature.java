@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -51,8 +52,15 @@ public class AzureDeleteFeature implements Delete {
             else {
                 callback.delete(file);
                 try {
-                    session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
-                            .getBlobClient(containerService.getKey(file)).delete();
+                    if(file.isDirectory() && session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                        // Directory is not addressable with trailing delimiter in hierarchical namespace
+                        session.getClient().getDataLakeServiceClient().getFileSystemClient(containerService.getContainer(file).getName())
+                                .deleteDirectory(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)));
+                    }
+                    else {
+                        session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                                .getBlobClient(containerService.getKey(file)).delete();
+                    }
                 }
                 catch(HttpResponseException e) {
                     switch(e.getResponse().getStatusCode()) {

@@ -16,7 +16,6 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -34,19 +33,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
-import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import com.azure.storage.file.datalake.DataLakeFileSystemClient;
-import com.azure.storage.file.datalake.DataLakeServiceClient;
-import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
-import com.azure.storage.file.datalake.models.ListPathsOptions;
-import com.azure.storage.file.datalake.models.PathItem;
+import com.azure.storage.common.implementation.Constants;
 
 public class AzureObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(AzureObjectListService.class);
@@ -65,7 +58,8 @@ public class AzureObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final BlobContainerClient containerClient = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(directory).getName());
+            final BlobContainerClient containerClient = session.getClient().getBlobServiceClient()
+                    .getBlobContainerClient(containerService.getContainer(directory).getName());
             String prefix = StringUtils.EMPTY;
             if(!containerService.isContainer(directory)) {
                 prefix = containerService.getKey(directory);
@@ -76,14 +70,14 @@ public class AzureObjectListService implements ListService {
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             String continuationToken = null;
             for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
-                    .setDetails(new BlobListDetails().setRetrieveMetadata(true))
-                    .setPrefix(prefix)
-                    .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null).iterableByPage(continuationToken,
-                    HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
+                            .setDetails(new BlobListDetails().setRetrieveMetadata(true))
+                            .setPrefix(prefix)
+                            .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null)
+                    .iterableByPage(continuationToken, HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
                 for(BlobItem item : response.getElements()) {
                     if(StringUtils.equals(prefix, item.getName())) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", item));
+                            log.debug("Skip placeholder key {}", item);
                         }
                         hasDirectoryPlaceholder = true;
                         continue;
@@ -96,9 +90,29 @@ public class AzureObjectListService implements ListService {
                         attr = attributes.toAttributes(item.getProperties());
                     }
                     // A directory is designated by a delimiter character.
-                    final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
-                            ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                    final EnumSet<Path.Type> types;
+                    if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                        // Directory in hierarchical namespace is a blob with metadata flag and no delimiter in name
+                        if(Boolean.parseBoolean(item.getMetadata().get(Constants.HeaderConstants.DIRECTORY_METADATA_KEY))) {
+                            types = EnumSet.of(Path.Type.directory);
+                        }
+                        else {
+                            types = EnumSet.of(Path.Type.file);
+                        }
+                    }
+                    else {
+                        if(null != item.isPrefix() && item.isPrefix()) {
+                            types = EnumSet.of(Path.Type.directory, Path.Type.placeholder);
+                        }
+                        else {
+                            types = EnumSet.of(Path.Type.file);
+                        }
+                    }
                     final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
+                    if(child.isDirectory() && children.contains(child)) {
+                        // Directory already listed as common prefix
+                        continue;
+                    }
                     children.add(child);
                 }
                 listener.chunk(directory, children);
@@ -107,11 +121,14 @@ public class AzureObjectListService implements ListService {
                     break;
                 }
             }
-            if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
+            if(!session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                    if(log.isWarnEnabled()) {
+                        log.warn("No placeholder found for directory {}", directory);
+                    }
+                    throw new NotfoundException(directory.getAbsolute());
                 }
-                throw new NotfoundException(directory.getAbsolute());
+                // Empty directories in hierarchical namespace are not listed with a trailing delimiter prefix
             }
             return children;
         }

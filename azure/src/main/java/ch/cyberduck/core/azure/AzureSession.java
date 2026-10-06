@@ -152,22 +152,20 @@ public class AzureSession extends HttpSession<AzureClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authenticator.setCredentials(host.getCredentials());
-        final StorageAccountInfo accountInfo = this.getStorageAccountInfo();
-        final AccountKind kind = accountInfo.getAccountKind();
-        if(log.isInfoEnabled()) {
-            log.info("Connected to account of kind {}", kind);
+        try {
+            final StorageAccountInfo accountInfo = client.getBlobServiceClient().getAccountInfo();
+            storageAccountInfo.set(accountInfo);
+            final AccountKind kind = accountInfo.getAccountKind();
+            if(log.isInfoEnabled()) {
+                log.info("Connected to account of kind {}", kind);
+            }
+        }
+        catch(HttpResponseException e) {
+            throw new AzureExceptionMappingService().map(e);
         }
     }
 
-    public StorageAccountInfo getStorageAccountInfo() throws BackgroundException {
-        if(null == storageAccountInfo.get()) {
-            try {
-                storageAccountInfo.set(client.getBlobServiceClient().getAccountInfo());
-            }
-            catch(HttpResponseException e) {
-                throw new AzureExceptionMappingService().map(e);
-            }
-        }
+    public StorageAccountInfo getStorageAccountInfo() {
         return storageAccountInfo.get();
     }
 
