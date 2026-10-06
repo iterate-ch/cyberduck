@@ -44,7 +44,7 @@ public class AzureContainerListService implements RootListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> containers = new AttributedList<>();
-            for(BlobContainerItem container : session.getClient().listBlobContainers(new ListBlobContainersOptions()
+            for(BlobContainerItem container : session.getClient().getBlobServiceClient().listBlobContainers(new ListBlobContainersOptions()
                     .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))
                     .setDetails(new BlobContainerListDetails().setRetrieveDeleted(false).setRetrieveMetadata(true)), null)) {
                 final PathAttributes attributes = new DefaultPathAttributes();

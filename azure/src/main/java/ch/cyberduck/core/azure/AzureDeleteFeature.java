@@ -51,7 +51,7 @@ public class AzureDeleteFeature implements Delete {
             else {
                 callback.delete(file);
                 try {
-                    session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                             .getBlobClient(containerService.getKey(file)).delete();
                 }
                 catch(HttpResponseException e) {
@@ -69,7 +69,7 @@ public class AzureDeleteFeature implements Delete {
         for(Path file : containers) {
             callback.delete(file);
             try {
-                session.getClient().getBlobContainerClient(containerService.getContainer(file).getName()).delete();
+                session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName()).delete();
             }
             catch(HttpResponseException e) {
                 throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);

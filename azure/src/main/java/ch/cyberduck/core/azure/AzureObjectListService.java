@@ -65,7 +65,7 @@ public class AzureObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
+            final BlobContainerClient containerClient = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(directory).getName());
             String prefix = StringUtils.EMPTY;
             if(!containerService.isContainer(directory)) {
                 prefix = containerService.getKey(directory);

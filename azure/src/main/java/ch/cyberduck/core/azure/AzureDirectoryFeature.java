@@ -15,7 +15,6 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -35,11 +34,8 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Optional;
 
-import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
-import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.file.datalake.DataLakeServiceClient;
-import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
 
 public class AzureDirectoryFeature implements Directory<Void> {
 
@@ -56,22 +52,12 @@ public class AzureDirectoryFeature implements Directory<Void> {
         try {
             if(containerService.isContainer(folder)) {
                 // Container name must be lower case.
-                session.getClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
+                session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
                 return new Path(folder.getParent(), folder.getName(), folder.getType());
             }
             else {
                 if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                    final Credentials credentials = session.getHost().getCredentials();
-                    final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
-                            .endpoint(session.getClient().getAccountUrl())
-                            .pipeline(session.getClient().getHttpPipeline());
-                    if(credentials.isTokenAuthentication()) {
-                        builder.credential(new AzureSasCredential(credentials.getToken()));
-                    }
-                    else {
-                        builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
-                    }
-                    final DataLakeServiceClient client = builder.buildClient();
+                    final DataLakeServiceClient client = session.getClient().getDataLakeServiceClient();
                     client.getFileSystemClient(containerService.getContainer(folder).getName())
                             .createDirectory(StringUtils.removeEnd(containerService.getKey(folder), String.valueOf(Path.DELIMITER)));
                     return new Path(folder.getParent(), folder.getName(), folder.getType());

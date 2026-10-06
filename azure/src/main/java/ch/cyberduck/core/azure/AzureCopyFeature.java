@@ -54,10 +54,10 @@ public class AzureCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(copy).getName())
+            final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(copy).getName())
                     .getBlobClient(containerService.getKey(copy));
             final SyncPoller<BlobCopyInfo, Void> poller = client.beginCopy(
-                    new BlobBeginCopyOptions(session.getClient().getBlobContainerClient(containerService.getContainer(source).getName())
+                    new BlobBeginCopyOptions(session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(source).getName())
                             .getBlobClient(containerService.getKey(source)).getBlobUrl()).setPollInterval(Duration.ofSeconds(1)));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s", copy));

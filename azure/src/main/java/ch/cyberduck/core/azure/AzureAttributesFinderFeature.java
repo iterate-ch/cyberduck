@@ -16,7 +16,6 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.CancellingListProgressListener;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
@@ -38,15 +37,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobContainerProperties;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.file.datalake.DataLakeServiceClient;
-import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
 import com.azure.storage.file.datalake.models.PathItem;
 import com.azure.storage.file.datalake.models.PathProperties;
 
@@ -71,7 +67,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
         try {
             if(containerService.isContainer(file)) {
                 final PathAttributes attributes = new DefaultPathAttributes();
-                final BlobContainerClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName());
+                final BlobContainerClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName());
                 final BlobContainerProperties properties = client.getProperties();
                 attributes.setETag(properties.getETag());
                 attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
@@ -79,17 +75,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
             }
             if(file.isDirectory()) {
                 if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                    final Credentials credentials = session.getHost().getCredentials();
-                    final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
-                            .endpoint(session.getClient().getAccountUrl())
-                            .pipeline(session.getClient().getHttpPipeline());
-                    if(credentials.isTokenAuthentication()) {
-                        builder.credential(new AzureSasCredential(credentials.getToken()));
-                    }
-                    else {
-                        builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
-                    }
-                    final DataLakeServiceClient client = builder.buildClient();
+                    final DataLakeServiceClient client = session.getClient().getDataLakeServiceClient();
                     final PathProperties properties = client
                             .getFileSystemClient(containerService.getContainer(file).getName())
                             .getDirectoryClient(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)))
@@ -99,7 +85,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
             }
             if(file.isFile() || file.isPlaceholder()) {
                 try {
-                    final BlobProperties properties = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    final BlobProperties properties = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                             .getBlobClient(containerService.getKey(file)).getBlockBlobClient().getProperties();
                     return this.toAttributes(properties);
                 }
