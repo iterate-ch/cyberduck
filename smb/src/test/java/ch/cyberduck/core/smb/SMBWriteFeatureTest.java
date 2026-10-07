@@ -33,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -42,6 +43,23 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class SMBWriteFeatureTest extends AbstractSMBTest {
+
+    @Test
+    public void testReleaseShareOnFailure() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final OutputStream out = new SMBWriteFeature(session).write(test, new TransferStatus(), ConnectionCallback.noop);
+        // Disconnect share with open file handle to fail subsequent write requests
+        final SMBSession.DiskShareWrapper share = session.openShare(test);
+        share.get().close();
+        session.releaseShare(share);
+        // Exceed write buffer size to send write request
+        final byte[] content = RandomUtils.nextBytes(4 * 1024 * 1024);
+        final Exception failure = assertThrows(Exception.class, () -> out.write(content));
+        assertShareAvailable(test);
+        assertTrue(failure instanceof IOException);
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
 
     @Test
     public void testWrite() throws Exception {

@@ -90,7 +90,7 @@ public class SMBWriteFeature implements Write<Void> {
         @Override
         protected void afterWrite(final int n) throws IOException {
             try {
-                session.releaseShare(share);
+                this.release();
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
@@ -100,13 +100,57 @@ public class SMBWriteFeature implements Write<Void> {
         @Override
         protected void handleIOException(final IOException e) throws IOException {
             try {
-                session.releaseShare(share);
+                this.release();
             }
             catch(BackgroundException r) {
                 r.addSuppressed(e);
                 throw e;
             }
             throw e;
+        }
+
+        @Override
+        public void write(final int b) throws IOException {
+            try {
+                super.write(b);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+            }
+        }
+
+        @Override
+        public void write(final byte[] b) throws IOException {
+            try {
+                super.write(b);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+            }
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            try {
+                super.write(b, off, len);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+            }
+        }
+
+        /**
+         * Release share obtained in {@link #beforeWrite(int)}. Must be called on failure in delegate as otherwise lock
+         * for share is never released and blocks any other thread.
+         */
+        private void release() throws BackgroundException {
+            if(null == share) {
+                // Not obtained or already released
+                return;
+            }
+            final SMBSession.DiskShareWrapper obtained = share;
+            share = null;
+            session.releaseShare(obtained);
         }
 
         @Override

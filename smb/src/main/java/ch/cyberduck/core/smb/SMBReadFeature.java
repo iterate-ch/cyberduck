@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class SMBReadFeature implements Read {
         @Override
         protected void afterRead(final int n) throws IOException {
             try {
-                session.releaseShare(share);
+                this.release();
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
@@ -105,12 +106,59 @@ public class SMBReadFeature implements Read {
         @Override
         protected void handleIOException(final IOException e) throws IOException {
             try {
-                session.releaseShare(share);
+                this.release();
             }
             catch(BackgroundException ignored) {
                 // Ignore
             }
             throw e;
+        }
+
+        @Override
+        public int read() throws IOException {
+            try {
+                return super.read();
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                return IOUtils.EOF;
+            }
+        }
+
+        @Override
+        public int read(final byte[] b) throws IOException {
+            try {
+                return super.read(b);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                return IOUtils.EOF;
+            }
+        }
+
+        @Override
+        public int read(final byte[] b, final int off, final int len) throws IOException {
+            try {
+                return super.read(b, off, len);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                return IOUtils.EOF;
+            }
+        }
+
+        /**
+         * Release share obtained in {@link #beforeRead(int)}. Must be called on failure in delegate as otherwise lock
+         * for share is never released and blocks any other thread.
+         */
+        private void release() throws BackgroundException {
+            if(null == share) {
+                // Not obtained or already released
+                return;
+            }
+            final SMBSession.DiskShareWrapper obtained = share;
+            share = null;
+            session.releaseShare(obtained);
         }
 
         @Override
