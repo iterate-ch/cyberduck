@@ -111,6 +111,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 .setRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                new ElevatedAuthRequiredResponseInterceptor(host, authorizationService, cancel),
                 new OAuth2ErrorResponseInterceptor(host, authorizationService, cancel)));
         configuration.addInterceptorLast(authorizationService);
         final String locale = this.pinLocalization();
