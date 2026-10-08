@@ -165,7 +165,6 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
 
     private Boolean login(final Host bookmark, final HostPreferences preferences) throws BackgroundException {
         File exported = null;
-        final KerberosDebug debug = log.isDebugEnabled() ? new KerberosDebug() : null;
         final boolean mit = preferences.getBoolean("ssh.authentication.gssapi.mit");
         final Factory.Platform.Name platform = Factory.Platform.getDefault();
         log.debug("Use MIT Kerberos option {} on platform {}", mit, platform);
@@ -199,9 +198,6 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                     log.warn("Failure deleting temporary Kerberos credentials cache {}", exported);
                 }
             }
-            if(debug != null) {
-                debug.close();
-            }
         }
     }
 
@@ -216,7 +212,6 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                     options.put("useTicketCache", "true");
                     options.put("renewTGT", String.valueOf(renew));
                     options.put("doNotPrompt", "true");
-                    options.put("debug", String.valueOf(log.isDebugEnabled()));
                     // Pick up changes to krb5.conf or its location without restarting
                     options.put("refreshKrb5Config", "true");
                     if(StringUtils.isNotBlank(ticketCache)) {
