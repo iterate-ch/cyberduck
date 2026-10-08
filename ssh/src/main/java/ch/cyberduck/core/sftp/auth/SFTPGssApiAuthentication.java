@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp.auth;
 
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -163,6 +164,48 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
     }
 
     private Boolean login(final Host bookmark, final HostPreferences preferences) throws BackgroundException {
+        File exported = null;
+        final KerberosDebug debug = log.isDebugEnabled() ? new KerberosDebug() : null;
+        final boolean mit = preferences.getBoolean("ssh.authentication.gssapi.mit");
+        final Factory.Platform.Name platform = Factory.Platform.getDefault();
+        log.debug("Use MIT Kerberos option {} on platform {}", mit, platform);
+        if(mit && platform.equals(Factory.Platform.Name.windows)) {
+            // Java cannot read the in-memory default cache of MIT Kerberos for Windows. Export to a file cache.
+            final File directory = MitKerberosTicketCache.locate(preferences.getProperty("ssh.authentication.gssapi.mit.path"));
+            if(null == directory) {
+                log.warn("MIT Kerberos for Windows not found");
+            }
+            else {
+                log.debug("Export ticket from MIT Kerberos installed in {}", directory);
+                try {
+                    exported = new MitKerberosTicketCache(directory).export();
+                }
+                catch(IOException e) {
+                    log.warn("Failure exporting ticket from MIT Kerberos: {}", e.getMessage());
+                }
+            }
+        }
+        try {
+            if(exported != null) {
+                // The exported ticket is a fresh copy. Renewing would require contacting the KDC and a failure
+                // to renew discards the ticket.
+                return this.login(bookmark, preferences, exported.getAbsolutePath(), false);
+            }
+            return this.login(bookmark, preferences, preferences.getProperty("ssh.authentication.gssapi.ticketcache"), true);
+        }
+        finally {
+            if(exported != null) {
+                if(!exported.delete()) {
+                    log.warn("Failure deleting temporary Kerberos credentials cache {}", exported);
+                }
+            }
+            if(debug != null) {
+                debug.close();
+            }
+        }
+    }
+
+    private Boolean login(final Host bookmark, final HostPreferences preferences, final String ticketCache, final boolean renew) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         LoginContext loginContext;
         try {
@@ -171,11 +214,11 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                 public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
                     final Map<String, String> options = new HashMap<>();
                     options.put("useTicketCache", "true");
-                    options.put("renewTGT", "true");
+                    options.put("renewTGT", String.valueOf(renew));
                     options.put("doNotPrompt", "true");
+                    options.put("debug", String.valueOf(log.isDebugEnabled()));
                     // Pick up changes to krb5.conf or its location without restarting
                     options.put("refreshKrb5Config", "true");
-                    final String ticketCache = preferences.getProperty("ssh.authentication.gssapi.ticketcache");
                     if(StringUtils.isNotBlank(ticketCache)) {
                         options.put("ticketCache", ticketCache);
                     }
