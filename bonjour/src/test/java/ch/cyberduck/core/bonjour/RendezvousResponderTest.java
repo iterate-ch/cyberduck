@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +48,69 @@ public class RendezvousResponderTest {
             fail(failure[0].getMessage());
         }
         r.quit();
+    }
+
+    @Test
+    public void testServiceLostStopsPendingResolve() throws Exception {
+        final RendezvousResponder r = new RendezvousResponder();
+        final int baseline = resolverThreads();
+        // Service that never resolves
+        final String name = String.format("cyberduck-%s", UUID.randomUUID());
+        r.serviceFound(null, 0, 0, name, "_sftp-ssh._tcp.", "local.");
+        assertEquals(baseline + 1, awaitResolverThreads(baseline + 1));
+        r.serviceLost(null, 0, 0, name, "_sftp-ssh._tcp.", "local.");
+        assertEquals(baseline, awaitResolverThreads(baseline));
+        r.quit();
+    }
+
+    @Test
+    public void testServiceFoundTwiceResolvesOnce() throws Exception {
+        final RendezvousResponder r = new RendezvousResponder();
+        final int baseline = resolverThreads();
+        final String name = String.format("cyberduck-%s", UUID.randomUUID());
+        // Same service reported on multiple interfaces or again after flapping
+        r.serviceFound(null, 0, 0, name, "_sftp-ssh._tcp.", "local.");
+        r.serviceFound(null, 0, 0, name, "_sftp-ssh._tcp.", "local.");
+        // Give a second resolver thread time to show up
+        Thread.sleep(500L);
+        assertEquals(baseline + 1, resolverThreads());
+        r.quit();
+        assertEquals(baseline, awaitResolverThreads(baseline));
+    }
+
+    @Test
+    public void testQuitStopsPendingResolve() throws Exception {
+        final RendezvousResponder r = new RendezvousResponder();
+        final int baseline = resolverThreads();
+        r.serviceFound(null, 0, 0, String.format("cyberduck-%s", UUID.randomUUID()), "_sftp-ssh._tcp.", "local.");
+        assertEquals(baseline + 1, awaitResolverThreads(baseline + 1));
+        r.quit();
+        assertEquals(baseline, awaitResolverThreads(baseline));
+    }
+
+    /**
+     * @return Number of threads polling a DNSSD service operation
+     */
+    private static int resolverThreads() {
+        int count = 0;
+        for(Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+            for(StackTraceElement frame : entry.getValue()) {
+                if("com.apple.dnssd.AppleService".equals(frame.getClassName())) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+
+    private static int awaitResolverThreads(final int expected) throws InterruptedException {
+        int count = resolverThreads();
+        for(int i = 0; i < 20 && count != expected; i++) {
+            Thread.sleep(100L);
+            count = resolverThreads();
+        }
+        return count;
     }
 
     @Test
