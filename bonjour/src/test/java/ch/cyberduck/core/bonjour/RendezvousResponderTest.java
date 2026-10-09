@@ -7,6 +7,7 @@ import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
+import java.net.NetworkInterface;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -79,6 +80,23 @@ public class RendezvousResponderTest {
     }
 
     @Test
+    public void testServiceFoundOnMultipleInterfaces() throws Exception {
+        final RendezvousResponder r = new RendezvousResponder();
+        final int baseline = resolverThreads();
+        final String name = String.format("cyberduck-%s", UUID.randomUUID());
+        final int loopback = NetworkInterface.getByName("lo0").getIndex();
+        // Same service reported on two interfaces is resolved on each
+        r.serviceFound(null, 0, 0, name, "_sftp-ssh._tcp.", "local.");
+        r.serviceFound(null, 0, loopback, name, "_sftp-ssh._tcp.", "local.");
+        assertEquals(baseline + 2, awaitResolverThreads(baseline + 2));
+        // Lost on one interface only stops resolve on this interface
+        r.serviceLost(null, 0, loopback, name, "_sftp-ssh._tcp.", "local.");
+        assertEquals(baseline + 1, awaitResolverThreads(baseline + 1));
+        r.quit();
+        assertEquals(baseline, awaitResolverThreads(baseline));
+    }
+
+    @Test
     public void testQuitStopsPendingResolve() throws Exception {
         final RendezvousResponder r = new RendezvousResponder();
         final int baseline = resolverThreads();
@@ -86,6 +104,17 @@ public class RendezvousResponderTest {
         assertEquals(baseline + 1, awaitResolverThreads(baseline + 1));
         r.quit();
         assertEquals(baseline, awaitResolverThreads(baseline));
+    }
+
+    @Test
+    public void testResolveTimeout() throws Exception {
+        final RendezvousResponder r = new RendezvousResponder(ProtocolFactory.get(), 500L);
+        final int baseline = resolverThreads();
+        r.serviceFound(null, 0, 0, String.format("cyberduck-%s", UUID.randomUUID()), "_sftp-ssh._tcp.", "local.");
+        assertEquals(baseline + 1, awaitResolverThreads(baseline + 1));
+        // No call to serviceLost or quit
+        assertEquals(baseline, awaitResolverThreads(baseline));
+        r.quit();
     }
 
     /**
