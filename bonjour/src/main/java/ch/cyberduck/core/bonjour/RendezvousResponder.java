@@ -98,10 +98,10 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             }
             service.stop();
         }
+        timer.shutdown(false);
         for(Resolver resolver : resolvers.values()) {
             resolver.stop();
         }
-        timer.shutdown(false);
         super.quit();
     }
 
