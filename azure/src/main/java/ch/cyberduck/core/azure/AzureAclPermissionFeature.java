@@ -75,7 +75,7 @@ public class AzureAclPermissionFeature implements AclPermission {
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final BlobContainerClient client = session.getClient()
+                final BlobContainerClient client = session.getClient().getBlobServiceClient()
                         .getBlobContainerClient(containerService.getContainer(file).getName());
                 final BlobContainerAccessPolicies accessPolicy = client.getAccessPolicy();
                 final Acl acl = new Acl();
@@ -98,7 +98,7 @@ public class AzureAclPermissionFeature implements AclPermission {
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final BlobContainerClient client = session.getClient()
+                final BlobContainerClient client = session.getClient().getBlobServiceClient()
                         .getBlobContainerClient(containerService.getContainer(file).getName());
                 if(status.getAcl().asList().isEmpty()) {
                     client.setAccessPolicy(null, Collections.emptyList());

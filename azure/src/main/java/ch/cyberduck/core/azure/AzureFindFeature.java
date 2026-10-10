@@ -47,7 +47,7 @@ public class AzureFindFeature implements Find {
         try {
             final boolean found;
             if(containerService.isContainer(file)) {
-                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName()).exists();
+                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName()).exists();
             }
             attributes.find(file, listener);
             return true;

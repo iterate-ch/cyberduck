@@ -60,6 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.HttpHeaderName;
+import com.azure.core.http.HttpPipeline;
 import com.azure.core.http.HttpPipelineBuilder;
 import com.azure.core.http.HttpPipelineCallContext;
 import com.azure.core.http.HttpPipelineNextPolicy;
@@ -72,7 +73,6 @@ import com.azure.core.http.policy.BearerTokenAuthenticationPolicy;
 import com.azure.core.http.policy.HttpPipelinePolicy;
 import com.azure.core.http.policy.RequestIdPolicy;
 import com.azure.core.http.policy.UserAgentPolicy;
-import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.AccountKind;
 import com.azure.storage.blob.models.StorageAccountInfo;
@@ -83,9 +83,10 @@ import com.azure.storage.common.policy.RequestRetryOptions;
 import com.azure.storage.common.policy.RequestRetryPolicy;
 import com.azure.storage.common.policy.ResponseValidationPolicyBuilder;
 import com.azure.storage.common.policy.StorageSharedKeyCredentialPolicy;
+import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
 import reactor.core.publisher.Mono;
 
-public class AzureSession extends HttpSession<BlobServiceClient> {
+public class AzureSession extends HttpSession<AzureClient> {
     private static final Logger log = LogManager.getLogger(AzureSession.class);
 
     private final CredentialsHttpPipelinePolicy authenticator
@@ -103,30 +104,31 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     }
 
     @Override
-    protected BlobServiceClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected AzureClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
-        return new BlobServiceClientBuilder()
-                .endpoint(new HostUrlProvider().withUsername(false).get(host))
-                .pipeline(new HttpPipelineBuilder()
-                        .httpClient(new ApacheHttpClient(pool))
-                        .policies(
-                                new EmptyAuthenticationPolicy(),
-                                new UserAgentPolicy(new PreferencesUseragentProvider().get()),
-                                new RequestIdPolicy(),
-                                new RequestRetryPolicy(new RequestRetryOptions()),
-                                new AddDatePolicy(),
-                                new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
-                                        Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
-                                ),
-                                new MetadataValidationPolicy(),
-                                authenticator,
-                                new ResponseValidationPolicyBuilder()
-                                        .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.CLIENT_REQUEST_ID))
-                                        .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256))
-                                        .build()
-                        )
-                        .build())
-                .buildClient();
+        final String endpoint = new HostUrlProvider().withUsername(false).get(host);
+        final HttpPipeline pipeline = new HttpPipelineBuilder()
+                .httpClient(new ApacheHttpClient(pool))
+                .policies(
+                        new EmptyAuthenticationPolicy(),
+                        new UserAgentPolicy(new PreferencesUseragentProvider().get()),
+                        new RequestIdPolicy(),
+                        new RequestRetryPolicy(new RequestRetryOptions()),
+                        new AddDatePolicy(),
+                        new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
+                                Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+                        ),
+                        new MetadataValidationPolicy(),
+                        authenticator,
+                        new ResponseValidationPolicyBuilder()
+                                .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.CLIENT_REQUEST_ID))
+                                .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256))
+                                .build()
+                )
+                .build();
+        return new AzureClient(
+                new BlobServiceClientBuilder().endpoint(endpoint).pipeline(pipeline).buildClient(),
+                new DataLakeServiceClientBuilder().endpoint(endpoint).pipeline(pipeline).buildClient());
     }
 
     private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
@@ -150,22 +152,20 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authenticator.setCredentials(host.getCredentials());
-        final StorageAccountInfo accountInfo = this.getStorageAccountInfo();
-        final AccountKind kind = accountInfo.getAccountKind();
-        if(log.isInfoEnabled()) {
-            log.info("Connected to account of kind {}", kind);
+        try {
+            final StorageAccountInfo accountInfo = client.getBlobServiceClient().getAccountInfo();
+            storageAccountInfo.set(accountInfo);
+            final AccountKind kind = accountInfo.getAccountKind();
+            if(log.isInfoEnabled()) {
+                log.info("Connected to account of kind {}", kind);
+            }
+        }
+        catch(HttpResponseException e) {
+            throw new AzureExceptionMappingService().map(e);
         }
     }
 
-    public StorageAccountInfo getStorageAccountInfo() throws BackgroundException {
-        if(null == storageAccountInfo.get()) {
-            try {
-                storageAccountInfo.set(client.getAccountInfo());
-            }
-            catch(HttpResponseException e) {
-                throw new AzureExceptionMappingService().map(e);
-            }
-        }
+    public StorageAccountInfo getStorageAccountInfo() {
         return storageAccountInfo.get();
     }
 

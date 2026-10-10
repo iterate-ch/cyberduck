@@ -52,11 +52,11 @@ public class AzureReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.isAppend()) {
-                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file)).openInputStream(new BlobRange(status.getOffset()), new BlobRequestConditions());
             }
             else {
-                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file)).openInputStream();
             }
         }

@@ -54,17 +54,26 @@ public class AzureCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(copy).getName())
-                    .getBlobClient(containerService.getKey(copy));
-            final SyncPoller<BlobCopyInfo, Void> poller = client.beginCopy(
-                    new BlobBeginCopyOptions(session.getClient().getBlobContainerClient(containerService.getContainer(source).getName())
-                            .getBlobClient(containerService.getKey(source)).getBlobUrl()).setPollInterval(Duration.ofSeconds(1)));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Started copy for %s", copy));
+            if(source.isDirectory() && session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                // Directory is no blob in hierarchical namespace. Children are copied individually.
+                if(!status.isExists()) {
+                    return new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), copy, status);
+                }
+                return copy;
             }
-            poller.waitForCompletion();
-            listener.sent(status.getLength());
-            return new Path(copy).withAttributes(PathAttributes.EMPTY);
+            else {
+                final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(copy).getName())
+                        .getBlobClient(containerService.getKey(copy));
+                final SyncPoller<BlobCopyInfo, Void> poller = client.beginCopy(
+                        new BlobBeginCopyOptions(session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(source).getName())
+                                .getBlobClient(containerService.getKey(source)).getBlobUrl()).setPollInterval(Duration.ofSeconds(1)));
+                if(log.isDebugEnabled()) {
+                    log.debug("Started copy for {}", copy);
+                }
+                poller.waitForCompletion();
+                listener.sent(status.getLength());
+                return new Path(copy).withAttributes(PathAttributes.EMPTY);
+            }
         }
         catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

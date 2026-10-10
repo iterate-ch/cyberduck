@@ -33,9 +33,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import com.azure.core.http.rest.Response;
-import com.azure.storage.blob.models.AppendBlobItem;
-
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -50,14 +47,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.azure.core.exception.HttpResponseException;
+import com.azure.core.http.rest.Response;
 import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.models.AppendBlobItem;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.BlobType;
 import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.AppendBlobCreateOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.AppendBlobClient;
-import com.azure.storage.blob.specialized.BlobOutputStream;
 import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.azure.storage.common.implementation.Constants;
 
@@ -90,7 +88,7 @@ public class AzureWriteFeature implements Write<Void> {
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+            final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                     .getBlobClient(containerService.getKey(file));
             final BlobHttpHeaders headers = new BlobHttpHeaders();
             if(StringUtils.isNotBlank(status.getMime())) {
@@ -125,7 +123,7 @@ public class AzureWriteFeature implements Write<Void> {
             final OutputStream out;
             if(status.isExists()) {
                 if(preferences.getBoolean("azure.upload.snapshot")) {
-                    session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                             .getBlobClient(containerService.getKey(file)).createSnapshot();
                 }
                 if(status.isAppend()) {
