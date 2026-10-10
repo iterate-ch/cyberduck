@@ -23,9 +23,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -110,8 +110,15 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                     StringUtils.isNotBlank(kdc) ?
                             String.format("[realms]\n    %s = {\n        kdc = %s\n    }\n", defaultRealm, kdc) :
                             "    dns_lookup_kdc = true\n");
-            try(final OutputStream out = temporary.getOutputStream(false)) {
-                IOUtils.write(content, out, StandardCharsets.UTF_8);
+            try {
+                // Close before use to make sure the content is flushed and any failure writing is detected
+                try(final OutputStream out = temporary.getOutputStream(false)) {
+                    IOUtils.write(content, out, StandardCharsets.UTF_8);
+                }
+                catch(IOException | LocalAccessDeniedException e) {
+                    log.warn("Failed to write temporary Kerberos configuration for realm {}: {}", defaultRealm, e.getMessage());
+                    return this.login(this.configure(bookmark));
+                }
                 log.debug("Use Kerberos default realm {} from temporary configuration {}", defaultRealm, temporary);
                 System.setProperty("java.security.krb5.conf", temporary.getAbsolute());
                 // Would override configuration file
@@ -120,17 +127,15 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
                 return this.login(bookmark);
             }
             finally {
-                try {
-                    temporary.delete();
-                }
-                catch(LocalNotfoundException | LocalAccessDeniedException e) {
-                    log.warn("Failure deleting temporary Kerberos configuration {}", temporary);
+                if(temporary.exists()) {
+                    try {
+                        temporary.delete();
+                    }
+                    catch(AccessDeniedException e) {
+                        log.warn("Failure deleting temporary Kerberos configuration {}: {}", temporary, e.getMessage());
+                    }
                 }
             }
-        }
-        catch(IOException | LocalAccessDeniedException e) {
-            log.warn("Failed to write temporary Kerberos configuration for realm {}: {}", defaultRealm, e.getMessage());
-            return this.login(this.configure(bookmark));
         }
         finally {
             saved.forEach((key, value) -> {
