@@ -28,6 +28,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
@@ -161,19 +162,29 @@ public final class MitKerberosTicketCache {
         final Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
         try {
             process.getOutputStream().close();
-            final String output;
-            try(InputStream in = process.getInputStream()) {
-                final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                final byte[] chunk = new byte[1024];
-                int read;
-                while((read = in.read(chunk)) != -1) {
-                    buffer.write(chunk, 0, read);
+            // Drain output concurrently so the timeout applies even if the process hangs without closing its output
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            final Thread reader = new Thread(() -> {
+                try(InputStream in = process.getInputStream()) {
+                    final byte[] chunk = new byte[1024];
+                    int read;
+                    while((read = in.read(chunk)) != -1) {
+                        buffer.write(chunk, 0, read);
+                    }
                 }
-                output = buffer.toString(StandardCharsets.UTF_8.name());
-            }
+                catch(IOException e) {
+                    log.warn("Failure reading output of {}: {}", executable, e.getMessage());
+                }
+            }, String.format("%s-output", executable));
+            reader.setDaemon(true);
+            reader.start();
             if(!process.waitFor(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                process.destroyForcibly();
                 throw new IOException(String.format("Timeout running %s", executable));
             }
+            reader.join(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+            // Console output uses the native code page
+            final String output = buffer.toString(Charset.defaultCharset().name());
             if(process.exitValue() != 0) {
                 throw new IOException(String.format("Failure running %s with exit code %d: %s",
                         executable, process.exitValue(), output.trim()));
@@ -185,7 +196,7 @@ public final class MitKerberosTicketCache {
             throw new IOException(String.format("Interrupted running %s", executable), e);
         }
         finally {
-            process.destroy();
+            process.destroyForcibly();
         }
     }
 }
