@@ -96,20 +96,26 @@ public class SMBReadFeature implements Read {
         @Override
         protected void afterRead(final int n) throws IOException {
             try {
-                this.release();
+                session.releaseShare(share);
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
+            }
+            finally {
+                share = null;
             }
         }
 
         @Override
         protected void handleIOException(final IOException e) throws IOException {
             try {
-                this.release();
+                session.releaseShare(share);
             }
             catch(BackgroundException ignored) {
                 // Ignore
+            }
+            finally {
+                share = null;
             }
             throw e;
         }
@@ -145,20 +151,6 @@ public class SMBReadFeature implements Read {
                 handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
                 return IOUtils.EOF;
             }
-        }
-
-        /**
-         * Release share obtained in {@link #beforeRead(int)}. Must be called on failure in delegate as otherwise lock
-         * for share is never released and blocks any other thread.
-         */
-        private void release() throws BackgroundException {
-            if(null == share) {
-                // Not obtained or already released
-                return;
-            }
-            final SMBSession.DiskShareWrapper obtained = share;
-            share = null;
-            session.releaseShare(obtained);
         }
 
         @Override

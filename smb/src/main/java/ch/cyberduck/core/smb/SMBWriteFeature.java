@@ -90,21 +90,27 @@ public class SMBWriteFeature implements Write<Void> {
         @Override
         protected void afterWrite(final int n) throws IOException {
             try {
-                this.release();
+                session.releaseShare(share);
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
+            }
+            finally {
+                share = null;
             }
         }
 
         @Override
         protected void handleIOException(final IOException e) throws IOException {
             try {
-                this.release();
+                session.releaseShare(share);
             }
             catch(BackgroundException r) {
                 r.addSuppressed(e);
                 throw e;
+            }
+            finally {
+                share = null;
             }
             throw e;
         }
@@ -137,20 +143,6 @@ public class SMBWriteFeature implements Write<Void> {
             catch(SMBRuntimeException e) {
                 handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
             }
-        }
-
-        /**
-         * Release share obtained in {@link #beforeWrite(int)}. Must be called on failure in delegate as otherwise lock
-         * for share is never released and blocks any other thread.
-         */
-        private void release() throws BackgroundException {
-            if(null == share) {
-                // Not obtained or already released
-                return;
-            }
-            final SMBSession.DiskShareWrapper obtained = share;
-            share = null;
-            session.releaseShare(obtained);
         }
 
         @Override
