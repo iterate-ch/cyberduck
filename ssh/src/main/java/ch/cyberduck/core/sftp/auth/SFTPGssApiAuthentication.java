@@ -88,15 +88,13 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
     }
 
     @Override
-    public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-            throws BackgroundException {
+    public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         log.debug("Login using GSS-API/Kerberos authentication with credentials {}", credentials);
         final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         final String defaultRealm = StringUtils.trim(preferences.getProperty(KERBEROS_REALM_PROPERTY));
         if(StringUtils.isBlank(defaultRealm)) {
-            this.configure(bookmark);
-            return this.login(bookmark);
+            return this.login(this.configure(bookmark));
         }
         // Default realm configured for this bookmark only. Only a configuration file allows setting the default
         // realm without also specifying the KDC. Restore JVM-wide settings afterward.
@@ -132,8 +130,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         }
         catch(IOException | LocalAccessDeniedException e) {
             log.warn("Failed to write temporary Kerberos configuration for realm {}: {}", defaultRealm, e.getMessage());
-            this.configure(bookmark);
-            return this.login(bookmark);
+            return this.login(this.configure(bookmark));
         }
         finally {
             saved.forEach((key, value) -> {
@@ -150,7 +147,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
     /**
      * Apply JVM wide settings read by Krb5LoginModule with refreshKrb5Config
      */
-    private void configure(final Host bookmark) {
+    private Host configure(final Host bookmark) {
         final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         final String conf = preferences.getProperty("java.security.krb5.conf");
         if(StringUtils.isNotBlank(conf)) {
@@ -168,8 +165,20 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         else if(StringUtils.isNotBlank(realm) || StringUtils.isNotBlank(kdc)) {
             log.warn("Ignore Kerberos realm {} and KDC {} not both set", realm, kdc);
         }
+        return bookmark;
     }
 
+    /**
+     * Attempts to authenticate to a remote host using GSS-API with Kerberos. This method
+     * interacts with the operating system and Kerberos libraries to establish a security
+     * context using the Kerberos protocol.
+     *
+     * @param bookmark The host configuration object including connection details such as
+     *                 the target server, user credentials, and preferences.
+     * @return True if the authentication succeeds, false otherwise.
+     * @throws BackgroundException If an error occurs during the authentication process
+     *                             or Kerberos ticket handling.
+     */
     private Boolean login(final Host bookmark) throws BackgroundException {
         final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         switch(Factory.Platform.getDefault()) {
@@ -205,6 +214,17 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         return this.login(bookmark, preferences.getProperty("ssh.authentication.gssapi.ticketcache"), true);
     }
 
+    /**
+     * Attempts to authenticate to a remote host using GSS-API with Kerberos. This method establishes
+     * a security context utilizing Kerberos credentials from a provided ticket cache or credentials
+     * configuration.
+     *
+     * @param bookmark    The host configuration containing connection details and user credentials.
+     * @param ticketCache The file path to the Kerberos ticket cache. If empty, the default cache will be used.
+     * @param renew       A flag indicating whether to attempt renewal of Kerberos tickets from the cache.
+     * @return True if the authentication succeeds, false otherwise.
+     * @throws BackgroundException If authentication fails or an error occurs during the process.
+     */
     private Boolean login(final Host bookmark, final String ticketCache, final boolean renew) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         LoginContext loginContext;
