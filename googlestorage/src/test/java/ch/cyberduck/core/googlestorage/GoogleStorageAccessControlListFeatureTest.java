@@ -38,6 +38,13 @@ import static org.junit.Assert.*;
 public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
+    public void testBucketDefault() throws Exception {
+        final Path container = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
+        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+    }
+
+    @Test
     public void testWrite() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

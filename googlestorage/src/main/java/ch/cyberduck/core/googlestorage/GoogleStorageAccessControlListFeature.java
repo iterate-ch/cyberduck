@@ -68,6 +68,9 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
+        }
         final Path bucket = containerService.getContainer(file);
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());

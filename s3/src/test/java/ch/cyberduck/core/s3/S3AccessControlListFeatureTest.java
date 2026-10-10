@@ -49,11 +49,18 @@ import static org.junit.Assert.*;
 public class S3AccessControlListFeatureTest extends AbstractS3Test {
 
     @Test
+    public void testBucketDefault() throws Exception {
+        final Path container = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+    }
+
+    @Test
     public void testReadBucketDisabledAcl() throws Exception {
         final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotEquals(Acl.EMPTY, f.getPermission(container));
-        assertEquals(Acl.EMPTY, f.getDefault(container));
+        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
     }
 
     @Test

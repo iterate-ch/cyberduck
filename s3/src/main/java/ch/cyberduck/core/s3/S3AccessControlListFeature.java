@@ -100,6 +100,9 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
+        }
         final Path bucket = containerService.getContainer(file);
         if(cache.contains(bucket)) {
             return cache.get(bucket);
