@@ -2,6 +2,7 @@
 
 [9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
 * [Feature] Upgrade runtime (macOS) ([#17509](https://trac.cyberduck.io/ticket/17509))
+* [Feature] Support public key authentication with FIDO/U2F security key including Touch ID (SFTP) ([#14732](https://trac.cyberduck.io/ticket/14732))
 * [Bugfix] Switch default type for uploads to block blob (Azure) ([#18386](https://trac.cyberduck.io/ticket/18386))
 * [Bugfix] Application hangs with large selection of files in browser ([#18438](https://trac.cyberduck.io/ticket/18438))
 * [Bugfix] Overwriting files appends to existing file (SFTP) ([#18335](https://trac.cyberduck.io/ticket/18335))
