@@ -212,13 +212,12 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testRoles() {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
-        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().anyMatch(user -> user instanceof Acl.CanonicalUser));
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().anyMatch(user -> user instanceof Acl.EmailUser));
     }
 
     @Test
     public void testCannedLists() {
-        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertSame(Acl.CANNED_PRIVATE, S3AccessControlListFeature.toAcl(AccessControlList.REST_CANNED_PRIVATE));
         assertSame(Acl.CANNED_PUBLIC_READ, S3AccessControlListFeature.toAcl(AccessControlList.REST_CANNED_PUBLIC_READ));
         assertSame(Acl.CANNED_PUBLIC_READ_WRITE, S3AccessControlListFeature.toAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE));
@@ -226,23 +225,23 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         assertSame(Acl.CANNED_BUCKET_OWNER_FULLCONTROL, S3AccessControlListFeature.toAcl(AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL));
         assertSame(Acl.CANNED_BUCKET_OWNER_READ, S3AccessControlListFeature.toAcl(AccessControlList.REST_CANNED_BUCKET_OWNER_READ));
 
-        assertSame(AccessControlList.REST_CANNED_PRIVATE, S3AccessControlListFeature.toAcl(Acl.CANNED_PRIVATE));
-        assertEquals(Acl.CANNED_PRIVATE.getCannedString(), S3AccessControlListFeature.toAcl(Acl.CANNED_PRIVATE).getValueForRESTHeaderACL());
+        assertSame(AccessControlList.REST_CANNED_PRIVATE, S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_PRIVATE));
+        assertEquals(Acl.CANNED_PRIVATE.getCannedString(), S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_PRIVATE).getValueForRESTHeaderACL());
 
-        assertSame(AccessControlList.REST_CANNED_PUBLIC_READ, S3AccessControlListFeature.toAcl(Acl.CANNED_PUBLIC_READ));
-        assertEquals(Acl.CANNED_PUBLIC_READ.getCannedString(), S3AccessControlListFeature.toAcl(Acl.CANNED_PUBLIC_READ).getValueForRESTHeaderACL());
+        assertSame(AccessControlList.REST_CANNED_PUBLIC_READ, S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_PUBLIC_READ));
+        assertEquals(Acl.CANNED_PUBLIC_READ.getCannedString(), S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_PUBLIC_READ).getValueForRESTHeaderACL());
 
-        assertSame(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE, S3AccessControlListFeature.toAcl(Acl.CANNED_PUBLIC_READ_WRITE));
-        assertEquals(Acl.CANNED_PUBLIC_READ_WRITE.getCannedString(), S3AccessControlListFeature.toAcl(Acl.CANNED_PUBLIC_READ_WRITE).getValueForRESTHeaderACL());
+        assertSame(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE, S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_PUBLIC_READ_WRITE));
+        assertEquals(Acl.CANNED_PUBLIC_READ_WRITE.getCannedString(), S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_PUBLIC_READ_WRITE).getValueForRESTHeaderACL());
 
-        assertSame(AccessControlList.REST_CANNED_AUTHENTICATED_READ, S3AccessControlListFeature.toAcl(Acl.CANNED_AUTHENTICATED_READ));
-        assertEquals(Acl.CANNED_AUTHENTICATED_READ.getCannedString(), S3AccessControlListFeature.toAcl(Acl.CANNED_AUTHENTICATED_READ).getValueForRESTHeaderACL());
+        assertSame(AccessControlList.REST_CANNED_AUTHENTICATED_READ, S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_AUTHENTICATED_READ));
+        assertEquals(Acl.CANNED_AUTHENTICATED_READ.getCannedString(), S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_AUTHENTICATED_READ).getValueForRESTHeaderACL());
 
-        assertSame(AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL, S3AccessControlListFeature.toAcl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL));
-        assertEquals(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.getCannedString(), S3AccessControlListFeature.toAcl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL).getValueForRESTHeaderACL());
+        assertSame(AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL, S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_BUCKET_OWNER_FULLCONTROL));
+        assertEquals(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.getCannedString(), S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_BUCKET_OWNER_FULLCONTROL).getValueForRESTHeaderACL());
 
-        assertSame(AccessControlList.REST_CANNED_BUCKET_OWNER_READ, S3AccessControlListFeature.toAcl(Acl.CANNED_BUCKET_OWNER_READ));
-        assertEquals(Acl.CANNED_BUCKET_OWNER_READ.getCannedString(), S3AccessControlListFeature.toAcl(Acl.CANNED_BUCKET_OWNER_READ).getValueForRESTHeaderACL());
+        assertSame(AccessControlList.REST_CANNED_BUCKET_OWNER_READ, S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_BUCKET_OWNER_READ));
+        assertEquals(Acl.CANNED_BUCKET_OWNER_READ.getCannedString(), S3AccessControlListFeature.toObjectAccessControlList(Acl.CANNED_BUCKET_OWNER_READ).getValueForRESTHeaderACL());
     }
 
     @Test
@@ -255,8 +254,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
 
     @Test
     public void testInvalidOwner() {
-        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        assertNull(S3AccessControlListFeature.toAcl(Acl.EMPTY));
-        assertNull(S3AccessControlListFeature.toAcl(new Acl(new Acl.UserAndRole(new Acl.Owner(""), new Acl.Role(Acl.Role.FULL)))));
+        assertNull(S3AccessControlListFeature.toObjectAccessControlList(Acl.EMPTY));
+        assertNull(S3AccessControlListFeature.toObjectAccessControlList(new Acl(new Acl.UserAndRole(new Acl.Owner(""), new Acl.Role(Acl.Role.FULL)))));
     }
 }

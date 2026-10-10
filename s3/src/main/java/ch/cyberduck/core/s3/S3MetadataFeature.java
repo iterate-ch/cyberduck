@@ -82,7 +82,7 @@ public class S3MetadataFeature implements Headers {
                 // Apply non-standard ACL
                 final Acl list = acl.getPermission(file);
                 if(list.isEditable()) {
-                    target.setAcl(S3AccessControlListFeature.toAcl(list));
+                    target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(list));
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {

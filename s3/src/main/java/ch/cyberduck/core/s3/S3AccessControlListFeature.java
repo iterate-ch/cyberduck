@@ -161,7 +161,7 @@ public class S3AccessControlListFeature implements AclPermission {
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             // Read owner from bucket
-            final AccessControlList list = toAcl(status.getAcl());
+            final AccessControlList list = toObjectAccessControlList(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
@@ -182,24 +182,32 @@ public class S3AccessControlListFeature implements AclPermission {
         }
     }
 
+    protected static AccessControlList toBucketAccessControlList(final Acl acl) {
+        return toAccessControlList(acl);
+    }
+
+    protected static AccessControlList toObjectAccessControlList(final Acl acl) {
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
+        }
+        return toAccessControlList(acl);
+    }
+
     /**
      * Convert ACL for writing to service.
      *
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected static AccessControlList toAcl(final Acl acl) {
+    protected static AccessControlList toAccessControlList(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }
         if(Acl.CANNED_PRIVATE.equals(acl)) {
             return AccessControlList.REST_CANNED_PRIVATE;
-        }
-        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
-            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
-        }
-        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
-            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
         }
         if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
             return AccessControlList.REST_CANNED_AUTHENTICATED_READ;

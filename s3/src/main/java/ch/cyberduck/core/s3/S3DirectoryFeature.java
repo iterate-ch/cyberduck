@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -66,13 +67,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
                 }
             }
-            AccessControlList acl;
-            if(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default").equals("public-read")) {
-                acl = AccessControlList.REST_CANNED_PUBLIC_READ;
-            }
-            else {
-                acl = AccessControlList.REST_CANNED_PRIVATE;
-            }
+            final AccessControlList acl = S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
             try {
                 if(StringUtils.isNotBlank(region)) {
                     if(S3Session.isAwsHostname(session.getHost().getHostname())) {
@@ -86,6 +81,8 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                 // Create bucket
                 session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(folder).getName()),
                         S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl);
+                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+                status.setAcl(Acl.EMPTY);
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, folder);
