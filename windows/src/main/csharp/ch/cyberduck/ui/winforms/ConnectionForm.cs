@@ -88,6 +88,40 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public string KerberosRealm
+        {
+            get { return string.Empty; }
+            set
+            {
+                ;
+            }
+        }
+
+        public bool KerberosRealmFieldEnabled
+        {
+            set
+            {
+                ;
+            }
+        }
+
+        public bool UseMitKerberos
+        {
+            get { return false; }
+            set
+            {
+                ;
+            }
+        }
+
+        public bool UseMitKerberosFieldEnabled
+        {
+            set
+            {
+                ;
+            }
+        }
+
         public bool TimezoneFieldEnabled
         {
             set
@@ -401,6 +435,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedConnectModeEvent = delegate { };
         public event VoidHandler ChangedTransferEvent = delegate { };
         public event VoidHandler ChangedWebURLEvent = delegate { };
+        public event VoidHandler ChangedKerberosRealmEvent = delegate { };
+        public event VoidHandler ChangedUseMitKerberosEvent = delegate { };
         public event VoidHandler ChangedCommentEvent = delegate { };
         public event VoidHandler ChangedBrowserDownloadPathEvent = delegate { };
         public event VoidHandler ChangedProtocolEvent = delegate { };

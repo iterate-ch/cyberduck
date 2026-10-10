@@ -40,6 +40,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.sftp.auth.SFTPGssApiAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -59,8 +60,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
@@ -131,6 +134,8 @@ public abstract class BookmarkController extends SheetController implements NSTa
     private NSTextField webURLField;
     @Outlet
     private NSButton webUrlImage;
+    @Outlet
+    private NSTextField kerberosRealmField;
 
     public BookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
         this.bookmark = bookmark;
@@ -759,6 +764,33 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Action
     public void webURLInputDidChange(final NSNotification sender) {
         bookmark.setWebURL(webURLField.stringValue());
+        this.update();
+    }
+
+    @Outlet
+    public void setKerberosRealmField(final NSTextField field) {
+        this.kerberosRealmField = field;
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("kerberosRealmInputDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                field.id());
+        this.addObserver(bookmark -> {
+            kerberosRealmField.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp);
+            updateField(kerberosRealmField, StringUtils.defaultString(bookmark.getCustom().get(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY)));
+        });
+    }
+
+    @Action
+    public void kerberosRealmInputDidChange(final NSNotification sender) {
+        final Map<String, String> custom = new HashMap<>(bookmark.getCustom());
+        final String realm = StringUtils.trim(kerberosRealmField.stringValue());
+        if(StringUtils.isBlank(realm)) {
+            custom.remove(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY);
+        }
+        else {
+            custom.put(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY, realm);
+        }
+        bookmark.setCustom(custom);
         this.update();
     }
 

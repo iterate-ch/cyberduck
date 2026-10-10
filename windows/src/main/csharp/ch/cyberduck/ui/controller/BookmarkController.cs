@@ -22,6 +22,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.sftp.auth;
 using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
@@ -56,6 +57,14 @@ namespace Ch.Cyberduck.Ui.Controller
         protected readonly Host _host;
         protected readonly LoginOptions _options;
         protected readonly LoginInputValidator _validator;
+        /// <summary>
+        /// Bookmark specific default realm for GSS-API authentication
+        /// </summary>
+        private const string KerberosRealmProperty = SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY;
+        /// <summary>
+        /// Bookmark specific option to read the Kerberos ticket from MIT Kerberos for Windows
+        /// </summary>
+        private const string UseMitKerberosProperty = "ssh.authentication.gssapi.mit";
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = LogManager.getLogger(typeof(BookmarkController<>).FullName);
@@ -127,6 +136,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
             View.ChangedNicknameEvent += View_ChangedNicknameEvent;
             View.ChangedWebURLEvent += View_ChangedWebURLEvent;
+            View.ChangedKerberosRealmEvent += View_ChangedKerberosRealmEvent;
+            View.ChangedUseMitKerberosEvent += View_ChangedUseMitKerberosEvent;
             View.ChangedCommentEvent += View_ChangedCommentEvent;
             View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
             View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
@@ -313,6 +324,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.WebUrlButtonToolTip = new DefaultWebUrlProvider().toUrl(_host).getUrl();
             View.WebURL = _host.getWebURL();
+            View.KerberosRealmFieldEnabled = _host.getProtocol().isKerberosConfigurable();
+            View.KerberosRealm = (string)_host.getCustom().get(KerberosRealmProperty) ?? string.Empty;
+            View.UseMitKerberosFieldEnabled = _host.getProtocol().isKerberosConfigurable();
+            View.UseMitKerberos = bool.TrueString.Equals((string)_host.getCustom().get(UseMitKerberosProperty),
+                StringComparison.OrdinalIgnoreCase);
             View.Notes = _host.getComment();
             View.TimezoneFieldEnabled = !_host.getProtocol().isUTCTimezone();
             if (null == _host.getTimezone())
@@ -655,6 +671,37 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _host.setWebURL(View.WebURL);
             UpdateFavicon();
+            ItemChanged();
+        }
+
+        private void View_ChangedKerberosRealmEvent()
+        {
+            java.util.HashMap custom = new java.util.HashMap(_host.getCustom());
+            string realm = View.KerberosRealm?.Trim();
+            if (string.IsNullOrEmpty(realm))
+            {
+                custom.remove(KerberosRealmProperty);
+            }
+            else
+            {
+                custom.put(KerberosRealmProperty, realm);
+            }
+            _host.setCustom(custom);
+            ItemChanged();
+        }
+
+        private void View_ChangedUseMitKerberosEvent()
+        {
+            java.util.HashMap custom = new java.util.HashMap(_host.getCustom());
+            if (View.UseMitKerberos)
+            {
+                custom.put(UseMitKerberosProperty, bool.TrueString.ToLowerInvariant());
+            }
+            else
+            {
+                custom.remove(UseMitKerberosProperty);
+            }
+            _host.setCustom(custom);
             ItemChanged();
         }
 

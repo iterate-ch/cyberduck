@@ -75,6 +75,11 @@ public class SFTPProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isKerberosConfigurable() {
+        return true;
+    }
+
+    @Override
     public boolean isEncodingConfigurable() {
         return true;
     }
