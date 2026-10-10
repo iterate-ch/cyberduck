@@ -27,9 +27,14 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
+
+import com.google.api.services.storage.model.BucketAccessControl;
+import com.google.api.services.storage.model.ObjectAccessControl;
 
 import static org.junit.Assert.*;
 
@@ -64,7 +69,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
-        assertTrue(acl.asList().stream().filter(user -> user.getUser().getIdentifier().equals("cloud-storage-analytics@google.com")).findAny().isPresent());
+        assertTrue(acl.asList().stream().anyMatch(user -> user.getUser().getIdentifier().equals("cloud-storage-analytics@google.com")));
         assertFalse(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
     }
 
@@ -74,7 +79,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
         assertEquals(Acl.EMPTY, acl);
-        assertEquals(Acl.EMPTY, f.getDefault(container));
+        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
         final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(new Path(container,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(Acl.EMPTY, f.getPermission(test));
@@ -127,5 +132,62 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         assertTrue(users.stream().anyMatch(user -> user instanceof Acl.EmailUser));
         assertTrue(users.stream().anyMatch(user -> user instanceof Acl.EmailGroupUser));
         assertTrue(users.stream().anyMatch(user -> user instanceof Acl.DomainUser));
+    }
+
+    @Test
+    public void testDefault() {
+        assertEquals(Collections.emptyList(), GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.toAcl("private")));
+    }
+
+    @Test
+    public void testToBucketAccessControlCanned() {
+        assertTrue(GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.CANNED_PRIVATE).isEmpty());
+        assertTrue(GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.CANNED_BUCKET_OWNER_READ).isEmpty());
+        assertTrue(GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL).isEmpty());
+        final List<BucketAccessControl> publicRead = GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.CANNED_PUBLIC_READ);
+        assertEquals(1, publicRead.size());
+        assertEquals("allUsers", publicRead.get(0).getEntity());
+        assertEquals("READER", publicRead.get(0).getRole());
+        final List<BucketAccessControl> publicReadWrite = GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.CANNED_PUBLIC_READ_WRITE);
+        assertEquals(2, publicReadWrite.size());
+        assertEquals("allUsers", publicReadWrite.get(0).getEntity());
+        assertEquals("READER", publicReadWrite.get(0).getRole());
+        assertEquals("allUsers", publicReadWrite.get(1).getEntity());
+        assertEquals("OWNER", publicReadWrite.get(1).getRole());
+        final List<BucketAccessControl> authenticatedRead = GoogleStorageAccessControlListFeature.toBucketAccessControl(Acl.CANNED_AUTHENTICATED_READ);
+        assertEquals(1, authenticatedRead.size());
+        assertEquals("allAuthenticatedUsers", authenticatedRead.get(0).getEntity());
+        assertEquals("READER", authenticatedRead.get(0).getRole());
+    }
+
+    @Test
+    public void testToObjectAccessControlCanned() {
+        assertTrue(GoogleStorageAccessControlListFeature.toObjectAccessControl(Acl.CANNED_PRIVATE).isEmpty());
+        for(Acl acl : Arrays.asList(Acl.CANNED_PUBLIC_READ, Acl.CANNED_PUBLIC_READ_WRITE)) {
+            final List<ObjectAccessControl> list = GoogleStorageAccessControlListFeature.toObjectAccessControl(acl);
+            assertEquals(1, list.size());
+            assertEquals("allUsers", list.get(0).getEntity());
+            assertEquals("READER", list.get(0).getRole());
+        }
+        final List<ObjectAccessControl> authenticatedRead = GoogleStorageAccessControlListFeature.toObjectAccessControl(Acl.CANNED_AUTHENTICATED_READ);
+        assertEquals(1, authenticatedRead.size());
+        assertEquals("allAuthenticatedUsers", authenticatedRead.get(0).getEntity());
+    }
+
+    @Test
+    public void testWriteBucketCannedPublicRead() throws Exception {
+        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), container, new TransferStatus().setRegion("us-east1"));
+        final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
+        try {
+            f.setPermission(container, new TransferStatus().setAcl(Acl.CANNED_PUBLIC_READ));
+            assertTrue(f.getPermission(container).asList().contains(
+                    new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
+            f.setPermission(container, new TransferStatus().setAcl(Acl.CANNED_PRIVATE));
+            assertFalse(f.getPermission(container).containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
+        }
+        finally {
+            new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
+        }
     }
 }
