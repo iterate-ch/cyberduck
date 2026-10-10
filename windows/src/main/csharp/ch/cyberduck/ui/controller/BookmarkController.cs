@@ -323,9 +323,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.WebUrlButtonToolTip = new DefaultWebUrlProvider().toUrl(_host).getUrl();
             View.WebURL = _host.getWebURL();
-            View.KerberosRealmFieldEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
+            View.KerberosRealmFieldEnabled = _host.getProtocol().isKerberosConfigurable();
             View.KerberosRealm = (string)_host.getCustom().get(KerberosRealmProperty) ?? string.Empty;
-            View.UseMitKerberosFieldEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
+            View.UseMitKerberosFieldEnabled = _host.getProtocol().isKerberosConfigurable();
             View.UseMitKerberos = bool.TrueString.Equals((string)_host.getCustom().get(UseMitKerberosProperty),
                 StringComparison.OrdinalIgnoreCase);
             View.Notes = _host.getComment();
