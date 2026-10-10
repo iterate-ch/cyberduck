@@ -45,27 +45,27 @@ public class S3UrlProviderTest extends AbstractS3Test {
             }
         };
         Path p = new Path("/bucket/f/key f", EnumSet.of(Path.Type.file));
-        assertEquals(5, new S3UrlProvider(session, Collections.emptyMap()).toUrl(p).filter(DescriptiveUrl.Type.signed).size());
+        assertEquals(5, new S3UrlProvider(session, Collections.emptyMap()).toUrl(p, EnumSet.of(DescriptiveUrl.Type.signed)).size());
     }
 
     @Test
-    public void testWebUrl() {
+    public void testWebURL() {
         {
             final DescriptiveUrlBag list = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
-                    EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http);
+                    EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http));
             assertEquals(2, list.size());
             final Iterator<DescriptiveUrl> provider = list.iterator();
-            assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
-            assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
         }
         session.getHost().setWebURL("https://cdn.cyberduck.io/");
         {
             final DescriptiveUrlBag list = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
-                    EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http);
+                    EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http));
             assertEquals(3, list.size());
             final Iterator<DescriptiveUrl> provider = list.iterator();
-            assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
-            assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
             assertEquals("https://cdn.cyberduck.io/test-eu-west-1-cyberduck/key", provider.next().getUrl());
         }
     }
@@ -73,32 +73,32 @@ public class S3UrlProviderTest extends AbstractS3Test {
     @Test
     public void testProviderUriWithKey() {
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
-                EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.provider).iterator();
+                EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.provider)).iterator();
         assertEquals("s3://test-eu-west-1-cyberduck/key", provider.next().getUrl());
     }
 
     @Test
     public void testProviderUriRoot() {
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck",
-                EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.provider).iterator();
+                EnumSet.of(Path.Type.directory)), EnumSet.of(DescriptiveUrl.Type.provider)).iterator();
         assertEquals("s3://test-eu-west-1-cyberduck/", provider.next().getUrl());
     }
 
     @Test
-    public void testHttpUri() {
+    public void testHttpURL() {
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
-                EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http).iterator();
-        assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
-        assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+                EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
+        assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
     public void testHttpUriCustomPort() {
         session.getHost().setPort(8443);
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
-                EnumSet.of(Path.Type.file))).filter(DescriptiveUrl.Type.http).iterator();
-        assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com:8443/key", http.next().getUrl());
-        assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+                EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
+        assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com:8443/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
@@ -164,6 +164,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     @Test
     public void testPlaceholder() {
         assertTrue(
-                new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());
+                new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/test", EnumSet.of(Path.Type.directory)),
+                        EnumSet.of(DescriptiveUrl.Type.signed)).isEmpty());
     }
 }
