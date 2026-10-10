@@ -108,7 +108,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
                         containerService.getContainer(file).getName()).execute();
                 for(BucketAccessControl control : controls.getItems()) {
                     final String entity = control.getEntity();
-                    acl.addAll(this.toUser(entity, control.getEmail()), new Acl.Role(control.getRole()));
+                    acl.addAll(toUser(entity, control.getEmail()), toRole(control));
                 }
             }
             else {
@@ -165,6 +165,16 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
     protected Acl.Role toRole(final ObjectAccessControl control) {
         switch(control.getRole()) {
             // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
+            case "READER":
+                return new Acl.Role(Acl.Role.READ);
+            case "OWNER":
+                return new Acl.Role(Acl.Role.FULL);
+        }
+        return new Acl.Role(control.getRole());
+    }
+
+    protected static Acl.Role toRole(final BucketAccessControl control) {
+        switch(control.getRole()) {
             case "READER":
                 return new Acl.Role(Acl.Role.READ);
             case "OWNER":
