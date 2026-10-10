@@ -15,6 +15,7 @@ package ch.cyberduck.core.sftp.openssh;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -40,7 +41,21 @@ public class OpenSSHIdentityAgentConfiguratorTest {
 
     @Test
     public void testNotConfiguredUsesDefault() {
-        assertEquals(System.getenv("SSH_AUTH_SOCK"), new OpenSSHIdentityAgentConfigurator(
+        final String expected;
+        if(null != System.getenv("SSH_AUTH_SOCK")) {
+            expected = System.getenv("SSH_AUTH_SOCK");
+        }
+        else {
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    expected = WindowsOpenSSHAgentAuthenticator.SSH_AGENT_PIPE;
+                    break;
+                default:
+                    expected = null;
+                    break;
+            }
+        }
+        assertEquals(expected, new OpenSSHIdentityAgentConfigurator(
             new OpenSshConfig(new Local("src/test/resources", "openssh/included"))).getIdentityAgent("unknown"));
     }
 }

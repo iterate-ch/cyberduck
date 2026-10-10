@@ -181,7 +181,7 @@ public class OpenSshConfigTest {
         assertEquals("wildcard", config.lookup("two").getUser());
         // Explicit `none` is not overridden by the wildcard block
         final OpenSshConfig.Host disabled = config.lookup("x");
-        assertNull(disabled.getIdentityAgent());
+        assertEquals("", disabled.getIdentityAgent());
         assertNull(disabled.getProxyJump());
         assertNull(disabled.getProxyCommand());
         final OpenSshConfig.Host other = config.lookup("y");
