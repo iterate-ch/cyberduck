@@ -15,19 +15,25 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LocalNotfoundException;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +46,7 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -85,66 +91,63 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         final String defaultRealm = StringUtils.trim(preferences.getProperty("ssh.authentication.gssapi.realm"));
         if(StringUtils.isBlank(defaultRealm)) {
-            this.configure(preferences);
-            return this.login(bookmark, preferences);
+            this.configure(bookmark);
+            return this.login(bookmark);
         }
-        // Default realm configured for this bookmark only. Only a configuration file allows to set the default
-        // realm without also specifying the KDC. Restore JVM wide settings afterwards.
+        // Default realm configured for this bookmark only. Only a configuration file allows setting the default
+        // realm without also specifying the KDC. Restore JVM-wide settings afterward.
         final List<String> keys = Arrays.asList("java.security.krb5.conf", "java.security.krb5.realm", "java.security.krb5.kdc");
         final Map<String, String> saved = new HashMap<>();
-        for(String key : keys) {
-            saved.put(key, System.getProperty(key));
-        }
-        File temporary = null;
+        keys.forEach(key -> saved.put(key, System.getProperty(key)));
         try {
-            temporary = File.createTempFile("cyberduck-krb5-", ".conf");
-            try(PrintWriter writer = new PrintWriter(temporary, StandardCharsets.UTF_8.name())) {
-                writer.println("[libdefaults]");
-                writer.println("    default_realm = " + defaultRealm);
-                final String kdc = preferences.getProperty("java.security.krb5.kdc");
-                if(StringUtils.isNotBlank(kdc)) {
-                    writer.println("[realms]");
-                    writer.println("    " + defaultRealm + " = {");
-                    writer.println("        kdc = " + kdc);
-                    writer.println("    }");
-                }
-                else {
-                    writer.println("    dns_lookup_kdc = true");
-                }
+            final Local temporary = TemporaryFileServiceFactory.get().create(String.format("%s.conf",
+                    new AlphanumericRandomStringService().random()));
+            final String kdc = preferences.getProperty("java.security.krb5.kdc");
+            final String content = String.format("[libdefaults]\n    default_realm = %s\n%s",
+                    defaultRealm,
+                    StringUtils.isNotBlank(kdc) ?
+                            String.format("[realms]\n    %s = {\n        kdc = %s\n    }\n", defaultRealm, kdc) :
+                            "    dns_lookup_kdc = true\n");
+            try(final OutputStream out = temporary.getOutputStream(false)) {
+                IOUtils.write(content, out, StandardCharsets.UTF_8);
+                log.debug("Use Kerberos default realm {} from temporary configuration {}", defaultRealm, temporary);
+                System.setProperty("java.security.krb5.conf", temporary.getAbsolute());
+                // Would override configuration file
+                System.clearProperty("java.security.krb5.realm");
+                System.clearProperty("java.security.krb5.kdc");
+                return this.login(bookmark);
             }
-            log.debug("Use Kerberos default realm {} from temporary configuration {}", defaultRealm, temporary);
-            System.setProperty("java.security.krb5.conf", temporary.getAbsolutePath());
-            // Would override configuration file
-            System.clearProperty("java.security.krb5.realm");
-            System.clearProperty("java.security.krb5.kdc");
-            return this.login(bookmark, preferences);
-        }
-        catch(IOException e) {
-            log.warn("Failed to write temporary Kerberos configuration for realm {}: {}", defaultRealm, e.getMessage());
-            this.configure(preferences);
-            return this.login(bookmark, preferences);
-        }
-        finally {
-            for(Map.Entry<String, String> entry : saved.entrySet()) {
-                if(null == entry.getValue()) {
-                    System.clearProperty(entry.getKey());
+            finally {
+                try {
+                    temporary.delete();
                 }
-                else {
-                    System.setProperty(entry.getKey(), entry.getValue());
-                }
-            }
-            if(temporary != null) {
-                if(!temporary.delete()) {
+                catch(LocalNotfoundException | LocalAccessDeniedException e) {
                     log.warn("Failure deleting temporary Kerberos configuration {}", temporary);
                 }
             }
+        }
+        catch(IOException | LocalAccessDeniedException e) {
+            log.warn("Failed to write temporary Kerberos configuration for realm {}: {}", defaultRealm, e.getMessage());
+            this.configure(bookmark);
+            return this.login(bookmark);
+        }
+        finally {
+            saved.forEach((key, value) -> {
+                if(null == value) {
+                    System.clearProperty(key);
+                }
+                else {
+                    System.setProperty(key, value);
+                }
+            });
         }
     }
 
     /**
      * Apply JVM wide settings read by Krb5LoginModule with refreshKrb5Config
      */
-    private void configure(final HostPreferences preferences) {
+    private void configure(final Host bookmark) {
+        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         final String conf = preferences.getProperty("java.security.krb5.conf");
         if(StringUtils.isNotBlank(conf)) {
             final String path = LocalFactory.get(conf).getAbsolute();
@@ -163,45 +166,42 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         }
     }
 
-    private Boolean login(final Host bookmark, final HostPreferences preferences) throws BackgroundException {
-        File exported = null;
-        final boolean mit = preferences.getBoolean("ssh.authentication.gssapi.mit");
-        final Factory.Platform.Name platform = Factory.Platform.getDefault();
-        log.debug("Use MIT Kerberos option {} on platform {}", mit, platform);
-        if(mit && platform.equals(Factory.Platform.Name.windows)) {
-            // Java cannot read the in-memory default cache of MIT Kerberos for Windows. Export to a file cache.
-            final File directory = MitKerberosTicketCache.locate(preferences.getProperty("ssh.authentication.gssapi.mit.path"));
-            if(null == directory) {
-                log.warn("MIT Kerberos for Windows not found");
-            }
-            else {
-                log.debug("Export ticket from MIT Kerberos installed in {}", directory);
-                try {
-                    exported = new MitKerberosTicketCache(directory).export();
+    private Boolean login(final Host bookmark) throws BackgroundException {
+        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
+        switch(Factory.Platform.getDefault()) {
+            case windows:
+                if(preferences.getBoolean("ssh.authentication.gssapi.mit")) {
+                    // Java cannot read the in-memory default cache of MIT Kerberos for Windows. Export to a file cache.
+                    final Local directory = MitKerberosTicketCache.locate(preferences.getProperty("ssh.authentication.gssapi.mit.path"));
+                    log.debug("Use MIT Kerberos directory {}", directory);
+                    if(null == directory) {
+                        log.warn("MIT Kerberos for Windows not found");
+                    }
+                    else {
+                        log.debug("Export ticket from MIT Kerberos installed in {}", directory);
+                        try {
+                            final File exported = new MitKerberosTicketCache(directory).export();
+                            // The exported ticket is a fresh copy. Renewing would require contacting the KDC and a failure
+                            // to renew discards the ticket.
+                            try {
+                                return this.login(bookmark, exported.getAbsolutePath(), false);
+                            }
+                            finally {
+                                if(!exported.delete()) {
+                                    log.warn("Failure deleting temporary Kerberos credentials cache {}", exported);
+                                }
+                            }
+                        }
+                        catch(IOException e) {
+                            log.warn("Failure exporting ticket from MIT Kerberos: {}", e.getMessage());
+                        }
+                    }
                 }
-                catch(IOException e) {
-                    log.warn("Failure exporting ticket from MIT Kerberos: {}", e.getMessage());
-                }
-            }
         }
-        try {
-            if(exported != null) {
-                // The exported ticket is a fresh copy. Renewing would require contacting the KDC and a failure
-                // to renew discards the ticket.
-                return this.login(bookmark, preferences, exported.getAbsolutePath(), false);
-            }
-            return this.login(bookmark, preferences, preferences.getProperty("ssh.authentication.gssapi.ticketcache"), true);
-        }
-        finally {
-            if(exported != null) {
-                if(!exported.delete()) {
-                    log.warn("Failure deleting temporary Kerberos credentials cache {}", exported);
-                }
-            }
-        }
+        return this.login(bookmark, preferences.getProperty("ssh.authentication.gssapi.ticketcache"), true);
     }
 
-    private Boolean login(final Host bookmark, final HostPreferences preferences, final String ticketCache, final boolean renew) throws BackgroundException {
+    private Boolean login(final Host bookmark, final String ticketCache, final boolean renew) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         LoginContext loginContext;
         try {

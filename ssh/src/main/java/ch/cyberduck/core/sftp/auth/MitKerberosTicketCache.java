@@ -15,6 +15,10 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
+
+import ch.cyberduck.core.LocalFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,9 +36,9 @@ import java.util.regex.Pattern;
 
 /**
  * Exports the ticket granting ticket from the default credentials cache of MIT Kerberos for Windows into a
- * temporary file based credentials cache. The default cache of MIT Kerberos for Windows (<code>API:</code>) is held
+ * temporary file-based credentials cache. The default cache of MIT Kerberos for Windows (<code>API:</code>) is held
  * in memory by the credentials cache server and cannot be read by the Kerberos implementation of Java, which can
- * only read file based caches.
+ * only read file-based caches.
  */
 public final class MitKerberosTicketCache {
     private static final Logger log = LogManager.getLogger(MitKerberosTicketCache.class);
@@ -46,12 +50,12 @@ public final class MitKerberosTicketCache {
     private static final int NT_PRINCIPAL = 1;
     private static final long TIMEOUT_SECONDS = 15L;
 
-    private final File directory;
+    private final Local directory;
 
     /**
      * @param directory Location of klist and kcpytkt executables, such as <code>C:\Program Files\MIT\Kerberos\bin</code>
      */
-    public MitKerberosTicketCache(final File directory) {
+    public MitKerberosTicketCache(final Local directory) {
         this.directory = directory;
     }
 
@@ -59,18 +63,18 @@ public final class MitKerberosTicketCache {
      * @param configured Location configured by the user or empty to look in the default installation folder
      * @return Directory with the MIT Kerberos executables or null when not found
      */
-    public static File locate(final String configured) {
+    public static Local locate(final String configured) {
         if(StringUtils.isNotBlank(configured)) {
-            final File directory = new File(configured);
-            return new File(directory, "klist.exe").exists() ? directory : null;
+            final Local directory = LocalFactory.get(configured);
+            return LocalFactory.get(directory, "klist.exe").exists() ? directory : null;
         }
         for(String variable : new String[]{"ProgramW6432", "ProgramFiles", "ProgramFiles(x86)"}) {
             final String root = System.getenv(variable);
             if(StringUtils.isBlank(root)) {
                 continue;
             }
-            final File directory = new File(root, "MIT\\Kerberos\\bin");
-            if(new File(directory, "klist.exe").exists()) {
+            final Local directory = LocalFactory.get(root, "MIT\\Kerberos\\bin");
+            if(LocalFactory.get(directory, "klist.exe").exists()) {
                 return directory;
             }
         }
@@ -152,7 +156,7 @@ public final class MitKerberosTicketCache {
 
     private String execute(final String executable, final String... arguments) throws IOException {
         final String[] command = new String[arguments.length + 1];
-        command[0] = new File(directory, executable).getAbsolutePath();
+        command[0] = LocalFactory.get(directory, executable).getAbsolute();
         System.arraycopy(arguments, 0, command, 1, arguments.length);
         final Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
         try {
