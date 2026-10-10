@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -35,6 +36,11 @@ import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.fail;
 
@@ -73,6 +79,30 @@ public abstract class AbstractSMBTest {
     @After
     public void disconnect() throws Exception {
         session.close();
+    }
+
+    /**
+     * Fail if lock for share is not available to other threads
+     */
+    protected void assertShareAvailable(final Path file) throws Exception {
+        // Daemon thread as waiting for lock cannot be interrupted
+        final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+            final Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
+        try {
+            executor.submit(() -> {
+                session.releaseShare(session.openShare(file));
+                return null;
+            }).get(10, TimeUnit.SECONDS);
+        }
+        catch(TimeoutException e) {
+            fail(String.format("Lock for share of %s not released", file));
+        }
+        finally {
+            executor.shutdownNow();
+        }
     }
 
     public static class TestContainer extends GenericContainer<TestContainer> {

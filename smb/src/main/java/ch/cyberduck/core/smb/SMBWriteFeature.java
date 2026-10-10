@@ -95,6 +95,9 @@ public class SMBWriteFeature implements Write<Void> {
             catch(BackgroundException e) {
                 throw new IOException(e);
             }
+            finally {
+                share = null;
+            }
         }
 
         @Override
@@ -106,7 +109,40 @@ public class SMBWriteFeature implements Write<Void> {
                 r.addSuppressed(e);
                 throw e;
             }
+            finally {
+                share = null;
+            }
             throw e;
+        }
+
+        @Override
+        public void write(final int b) throws IOException {
+            try {
+                super.write(b);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+            }
+        }
+
+        @Override
+        public void write(final byte[] b) throws IOException {
+            try {
+                super.write(b);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+            }
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            try {
+                super.write(b, off, len);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+            }
         }
 
         @Override

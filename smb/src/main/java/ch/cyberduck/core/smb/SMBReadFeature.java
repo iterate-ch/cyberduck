@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 
 import java.io.IOException;
@@ -100,6 +101,9 @@ public class SMBReadFeature implements Read {
             catch(BackgroundException e) {
                 throw new IOException(e);
             }
+            finally {
+                share = null;
+            }
         }
 
         @Override
@@ -110,7 +114,43 @@ public class SMBReadFeature implements Read {
             catch(BackgroundException ignored) {
                 // Ignore
             }
+            finally {
+                share = null;
+            }
             throw e;
+        }
+
+        @Override
+        public int read() throws IOException {
+            try {
+                return super.read();
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                return IOUtils.EOF;
+            }
+        }
+
+        @Override
+        public int read(final byte[] b) throws IOException {
+            try {
+                return super.read(b);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                return IOUtils.EOF;
+            }
+        }
+
+        @Override
+        public int read(final byte[] b, final int off, final int len) throws IOException {
+            try {
+                return super.read(b, off, len);
+            }
+            catch(SMBRuntimeException e) {
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                return IOUtils.EOF;
+            }
         }
 
         @Override
