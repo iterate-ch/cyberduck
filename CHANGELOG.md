@@ -2,6 +2,7 @@
 
 [9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
 * [Feature] Upgrade runtime (macOS) ([#17509](https://trac.cyberduck.io/ticket/17509))
+* [Feature] Support `ProxyCommand` from ssh_config (SFTP) ([#8688](https://trac.cyberduck.io/ticket/8688))
 * [Bugfix] Switch default type for uploads to block blob (Azure) ([#18386](https://trac.cyberduck.io/ticket/18386))
 * [Bugfix] Application hangs with large selection of files in browser ([#18438](https://trac.cyberduck.io/ticket/18438))
 * [Bugfix] Overwriting files appends to existing file (SFTP) ([#18335](https://trac.cyberduck.io/ticket/18335))
@@ -9,6 +10,13 @@
 * [Bugfix] OAuth login fails with loopback redirect URI without port (ownCloud) ([#18447](https://trac.cyberduck.io/ticket/18447))
 * [Bugfix] Handle timeout during resumable file upload finalization (ownCloud)
 * [Bugfix] Error on startup after installing from website (CLI, Windows) ([#18408](https://trac.cyberduck.io/ticket/18408))
+* [Bugfix] Support Pageant through OpenSSH agent named pipe configured in ssh_config, replacing the Pageant connector
+  (SFTP, Windows) ([#18479](https://trac.cyberduck.io/ticket/18479))
+* [Bugfix] Disable SSH agent with `IdentityAgent none` in ssh_config (SFTP)
+* [Bugfix] Resolve username from server after OAuth authorization (Nextcloud, ownCloud)
+  ([#18456](https://trac.cyberduck.io/ticket/18456))
+* [Bugfix] Verify server-side checksum after upload (iRODS) ([#18457](https://trac.cyberduck.io/ticket/18457))
+* [Bugfix] Reuse TLS session for data connections with TLS 1.3 (FTP-SSL)
 
 [9.5.4](https://github.com/iterate-ch/cyberduck/compare/release-9-5-3...release-9-5-4)
 * [Feature] Suppress sleep mode during file transfers (Windows)
