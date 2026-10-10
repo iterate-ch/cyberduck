@@ -532,12 +532,11 @@ public class OpenSshConfig {
         }
 
         /**
-         * @return Specifies the UNIX-domain socket used to communicate with the authentication agent. Null if not set
-         * or disabled with {@code IdentityAgent none}.
+         * @return Specifies the UNIX-domain socket used to communicate with the authentication agent. Empty string if disabled with {@code IdentityAgent none}.
          */
         public String getIdentityAgent() {
-            // Normalize the `none` sentinel (empty string) back to null for callers
-            return StringUtils.isEmpty(identityAgent) ? null : identityAgent;
+            // Do not normalize the `none` sentinel (empty string) back to null for callers
+            return identityAgent;
         }
 
         /**

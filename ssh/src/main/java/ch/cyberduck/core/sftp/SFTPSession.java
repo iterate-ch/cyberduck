@@ -287,30 +287,18 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-            String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
-            if (configuration != "")
-            {
-                if(null == configuration) {
-                    configuration = System.getenv("SSH_AUTH_SOCK");
+            final String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            if(configuration != null) {
+                final String identityAgent = LocalFactory.get(configuration).getAbsolute();
+                log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
+                switch(Platform.getDefault()) {
+                    case windows:
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator(identityAgent)));
+                        break;
+                    default:
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
+                        break;
                 }
-                if(null == configuration && Platform.Name.windows == Platform.getDefault()) {
-                    configuration = WindowsOpenSSHAgentAuthenticator.SSH_AGENT_PIPE;
-                }
-                if(configuration != null) {
-                    final String identityAgent = LocalFactory.get(configuration).getAbsolute();
-                    log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
-                    switch(Platform.getDefault()) {
-                        case windows:
-                            defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator(identityAgent)));
-                            break;
-                        default:
-                            defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(identityAgent)));
-                            break;
-                    }
-                }
-            }
-            else if(log.isDebugEnabled()) {
-                log.debug("Skip identity agent for {} by user configuration", host.getHostname());
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
