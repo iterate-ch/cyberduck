@@ -63,6 +63,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
      */
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
+    private static final String DEFAULT_PROFILE_NAME = "default";
+
     public S3CredentialsConfigurator() {
         this(LocalFactory.get(LocalFactory.get(), ".aws"));
     }
@@ -89,7 +91,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
             return false;
         }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername())
-                && S3Session.isAwsHostname(StringUtils.defaultString(host.getHostname())) ? profiles.get("default") : null);
+                && S3Session.isAwsHostname(StringUtils.defaultString(host.getHostname())) ? profiles.get(DEFAULT_PROFILE_NAME) : null);
         if(null != profile) {
             if(profile.isProcessBasedProfile()) {
                 // Uses external process to retrieve temporary credentials
