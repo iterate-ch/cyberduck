@@ -40,6 +40,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.sftp.auth.SFTPGssApiAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -71,11 +72,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
     private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
-
-    /**
-     * Bookmark specific default realm for GSS-API authentication
-     */
-    private static final String KERBEROS_REALM_PROPERTY = "ssh.authentication.gssapi.realm";
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
             "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
@@ -780,7 +776,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 field.id());
         this.addObserver(bookmark -> {
             kerberosRealmField.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp);
-            updateField(kerberosRealmField, StringUtils.defaultString(bookmark.getCustom().get(KERBEROS_REALM_PROPERTY)));
+            updateField(kerberosRealmField, StringUtils.defaultString(bookmark.getCustom().get(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY)));
         });
     }
 
@@ -789,10 +785,10 @@ public abstract class BookmarkController extends SheetController implements NSTa
         final Map<String, String> custom = new HashMap<>(bookmark.getCustom());
         final String realm = StringUtils.trim(kerberosRealmField.stringValue());
         if(StringUtils.isBlank(realm)) {
-            custom.remove(KERBEROS_REALM_PROPERTY);
+            custom.remove(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY);
         }
         else {
-            custom.put(KERBEROS_REALM_PROPERTY, realm);
+            custom.put(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY, realm);
         }
         bookmark.setCustom(custom);
         this.update();

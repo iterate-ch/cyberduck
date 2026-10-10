@@ -61,6 +61,11 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
     private static final Logger log = LogManager.getLogger(SFTPGssApiAuthentication.class);
 
     /**
+     * Bookmark specific default realm for GSS-API authentication
+     */
+    public static final String KERBEROS_REALM_PROPERTY = "ssh.authentication.gssapi.realm";
+
+    /**
      * Kerberos v5 mechanism OID (1.2.840.113554.1.2.2) as advertised by OpenSSH servers
      * with <code>GSSAPIAuthentication yes</code>.
      */
@@ -87,9 +92,8 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
             throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         log.debug("Login using GSS-API/Kerberos authentication with credentials {}", credentials);
-
         final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
-        final String defaultRealm = StringUtils.trim(preferences.getProperty("ssh.authentication.gssapi.realm"));
+        final String defaultRealm = StringUtils.trim(preferences.getProperty(KERBEROS_REALM_PROPERTY));
         if(StringUtils.isBlank(defaultRealm)) {
             this.configure(bookmark);
             return this.login(bookmark);

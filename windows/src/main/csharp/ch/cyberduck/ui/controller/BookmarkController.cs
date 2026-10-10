@@ -22,6 +22,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.sftp.auth;
 using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
@@ -59,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         /// Bookmark specific default realm for GSS-API authentication
         /// </summary>
-        private const string KerberosRealmProperty = "ssh.authentication.gssapi.realm";
+        private const string KerberosRealmProperty = SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY;
         /// <summary>
         /// Bookmark specific option to read the Kerberos ticket from MIT Kerberos for Windows
         /// </summary>
