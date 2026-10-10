@@ -51,7 +51,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     public void testMove() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new S3MoveFeature(session, acl).move(test, new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)),
@@ -69,7 +69,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testMoveVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3TouchFeature(virtualhost, acl).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
@@ -81,7 +81,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testMovePlaceholderVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3DirectoryFeature(virtualhost, acl).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(virtualhost).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
@@ -95,7 +95,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertNotNull(new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, acl), test, new TransferStatus()).attributes().getVersionId());
+        assertNotNull(new S3TouchFeature(session).touch(new S3WriteFeature(session, acl), test, new TransferStatus()).attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
         // Write some data to add a new version
         final S3WriteFeature feature = new S3WriteFeature(session, acl);
@@ -126,7 +126,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path placeholder = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final Path renamed = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new S3FindFeature(session, acl).find(test));
@@ -147,7 +147,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3TouchFeature touch = new S3TouchFeature(session, acl);
+        final S3TouchFeature touch = new S3TouchFeature(session);
         final TransferStatus status = new TransferStatus();
         status.setEncryption(S3EncryptionFeature.SSE_AES256);
         touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, status);
@@ -164,7 +164,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3TouchFeature touch = new S3TouchFeature(session, acl);
+        final S3TouchFeature touch = new S3TouchFeature(session);
         touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));

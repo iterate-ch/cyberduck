@@ -94,7 +94,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     public void testWrite() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         final Acl acl = new Acl();
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
@@ -110,7 +110,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     public void testWriteVirtualHostBucket() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(virtualhost);
-        new S3TouchFeature(virtualhost, f).touch(new S3WriteFeature(virtualhost, f), test, new TransferStatus());
+        new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, f), test, new TransferStatus());
         final Acl acl = new Acl();
         acl.addAll(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
@@ -138,10 +138,10 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path(String.format("cd-%s", new AlphanumericRandomStringService().random().toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        new S3DirectoryFeature(session, f).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)),
+        new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)),
                 container, new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         {
             final Acl acl = new Acl();
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
@@ -161,7 +161,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testReadWithDelimiter() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
@@ -171,7 +171,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     public void testReadDirectoryPlaceholder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path placeholder = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(acl.getPermission(placeholder));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
@@ -198,7 +198,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testReadVersioned() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(test));
         try {
             new S3AccessControlListFeature(session).getPermission(test);

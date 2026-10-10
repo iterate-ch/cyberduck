@@ -68,7 +68,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
@@ -92,7 +92,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
