@@ -39,6 +39,7 @@ import org.jets3t.service.Constants;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,11 +63,17 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return Collections.emptyMap();
+        }
         return new S3AttributesFinderFeature(session, acl).find(file).getMetadata();
     }
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return;
+        }
         log.debug("Write metadata {} for file {}", status, file);
         try {
             final S3Object target = new S3Object(containerService.getKey(file));
@@ -75,7 +82,7 @@ public class S3MetadataFeature implements Headers {
                 // Apply non-standard ACL
                 final Acl list = acl.getPermission(file);
                 if(list.isEditable()) {
-                    target.setAcl(S3AccessControlListFeature.toAcl(list));
+                    target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(list));
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {

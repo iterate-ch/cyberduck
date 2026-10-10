@@ -17,17 +17,25 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -36,31 +44,55 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
+    private static final Logger log = LogManager.getLogger(S3DirectoryFeature.class);
 
     private static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
     private final PathContainerService containerService;
 
-    public S3DirectoryFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3DirectoryFeature(final S3Session session) {
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
-        this.acl = acl;
     }
 
     @Override
     public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
-            final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(folder, StringUtils.isBlank(status.getRegion()) ?
-                    new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault(folder).getIdentifier() : status.getRegion());
+            final String region = StringUtils.isBlank(status.getRegion()) ?
+                    new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault(folder).getIdentifier() : status.getRegion();
+            log.debug("Create bucket {} in region {}", folder, region);
+            if(!HostPreferencesFactory.get(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
+                if(!ServiceUtils.isBucketNameValidDNSName(folder.getName())) {
+                    throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
+                }
+            }
+            final AccessControlList acl = S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
+            try {
+                if(StringUtils.isNotBlank(region)) {
+                    if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                        // Adjust default region to be used when searching for existing bucket will return 404
+                        HostPreferencesFactory.get(session.getHost()).setProperty("s3.location", region);
+                    }
+                }
+                else {
+                    log.warn("Missing region for bucket location");
+                }
+                // Create bucket
+                session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(folder).getName()),
+                        S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl);
+                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+                status.setAcl(Acl.EMPTY);
+            }
+            catch(ServiceException e) {
+                throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, folder);
+            }
             return folder;
         }
         else {
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            return new S3TouchFeature(session, acl).touch(writer, folder
+            return new S3TouchFeature(session).touch(writer, folder
                     .withType(type), status
                     // Add placeholder object
                     .setMime(MIMETYPE)

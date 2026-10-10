@@ -58,14 +58,12 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
 
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature acl;
     private final S3Session session;
 
     public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(session.getHost(), new S3AttributesAdapter(session.getHost()));
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
-        this.acl = acl;
     }
 
     @Override
@@ -138,13 +136,11 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
         }
-        if(!Acl.EMPTY.equals(status.getAcl())) {
-            if(status.getAcl().isCanned()) {
-                log.debug("Set canned ACL {} for {}", status.getAcl(), file);
-                object.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
-                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
-                status.setAcl(Acl.EMPTY);
-            }
+        if(status.getAcl().isCanned()) {
+            log.debug("Set canned ACL {} for {}", status.getAcl(), file);
+            object.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+            // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+            status.setAcl(Acl.EMPTY);
         }
         if(status.getModified() != null) {
             // Interoperable with rsync

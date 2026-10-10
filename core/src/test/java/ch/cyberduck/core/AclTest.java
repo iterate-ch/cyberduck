@@ -47,6 +47,7 @@ public class AclTest {
         assertSame(Acl.EMPTY, Acl.toAcl(""));
         assertSame(Acl.EMPTY, Acl.toAcl("none"));
         assertSame(Acl.CANNED_PRIVATE, Acl.toAcl("private"));
+        assertNotEquals(Acl.EMPTY, Acl.CANNED_PRIVATE);
     }
 
     @Test

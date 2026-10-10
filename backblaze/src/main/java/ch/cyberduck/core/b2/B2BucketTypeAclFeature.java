@@ -90,4 +90,9 @@ public class B2BucketTypeAclFeature implements AclPermission {
         return Collections.singletonList(
                 new Acl.Role(Permission.PERMISSION_READ.toString()));
     }
+
+    @Override
+    public Acl getDefault(final Path file) throws BackgroundException {
+        return Acl.EMPTY;
+    }
 }

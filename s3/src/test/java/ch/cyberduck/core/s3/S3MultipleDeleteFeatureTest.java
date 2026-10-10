@@ -48,7 +48,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     public void testDeleteFile() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Arrays.asList(test, test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -59,7 +59,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, String.format("%s\\%s", new AlphanumericRandomStringService().random(),
                 new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -69,7 +69,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     public void testDeleteFileVirtualHost() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        new S3TouchFeature(virtualhost, acl).touch(new S3WriteFeature(virtualhost, acl), test, new TransferStatus());
+        new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, acl), test, new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         new S3MultipleDeleteFeature(virtualhost, acl).delete(Arrays.asList(test, test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(virtualhost, acl).find(test));
@@ -79,7 +79,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     public void testDeletePlaceholder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3DirectoryFeature(session, acl).mkdir(
+        final Path test = new S3DirectoryFeature(session).mkdir(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -93,7 +93,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         {
-            final Path test = new S3DirectoryFeature(session, acl).mkdir(
+            final Path test = new S3DirectoryFeature(session).mkdir(
                     new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
             assertTrue(new S3FindFeature(session, acl).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
@@ -101,7 +101,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
             assertFalse(new S3FindFeature(session, acl).find(test));
         }
         {
-            final Path test = new S3DirectoryFeature(session, acl).mkdir(
+            final Path test = new S3DirectoryFeature(session).mkdir(
                     new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
             assertTrue(new S3FindFeature(session, acl).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
@@ -116,7 +116,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), container, new TransferStatus());
+        new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), container, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(container));
         new S3MultipleDeleteFeature(session, acl).delete(Arrays.asList(container,
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))), LoginCallback.noop, new Delete.DisabledCallback());
