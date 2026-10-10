@@ -79,19 +79,25 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         if(credentials.isPasswordAuthentication()) {
             return credentials;
         }
-        final BasicProfile profile = profiles.entrySet().stream().filter(entry -> {
+        final BasicProfile profile;
+        if(StringUtils.isBlank(credentials.getUsername())) {
+            // The default profile holds credentials for AWS. Never apply it to a third party S3 compatible endpoint
+            profile = S3Session.isAwsHostname(StringUtils.defaultString(host.getHostname())) ? profiles.get(DEFAULT_PROFILE_NAME) : null;
+        }
+        else {
             // Matching access key or profile name
-            if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
-                log.debug("Found matching profile {} for profile name {}", credentials.getUsername(), entry.getKey());
-                return true;
-            }
-            else if(StringUtils.equals(entry.getValue().getAwsAccessIdKey(), credentials.getUsername())) {
-                log.debug("Found matching profile {} for access key {}", credentials.getUsername(), entry.getValue().getAwsAccessIdKey());
-                return true;
-            }
-            return false;
-        }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername())
-                && S3Session.isAwsHostname(StringUtils.defaultString(host.getHostname())) ? profiles.get(DEFAULT_PROFILE_NAME) : null);
+            profile = profiles.entrySet().stream().filter(entry -> {
+                if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
+                    log.debug("Found matching profile {} for profile name {}", credentials.getUsername(), entry.getKey());
+                    return true;
+                }
+                else if(StringUtils.equals(entry.getValue().getAwsAccessIdKey(), credentials.getUsername())) {
+                    log.debug("Found matching profile {} for access key {}", credentials.getUsername(), entry.getValue().getAwsAccessIdKey());
+                    return true;
+                }
+                return false;
+            }).map(Map.Entry::getValue).findFirst().orElse(null);
+        }
         if(null != profile) {
             if(profile.isProcessBasedProfile()) {
                 // Uses external process to retrieve temporary credentials

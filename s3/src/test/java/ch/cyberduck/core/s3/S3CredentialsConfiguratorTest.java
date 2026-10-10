@@ -47,6 +47,14 @@ public class S3CredentialsConfiguratorTest {
     }
 
     @Test
+    public void testNoKeylessProfileForCustomHostnameWithoutUsername() throws Exception {
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/default/.aws").getAbsolutePath()))
+                .reload().configure(new Host(new TestProtocol(), "s3-location.subdomain.de", new Credentials((String) null)));
+        assertNull(verify.getTokens().getAccessKeyId());
+        assertNull(verify.getProperty("sso_start_url"));
+    }
+
+    @Test
     public void testNoDefaultProfileForCustomHostname() throws Exception {
         final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/default/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), "s3-location.subdomain.de", new Credentials()));
