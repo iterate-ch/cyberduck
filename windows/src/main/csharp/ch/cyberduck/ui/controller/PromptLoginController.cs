@@ -134,7 +134,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View = ObjectFactory.GetInstance<ILoginView>();
             _loginView = (ILoginView)View;
-            var credentials = new Credentials().setSaved(options.save()).setUsername(username);
+            var credentials = new Credentials().setSaved(options.save()).setUsername(username).setIdentity(bookmark.getCredentials().getIdentity());
             InitEventHandlers(bookmark, credentials, options);
 
 
