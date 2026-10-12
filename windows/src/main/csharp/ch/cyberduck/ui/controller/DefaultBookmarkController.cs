@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPasswordEvent()
         {
-            if (_options.keychain() && _options.password())
+            if (_options.keychain())
             {
                 if (string.IsNullOrWhiteSpace(_host.getHostname()))
                 {
@@ -48,16 +48,34 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (string.IsNullOrWhiteSpace(View.Password))
                 {
+                    try
+                    {
+                        HostPasswordStore store = PasswordStoreFactory.get();
+                        store.deletePassword(_host.getProtocol().getScheme(),
+                                _host.getPort(),
+                                _host.getHostname(),
+                                _host.getCredentials().getUsername()
+                        );
+                    }
+                    catch (LocalAccessDeniedException e)
+                    {
+                        Log.error($"Failure ${e.getDetail()} deleting credentials for ${_host} in keychain");
+                    }
                     return;
                 }
                 try
                 {
-                    _host.getCredentials().setPassword(View.Password);
-                    PasswordStoreFactory.get().save(_host);
+                    HostPasswordStore store = PasswordStoreFactory.get();
+                    store.addPassword(_host.getProtocol().getScheme(),
+                            _host.getPort(),
+                            _host.getHostname(),
+                            _host.getCredentials().getUsername(),
+                            View.Password
+                    );
                 }
                 catch (LocalAccessDeniedException e)
                 {
-                    Log.error($"Failure saving credentials for ${_host} in keychain. ${e.getDetail()}");
+                    Log.error($"Failure ${e.getDetail()} saving credentials for ${_host} in keychain");
                 }
             }
         }

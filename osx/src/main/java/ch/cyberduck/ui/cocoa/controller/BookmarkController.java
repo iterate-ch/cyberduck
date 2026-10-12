@@ -533,29 +533,37 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 field.id());
         this.addObserver(bookmark -> {
             passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-            passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
-            if(options.password) {
-                if(options.keychain) {
-                    if(StringUtils.isBlank(bookmark.getHostname())) {
-                        return;
-                    }
-                    if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
-                        return;
-                    }
-                    final String password = keychain.findLoginPassword(bookmark);
-                    if(StringUtils.isNotBlank(password)) {
-                        // Make sure password fetched from keychain and set in field is set in model
-                        bookmark.getCredentials().setPassword(password);
-                    }
+            passwordField.setEnabled(this.isPasswordEditable() && !bookmark.getCredentials().isAnonymousLogin());
+            if(options.password && options.keychain) {
+                if(StringUtils.isBlank(bookmark.getHostname())) {
+                    return;
                 }
-                updateField(passwordField, bookmark.getCredentials().getPassword());
+                if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                    return;
+                }
+                // Password is read from keychain and never kept in the model; empty if none saved
+                this.setPasswordFromKeychain(keychain.findLoginPassword(bookmark));
             }
         });
     }
 
+    /**
+     * @param password Password found in keychain or null
+     */
+    protected void setPasswordFromKeychain(final String password) {
+        updateField(passwordField, StringUtils.defaultString(password));
+    }
+
+    /**
+     * @return True if password field can be edited
+     */
+    protected boolean isPasswordEditable() {
+        return options.password && options.keychain;
+    }
+
     @Action
     public void passwordFieldTextDidEndEditing(NSNotification notification) {
-        if(options.keychain && options.password) {
+        if(options.keychain) {
             if(StringUtils.isBlank(bookmark.getHostname())) {
                 return;
             }
@@ -563,6 +571,15 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 return;
             }
             if(StringUtils.isBlank(passwordField.stringValue())) {
+                try {
+                    keychain.deletePassword(bookmark.getProtocol().getScheme(),
+                            bookmark.getPort(),
+                            bookmark.getHostname(),
+                            bookmark.getCredentials().getUsername());
+                }
+                catch(AccessDeniedException e) {
+                    log.error("Failure {} deleting password for {} in keychain", e, bookmark);
+                }
                 return;
             }
             try {
@@ -575,7 +592,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 );
             }
             catch(AccessDeniedException e) {
-                log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
+                log.error("Failure {} saving credentials for {} in keychain", e, bookmark);
             }
         }
     }
