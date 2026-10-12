@@ -74,6 +74,10 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
         private final ProtocolFactory protocols;
 
         private Host current = null;
+        /**
+         * Port given for the server, which is listed before the protocol
+         */
+        private int port = -1;
         private Attributes attrs;
 
         public ServerHandler(final ProtocolFactory protocols) {
@@ -85,6 +89,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
             this.attrs = attrs;
             if(name.equals("Server")) {
                 current = new Host(protocols.forScheme(Scheme.ftp));
+                port = -1;
             }
         }
 
@@ -108,8 +113,8 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                                 current.setProtocol(protocols.forScheme(Scheme.sftp));
                                 break;
                         }
-                        // Reset port to default
-                        current.setPort(-1);
+                        // Port of the new protocol, the default unless the server has one
+                        current.setPort(port);
                     }
                     catch(NumberFormatException e) {
                         log.warn("Unknown protocol:{}", e.getMessage());
@@ -117,7 +122,8 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     break;
                 case "Port":
                     try {
-                        current.setPort(Integer.parseInt(elementText));
+                        port = Integer.parseInt(elementText);
+                        current.setPort(port);
                     }
                     catch(NumberFormatException e) {
                         log.warn("Invalid Port:{}", e.getMessage());
