@@ -41,7 +41,7 @@
                         Grid.Row="0">
                 <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
                            Text="&#xE721;"
-                           VerticalAlignment="Center" 
+                           VerticalAlignment="Center"
                            Margin="{DynamicResource UIItemSpacing}" />
 
                 <TextBox Name="Search"
@@ -76,7 +76,8 @@
                     </DataGridCheckBoxColumn>
                     <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.CellStyle>
-                            <Style TargetType="DataGridCell">
+                            <Style TargetType="DataGridCell"
+                                   BasedOn="{StaticResource {x:Type DataGridCell}}">
                                 <Setter Property="Focusable"
                                         Value="False" />
                             </Style>

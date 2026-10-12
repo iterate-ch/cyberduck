@@ -51,6 +51,10 @@
                 Value="24" />
     </Style>
 
+    <Thickness x:Key="TitledTabHeaderSpacing">12,12,12,6</Thickness>
+    <Thickness x:Key="TitledTabContentSpacing">0,6,0,0</Thickness>
+    <Thickness x:Key="TabContentPadding">12,0</Thickness>
+
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="AppStyles.Base.xaml" />
     </ResourceDictionary.MergedDictionaries>
