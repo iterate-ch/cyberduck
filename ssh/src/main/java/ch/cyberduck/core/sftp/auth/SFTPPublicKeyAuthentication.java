@@ -188,6 +188,10 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
      */
     protected SecurityKeyMiddleware middleware(final Host bookmark) throws IOException {
         final String library = this.provider(bookmark);
+        if(StringUtils.isBlank(library)) {
+            // No default middleware library other than for keys in the Secure Enclave on macOS
+            throw new IOException("No security key provider configured");
+        }
         log.debug("Load middleware {} for security key", library);
         return new NativeSecurityKeyMiddleware(library);
     }
