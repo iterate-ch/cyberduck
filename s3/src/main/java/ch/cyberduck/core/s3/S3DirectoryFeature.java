@@ -36,11 +36,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.model.OwnershipControlsConfig;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
@@ -67,7 +70,9 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
                 }
             }
-            final AccessControlList acl = S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
+            final boolean enforced = S3Session.isAwsHostname(session.getHost().getHostname());
+            // ACLs are disabled with Bucket Owner Enforced and requests setting an ACL other than bucket-owner-full-control are rejected
+            final AccessControlList acl = enforced ? null : S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
             try {
                 if(StringUtils.isNotBlank(region)) {
                     if(S3Session.isAwsHostname(session.getHost().getHostname())) {
@@ -79,8 +84,12 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     log.warn("Missing region for bucket location");
                 }
                 // Create bucket
-                session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(folder).getName()),
-                        S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl);
+                final Map<String, Object> headers = new HashMap<>();
+                if(enforced) {
+                    headers.put("x-amz-object-ownership", OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED.toText());
+                }
+                session.getClient().createBucketImpl(URIEncoder.encode(containerService.getContainer(folder).getName()),
+                        S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl, headers);
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }
