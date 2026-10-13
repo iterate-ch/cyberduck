@@ -86,6 +86,12 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
                 new DisabledListProgressListener()).contains(test));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session).find(test));
+        final Delete delete = new AzureDeleteFeature(session);
+        if(delete.features(intermediate).contains(Delete.Flags.recursive)) {
+            // Parent directory is not implicit in hierarchical namespace
+            assertTrue(new AzureFindFeature(session).find(intermediate));
+            delete.delete(Collections.singletonList(intermediate), LoginCallback.noop, new Delete.DisabledCallback());
+        }
         assertFalse(new AzureFindFeature(session).find(intermediate));
         final PathCache cache = new PathCache(1);
         final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
