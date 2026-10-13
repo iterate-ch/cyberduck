@@ -213,7 +213,7 @@ public class HttpConnectionPoolBuilder {
                         new BackportWindowsNegotiateSchemeFactory(null) :
                         new SPNegoSchemeFactory());
         configuration.setDefaultAuthSchemeRegistry(authSchemeRegistry.build());
-        if(HostPreferencesFactory.get(host).getBoolean("connection.retry.backoff.enable")) {
+        if(HostPreferencesFactory.get(host).getBoolean("http.connections.backoff.enable")) {
             final AIMDBackoffManager manager = new AIMDBackoffManager(connectionManager);
             manager.setPerHostConnectionCap(HostPreferencesFactory.get(host).getInteger("http.connections.route"));
             configuration.setBackoffManager(manager);
