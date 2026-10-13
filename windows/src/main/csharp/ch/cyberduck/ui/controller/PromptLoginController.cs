@@ -143,7 +143,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _loginView.Username = username;
             _loginView.DiskIcon = Images.Get(options.icon()).Size(64);
 
-            InitPrivateKeys();
+            InitPrivateKeys(credentials);
 
             Update(credentials, options);
 
@@ -163,7 +163,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return identity;
         }
 
-        private void InitPrivateKeys()
+        private void InitPrivateKeys(Credentials credentials)
         {
             _keys.Clear();
             foreach (
@@ -173,6 +173,15 @@ namespace Ch.Cyberduck.Ui.Controller
                         LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home"), ".ssh")).list()))
             {
                 _keys.Add(key.getAbsolute());
+            }
+            if (credentials.isPublicKeyAuthentication())
+            {
+                // Identity configured in bookmark may be located outside of the default directory
+                string identity = credentials.getIdentity().getAbsolute();
+                if (!_keys.Contains(identity))
+                {
+                    _keys.Add(identity);
+                }
             }
 
             _loginView.PopulatePrivateKeys(_keys);
