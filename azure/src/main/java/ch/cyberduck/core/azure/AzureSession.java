@@ -48,6 +48,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -92,6 +93,12 @@ public class AzureSession extends HttpSession<AzureClient> {
     private final CredentialsHttpPipelinePolicy authenticator
             = new CredentialsHttpPipelinePolicy();
 
+    /**
+     * Retained by the Data Lake client to compose the source of a rename. Updated with the token on login.
+     */
+    private final AzureSasCredential sas
+            = new AzureSasCredential("?");
+
     private final AtomicReference<StorageAccountInfo> storageAccountInfo
             = new AtomicReference<>();
 
@@ -130,7 +137,7 @@ public class AzureSession extends HttpSession<AzureClient> {
                 new BlobServiceClientBuilder()
                         .endpoint(endpoint).pipeline(pipeline).buildClient(),
                 new DataLakeServiceClientBuilder()
-                        .endpoint(endpoint).pipeline(pipeline).credential(new AzureSasCredential("?")).buildClient());
+                        .endpoint(endpoint).pipeline(pipeline).credential(sas).buildClient());
     }
 
     private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
@@ -153,7 +160,11 @@ public class AzureSession extends HttpSession<AzureClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authenticator.setCredentials(host.getCredentials());
+        final Credentials credentials = host.getCredentials();
+        authenticator.setCredentials(credentials);
+        if(credentials.isTokenAuthentication()) {
+            sas.update(StringUtils.removeStart(credentials.getToken(), "?"));
+        }
         try {
             final StorageAccountInfo accountInfo = client.getBlobServiceClient().getAccountInfo();
             storageAccountInfo.set(accountInfo);
