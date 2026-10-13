@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -46,20 +46,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
+
+                var store = PasswordStoreFactory.get();
                 if (string.IsNullOrWhiteSpace(View.Password))
                 {
-                    HostPasswordStore store = PasswordStoreFactory.get();
                     store.deleteLoginPassword(_host);
-                    return;
                 }
-                try
+                else
                 {
-                    HostPasswordStore store = PasswordStoreFactory.get();
                     store.addLoginPassword(_host, View.Password);
-                }
-                catch (LocalAccessDeniedException e)
-                {
-                    Log.error($"Failure {e.getDetail()} saving credentials for {_host} in keychain");
                 }
             }
         }
