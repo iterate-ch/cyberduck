@@ -34,7 +34,9 @@ import java.util.Locale;
  * (<code>ftp.transfer.mode</code>) and never the default.
  * <p>
  * It applies to uploads only. A download that is converted has fewer bytes than the size that the server tells, and the
- * transfer would never count as complete, so downloads stay binary.
+ * transfer would never count as complete, so downloads stay binary. Files of a Cryptomator vault are always binary,
+ * because their content is ciphertext. An ASCII upload is not resumed, because the size on the server does not tell
+ * how many bytes of the local file were sent.
  */
 public final class FTPFileType {
 
@@ -44,7 +46,8 @@ public final class FTPFileType {
     public static final String MODE = "ftp.transfer.mode";
 
     /**
-     * Name of the setting with the file extensions that are transferred as ASCII in the auto mode, separated by commas
+     * Name of the setting with the file extensions that are transferred as ASCII in the auto mode, separated by commas,
+     * semicolons or white space
      */
     public static final String EXTENSIONS = "ftp.transfer.ascii.extensions";
 
@@ -62,6 +65,10 @@ public final class FTPFileType {
      * @return The file type of the FTP protocol to set before the transfer of the file
      */
     public static int of(final Host host, final Path file) {
+        if(file.getType().contains(Path.Type.encrypted)) {
+            // Ciphertext of a vault must not have its line breaks converted
+            return FTP.BINARY_FILE_TYPE;
+        }
         final PreferencesReader preferences = HostPreferencesFactory.get(host);
         final String mode = StringUtils.defaultIfBlank(preferences.getProperty(MODE), BINARY).trim().toLowerCase(Locale.ROOT);
         switch(mode) {

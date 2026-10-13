@@ -19,6 +19,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.MemoryPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.net.ftp.FTP;
 import org.junit.Before;
@@ -27,6 +28,8 @@ import org.junit.Test;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FTPFileTypeTest {
 
@@ -82,5 +85,21 @@ public class FTPFileTypeTest {
     @Test
     public void testNotAKnownModeIsBinary() {
         assertEquals(FTP.BINARY_FILE_TYPE, FTPFileType.of(new Host(new FTPProtocol(), "example.net").setProperty(FTPFileType.MODE, "ebcdic"), file("a.txt")));
+    }
+
+    @Test
+    public void testFileOfVaultIsBinary() {
+        final Host host = new Host(new FTPProtocol(), "example.net").setProperty(FTPFileType.MODE, "ascii");
+        assertEquals(FTP.BINARY_FILE_TYPE, FTPFileType.of(host, new Path("/d/AB/readme.txt.c9r", EnumSet.of(Path.Type.file, Path.Type.encrypted))));
+        assertEquals(FTP.BINARY_FILE_TYPE, FTPFileType.of(host.setProperty(FTPFileType.MODE, "auto"), new Path("/d/AB/readme.txt", EnumSet.of(Path.Type.file, Path.Type.encrypted))));
+    }
+
+    @Test
+    public void testAsciiUploadIsNotResumed() throws Exception {
+        final TransferStatus status = new TransferStatus().setExists(true).setLength(10L);
+        assertFalse(new FTPUploadFeature(new FTPSession(new Host(new FTPProtocol(), "example.net").setProperty(FTPFileType.MODE, "ascii")))
+            .append(file("readme.txt"), status).append);
+        assertTrue(new FTPUploadFeature(new FTPSession(new Host(new FTPProtocol(), "example.net")))
+            .append(file("readme.txt"), status).append);
     }
 }

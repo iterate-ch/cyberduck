@@ -15,6 +15,7 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -22,14 +23,23 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.net.ftp.FTP;
+
 public class FTPUploadFeature extends DefaultUploadFeature<Void> {
+
+    private final Host host;
 
     public FTPUploadFeature(final Session<?> session) {
         super(session);
+        this.host = session.getHost();
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        if(FTP.ASCII_FILE_TYPE == FTPFileType.of(host, file)) {
+            // The size on the server after converting line breaks is not the number of bytes read from the local file
+            return new Write.Append(false).withStatus(status);
+        }
         return new Write.Append(status.isExists()).withStatus(status);
     }
 }
