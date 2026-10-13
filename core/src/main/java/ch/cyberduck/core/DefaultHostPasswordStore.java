@@ -51,7 +51,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             bookmark.getProtocol().getPasswordPlaceholder() : credentials.getUsername());
         }
         catch(AccessDeniedException e) {
-            log.warn("Failure {} searching in keychain", e.getMessage());
+            log.warn("Failure {} searching in keychain", e.toString());
             return null;
         }
         if(null == password) {
@@ -77,7 +77,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()));
         }
         catch(AccessDeniedException e) {
-            log.warn("Failure {} searching in keychain", e.getMessage());
+            log.warn("Failure {} searching in keychain", e.toString());
             return null;
         }
         if(null == token) {
@@ -122,7 +122,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 return passphrase;
             }
             catch(AccessDeniedException e) {
-                log.warn("Failure {} searching in keychain", e.getMessage());
+                log.warn("Failure {} searching in keychain", e.toString());
                 return null;
             }
         }
@@ -158,7 +158,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 // Continue with deprecated descriptors
             }
             catch(AccessDeniedException e) {
-                log.warn("Failure {} searching in keychain", e.getMessage());
+                log.warn("Failure {} searching in keychain", e.toString());
                 return OAuthTokens.EMPTY;
             }
         }
