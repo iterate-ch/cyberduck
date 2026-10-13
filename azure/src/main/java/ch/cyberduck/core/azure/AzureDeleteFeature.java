@@ -27,10 +27,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 import com.azure.core.exception.HttpResponseException;
+import com.azure.core.util.Context;
 
 public class AzureDeleteFeature implements Delete {
 
@@ -55,7 +57,7 @@ public class AzureDeleteFeature implements Delete {
                     if(file.isDirectory() && session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
                         // Directory is not addressable with trailing delimiter in hierarchical namespace
                         session.getClient().getDataLakeServiceClient().getFileSystemClient(containerService.getContainer(file).getName())
-                                .deleteDirectory(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)));
+                                .deleteDirectoryWithResponse(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)), true, null, null, Context.NONE);
                     }
                     else {
                         session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
@@ -83,5 +85,13 @@ public class AzureDeleteFeature implements Delete {
                 throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+            return EnumSet.of(Flags.recursive);
+        }
+        return EnumSet.noneOf(Flags.class);
     }
 }
