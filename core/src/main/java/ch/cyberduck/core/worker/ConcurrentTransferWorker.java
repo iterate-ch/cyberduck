@@ -181,6 +181,14 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
+    public void cleanup(final Boolean result) {
+        // Pool is only shutdown in run upon success. Invoked once after retries and possibly on main thread, therefore do not await termination.
+        log.debug("Shutdown pool {}", pool);
+        pool.executor().shutdown();
+        super.cleanup(result);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
         sb.append("source=").append(source);
