@@ -39,8 +39,6 @@ namespace Ch.Cyberduck.Core.CredentialManager
     {
         private static readonly Logger log = LogManager.getLogger(typeof(WinCredentialManager).AssemblyQualifiedName);
 
-        private const int ERROR_NOT_FOUND = 1168;
-
         /// <summary>
         /// Generates a string that can be used for "Auth" headers in web requests, "username:password" encoded in Base64
         /// </summary>
@@ -128,17 +126,18 @@ namespace Ch.Cyberduck.Core.CredentialManager
         {
             if (!CredDelete(target, CRED_TYPE_GENERIC))
             {
-                var error = Marshal.GetLastWin32Error();
-                if (error == ERROR_NOT_FOUND)
+                var error = Marshal.GetHRForLastWin32Error();
+                if (error == HRESULT.E_NOTFOUND)
                 {
-                    // Nothing to remove
                     if (log.isDebugEnabled())
                     {
                         log.debug($"No credentials found for \"{target}\" to remove");
                     }
+
                     return true;
                 }
-                var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+
+                var message = Marshal.GetExceptionForHR(error);
                 log.error($"Could not remove credentials \"{target}\": {message.Message}");
                 return false;
             }
