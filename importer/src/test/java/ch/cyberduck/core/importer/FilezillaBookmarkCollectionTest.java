@@ -68,4 +68,14 @@ public class FilezillaBookmarkCollectionTest {
         assertTrue(saved.get());
         assertNull(b.getCredentials().getPassword());
     }
+
+    @Test
+    public void testPortIsKeptWhenProtocolFollows() throws Exception {
+        FilezillaBookmarkCollection c = new FilezillaBookmarkCollection();
+        c.parse(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.ftps), new TestProtocol(Scheme.sftp)))), new Local("src/test/resources/org.filezilla-project.sitemanager-port.xml"));
+        assertEquals(1, c.size());
+        final Host b = c.iterator().next();
+        assertEquals(Scheme.sftp, b.getProtocol().getScheme());
+        assertEquals(2222, b.getPort());
+    }
 }
