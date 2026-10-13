@@ -44,11 +44,11 @@ public class AzureDataLakeListService implements ListService {
     private final AzureSession session;
     private final PathContainerService containerService
             = new DirectoryDelimiterPathContainerService();
-    private final AzureAttributesFinderFeature attributes;
+    private final AzureDataLakeAttributesFinderFeature attributes;
 
     public AzureDataLakeListService(final AzureSession session) {
         this.session = session;
-        this.attributes = new AzureAttributesFinderFeature(session);
+        this.attributes = new AzureDataLakeAttributesFinderFeature(session);
     }
 
     @Override

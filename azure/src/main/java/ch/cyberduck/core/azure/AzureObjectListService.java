@@ -46,11 +46,11 @@ public class AzureObjectListService implements ListService {
     private final AzureSession session;
     private final PathContainerService containerService
             = new DirectoryDelimiterPathContainerService();
-    private final AzureAttributesFinderFeature attributes;
+    private final AzureBlobAttributesFinderFeature attributes;
 
     public AzureObjectListService(final AzureSession session) {
         this.session = session;
-        this.attributes = new AzureAttributesFinderFeature(session);
+        this.attributes = new AzureBlobAttributesFinderFeature(session);
     }
 
     @Override
