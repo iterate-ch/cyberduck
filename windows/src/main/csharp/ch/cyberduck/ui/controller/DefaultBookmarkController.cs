@@ -59,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     catch (LocalAccessDeniedException e)
                     {
-                        Log.error($"Failure ${e.getDetail()} deleting credentials for ${_host} in keychain");
+                        Log.error($"Failure {e.getDetail()} deleting credentials for {_host} in keychain");
                     }
                     return;
                 }
@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 catch (LocalAccessDeniedException e)
                 {
-                    Log.error($"Failure ${e.getDetail()} saving credentials for ${_host} in keychain");
+                    Log.error($"Failure {e.getDetail()} saving credentials for {_host} in keychain");
                 }
             }
         }
