@@ -48,8 +48,10 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -142,12 +144,13 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     protected FTPClient connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        FTPClient client = null;
         try {
             final CustomTrustSSLProtocolSocketFactory f
                     = new CustomTrustSSLProtocolSocketFactory(trust, key);
 
             final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(this);
-            final FTPClient client = new FTPClient(host.getProtocol(), f, f.getSSLContext()) {
+            client = new FTPClient(host.getProtocol(), f, f.getSSLContext()) {
                 @Override
                 public void disconnect() throws IOException {
                     try {
@@ -163,6 +166,13 @@ public class FTPSession extends SSLSession<FTPClient> {
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);
             return client;
+        }
+        catch(FTPConnectionClosedException e) {
+            if(client != null && FTPReply.SERVICE_NOT_AVAILABLE == client.getReplyCode()) {
+                // Server rejected the connection in place of the greeting. Preserve the reply text
+                throw new FTPExceptionMappingService().map(new FTPException(client.getReplyCode(), StringUtils.trim(client.getReplyString())));
+            }
+            throw new FTPExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
