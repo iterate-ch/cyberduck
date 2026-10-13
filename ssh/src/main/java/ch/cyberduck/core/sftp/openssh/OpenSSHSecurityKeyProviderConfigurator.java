@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp.openssh;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +36,8 @@ public class OpenSSHSecurityKeyProviderConfigurator {
     }
 
     /**
+     * A value beginning with <code>$</code> is the name of an environment variable holding the path to the library.
+     *
      * @param alias Hostname
      * @return Middleware library configured with <code>SecurityKeyProvider</code> or null
      */
@@ -44,8 +47,23 @@ public class OpenSSHSecurityKeyProviderConfigurator {
             log.debug("No configuration for alias {}", alias);
             return null;
         }
+        if(StringUtils.startsWith(library, "$")) {
+            final String variable = StringUtils.removeStart(library, "$");
+            final String resolved = this.getEnv(variable);
+            if(StringUtils.isBlank(resolved)) {
+                log.warn("Missing value for environment variable {} referenced in configuration for alias {}",
+                        variable, alias);
+                return null;
+            }
+            log.debug("Found configuration {} from environment variable {} for alias {}", resolved, variable, alias);
+            return resolved;
+        }
         log.debug("Found configuration {} for alias {}", library, alias);
         return library;
+    }
+
+    protected String getEnv(final String variable) {
+        return System.getenv(variable);
     }
 
     @Override
