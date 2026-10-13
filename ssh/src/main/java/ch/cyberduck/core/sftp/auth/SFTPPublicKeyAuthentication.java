@@ -160,7 +160,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                             throw new LoginFailureException(e.getMessage(), e);
                         }
                         client.auth(credentials.getUsername(),
-                                new AuthSecurityKeyPublickey(provider, middleware, bookmark, prompt));
+                                new AuthSecurityKeyPublickey(provider, middleware, bookmark, prompt, canceled));
                         return client.isAuthenticated();
                     }
                 }

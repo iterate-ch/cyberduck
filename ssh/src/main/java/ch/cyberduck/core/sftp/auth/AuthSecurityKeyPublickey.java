@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hierynomus.sshj.userauth.fido.SecurityKeyPrivateKey;
 import com.hierynomus.sshj.userauth.fido.SecurityKeyPublicKey;
@@ -55,14 +56,24 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
     private final SecurityKeyMiddleware middleware;
     private final Host bookmark;
     private final LoginCallback prompt;
+    /**
+     * Set when the prompt for the PIN of the authenticator is canceled
+     */
+    private final AtomicBoolean canceled;
 
     public AuthSecurityKeyPublickey(final KeyProvider keys, final SecurityKeyMiddleware middleware,
                                     final Host bookmark, final LoginCallback prompt) {
+        this(keys, middleware, bookmark, prompt, new AtomicBoolean());
+    }
+
+    public AuthSecurityKeyPublickey(final KeyProvider keys, final SecurityKeyMiddleware middleware,
+                                    final Host bookmark, final LoginCallback prompt, final AtomicBoolean canceled) {
         super(keys);
         this.keys = keys;
         this.middleware = middleware;
         this.bookmark = bookmark;
         this.prompt = prompt;
+        this.canceled = canceled;
     }
 
     @Override
@@ -117,6 +128,8 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
                                 .icon(bookmark.getProtocol().disk()));
             }
             catch(LoginCanceledException c) {
+                // Signal cancel to the authentication provider mapping the failure to LoginCanceledException
+                canceled.set(true);
                 throw new IOException("PIN prompt for security key canceled", c);
             }
             if(StringUtils.isBlank(input.getPassword())) {
