@@ -24,6 +24,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.DisabledCancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.signature.BuiltinSignatures;
@@ -132,6 +133,31 @@ public class SFTPSecurityKeyFileAuthenticationTest {
     @Test
     public void testFailureMissingMiddlewareWithoutCompanionPublicKey() throws Exception {
         this.failure(false);
+    }
+
+    /**
+     * Without a middleware library configured for the platform there is nothing to sign with
+     */
+    @Test
+    public void testFailureNoProviderConfigured() throws Exception {
+        final KeyPair pair = KeyPairGenerator.getInstance("Ed25519").generateKeyPair();
+        final Local key = SecurityKeyFileWriter.write(pair, APPLICATION, HANDLE, true);
+        try {
+            new SFTPPublicKeyAuthentication(new SSHClient()) {
+                @Override
+                protected String provider(final Host bookmark) {
+                    return StringUtils.EMPTY;
+                }
+            }.authenticate(this.bookmark(key), new DisabledLoginCallback(), new DisabledCancelCallback());
+            fail("Expected failure for security key without middleware");
+        }
+        catch(LoginFailureException e) {
+            assertTrue(e.getDetail(false), e.getDetail(false).contains("No security key provider configured"));
+            assertTrue(e.getCause() instanceof IOException);
+        }
+        finally {
+            this.delete(key);
+        }
     }
 
     private void failure(final boolean companion) throws Exception {
