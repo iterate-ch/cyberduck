@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -65,12 +66,34 @@ public class AzureExceptionMappingServiceTest {
         assertTrue(e.getDetail(false), e.getDetail(false).contains("Not Found"));
     }
 
+    @Test
+    public void testMapBlockCountExceedsLimit() {
+        final BackgroundException e = new AzureExceptionMappingService().map(
+                new HttpResponseException("Status code 409, The committed block count cannot exceed the maximum limit of 50,000 blocks.",
+                        new StubResponse(409, "BlockCountExceedsLimit"), null));
+        assertTrue(e.getClass() + " " + e.getDetail(false), e instanceof InteroperabilityException);
+        assertTrue(e.getDetail(false), e.getDetail(false).contains("50,000 blocks"));
+    }
+
+    @Test
+    public void testMapConflictOtherErrorCode() {
+        final BackgroundException e = new AzureExceptionMappingService().map(
+                new HttpResponseException("Status code 409", new StubResponse(409, "BlobAlreadyExists"), null));
+        assertFalse(e instanceof InteroperabilityException);
+    }
+
     private static final class StubResponse extends HttpResponse {
         private final int status;
+        private final String code;
 
         StubResponse(final int status) {
+            this(status, null);
+        }
+
+        StubResponse(final int status, final String code) {
             super(new HttpRequest(HttpMethod.GET, "https://localhost/"));
             this.status = status;
+            this.code = code;
         }
 
         @Override
@@ -80,12 +103,19 @@ public class AzureExceptionMappingServiceTest {
 
         @Override
         public String getHeaderValue(final String name) {
+            if("x-ms-error-code".equalsIgnoreCase(name)) {
+                return code;
+            }
             return null;
         }
 
         @Override
         public HttpHeaders getHeaders() {
-            return new HttpHeaders();
+            final HttpHeaders headers = new HttpHeaders();
+            if(code != null) {
+                headers.set("x-ms-error-code", code);
+            }
+            return headers;
         }
 
         @Override
