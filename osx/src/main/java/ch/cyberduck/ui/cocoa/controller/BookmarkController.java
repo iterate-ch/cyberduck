@@ -32,7 +32,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.Reachability;
 import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
@@ -571,29 +570,12 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 return;
             }
             if(StringUtils.isBlank(passwordField.stringValue())) {
-                try {
-                    keychain.deletePassword(bookmark.getProtocol().getScheme(),
-                            bookmark.getPort(),
-                            bookmark.getHostname(),
-                            bookmark.getCredentials().getUsername());
-                }
-                catch(AccessDeniedException e) {
-                    log.error("Failure {} deleting password for {} in keychain", e, bookmark);
-                }
+                keychain.deleteLoginPassword(bookmark);
                 return;
             }
-            try {
-                keychain.addPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(),
-                        bookmark.getHostname(),
-                        bookmark.getCredentials().getUsername(),
-                        // Remove control characters (char &lt;= 32) from both ends
-                        StringUtils.strip(passwordField.stringValue())
-                );
-            }
-            catch(AccessDeniedException e) {
-                log.error("Failure {} saving credentials for {} in keychain", e, bookmark);
-            }
+            keychain.addLoginPassword(bookmark,
+                    // Remove control characters (char &lt;= 32) from both ends
+                    StringUtils.strip(passwordField.stringValue()));
         }
     }
 

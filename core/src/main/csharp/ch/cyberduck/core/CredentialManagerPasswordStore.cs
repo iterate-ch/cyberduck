@@ -85,6 +85,57 @@ namespace Ch.Cyberduck.Core
             }
         }
 
+        public override void addLoginPassword(Host bookmark, string password)
+        {
+            var target = ToUri(bookmark)[0].AbsoluteUri;
+            // Keep other attributes such as token or passphrase saved with the same target
+            var existing = WinCredentialManager.GetCredentials(target);
+            var winCred = new WindowsCredentialManagerCredential(
+                bookmark.getCredentials().getUsername(), password,
+                CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE);
+            if (existing.Attributes != null)
+            {
+                foreach (var attribute in existing.Attributes)
+                {
+                    winCred.Attributes[attribute.Key] = attribute.Value;
+                }
+            }
+            if (!WinCredentialManager.SaveCredentials(target, winCred))
+            {
+                logger.warn(string.Format("Failure adding password in keychain for {0}", bookmark));
+            }
+        }
+
+        public override void deleteLoginPassword(Host bookmark)
+        {
+            var target = ToUri(bookmark)[0].AbsoluteUri;
+            var existing = WinCredentialManager.GetCredentials(target);
+            if (existing.Attributes != null && existing.Attributes.Count > 0)
+            {
+                // Only clear the password but keep other attributes such as token or identity passphrase
+                var winCred = new WindowsCredentialManagerCredential(
+                    existing.UserName, null, CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE);
+                foreach (var attribute in existing.Attributes)
+                {
+                    winCred.Attributes[attribute.Key] = attribute.Value;
+                }
+                if (!WinCredentialManager.SaveCredentials(target, winCred))
+                {
+                    logger.warn(string.Format("Failure deleting password in keychain for {0}", bookmark));
+                }
+            }
+            else
+            {
+                WinCredentialManager.RemoveCredentials(target);
+            }
+            // Remove deprecated entry that would otherwise be found as fallback in findLoginPassword
+            var user = string.IsNullOrWhiteSpace(bookmark.getCredentials().getUsername())
+                ? bookmark.getProtocol().getPasswordPlaceholder()
+                : bookmark.getCredentials().getUsername();
+            WinCredentialManager.RemoveCredentials(
+                hostUrlProvider.get(bookmark.getProtocol().getScheme(), bookmark.getPort(), user, bookmark.getHostname(), string.Empty));
+        }
+
         public override string findLoginPassword(Host bookmark)
         {
             var target = ToUri(bookmark)[0];

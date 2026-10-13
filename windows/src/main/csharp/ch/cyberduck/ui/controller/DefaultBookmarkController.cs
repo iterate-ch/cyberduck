@@ -48,30 +48,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (string.IsNullOrWhiteSpace(View.Password))
                 {
-                    try
-                    {
-                        HostPasswordStore store = PasswordStoreFactory.get();
-                        store.deletePassword(_host.getProtocol().getScheme(),
-                                _host.getPort(),
-                                _host.getHostname(),
-                                _host.getCredentials().getUsername()
-                        );
-                    }
-                    catch (LocalAccessDeniedException e)
-                    {
-                        Log.error($"Failure {e.getDetail()} deleting credentials for {_host} in keychain");
-                    }
+                    HostPasswordStore store = PasswordStoreFactory.get();
+                    store.deleteLoginPassword(_host);
                     return;
                 }
                 try
                 {
                     HostPasswordStore store = PasswordStoreFactory.get();
-                    store.addPassword(_host.getProtocol().getScheme(),
-                            _host.getPort(),
-                            _host.getHostname(),
-                            _host.getCredentials().getUsername(),
-                            View.Password
-                    );
+                    store.addLoginPassword(_host, View.Password);
                 }
                 catch (LocalAccessDeniedException e)
                 {

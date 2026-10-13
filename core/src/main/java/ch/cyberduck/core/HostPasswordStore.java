@@ -23,7 +23,17 @@ public interface HostPasswordStore extends PasswordStore {
     /**
      * @see Protocol#isPasswordConfigurable()
      */
+    void addLoginPassword(Host bookmark, String password);
+
+    /**
+     * @see Protocol#isPasswordConfigurable()
+     */
     String findLoginPassword(Host bookmark);
+
+    /**
+     * @see Protocol#isPasswordConfigurable()
+     */
+    void deleteLoginPassword(Host bookmark);
 
     /**
      * @see Protocol#isTokenConfigurable() ()
