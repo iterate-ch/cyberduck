@@ -15,45 +15,24 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class AzureFindFeature implements Find {
-    private static final Logger log = LogManager.getLogger(AzureFindFeature.class);
 
     private final AzureSession session;
-    private final AzureAttributesFinderFeature attributes;
-    private final PathContainerService containerService
-            = new DirectoryDelimiterPathContainerService();
 
     public AzureFindFeature(final AzureSession session) {
         this.session = session;
-        this.attributes = new AzureAttributesFinderFeature(session);
     }
 
     @Override
-    public boolean find(Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
-            return true;
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+            return new AzureDataLakeFindFeature(session).find(file, listener);
         }
-        try {
-            final boolean found;
-            if(containerService.isContainer(file)) {
-                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName()).exists();
-            }
-            attributes.find(file, listener);
-            return true;
-        }
-        catch(NotfoundException e) {
-            return false;
-        }
+        return new AzureBlobFindFeature(session).find(file, listener);
     }
 }
