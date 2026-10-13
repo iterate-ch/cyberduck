@@ -62,7 +62,8 @@ public class CreateDirectoryWorker extends Worker<Path> {
             status.setEncryption(encryption.getDefault(container));
         }
         status.setModified(System.currentTimeMillis());
-        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.change")
+                && HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
             final UnixPermission permission = session.getFeature(UnixPermission.class);
             if(permission != null) {
                 status.setPermission(permission.getDefault(folder.getParent(), EnumSet.of(Path.Type.directory)));
