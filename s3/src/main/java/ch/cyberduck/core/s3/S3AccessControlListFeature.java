@@ -183,6 +183,12 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     protected static AccessControlList toBucketAccessControlList(final Acl acl) {
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
         return toAccessControlList(acl);
     }
 
