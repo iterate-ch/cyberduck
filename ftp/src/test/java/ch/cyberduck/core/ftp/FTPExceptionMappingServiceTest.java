@@ -1,11 +1,13 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.junit.Test;
 
@@ -34,6 +36,13 @@ public class FTPExceptionMappingServiceTest {
     @Test
     public void testLogin() {
         assertTrue(new FTPExceptionMappingService().map(new FTPException(530, "")) instanceof LoginFailureException);
+    }
+
+    @Test
+    public void testServiceNotAvailable() {
+        final BackgroundException failure = new FTPExceptionMappingService().map(new FTPException(421, "Too many connections (25) from this IP"));
+        assertTrue(failure instanceof RetriableAccessDeniedException);
+        assertEquals("Too many connections (25) from this IP. Please contact your web hosting service provider for assistance.", failure.getDetail());
     }
 
     @Test
