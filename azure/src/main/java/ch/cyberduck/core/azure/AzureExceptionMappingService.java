@@ -49,6 +49,10 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
                 this.append(buffer, messages.get("Message").toString());
             }
         }
+        if(buffer.length() == 0) {
+            // No structured error details such as from an intermediary
+            this.append(buffer, failure.getMessage());
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
                 return new SSLExceptionMappingService().map(buffer.toString(), (SSLException) cause);
