@@ -82,7 +82,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session).find(intermediate));
         // Ignore 404 for placeholder and search for common prefix
         assertTrue(new AzureFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(new AzureObjectListService(session).list(intermediate,
+        assertTrue(new AzureListService(session).list(intermediate,
                 new DisabledListProgressListener()).contains(test));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session).find(test));

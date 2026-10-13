@@ -35,6 +35,9 @@ public class AzureListService implements ListService {
             return new AzureContainerListService(session).list(directory, listener);
         }
         else {
+            if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                return new AzureDataLakeListService(session).list(directory, listener);
+            }
             return new AzureObjectListService(session).list(directory, listener);
         }
     }

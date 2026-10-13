@@ -39,7 +39,6 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
-import com.azure.storage.common.implementation.Constants;
 
 public class AzureObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(AzureObjectListService.class);
@@ -68,12 +67,12 @@ public class AzureObjectListService implements ListService {
                 }
             }
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+            final int chunksize = HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize");
             String continuationToken = null;
             for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
-                            .setDetails(new BlobListDetails().setRetrieveMetadata(true))
-                            .setPrefix(prefix)
-                            .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null)
-                    .iterableByPage(continuationToken, HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
+                    .setDetails(new BlobListDetails().setRetrieveMetadata(true))
+                    .setPrefix(prefix)
+                    .setMaxResultsPerPage(chunksize), null).iterableByPage(continuationToken, chunksize)) {
                 for(BlobItem item : response.getElements()) {
                     if(StringUtils.equals(prefix, item.getName())) {
                         if(log.isDebugEnabled()) {
@@ -90,30 +89,9 @@ public class AzureObjectListService implements ListService {
                         attr = attributes.toAttributes(item.getProperties());
                     }
                     // A directory is designated by a delimiter character.
-                    final EnumSet<Path.Type> types;
-                    if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                        // Directory in hierarchical namespace is a blob with metadata flag and no delimiter in name
-                        if(null != item.getMetadata() && Boolean.parseBoolean(item.getMetadata().get(Constants.HeaderConstants.DIRECTORY_METADATA_KEY))) {
-                            types = EnumSet.of(Path.Type.directory);
-                        }
-                        else {
-                            types = EnumSet.of(Path.Type.file);
-                        }
-                    }
-                    else {
-                        if(null != item.isPrefix() && item.isPrefix()) {
-                            types = EnumSet.of(Path.Type.directory, Path.Type.placeholder);
-                        }
-                        else {
-                            types = EnumSet.of(Path.Type.file);
-                        }
-                    }
-                    final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
-                    if(child.isDirectory() && children.contains(child)) {
-                        // Directory already listed as common prefix
-                        continue;
-                    }
-                    children.add(child);
+                    final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
+                            ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                    children.add(new Path(directory, PathNormalizer.name(item.getName()), types, attr));
                 }
                 listener.chunk(directory, children);
                 continuationToken = response.getContinuationToken();
@@ -121,14 +99,11 @@ public class AzureObjectListService implements ListService {
                     break;
                 }
             }
-            if(!session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                    if(log.isWarnEnabled()) {
-                        log.warn("No placeholder found for directory {}", directory);
-                    }
-                    throw new NotfoundException(directory.getAbsolute());
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn("No placeholder found for directory {}", directory);
                 }
-                // Empty directories in hierarchical namespace are not listed with a trailing delimiter prefix
+                throw new NotfoundException(directory.getAbsolute());
             }
             return children;
         }

@@ -105,7 +105,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
                 log.debug(String.format("Search for common prefix %s", file));
             }
             try {
-                new AzureObjectListService(session).list(file, new CancellingListProgressListener());
+                new AzureListService(session).list(file, new CancellingListProgressListener());
                 return PathAttributes.EMPTY;
             }
             catch(ListCanceledException l) {

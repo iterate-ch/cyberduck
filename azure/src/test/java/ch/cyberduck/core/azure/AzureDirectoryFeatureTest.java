@@ -8,6 +8,7 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -53,6 +54,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         final Path placeholder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(placeholder));
+        assertTrue(new DefaultFindFeature(session).find(placeholder));
         assertEquals(PathAttributes.EMPTY, placeholder.attributes());
         final Path file = new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), file, new TransferStatus());
