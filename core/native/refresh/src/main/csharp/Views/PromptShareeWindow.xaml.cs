@@ -20,8 +20,7 @@ public partial class PromptShareeWindow
             d(this.OneWayBind(ViewModel, vm => vm.Items, v => v.sharees.ItemsSource));
             d(this.Bind(ViewModel, vm => vm.SelectedShareeView, v => v.sharees.SelectedItem));
 
-            d(this.OneWayBind(ViewModel, vm => vm.Protocol, v => v.protocolImage.Source, i => iconProvider.GetDisk(i, 48)));
-            d(this.WhenAnyValue(x => x.ViewModel.Protocol).Subscribe(x => AutomationProperties.SetName(protocolImage, x.getDescription())));
+            d(this.OneWayBind(ViewModel, vm => vm.Protocol, v => v.LayoutRoot.ImageSource, i => iconProvider.GetDisk(i, 48)));
 
             d(this.BindCommand(ViewModel, vm => vm.Confirm, v => v.chooseButton));
             d(this.BindCommand(ViewModel, vm => vm.Cancel, v => v.cancelButton));

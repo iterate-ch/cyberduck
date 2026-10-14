@@ -4,55 +4,32 @@
                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                               xmlns:dvm="clr-namespace:Ch.Cyberduck.Core.Refresh.ViewModels.Dialogs"
+                              xmlns:controls="clr-namespace:Ch.Cyberduck.Core.Refresh.Controls"
                               xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
                               xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
                               mc:Ignorable="d"
                               Icon="{xaml:Icon 'cyberduck-application'}"
                               ResizeMode="NoResize"
+                              SizeToContent="Height"
                               Title="{xaml:Text 'Create Download Share', Table=Share}"
-                              SizeToContent="WidthAndHeight"
-                              WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+                              WindowStartupLocation="CenterScreen"
+                              Width="300">
+    <controls:DialogContentControl x:Name="LayoutRoot">
+        <HeaderedContentControl.Header>
+            <HeaderedContentControl Style="{StaticResource LabeledControlStyle}">
+                <HeaderedContentControl.Header>
+                    <TextBlock Name="shareesLabel"
+                               Text="{xaml:Text 'Send share to:', Table=Share}"
+                               Style="{StaticResource SubtitleTextBlockStyle}" />
+                </HeaderedContentControl.Header>
 
-        <Border Margin="{StaticResource ControlSpacing}"
-                Grid.Row="0">
-            <Grid Margin="{StaticResource ControlItemNegativeSpacing}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition MinWidth="280" />
-                </Grid.ColumnDefinitions>
+                <ComboBox Name="sharees"
+                          DisplayMemberPath="Description"
+                          AutomationProperties.LabeledBy="{Binding ElementName=shareesLabel}" />
+            </HeaderedContentControl>
+        </HeaderedContentControl.Header>
 
-                <Image Name="protocolImage"
-                       Height="48"
-                       Width="48"
-                       VerticalAlignment="Top"
-                       HorizontalAlignment="Left"
-                       Grid.Column="0"
-                       Margin="{StaticResource ControlItemSpacing}" />
-
-                <HeaderedContentControl Style="{StaticResource LabeledControlStyle}"
-                                        Grid.Column="1"
-                                        Margin="{StaticResource ControlItemSpacing}">
-                    <HeaderedContentControl.Header>
-                        <TextBlock Name="shareesLabel"
-                                   Text="{xaml:Text 'Send share to:', Table=Share}"
-                                   Style="{StaticResource SubtitleTextBlockStyle}" />
-                    </HeaderedContentControl.Header>
-
-                    <ComboBox Name="sharees"
-                              DisplayMemberPath="Description"
-                              AutomationProperties.LabeledBy="{Binding ElementName=shareesLabel}"
-                              MinWidth="{StaticResource TextControlThemeMinWidth}" />
-                </HeaderedContentControl>
-            </Grid>
-        </Border>
-
-        <Border Style="{StaticResource DialogBorderStyle}"
-                Grid.Row="1">
+        <controls:DialogContentControl.DialogContent>
             <UniformGrid Columns="2"
                          Margin="{StaticResource ControlItemNegativeSpacing}">
                 <Button Content="{xaml:Text 'Create', Table=Share}"
@@ -67,6 +44,6 @@
                         Margin="{StaticResource ControlItemSpacing}"
                         HorizontalAlignment="Stretch" />
             </UniformGrid>
-        </Border>
-    </Grid>
+        </controls:DialogContentControl.DialogContent>
+    </controls:DialogContentControl>
 </local:PromptShareeWindowBase>
