@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.net.URL;
 import java.util.Date;
 
 import com.amazonaws.HttpMethod;
@@ -73,14 +72,12 @@ public class S3PresignedUrlProvider {
         }
         final String endpoint = S3Session.isAwsHostname(host.getHostname()) ?
                 RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region) : host.getHostname();
-        // Virtual-host addressing rewrites the endpoint to bucket.authority and drops any path, so the context has to be part of the key.
-        // Path-style keeps a custom endpoint path and SigV4 canonicalizes it with the resource path.
-        final boolean virtualHost = !preferences.getBoolean("s3.bucket.virtualhost.disable")
-                && ServiceUtils.isBucketNameValidDNSName(bucketname)
-                && !InetAddressUtils.isIPv4Address(host.getHostname());
         final String serviceEndpoint;
         final String signingKey;
-        if(virtualHost) {
+        if(!preferences.getBoolean("s3.bucket.virtualhost.disable")
+                && ServiceUtils.isBucketNameValidDNSName(bucketname)
+                && !InetAddressUtils.isIPv4Address(host.getHostname()) && !InetAddressUtils.isIPv6Address(host.getHostname())) {
+            // Virtual-host addressing rewrites the endpoint to bucket.authority and drops any path, so the context has to be part of the key.
             serviceEndpoint = endpoint;
             if(StringUtils.isNotEmpty(context)) {
                 final String prefix = StringUtils.removeStart(context, "/");
@@ -91,19 +88,19 @@ public class S3PresignedUrlProvider {
             }
         }
         else {
+            // Path-style keeps a custom endpoint path and canonicalizes it with the resource path.
             signingKey = key;
             serviceEndpoint = StringUtils.isEmpty(context) ? endpoint : endpoint + context;
         }
-        // Dualstack resolution replaces the configured endpoint and would drop a context path.
-        final boolean endpointCarriesContext = !virtualHost && StringUtils.isNotEmpty(context);
         final AmazonS3 client = AmazonS3ClientBuilder.standard()
-                .withDualstackEnabled(!endpointCarriesContext
+                // Dualstack resolution replaces the configured endpoint and would drop a context path.
+                .withDualstackEnabled(StringUtils.isEmpty(context)
                         && S3Session.isAwsHostname(host.getHostname())
                         && preferences.getBoolean("s3.endpoint.dualstack.enable"))
                 .withPathStyleAccessEnabled(preferences.getBoolean("s3.bucket.virtualhost.disable"))
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(serviceEndpoint, region))
                 .withCredentials(toCredentialsProvider(credentials)).build();
-        final URL presigned = client.generatePresignedUrl(bucketname, signingKey, new Date(expiry), HttpMethod.valueOf(method));
-        return presigned.toExternalForm();
+        return client.generatePresignedUrl(bucketname, signingKey, new Date(expiry), HttpMethod.valueOf(method))
+                .toExternalForm();
     }
 }
