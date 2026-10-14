@@ -1,4 +1,10 @@
-﻿using ch.cyberduck.core;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pool;
@@ -6,192 +12,188 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.quicklook;
-using Ch.Cyberduck.Core.Refresh.Models;
-using DynamicData;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using java.util;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using Observable = System.Reactive.Linq.Observable;
-using Unit = System.Reactive.Unit;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 {
-    public class VersionsViewModel : ReactiveObject
+    public partial class VersionsViewModel(Controller controller, SessionPool session) : ObservableObject
     {
-        private readonly ObservableAsPropertyHelper<VersionViewModel> selectedVersionProperty;
-        private readonly ReadOnlyObservableCollection<VersionViewModel> versions;
-        private readonly IObservableCache<VersionViewModel, VersionModel> viewModelCache;
-        private bool busy;
-        private Path selection;
-        private VersionModel selectedVersionValue;
-
-        public VersionsViewModel(Controller controller, SessionPool session)
-        {
-            var temporary = TemporaryFileServiceFactory.get();
-            var delete = (Delete)session.getFeature(typeof(Delete));
-            var versioning = (Versioning)session.getFeature(typeof(Versioning));
-
-            var selectedVersion = this.WhenAnyValue(x => x.SelectedVersionValue).Publish().RefCount();
-
-            /* setup commands */
-            Open = ReactiveCommand.Create(() =>
-            {
-                var f = SelectedVersionValue.Path;
-                controller.background(new QuicklookTransferBackgroundAction(
-                    controller, QuickLookFactory.get(), session, TransferQueueFactory.get(), Collections.singletonList(
-                        new TransferItem(f, temporary.create(session.getHost().getUuid(), f)))));
-            }, selectedVersion.Select(v => v != null && v.Path.attributes().getPermission().isReadable()));
-            Remove = ReactiveCommand.CreateFromTask(async () =>
-            {
-                var norm = PathNormalizer.normalize(Collections.singletonList(SelectedVersionValue.Path));
-                if (norm.size() == 0)
-                {
-                    return;
-                }
-                var native = Utils.ConvertFromJavaList<Path>(norm);
-                if (!await PromptDelete.Handle(native))
-                {
-                    return;
-                }
-                try
-                {
-                    Busy = true;
-                    TaskCompletionSource<object> result = new();
-                    controller.background(
-                        new AsyncWorkerBackgroundAction(controller, session, result,
-                            new DeleteWorker(
-                                LoginCallbackFactory.get(controller), norm,
-                                ProgressListener.noop, false)));
-                    await result.Task;
-                }
-                finally
-                {
-                    Busy = false;
-                }
-                await Load.ExecuteIfPossible();
-            }, selectedVersion.Select(v => v != null && delete.isSupported(v.Path)));
-            Revert = ReactiveCommand.CreateFromTask(async () =>
-            {
-                try
-                {
-                    Busy = true;
-                    var files = Collections.singletonList(SelectedVersionValue.Path);
-                    var native = Utils.ConvertFromJavaList<Path>(files);
-                    TaskCompletionSource<object> result = new();
-                    controller.background(
-                        new AsyncWorkerBackgroundAction(controller, session, result,
-                            new RevertWorker(files)));
-                    await result.Task;
-                    Reverted?.Invoke(native);
-                }
-                finally
-                {
-                    Busy = false;
-                }
-                await Load.ExecuteIfPossible();
-            }, selectedVersion.Select(v => v != null && versioning.isRevertable(v.Path)));
-            Load = ReactiveCommand.CreateFromTask(async () =>
-            {
-                try
-                {
-                    Busy = true;
-                    TaskCompletionSource<AttributedList> result = new();
-                    controller.background(
-                        new WorkerBackgroundAction(
-                            controller, session, new VersionsWorkerImpl(Selection, new DisabledListProgressListener(), result)));
-                    var versions = await result.Task;
-
-                    return versions.Cast<Path>().Select(p => new VersionModel(p)).AsObservableChangeSet();
-                }
-                finally
-                {
-                    Busy = false;
-                }
-            });
-
-            /* setup tracking */
-            viewModelCache = Load.Switch()
-                .Transform(x => new VersionViewModel(x))
-                .Bind(out versions)
-                .AddKey(x => x.Model)
-                .AsObservableCache();
-
-            selectedVersionProperty = selectedVersion.Select(x => x switch
-            {
-                null => Observable.Empty<VersionViewModel>(),
-                _ => viewModelCache.WatchValue(x)
-            }).Switch().ToProperty(this, nameof(SelectedVersion));
-        }
-
         public delegate void RevertedEventHandler(IList<Path> files);
+        public delegate void DeleteConfirmationEventHandler(ConfirmDeleteEventArgs e);
 
+        public event DeleteConfirmationEventHandler OnDeleteConfirmation;
         public event RevertedEventHandler Reverted;
 
-        public bool Busy
+        private readonly Controller controller = controller;
+        private readonly Delete delete = session.Feature<Delete>();
+        private readonly SessionPool session = session;
+        private readonly Versioning versioning = session.Feature<Versioning>();
+        [ObservableProperty]
+        private bool busy;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(DeleteVersionCommand))]
+        [NotifyCanExecuteChangedFor(nameof(RevealVersionCommand))]
+        [NotifyCanExecuteChangedFor(nameof(RevertVersionCommand))]
+        private VersionViewModel selectedVersion;
+        [ObservableProperty]
+        private Path selection;
+        private ReadOnlyCollection<VersionViewModel> versions;
+        private TaskNotifier<ReadOnlyCollection<VersionViewModel>> versionsNotifier;
+
+        public ReadOnlyCollection<VersionViewModel> Versions
         {
-            get => busy;
-            set => this.RaiseAndSetIfChanged(ref busy, value);
+            get => versions;
+            private set => SetProperty(ref versions, value);
         }
 
-        public ReactiveCommand<Unit, IObservable<IChangeSet<VersionModel>>> Load { get; }
-
-        public ReactiveCommand<Unit, Unit> Open { get; }
-
-        public Interaction<ICollection<Path>, bool> PromptDelete { get; } = new();
-
-        public ReactiveCommand<Unit, Unit> Remove { get; }
-
-        public ReactiveCommand<Unit, Unit> Revert { get; }
-
-        public VersionViewModel SelectedVersion
+        private Task<ReadOnlyCollection<VersionViewModel>> LoadingTask
         {
-            get => selectedVersionProperty.Value;
-            set => SelectedVersionValue = value?.Model;
+            get => versionsNotifier;
+            set => SetPropertyAndNotifyOnCompletion(ref versionsNotifier, value, OnLoadCompleted);
         }
 
-        public Path Selection
+        public void Load()
         {
-            get => selection;
-            set => this.RaiseAndSetIfChanged(ref selection, value);
+            LoadingTask = LoadVersionsAsync(Selection);
         }
 
-        public ReadOnlyObservableCollection<VersionViewModel> Versions => versions;
+        private bool CanDeleteVersion() => SelectedVersion != null && delete.isSupported(SelectedVersion.Model.Path);
 
-        private VersionModel SelectedVersionValue
+        private bool CanRevealVersion() => SelectedVersion != null && SelectedVersion.Model.Path.attributes().getPermission().isReadable();
+
+        private bool CanRevertVersion() => SelectedVersion != null && versioning.isRevertable(SelectedVersion.Model.Path);
+
+        [RelayCommand(CanExecute = nameof(CanDeleteVersion))]
+        private async Task OnDeleteVersion()
         {
-            get => selectedVersionValue;
-            set => this.RaiseAndSetIfChanged(ref selectedVersionValue, value);
-        }
-
-        private class AsyncWorkerBackgroundAction : WorkerBackgroundAction
-        {
-            private readonly TaskCompletionSource<object> completionSource;
-
-            public AsyncWorkerBackgroundAction(Controller controller, SessionPool session, TaskCompletionSource<object> completionSource, Worker worker) : base(controller, session, worker)
+            var norm = PathNormalizer.normalize(Collections.singletonList(SelectedVersion.Model.Path));
+            if (norm.size() == 0)
             {
-                this.completionSource = completionSource;
+                return;
             }
+
+            var native = Utils.ConvertFromJavaList<Path>(norm);
+            ConfirmDeleteEventArgs e = new(native);
+            OnDeleteConfirmation?.Invoke(e);
+            if (!e.Result)
+            {
+                return;
+            }
+
+            try
+            {
+                Busy = true;
+                AsyncWorkerBackgroundAction action = new(controller, session,
+                        new DeleteWorker(
+                            LoginCallbackFactory.get(controller), norm,
+                            ProgressListener.noop, false));
+                controller.background(action);
+                await action.Task;
+            }
+            finally
+            {
+                Busy = false;
+            }
+
+            await (LoadingTask = LoadVersionsAsync(Selection));
+        }
+
+        private void OnLoadCompleted(Task<ReadOnlyCollection<VersionViewModel>> task)
+        {
+            if (LoadingTask == task && task?.Status == TaskStatus.RanToCompletion)
+            {
+                Versions = task.Result;
+            }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanRevealVersion))]
+        private void OnRevealVersion()
+        {
+            var f = SelectedVersion.Model.Path;
+            controller.background(new QuicklookTransferBackgroundAction(
+                controller, QuickLookFactory.get(), session, TransferQueueFactory.get(), Collections.singletonList(
+                    new TransferItem(f, TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), f)))));
+        }
+
+        [RelayCommand(CanExecute = nameof(CanRevertVersion))]
+        private async Task OnRevertVersion()
+        {
+            try
+            {
+                Busy = true;
+                var files = Collections.singletonList(SelectedVersion.Model.Path);
+                var native = Utils.ConvertFromJavaList<Path>(files);
+                AsyncWorkerBackgroundAction action = new(controller, session, new RevertWorker(files));
+                controller.background(action);
+                await action.Task;
+                Reverted?.Invoke(native);
+            }
+            finally
+            {
+                Busy = false;
+            }
+
+            await (LoadingTask = LoadVersionsAsync(Selection));
+        }
+
+        private async Task<ReadOnlyCollection<VersionViewModel>> LoadVersionsAsync(Path path)
+        {
+            if (path is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                Busy = true;
+                VersionsWorkerImpl worker = new(path, new DisabledListProgressListener());
+                controller.background(new WorkerBackgroundAction(controller, session, worker, ProgressListener.noop));
+                var result = await worker.Task;
+                List<VersionViewModel> viewModels = [];
+                foreach (Path version in result)
+                {
+                    viewModels.Add(new(new(version)));
+                }
+
+                return viewModels.AsReadOnly();
+            }
+            finally
+            {
+                Busy = false;
+            }
+        }
+
+        partial void OnSelectionChanged(Path value)
+        {
+            SelectedVersion = null;
+        }
+
+        public sealed class ConfirmDeleteEventArgs(ICollection<Path> files) : EventArgs
+        {
+            public ICollection<Path> Files { get; } = files;
+
+            public bool Result { get; set; }
+        }
+
+        private class AsyncWorkerBackgroundAction(Controller controller, SessionPool session, Worker worker) : WorkerBackgroundAction(controller, session, worker)
+        {
+            private readonly TaskCompletionSource<object> completionSource = new();
+
+            public Task Task => completionSource.Task;
 
             public override void cleanup()
             {
-                base.cleanup();
                 completionSource.SetResult(default);
             }
         }
 
-        private class VersionsWorkerImpl : VersionsWorker
+        private class VersionsWorkerImpl(Path file, ListProgressListener listener) : VersionsWorker(file, listener)
         {
-            private readonly TaskCompletionSource<AttributedList> completionSource;
+            private readonly TaskCompletionSource<AttributedList> completionSource = new();
 
-            public VersionsWorkerImpl(Path file, ListProgressListener listener, TaskCompletionSource<AttributedList> completionSource) : base(file, listener)
-            {
-                this.completionSource = completionSource;
-            }
+            public Task<AttributedList> Task => completionSource.Task;
 
             public override void cleanup(object result) => completionSource.SetResult((AttributedList)result);
         }

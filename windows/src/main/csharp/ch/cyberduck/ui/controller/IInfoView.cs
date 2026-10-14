@@ -42,6 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         InfoTab ActiveTab { set; get; }
         VersionsInfoTab Versions { get; }
+        MetadataInfoTab Metadata { get; }
 
         Image ToolbarDistributionImage { set; }
         bool ToolbarDistributionEnabled { set; }
@@ -101,8 +102,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool AclAddEnabled { set; }
         bool AclRemoveEnabled { set; }
         bool AclAnimationActive { set; }
-
-        MetadataViewModel MetadataViewModel { get; set; }
 
         Distribution.Method DistributionDeliveryMethod { set; get; }
         bool DistributionDeliveryMethodEnabled { set; }

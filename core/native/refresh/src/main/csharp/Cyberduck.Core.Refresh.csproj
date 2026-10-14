@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>
@@ -43,10 +44,6 @@
     <PackageReference Include="System.Runtime.Caching" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
-    <PackageReference Include="System.Memory" />
-  </ItemGroup>
-
   <ItemGroup>
     <ImageResource Include="$(CyberduckDir)img\*.png" />
     <ImageResource Include="$(CyberduckDir)img\*.tiff" />
@@ -54,5 +51,10 @@
     <ImageResource Include="$(CyberduckDir)img\*.gif" />
     <ImageResource Include="$(CyberduckDir)cyberduck-application.ico" />
     <ImageResource Include="$(CyberduckDir)cyberduck-document.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources\AppStyles.net472.xaml" Link="Resources\AppStyles.xaml" />
+    <Page Update="Resources\AppStyles.net10.0.xaml" Link="Resources\AppStyles.xaml" />
   </ItemGroup>
 </Project>
