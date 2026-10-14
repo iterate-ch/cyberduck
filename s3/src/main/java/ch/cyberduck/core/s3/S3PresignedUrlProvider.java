@@ -26,6 +26,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.util.InetAddressUtils;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URL;
 import java.util.Date;
@@ -58,22 +60,50 @@ public class S3PresignedUrlProvider {
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
     public String create(final Credentials credentials, final String bucketname, final String region, final String key, final String method, final long expiry) {
-        final AmazonS3 client = AmazonS3ClientBuilder.standard()
-                .withDualstackEnabled(S3Session.isAwsHostname(host.getHostname()) && preferences.getBoolean("s3.endpoint.dualstack.enable"))
-                .withPathStyleAccessEnabled(preferences.getBoolean("s3.bucket.virtualhost.disable"))
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
-                        S3Session.isAwsHostname(host.getHostname()) ?
-                                RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region) : host.getHostname(), region))
-                .withCredentials(toCredentialsProvider(credentials)).build();
-        final URL presigned = client.generatePresignedUrl(bucketname, key, new Date(expiry), HttpMethod.valueOf(method));
-        // Allow for non-standard virtual directory paths on the server-side
+        // Allow for non-standard virtual directory paths on the server-side. Credential endpoints and "/" are not a path prefix.
         String context = host.getProtocol().getContext();
         if(StringUtils.isNotBlank(context) && !Scheme.isURL(context)) {
             context = PathNormalizer.normalize(context);
+            if(StringUtils.equals(context, "/")) {
+                context = StringUtils.EMPTY;
+            }
         }
         else {
             context = StringUtils.EMPTY;
         }
-        return String.format("%s://%s%s%s?%s", presigned.getProtocol(), presigned.getAuthority(), context, presigned.getPath(), presigned.getQuery());
+        final String endpoint = S3Session.isAwsHostname(host.getHostname()) ?
+                RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region) : host.getHostname();
+        // Virtual-host addressing rewrites the endpoint to bucket.authority and drops any path, so the context has to be part of the key.
+        // Path-style keeps a custom endpoint path and SigV4 canonicalizes it with the resource path.
+        final boolean virtualHost = !preferences.getBoolean("s3.bucket.virtualhost.disable")
+                && ServiceUtils.isBucketNameValidDNSName(bucketname)
+                && !InetAddressUtils.isIPv4Address(host.getHostname());
+        final String serviceEndpoint;
+        final String signingKey;
+        if(virtualHost) {
+            serviceEndpoint = endpoint;
+            if(StringUtils.isNotEmpty(context)) {
+                final String prefix = StringUtils.removeStart(context, "/");
+                signingKey = StringUtils.isEmpty(key) ? prefix : prefix + "/" + key;
+            }
+            else {
+                signingKey = key;
+            }
+        }
+        else {
+            signingKey = key;
+            serviceEndpoint = StringUtils.isEmpty(context) ? endpoint : endpoint + context;
+        }
+        // Dualstack resolution replaces the configured endpoint and would drop a context path.
+        final boolean endpointCarriesContext = !virtualHost && StringUtils.isNotEmpty(context);
+        final AmazonS3 client = AmazonS3ClientBuilder.standard()
+                .withDualstackEnabled(!endpointCarriesContext
+                        && S3Session.isAwsHostname(host.getHostname())
+                        && preferences.getBoolean("s3.endpoint.dualstack.enable"))
+                .withPathStyleAccessEnabled(preferences.getBoolean("s3.bucket.virtualhost.disable"))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(serviceEndpoint, region))
+                .withCredentials(toCredentialsProvider(credentials)).build();
+        final URL presigned = client.generatePresignedUrl(bucketname, signingKey, new Date(expiry), HttpMethod.valueOf(method));
+        return presigned.toExternalForm();
     }
 }
