@@ -31,10 +31,20 @@
         <false/>
         <key>Port Configurable</key>
         <false/>
-        <key>Password Configurable</key>
-        <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Password Configurable</key>
+        <false/>
+        <key>Token Configurable</key>
+        <false/>
+        <key>OAuth Configurable</key>
+        <false/>
+        <key>OAuth Redirect Url</key>
+        <string>http://127.0.0.1/oauth/callback</string>
+        <key>Scopes</key>
+        <array>
+            <string>openid</string>
+        </array>
         <key>Region</key>
         <string>us-east-1</string>
         <key>Regions</key>
@@ -75,7 +85,6 @@
         </array>
         <key>Properties</key>
         <array>
-            <string>s3.login.enable=true</string>
             <string>s3.storage.class.options=STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY
                 GLACIER GLACIER_IR DEEP_ARCHIVE
             </string>
