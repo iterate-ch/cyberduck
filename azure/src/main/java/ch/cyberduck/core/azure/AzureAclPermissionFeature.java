@@ -72,6 +72,11 @@ public class AzureAclPermissionFeature implements AclPermission {
     }
 
     @Override
+    public Acl getDefault(final Path file) throws BackgroundException {
+        return Acl.EMPTY;
+    }
+
+    @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {

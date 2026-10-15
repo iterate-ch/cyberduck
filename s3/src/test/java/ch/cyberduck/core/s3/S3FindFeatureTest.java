@@ -64,7 +64,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertTrue(new S3FindFeature(session, acl).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
-        final Path test = new S3TouchFeature(session, acl).touch(
+        final Path test = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
@@ -89,7 +89,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         assertTrue(new S3FindFeature(virtualhost, acl).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
-        final Path test = new S3TouchFeature(virtualhost, acl).touch(
+        final Path test = new S3TouchFeature(virtualhost).touch(
                 new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
@@ -113,7 +113,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path f = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path testWithVersionId = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, acl), f, new TransferStatus());
+        final Path testWithVersionId = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl), f, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(f));
         // Set delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());

@@ -68,6 +68,9 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
+        }
         final Path bucket = containerService.getContainer(file);
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
@@ -105,14 +108,15 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
                         containerService.getContainer(file).getName()).execute();
                 for(BucketAccessControl control : controls.getItems()) {
                     final String entity = control.getEntity();
-                    acl.addAll(this.toUser(entity, control.getEmail()), new Acl.Role(control.getRole()));
+                    acl.addAll(toUser(entity, control.getEmail()), toRole(control));
                 }
             }
             else {
-                final ObjectAccessControls controls = session.getClient().objectAccessControls().list(containerService.getContainer(file).getName(), containerService.getKey(file)).execute();
+                final ObjectAccessControls controls = session.getClient().objectAccessControls().list(
+                        containerService.getContainer(file).getName(), containerService.getKey(file)).execute();
                 for(ObjectAccessControl control : controls.getItems()) {
                     final String entity = control.getEntity();
-                    acl.addAll(this.toUser(entity, control.getEmail()), this.toRole(control));
+                    acl.addAll(toUser(entity, control.getEmail()), toRole(control));
                 }
             }
             return acl;
@@ -121,7 +125,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
-                    // No placeholder file may exist but we just have a common prefix
+                    // No placeholder file may exist, but we just have a common prefix
                     return Acl.EMPTY;
                 }
             }
@@ -133,7 +137,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         }
     }
 
-    protected Acl.User toUser(final String entity, final String email) {
+    protected static Acl.User toUser(final String entity, final String email) {
         if(entity.startsWith("user-")) {
             if(StringUtils.isNotBlank(email)) {
                 return new Acl.EmailUser(StringUtils.substringAfter(entity, "user-"));
@@ -159,9 +163,19 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         return new Acl.CanonicalUser(entity);
     }
 
-    protected Acl.Role toRole(final ObjectAccessControl control) {
+    protected static Acl.Role toRole(final ObjectAccessControl control) {
         switch(control.getRole()) {
             // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
+            case "READER":
+                return new Acl.Role(Acl.Role.READ);
+            case "OWNER":
+                return new Acl.Role(Acl.Role.FULL);
+        }
+        return new Acl.Role(control.getRole());
+    }
+
+    protected static Acl.Role toRole(final BucketAccessControl control) {
+        switch(control.getRole()) {
             case "READER":
                 return new Acl.Role(Acl.Role.READ);
             case "OWNER":
@@ -175,22 +189,22 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         try {
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(status.getAcl());
+                final List<BucketAccessControl> controls = toBucketAccessControl(status.getAcl());
                 status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(
-                        session.getClient().buckets().update(bucket.getName(),
-                                new Bucket().setAcl(bucketAccessControls)).execute()
-                ));
+                        session.getClient().buckets().update(bucket.getName(), new Bucket()
+                                        .setAcl(controls))
+                                // An empty or omitted ACL list in the request body is ignored and keeps the existing entries.
+                                // Reset to the private default using the predefinedAcl query parameter instead.
+                                .setPredefinedAcl(Acl.EMPTY == status.getAcl() ? null : controls.isEmpty() ? Acl.CANNED_PRIVATE.getCannedString() : null).execute()));
             }
             else {
-                final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(status.getAcl());
+                final List<ObjectAccessControl> controls = toObjectAccessControl(status.getAcl());
                 final Storage.Objects.Update request = session.getClient().objects().update(bucket.getName(), containerService.getKey(file),
-                        new StorageObject().setAcl(objectAccessControls));
+                        new StorageObject().setAcl(controls));
                 if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
-                status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(
-                        request.execute()
-                ));
+                status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(request.execute()));
             }
         }
         catch(IOException e) {
@@ -206,120 +220,148 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         }
     }
 
-    protected List<BucketAccessControl> toBucketAccessControl(final Acl acl) {
+    public static List<BucketAccessControl> toBucketAccessControl(final Acl acl) {
         final List<BucketAccessControl> list = new ArrayList<>();
-        for(Acl.UserAndRole userAndRole : acl.asList()) {
-            if(!userAndRole.isValid()) {
-                continue;
+        if(acl.isCanned()) {
+            if(Acl.CANNED_PUBLIC_READ.equals(acl)) {
+                list.add(new BucketAccessControl().setRole("READER").setEntity("allUsers"));
             }
-            final BucketAccessControl control = new BucketAccessControl();
-            switch(userAndRole.getRole().getName()) {
-                // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
-                case Acl.Role.READ:
-                    control.setRole("READER");
-                    break;
-                case Acl.Role.FULL:
-                    control.setRole("OWNER");
-                    break;
+            if(Acl.CANNED_PUBLIC_READ_WRITE.equals(acl)) {
+                list.add(new BucketAccessControl().setRole("READER").setEntity("allUsers"));
+                list.add(new BucketAccessControl().setRole("OWNER").setEntity("allUsers"));
             }
-            if(userAndRole.getUser() instanceof Acl.EmailUser) {
-                control.setEntity(String.format("user-%s", userAndRole.getUser().getIdentifier()));
-                control.setEmail(userAndRole.getUser().getIdentifier());
+            if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
+                list.add(new BucketAccessControl().setRole("READER").setEntity("allAuthenticatedUsers"));
             }
-            else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                    // This special scope identifier represents anyone who is on the Internet, with or without a Google
-                    // account. The special scope identifier for all users is AllUsers.
-                    control.setEntity("allUsers");
+            // private, bucket-owner-read and bucket-owner-full-control have no bucket equivalent
+        }
+        else {
+            for(Acl.UserAndRole userAndRole : acl.asList()) {
+                if(!userAndRole.isValid()) {
+                    continue;
                 }
-                else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
-                    // This special scope identifier represents anyone who is authenticated with a Google account. The special scope identifier
-                    // for all Google account holders is AllAuthenticatedUsers.
-                    control.setEntity("allAuthenticatedUsers");
+                final BucketAccessControl control = new BucketAccessControl();
+                switch(userAndRole.getRole().getName()) {
+                    // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
+                    case Acl.Role.READ:
+                        control.setRole("READER");
+                        break;
+                    case Acl.Role.FULL:
+                        control.setRole("OWNER");
+                        break;
+                }
+                if(userAndRole.getUser() instanceof Acl.EmailUser) {
+                    control.setEntity(String.format("user-%s", userAndRole.getUser().getIdentifier()));
+                    control.setEmail(userAndRole.getUser().getIdentifier());
+                }
+                else if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                    if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                        // This special scope identifier represents anyone who is on the Internet, with or without a Google
+                        // account. The special scope identifier for all users is AllUsers.
+                        control.setEntity("allUsers");
+                    }
+                    else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
+                        // This special scope identifier represents anyone who is authenticated with a Google account. The special scope identifier
+                        // for all Google account holders is AllAuthenticatedUsers.
+                        control.setEntity("allAuthenticatedUsers");
+                    }
+                    else {
+                        control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
+                    }
+                }
+                else if(userAndRole.getUser() instanceof Acl.DomainUser) {
+                    control.setEntity(String.format("domain-%s", userAndRole.getUser().getIdentifier()));
+                    control.setDomain(userAndRole.getUser().getIdentifier());
+                }
+                else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
+                    control.setEntity(userAndRole.getUser().getIdentifier());
+                    control.setEmail(userAndRole.getUser().getIdentifier());
+                }
+                else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
+                    control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
+                    control.setEmail(userAndRole.getUser().getIdentifier());
                 }
                 else {
-                    control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
+                    log.warn("Unsupported user {}", userAndRole.getUser());
                 }
+                list.add(control);
             }
-            else if(userAndRole.getUser() instanceof Acl.DomainUser) {
-                control.setEntity(String.format("domain-%s", userAndRole.getUser().getIdentifier()));
-                control.setDomain(userAndRole.getUser().getIdentifier());
-            }
-            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
-                control.setEntity(userAndRole.getUser().getIdentifier());
-                control.setEmail(userAndRole.getUser().getIdentifier());
-            }
-            else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
-                control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
-                control.setEmail(userAndRole.getUser().getIdentifier());
-            }
-            else {
-                log.warn("Unsupported user {}", userAndRole.getUser());
-            }
-            list.add(control);
         }
         return list;
     }
 
-    protected List<ObjectAccessControl> toObjectAccessControl(final Acl acl) {
+    public static List<ObjectAccessControl> toObjectAccessControl(final Acl acl) {
         final List<ObjectAccessControl> list = new ArrayList<>();
-        // Do not set owner for ACL which is set automatically
-        for(Acl.UserAndRole userAndRole : acl.asList()) {
-            if(!userAndRole.isValid()) {
-                continue;
+        if(acl.isCanned()) {
+            if(Acl.CANNED_PUBLIC_READ.equals(acl)
+                    || Acl.CANNED_PUBLIC_READ_WRITE.equals(acl)) {
+                // Objects cannot be made publicly writable
+                list.add(new ObjectAccessControl().setRole("READER").setEntity("allUsers"));
             }
-            final ObjectAccessControl control = new ObjectAccessControl();
-            switch(userAndRole.getRole().getName()) {
-                // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
-                case Acl.Role.READ:
-                    control.setRole("READER");
-                    break;
-                case Acl.Role.FULL:
-                    control.setRole("OWNER");
-                    break;
+            if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
+                list.add(new ObjectAccessControl().setRole("READER").setEntity("allAuthenticatedUsers"));
             }
-            if(userAndRole.getUser() instanceof Acl.EmailUser) {
-                control.setEntity(String.format("user-%s", userAndRole.getUser().getIdentifier()));
-                control.setEmail(userAndRole.getUser().getIdentifier());
-            }
-            else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                    // This special scope identifier represents anyone who is on the Internet, with or without a Google
-                    // account. The special scope identifier for all users is AllUsers.
-                    control.setEntity("allUsers");
+            // private, bucket-owner-read and bucket-owner-full-control are derived from the owner
+        }
+        else {
+            // Do not set owner for ACL which is set automatically
+            for(Acl.UserAndRole userAndRole : acl.asList()) {
+                if(!userAndRole.isValid()) {
+                    continue;
                 }
-                else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
-                    // This special scope identifier represents anyone who is authenticated with a Google account. The special scope identifier
-                    // for all Google account holders is AllAuthenticatedUsers.
-                    control.setEntity("allAuthenticatedUsers");
+                final ObjectAccessControl control = new ObjectAccessControl();
+                switch(userAndRole.getRole().getName()) {
+                    // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
+                    case Acl.Role.READ:
+                        control.setRole("READER");
+                        break;
+                    case Acl.Role.FULL:
+                        control.setRole("OWNER");
+                        break;
+                }
+                if(userAndRole.getUser() instanceof Acl.EmailUser) {
+                    control.setEntity(String.format("user-%s", userAndRole.getUser().getIdentifier()));
+                    control.setEmail(userAndRole.getUser().getIdentifier());
+                }
+                else if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                    if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                        // This special scope identifier represents anyone who is on the Internet, with or without a Google
+                        // account. The special scope identifier for all users is AllUsers.
+                        control.setEntity("allUsers");
+                    }
+                    else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
+                        // This special scope identifier represents anyone who is authenticated with a Google account. The special scope identifier
+                        // for all Google account holders is AllAuthenticatedUsers.
+                        control.setEntity("allAuthenticatedUsers");
+                    }
+                    else {
+                        control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
+                    }
+                }
+                else if(userAndRole.getUser() instanceof Acl.DomainUser) {
+                    control.setEntity(String.format("domain-%s", userAndRole.getUser().getIdentifier()));
+                    control.setDomain(userAndRole.getUser().getIdentifier());
+                }
+                else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
+                    control.setEntity(userAndRole.getUser().getIdentifier());
+                    control.setEmail(userAndRole.getUser().getIdentifier());
+                }
+                else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
+                    control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
+                    control.setEmail(userAndRole.getUser().getIdentifier());
                 }
                 else {
-                    control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
+                    log.warn("Unsupported user {}", userAndRole.getUser());
                 }
+                list.add(control);
             }
-            else if(userAndRole.getUser() instanceof Acl.DomainUser) {
-                control.setEntity(String.format("domain-%s", userAndRole.getUser().getIdentifier()));
-                control.setDomain(userAndRole.getUser().getIdentifier());
-            }
-            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
-                control.setEntity(userAndRole.getUser().getIdentifier());
-                control.setEmail(userAndRole.getUser().getIdentifier());
-            }
-            else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
-                control.setEntity(String.format("group-%s", userAndRole.getUser().getIdentifier()));
-                control.setEmail(userAndRole.getUser().getIdentifier());
-            }
-            else {
-                log.warn("Unsupported user {}", userAndRole.getUser());
-            }
-            list.add(control);
         }
         return list;
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
-        final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+        final List<Acl.User> users = new ArrayList<>(Arrays.asList(
                 new Acl.CanonicalUser(),
                 new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {
                     @Override
@@ -356,7 +398,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         // There are two roles that can be assigned to an entity:
-        return new ArrayList<Acl.Role>(Arrays.asList(
+        return new ArrayList<>(Arrays.asList(
                 new Acl.Role(Acl.Role.FULL),
                 new Acl.Role(Acl.Role.READ))
         );

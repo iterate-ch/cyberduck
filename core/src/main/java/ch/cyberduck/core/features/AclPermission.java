@@ -17,11 +17,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.List;
@@ -65,35 +61,9 @@ public interface AclPermission {
      */
     List<Acl.Role> getAvailableAclRoles(List<Path> files);
 
-    Preferences preferences = PreferencesFactory.get();
-
     /**
      * @param file Remote file
      * @return Default ACL to set for file
      */
-    default Acl getDefault(final Path file) throws BackgroundException {
-        if(preferences.getBoolean("queue.upload.permissions.default")) {
-            if(file.getType().contains(Path.Type.file)) {
-                return toAcl(new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default")));
-            }
-            else {
-                return toAcl(new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default")));
-            }
-        }
-        return Acl.EMPTY;
-    }
-
-    static Acl toAcl(final Permission permission) {
-        final Acl acl = new Acl();
-        if(permission.getOther().implies(Permission.Action.read)) {
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
-        }
-        if(permission.getGroup().implies(Permission.Action.read)) {
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-        }
-        if(permission.getGroup().implies(Permission.Action.write)) {
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
-        }
-        return acl;
-    }
+    Acl getDefault(final Path file) throws BackgroundException;
 }

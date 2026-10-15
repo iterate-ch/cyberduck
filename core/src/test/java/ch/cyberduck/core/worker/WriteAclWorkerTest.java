@@ -55,6 +55,11 @@ public class WriteAclWorkerTest {
                         public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                             throw new UnsupportedOperationException();
                         }
+
+                        @Override
+                        public Acl getDefault(final Path file) {
+                            return Acl.EMPTY;
+                        }
                     };
                 }
                 return super._getFeature(type);
@@ -97,6 +102,11 @@ public class WriteAclWorkerTest {
                         @Override
                         public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                             throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public Acl getDefault(final Path file) {
+                            return Acl.EMPTY;
                         }
                     };
                 }
@@ -142,6 +152,11 @@ public class WriteAclWorkerTest {
                                    @Override
                                    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                                        throw new UnsupportedOperationException();
+                                   }
+
+                                   @Override
+                                   public Acl getDefault(final Path file) {
+                                       return Acl.EMPTY;
                                    }
                                };
                            }

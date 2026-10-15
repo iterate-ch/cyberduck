@@ -112,10 +112,10 @@ public class MoveWorkerTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        final Path targetFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path targetFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final Path target = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -138,10 +138,10 @@ public class MoveWorkerTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        final Path targetFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path targetFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
@@ -161,11 +161,11 @@ public class MoveWorkerTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path folder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path folder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // rename file
@@ -197,13 +197,13 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), clearFile, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), clearFile, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(clearFile));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
         provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -221,9 +221,9 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path clearFolder = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path clearFolder = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), clearFile, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), clearFile, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(clearFolder));
         assertTrue(new S3FindFeature(session, acl).find(clearFile));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
@@ -248,17 +248,17 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path clearFolder = new S3DirectoryFeature(session, acl).mkdir(
+        final Path clearFolder = new S3DirectoryFeature(session).mkdir(
                 new S3WriteFeature(session, acl), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
         provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
@@ -280,11 +280,11 @@ public class MoveWorkerTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move directory outside vault

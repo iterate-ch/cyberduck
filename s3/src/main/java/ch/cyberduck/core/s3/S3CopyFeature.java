@@ -22,7 +22,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -84,7 +83,7 @@ public class S3CopyFeature implements Copy {
             }
         }
         final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
-        destination.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
+        destination.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));

@@ -43,8 +43,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import static ch.cyberduck.core.features.AclPermission.preferences;
-
 public class ExtendedBookmarkController extends BookmarkContainerController implements CollectionListener<Host> {
 
     private final Host bookmark;
@@ -131,7 +129,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
         // Default download folder
         this.addDownloadPath(new DownloadDirectoryFinder().find(bookmark));
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.addDownloadPath(LocalFactory.get(preferences.getProperty("queue.download.folder")));
+        this.addDownloadPath(LocalFactory.get(HostPreferencesFactory.get(bookmark).getProperty("queue.download.folder")));
         // Shortcut to the Desktop
         this.addDownloadPath(LocalFactory.get("~/Desktop"));
         // Shortcut to user home
