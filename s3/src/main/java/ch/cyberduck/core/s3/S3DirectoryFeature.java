@@ -36,14 +36,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.model.OwnershipControlsConfig;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
@@ -83,12 +80,8 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     log.warn("Missing region for bucket location");
                 }
                 // Create bucket
-                final Map<String, Object> headers = new HashMap<>();
-                if(null == acl) {
-                    headers.put("x-amz-object-ownership", OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED.toText());
-                }
-                session.getClient().createBucketImpl(URIEncoder.encode(containerService.getContainer(folder).getName()),
-                        S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl, headers);
+                session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(folder).getName()),
+                        S3LocationFeature.DEFAULT_REGION.getIdentifier().equals(region) ? "US" : region, acl);
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }
