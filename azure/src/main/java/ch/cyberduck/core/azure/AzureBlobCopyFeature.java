@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,9 +58,15 @@ public class AzureBlobCopyFeature implements Copy {
         try {
             final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(copy).getName())
                     .getBlobClient(containerService.getKey(copy));
+            String url = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(source).getName())
+                    .getBlobClient(containerService.getKey(source)).getBlobUrl();
+            final Credentials credentials = session.getHost().getCredentials();
+            if(credentials.isTokenAuthentication()) {
+                // The source of a copy is authorized by the server and not by the pipeline of the request
+                url += String.format("?%s", StringUtils.removeStart(credentials.getToken(), "?"));
+            }
             final SyncPoller<BlobCopyInfo, Void> poller = client.beginCopy(
-                    new BlobBeginCopyOptions(session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(source).getName())
-                            .getBlobClient(containerService.getKey(source)).getBlobUrl()).setPollInterval(Duration.ofSeconds(1)));
+                    new BlobBeginCopyOptions(url).setPollInterval(Duration.ofSeconds(1)));
             if(log.isDebugEnabled()) {
                 log.debug("Started copy for {}", copy);
             }
