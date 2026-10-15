@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -61,17 +62,15 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
+    private final LRUCache<Path, Acl> cache
+            = LRUCache.build(10);
+
     public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
-    @Override
-    public Acl getDefault(final Path file) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
-        }
-        final Path bucket = containerService.getContainer(file);
+    private boolean isUniformAccessEnforced(final Path bucket) throws BackgroundException {
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
             if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
@@ -80,23 +79,39 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
             final Bucket configuration = request.execute();
             if(null != configuration.getIamConfiguration()) {
                 if(configuration.getIamConfiguration().getUniformBucketLevelAccess().getEnabled()) {
-                    return Acl.EMPTY;
+                    return true;
                 }
             }
-            else {
-                log.warn("Missing IAM configuration for bucket {}", bucket);
-            }
-            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
+            log.warn("Missing IAM configuration for bucket {}", bucket);
+            return false;
         }
         catch(IOException e) {
             try {
-                throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(AccessDeniedException p) {
                 log.warn("Missing permission to read bucket IAM configuration for {} {}", bucket.getName(), e.getMessage());
-                return Acl.EMPTY;
+                return false;
             }
         }
+    }
+
+    @Override
+    public Acl getDefault(final Path file) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
+        }
+        final Path bucket = containerService.getContainer(file);
+        if(cache.contains(bucket)) {
+            return cache.get(bucket);
+        }
+        if(this.isUniformAccessEnforced(bucket)) {
+            cache.put(bucket, Acl.EMPTY);
+            return Acl.EMPTY;
+        }
+        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.acl.default"));
+        cache.put(bucket, preference);
+        return preference;
     }
 
     @Override
