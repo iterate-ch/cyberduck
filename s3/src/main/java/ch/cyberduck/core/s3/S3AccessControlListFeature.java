@@ -160,14 +160,15 @@ public class S3AccessControlListFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            // Read owner from bucket
-            final AccessControlList list = toObjectAccessControlList(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
+                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        toBucketAccessControlList(status.getAcl()));
             }
             else {
-                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
+                // Read owner from bucket
+                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file),
+                        toObjectAccessControlList(status.getAcl()));
             }
         }
         catch(ServiceException e) {
