@@ -50,7 +50,9 @@ import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.rest.Response;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.AppendBlobItem;
+import com.azure.storage.blob.models.BlobErrorCode;
 import com.azure.storage.blob.models.BlobHttpHeaders;
+import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.models.BlobType;
 import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.AppendBlobCreateOptions;
@@ -141,15 +143,28 @@ public class AzureWriteFeature implements Write<Void> {
                     // Overwrite existing blob replacing its type with the configured default. Append blobs are limited to
                     // 50,000 committed blocks and cannot hold large files.
                     final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
-                    if(!StringUtils.equals(blobType.name(), attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
+                    final String existing = attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE);
+                    BlobType type = blobType;
+                    if(!StringUtils.equals(blobType.name(), existing)) {
                         // Type of existing blob cannot be changed in place
                         if(log.isWarnEnabled()) {
-                            log.warn("Delete existing blob {} of type {} to replace with type {}", file,
-                                    attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE), blobType);
+                            log.warn("Delete existing blob {} of type {} to replace with type {}", file, existing, blobType);
                         }
-                        client.deleteIfExists();
+                        try {
+                            client.deleteIfExists();
+                        }
+                        catch(BlobStorageException e) {
+                            if(BlobErrorCode.SNAPSHOTS_PRESENT == e.getErrorCode()) {
+                                // Deleting would discard snapshots. Retain type of existing blob.
+                                log.warn("Retain type {} of existing blob {} with snapshots", existing, file);
+                                type = BlobType.valueOf(existing);
+                            }
+                            else {
+                                throw e;
+                            }
+                        }
                     }
-                    out = this.create(client, blobType, metadata, headers, file);
+                    out = this.create(client, type, metadata, headers, file);
                 }
             }
             else {

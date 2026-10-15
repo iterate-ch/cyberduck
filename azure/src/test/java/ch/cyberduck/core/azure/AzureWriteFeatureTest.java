@@ -26,7 +26,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 
+import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.BlobType;
+import com.azure.storage.blob.models.DeleteSnapshotsOptionType;
 
 import static org.junit.Assert.*;
 
@@ -145,5 +147,26 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         assertEquals(BlobType.APPEND_BLOB.name(), attributes.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE));
         assertEquals(content.length, attributes.getSize());
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteOverwriteAppendBlobWithSnapshotRetainsType() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] initial = RandomUtils.nextBytes(513);
+        final OutputStream out = new AzureWriteFeature(session, BlobType.APPEND_BLOB).write(test, new TransferStatus().setLength(initial.length), ConnectionCallback.noop);
+        new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(initial), out);
+        out.close();
+        final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient("cyberduck").getBlobClient(test.getName());
+        client.createSnapshot();
+        final byte[] content = RandomUtils.nextBytes(1025);
+        final OutputStream overwrite = new AzureWriteFeature(session, BlobType.BLOCK_BLOB).write(test, new TransferStatus().setExists(true).setLength(content.length), ConnectionCallback.noop);
+        new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), overwrite);
+        overwrite.close();
+        final PathAttributes attributes = new AzureAttributesFinderFeature(session).find(test);
+        // Snapshots must be retained, hence the type of the existing blob is kept
+        assertEquals(BlobType.APPEND_BLOB.name(), attributes.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE));
+        assertEquals(content.length, attributes.getSize());
+        client.deleteWithResponse(DeleteSnapshotsOptionType.INCLUDE, null, null, null);
     }
 }
