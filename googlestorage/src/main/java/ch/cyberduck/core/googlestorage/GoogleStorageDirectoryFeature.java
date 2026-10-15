@@ -41,6 +41,7 @@ import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.StorageObject;
 
 import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toBucketAccessControl;
+import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toPredefinedAcl;
 
 public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
@@ -58,16 +59,21 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                final List<BucketAccessControl> controls = toBucketAccessControl(status.getAcl());
-                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
-                status.setAcl(Acl.EMPTY);
+                final List<BucketAccessControl> acl = toBucketAccessControl(status.getAcl());
                 final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
                                 new Bucket()
-                                        .setAcl(controls)
+                                        // ACLs are disabled with uniform bucket-level access
+                                        .setIamConfiguration(new Bucket.IamConfiguration().setUniformBucketLevelAccess(
+                                                new Bucket.IamConfiguration.UniformBucketLevelAccess().setEnabled(null == acl)))
                                         .setLocation(status.getRegion())
                                         .setStorageClass(status.getStorageClass())
+                                        // An empty ACL list in the request body is ignored and applies projectPrivate. Use predefinedAcl for canned ACLs instead.
+                                        .setAcl(status.getAcl().isCanned() ? null : acl)
                                         .setName(containerService.getContainer(folder).getName()))
-                        .setPredefinedAcl(Acl.EMPTY == status.getAcl() ? null : controls.isEmpty() ? Acl.CANNED_PRIVATE.getCannedString() : null).execute();
+                        // Bucket owner canned ACLs apply to objects only
+                        .setPredefinedAcl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(status.getAcl()) || Acl.CANNED_BUCKET_OWNER_READ.equals(status.getAcl())
+                                ? null : toPredefinedAcl(status.getAcl()))
+                        .execute();
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

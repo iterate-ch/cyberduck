@@ -46,7 +46,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     public void testBucketDefault() throws Exception {
         final Path container = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
-        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
     }
 
     @Test
@@ -79,9 +79,9 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
         assertEquals(Acl.EMPTY, acl);
-        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
         final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(new Path(container,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(Acl.EMPTY, f.getPermission(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
@@ -90,7 +90,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     public void testReadWithDelimiter() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory));
         final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(new Path(container,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
@@ -100,7 +100,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     public void testReadDirectoryPlaceholder() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory));
         final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(container,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         assertNotNull(f.getPermission(placeholder));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
@@ -177,7 +177,9 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test
     public void testWriteBucketCannedPublicRead() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), container, new TransferStatus().setRegion("us-east1"));
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), container, new TransferStatus()
+                .setAcl(Acl.CANNED_PRIVATE)
+                .setRegion("us-east1"));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         try {
             f.setPermission(container, new TransferStatus().setAcl(Acl.CANNED_PUBLIC_READ));

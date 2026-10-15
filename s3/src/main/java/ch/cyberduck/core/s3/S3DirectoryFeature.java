@@ -67,6 +67,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
                 }
             }
+            // ACLs are disabled with Bucket Owner Enforced and requests setting an ACL other than bucket-owner-full-control are rejected
             final AccessControlList acl = S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
             try {
                 if(StringUtils.isNotBlank(region)) {

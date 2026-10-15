@@ -57,6 +57,7 @@ import java.util.TimeZone;
 import com.google.api.services.storage.model.StorageObject;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
+import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toPredefinedAcl;
 
 public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
 
@@ -82,24 +83,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                         uri.append(String.format("&userProject=%s", session.getHost().getCredentials().getUsername()));
                     }
                     if(status.getAcl().isCanned()) {
-                        uri.append("&predefinedAcl=");
-                        if(Acl.CANNED_PRIVATE.equals(status.getAcl())) {
-                            uri.append("private");
-                        }
-                        else if(Acl.CANNED_PUBLIC_READ.equals(status.getAcl())) {
-                            uri.append("publicRead");
-                        }
-                        else if(Acl.CANNED_PUBLIC_READ_WRITE.equals(status.getAcl())) {
-                            uri.append("publicReadWrite");
-                        }
-                        else if(Acl.CANNED_AUTHENTICATED_READ.equals(status.getAcl())) {
-                            uri.append("authenticatedRead");
-                        }
-                        else if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(status.getAcl())) {
-                            uri.append("bucketOwnerFullControl");
-                        }
-                        else if(Acl.CANNED_BUCKET_OWNER_READ.equals(status.getAcl())) {
-                            uri.append("bucketOwnerRead");
+                        final String predefined = toPredefinedAcl(status.getAcl());
+                        if(null != predefined) {
+                            uri.append("&predefinedAcl=").append(predefined);
                         }
                         // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                         status.setAcl(Acl.EMPTY);

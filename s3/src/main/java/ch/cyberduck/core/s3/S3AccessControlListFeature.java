@@ -100,8 +100,13 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
+        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
         if(containerService.isContainer(file)) {
-            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
+            return preference;
+        }
+        if(Acl.EMPTY.equals(preference)) {
+            // Selected "None" in preferences. No need to check if ACLs are disabled for the bucket
+            return Acl.EMPTY;
         }
         final Path bucket = containerService.getContainer(file);
         if(cache.contains(bucket)) {
@@ -111,7 +116,6 @@ public class S3AccessControlListFeature implements AclPermission {
             cache.put(bucket, Acl.EMPTY);
             return Acl.EMPTY;
         }
-        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
         cache.put(bucket, preference);
         return preference;
     }
@@ -160,14 +164,15 @@ public class S3AccessControlListFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            // Read owner from bucket
-            final AccessControlList list = toObjectAccessControlList(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
+                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        toBucketAccessControlList(status.getAcl()));
             }
             else {
-                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
+                // Read owner from bucket
+                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file),
+                        toObjectAccessControlList(status.getAcl()));
             }
         }
         catch(ServiceException e) {
@@ -210,6 +215,7 @@ public class S3AccessControlListFeature implements AclPermission {
      */
     protected static AccessControlList toAccessControlList(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
+            // Selected "None" in preferences
             return null;
         }
         if(Acl.CANNED_PRIVATE.equals(acl)) {

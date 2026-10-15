@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -52,7 +53,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     public void testBucketDefault() throws Exception {
         final Path container = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
     }
 
     @Test
@@ -60,7 +61,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotEquals(Acl.EMPTY, f.getPermission(container));
-        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
     }
 
     @Test
@@ -256,5 +257,16 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     public void testInvalidOwner() {
         assertNull(S3AccessControlListFeature.toObjectAccessControlList(Acl.EMPTY));
         assertNull(S3AccessControlListFeature.toObjectAccessControlList(new Acl(new Acl.UserAndRole(new Acl.Owner(""), new Acl.Role(Acl.Role.FULL)))));
+    }
+
+    @Test
+    public void testWriteBucketCannedPublicRead() throws Exception {
+        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, f), container, new TransferStatus()
+                .setAcl(Acl.CANNED_PRIVATE)
+        );
+        // S3 turns on all four Block Public Access settings for every new bucket
+        assertThrows(AccessDeniedException.class, () -> f.setPermission(container, new TransferStatus().setAcl(Acl.CANNED_PUBLIC_READ)));
     }
 }
