@@ -70,9 +70,8 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
                 }
             }
-            final boolean enforced = S3Session.isAwsHostname(session.getHost().getHostname());
             // ACLs are disabled with Bucket Owner Enforced and requests setting an ACL other than bucket-owner-full-control are rejected
-            final AccessControlList acl = enforced ? null : S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
+            final AccessControlList acl = S3AccessControlListFeature.toBucketAccessControlList(status.getAcl());
             try {
                 if(StringUtils.isNotBlank(region)) {
                     if(S3Session.isAwsHostname(session.getHost().getHostname())) {
@@ -85,7 +84,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                 }
                 // Create bucket
                 final Map<String, Object> headers = new HashMap<>();
-                if(enforced) {
+                if(null == acl) {
                     headers.put("x-amz-object-ownership", OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED.toText());
                 }
                 session.getClient().createBucketImpl(URIEncoder.encode(containerService.getContainer(folder).getName()),

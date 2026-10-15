@@ -205,6 +205,7 @@ public class S3AccessControlListFeature implements AclPermission {
      */
     protected static AccessControlList toAccessControlList(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
+            // Selected "None" in preferences
             return null;
         }
         if(Acl.CANNED_PRIVATE.equals(acl)) {

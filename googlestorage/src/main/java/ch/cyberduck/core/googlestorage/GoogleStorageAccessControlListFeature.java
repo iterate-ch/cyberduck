@@ -236,6 +236,10 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
     }
 
     public static List<BucketAccessControl> toBucketAccessControl(final Acl acl) {
+        if(Acl.EMPTY.equals(acl)) {
+            // Selected "None" in preferences
+            return null;
+        }
         final List<BucketAccessControl> list = new ArrayList<>();
         if(acl.isCanned()) {
             if(Acl.CANNED_PUBLIC_READ.equals(acl)) {

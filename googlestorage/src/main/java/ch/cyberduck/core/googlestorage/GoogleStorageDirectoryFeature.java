@@ -33,10 +33,14 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 import com.google.api.services.storage.model.Bucket;
+import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.StorageObject;
+
+import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toBucketAccessControl;
 
 public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
@@ -54,13 +58,15 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
+                final List<BucketAccessControl> acl = toBucketAccessControl(status.getAcl());
                 final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
                                 new Bucket()
                                         // ACLs are disabled with uniform bucket-level access
                                         .setIamConfiguration(new Bucket.IamConfiguration().setUniformBucketLevelAccess(
-                                                new Bucket.IamConfiguration.UniformBucketLevelAccess().setEnabled(true)))
+                                                new Bucket.IamConfiguration.UniformBucketLevelAccess().setEnabled(null == acl)))
                                         .setLocation(status.getRegion())
                                         .setStorageClass(status.getStorageClass())
+                                        .setAcl(acl)
                                         .setName(containerService.getContainer(folder).getName()))
                         .execute();
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
