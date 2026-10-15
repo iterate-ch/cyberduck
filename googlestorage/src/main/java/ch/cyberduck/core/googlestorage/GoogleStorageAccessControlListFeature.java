@@ -243,9 +243,9 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
 
     /**
      * @param acl Canned ACL
-     * @return Value for predefinedAcl query parameter or null if not a canned ACL with bucket equivalent
+     * @return Value for predefinedAcl query parameter or null if not a canned ACL
      */
-    public static String toPredefinedBucketAcl(final Acl acl) {
+    public static String toPredefinedAcl(final Acl acl) {
         if(Acl.CANNED_PRIVATE.equals(acl)) {
             return "private";
         }
@@ -257,6 +257,12 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
         }
         if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
             return "authenticatedRead";
+        }
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return "bucketOwnerFullControl";
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return "bucketOwnerRead";
         }
         return null;
     }
