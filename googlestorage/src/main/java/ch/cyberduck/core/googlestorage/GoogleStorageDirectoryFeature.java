@@ -41,6 +41,7 @@ import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.StorageObject;
 
 import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toBucketAccessControl;
+import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toPredefinedBucketAcl;
 
 public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
@@ -66,8 +67,10 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                                                 new Bucket.IamConfiguration.UniformBucketLevelAccess().setEnabled(null == acl)))
                                         .setLocation(status.getRegion())
                                         .setStorageClass(status.getStorageClass())
-                                        .setAcl(acl)
+                                        // An empty ACL list in the request body is ignored and applies projectPrivate. Use predefinedAcl for canned ACLs instead.
+                                        .setAcl(status.getAcl().isCanned() ? null : acl)
                                         .setName(containerService.getContainer(folder).getName()))
+                        .setPredefinedAcl(toPredefinedBucketAcl(status.getAcl()))
                         .execute();
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);

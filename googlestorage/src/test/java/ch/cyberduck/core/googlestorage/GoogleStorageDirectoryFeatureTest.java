@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Locale;
 
+import com.google.api.services.storage.model.BucketAccessControl;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -52,6 +54,24 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus()));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMakeBucketCannedPrivate() throws Exception {
+        final Path test = new Path(new DefaultHomeFinderService(session).find(),
+                new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test,
+                new TransferStatus().setRegion("us").setAcl(Acl.CANNED_PRIVATE));
+        try {
+            // Private is owner only. The default projectPrivate would grant access to project editors and viewers.
+            for(BucketAccessControl control : session.getClient().bucketAccessControls().list(test.getName()).execute().getItems()) {
+                assertFalse(control.getEntity(), control.getEntity().startsWith("project-editors-"));
+                assertFalse(control.getEntity(), control.getEntity().startsWith("project-viewers-"));
+            }
+        }
+        finally {
+            new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        }
     }
 
     @Test
