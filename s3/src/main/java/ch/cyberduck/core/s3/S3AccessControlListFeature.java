@@ -100,8 +100,13 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
+        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
         if(containerService.isContainer(file)) {
-            return Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
+            return preference;
+        }
+        if(Acl.EMPTY.equals(preference)) {
+            // Selected "None" in preferences. No need to check if ACLs are disabled for the bucket
+            return Acl.EMPTY;
         }
         final Path bucket = containerService.getContainer(file);
         if(cache.contains(bucket)) {
@@ -111,7 +116,6 @@ public class S3AccessControlListFeature implements AclPermission {
             cache.put(bucket, Acl.EMPTY);
             return Acl.EMPTY;
         }
-        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
         cache.put(bucket, preference);
         return preference;
     }
