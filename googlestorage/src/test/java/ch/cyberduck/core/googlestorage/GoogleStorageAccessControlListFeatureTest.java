@@ -46,7 +46,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     public void testBucketDefault() throws Exception {
         final Path container = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
-        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
         assertEquals(Acl.EMPTY, acl);
-        assertEquals(Acl.CANNED_PRIVATE, f.getDefault(container));
+        assertEquals(Acl.EMPTY, f.getDefault(container));
         final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(new Path(container,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(Acl.EMPTY, f.getPermission(test));
