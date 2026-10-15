@@ -82,7 +82,9 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
                     return true;
                 }
             }
-            log.warn("Missing IAM configuration for bucket {}", bucket);
+            else {
+                log.warn("Missing IAM configuration for bucket {}", bucket);
+            }
             return false;
         }
         catch(IOException e) {
