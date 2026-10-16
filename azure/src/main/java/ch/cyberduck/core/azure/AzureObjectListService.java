@@ -16,7 +16,6 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -34,19 +33,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
-import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import com.azure.storage.file.datalake.DataLakeFileSystemClient;
-import com.azure.storage.file.datalake.DataLakeServiceClient;
-import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
-import com.azure.storage.file.datalake.models.ListPathsOptions;
-import com.azure.storage.file.datalake.models.PathItem;
 
 public class AzureObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(AzureObjectListService.class);
@@ -54,18 +46,19 @@ public class AzureObjectListService implements ListService {
     private final AzureSession session;
     private final PathContainerService containerService
             = new DirectoryDelimiterPathContainerService();
-    private final AzureAttributesFinderFeature attributes;
+    private final AzureBlobAttributesFinderFeature attributes;
 
     public AzureObjectListService(final AzureSession session) {
         this.session = session;
-        this.attributes = new AzureAttributesFinderFeature(session);
+        this.attributes = new AzureBlobAttributesFinderFeature(session);
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
+            final BlobContainerClient containerClient = session.getClient().getBlobServiceClient()
+                    .getBlobContainerClient(containerService.getContainer(directory).getName());
             String prefix = StringUtils.EMPTY;
             if(!containerService.isContainer(directory)) {
                 prefix = containerService.getKey(directory);
@@ -74,16 +67,16 @@ public class AzureObjectListService implements ListService {
                 }
             }
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+            final int chunksize = HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize");
             String continuationToken = null;
             for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
                     .setDetails(new BlobListDetails().setRetrieveMetadata(true))
                     .setPrefix(prefix)
-                    .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null).iterableByPage(continuationToken,
-                    HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
+                    .setMaxResultsPerPage(chunksize), null).iterableByPage(continuationToken, chunksize)) {
                 for(BlobItem item : response.getElements()) {
                     if(StringUtils.equals(prefix, item.getName())) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", item));
+                            log.debug("Skip placeholder key {}", item);
                         }
                         hasDirectoryPlaceholder = true;
                         continue;
@@ -98,8 +91,7 @@ public class AzureObjectListService implements ListService {
                     // A directory is designated by a delimiter character.
                     final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
                             ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
-                    final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
-                    children.add(child);
+                    children.add(new Path(directory, PathNormalizer.name(item.getName()), types, attr));
                 }
                 listener.chunk(directory, children);
                 continuationToken = response.getContinuationToken();
@@ -109,7 +101,7 @@ public class AzureObjectListService implements ListService {
             }
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
+                    log.warn("No placeholder found for directory {}", directory);
                 }
                 throw new NotfoundException(directory.getAbsolute());
             }

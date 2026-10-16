@@ -180,7 +180,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out));
         assertArrayEquals(content, out.toByteArray());
         session.getRegistry().clear();
-        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(vault, cleartextFile), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -207,7 +207,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session).find(cleartextFolder));
         assertTrue(new AzureFindFeature(session).find(cleartextFile));
         session.getRegistry().clear();
-        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(vault, cleartextFolder), ProgressListener.noop).run(session);
     }
 
     @Test
