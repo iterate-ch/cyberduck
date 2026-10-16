@@ -15,20 +15,8 @@
 
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestLoginConnectionService;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
@@ -43,16 +31,21 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +55,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -279,5 +274,198 @@ public class ConcurrentTransferWorkerTest {
         worker.await();
         assertEquals(0, entry.getCount());
         worker.cleanup(true);
+    }
+
+    @Test
+    public void testShutdownPoolOnFailure() throws Exception {
+        final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
+        final Transfer transfer = new UploadTransfer(host,
+                new Path("/t", EnumSet.of(Path.Type.file)),
+                new NullLocal("l")) {
+            @Override
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
+                                         final TransferPrompt prompt, final ListProgressListener listener) {
+                return TransferAction.overwrite;
+            }
+
+            @Override
+            public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return new OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), source) {
+                    @Override
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
+                        throw new AccessDeniedException(file.getAbsolute());
+                    }
+                };
+            }
+        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        new DefaultVaultRegistry(new DisabledPasswordCallback()),
+                        new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                LoginCallback.noop, ProgressListener.noop, StreamListener.noop, new DisabledNotificationService()
+        );
+        final Set<Thread> baseline = transferThreads();
+        BackgroundException failure = null;
+        try {
+            worker.run(worker.borrow(ConcurrentTransferWorker.Connection.source));
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            // Failure in thread of transfer pool
+            failure = e;
+        }
+        worker.cleanup(false, failure);
+        assertEquals(baseline, awaitTransferThreads(baseline));
+    }
+
+    @Test
+    public void testShutdownPoolOnTransferFailure() throws Exception {
+        final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
+        final Set<String> transfers = ConcurrentHashMap.newKeySet();
+        final Transfer transfer = new UploadTransfer(host,
+                new Path("/t", EnumSet.of(Path.Type.file)),
+                new NullLocal("l")) {
+            @Override
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
+                                         final TransferPrompt prompt, final ListProgressListener listener) {
+                return TransferAction.overwrite;
+            }
+
+            @Override
+            public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return new OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), source) {
+                    @Override
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
+                        return true;
+                    }
+
+                    @Override
+                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
+                        return new TransferStatus();
+                    }
+
+                    @Override
+                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
+                        //
+                    }
+                };
+            }
+
+            @Override
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
+                                 final TransferStatus segment, final ConnectionCallback prompt,
+                                 final ProgressListener progress, final StreamListener listener) throws BackgroundException {
+                transfers.add(Thread.currentThread().getName());
+                throw new AccessDeniedException(file.getAbsolute());
+            }
+        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        new DefaultVaultRegistry(new DisabledPasswordCallback()),
+                        new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                LoginCallback.noop, ProgressListener.noop, StreamListener.noop, new DisabledNotificationService()
+        );
+        final Set<Thread> baseline = transferThreads();
+        BackgroundException failure = null;
+        try {
+            worker.run(worker.borrow(ConcurrentTransferWorker.Connection.source));
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            // Failure in thread of transfer pool after prepare
+            failure = e;
+        }
+        assertEquals(1, transfers.size());
+        assertTrue(transfers.iterator().next().matches("[A-Za-z0-9]+-transfer-\\d+"));
+        worker.cleanup(false, failure);
+        assertEquals(baseline, awaitTransferThreads(baseline));
+    }
+
+    @Test
+    public void testRetryAfterTransferFailure() throws Exception {
+        final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
+        final AtomicInteger attempts = new AtomicInteger();
+        final Transfer transfer = new UploadTransfer(host,
+                new Path("/t", EnumSet.of(Path.Type.file)),
+                new NullLocal("l")) {
+            @Override
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
+                                         final TransferPrompt prompt, final ListProgressListener listener) {
+                return TransferAction.overwrite;
+            }
+
+            @Override
+            public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return new OverwriteFilter(new UploadSymlinkResolver(null, Collections.emptyList()), source) {
+                    @Override
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
+                        return true;
+                    }
+
+                    @Override
+                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
+                        return new TransferStatus();
+                    }
+
+                    @Override
+                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
+                        //
+                    }
+
+                    @Override
+                    public void complete(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
+                        //
+                    }
+                };
+            }
+
+            @Override
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
+                                 final TransferStatus segment, final ConnectionCallback prompt,
+                                 final ProgressListener progress, final StreamListener listener) throws BackgroundException {
+                if(attempts.incrementAndGet() == 1) {
+                    throw new AccessDeniedException(file.getAbsolute());
+                }
+                segment.setComplete();
+            }
+        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        new DefaultVaultRegistry(new DisabledPasswordCallback()),
+                        new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                LoginCallback.noop, ProgressListener.noop, StreamListener.noop, new DisabledNotificationService()
+        );
+        final Set<Thread> baseline = transferThreads();
+        try {
+            worker.run(worker.borrow(ConcurrentTransferWorker.Connection.source));
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            // Retry with same worker as in background action
+        }
+        assertTrue(worker.run(worker.borrow(ConcurrentTransferWorker.Connection.source)));
+        assertEquals(2, attempts.get());
+        worker.cleanup(true, null);
+        assertEquals(baseline, awaitTransferThreads(baseline));
+    }
+
+    /**
+     * @return Threads of transfer pools
+     */
+    private static Set<Thread> transferThreads() {
+        return Thread.getAllStackTraces().keySet().stream()
+                .filter(thread -> thread.getName().matches("[A-Za-z0-9]+-transfer-\\d+")).collect(Collectors.toSet());
+    }
+
+    private static Set<Thread> awaitTransferThreads(final Set<Thread> expected) throws InterruptedException {
+        Set<Thread> threads = transferThreads();
+        for(int i = 0; i < 50 && !threads.equals(expected); i++) {
+            Thread.sleep(100L);
+            threads = transferThreads();
+        }
+        return threads;
     }
 }
