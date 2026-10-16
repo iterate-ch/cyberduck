@@ -175,16 +175,22 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void shutdown() {
-        // Always shutdown gracefully, allowing the threads to return after checking transfer status
-        pool.shutdown(true);
+    protected void shutdown(final boolean gracefully) {
+        if(gracefully) {
+            // Allow the threads to return after checking transfer status
+            pool.shutdown(true);
+        }
+        else {
+            // Do not await termination as running tasks may block in I/O and cleanup is invoked on main thread
+            log.info("Shutdown pool {} now", pool);
+            pool.executor().shutdownNow();
+        }
     }
 
     @Override
     public void cleanup(final Boolean result) {
-        // Pool is only shutdown in run upon success. Invoked once after retries and possibly on main thread, therefore do not await termination.
-        log.debug("Shutdown pool {}", pool);
-        pool.executor().shutdown();
+        // Pool is only shutdown in run upon success. Invoked once after retries
+        this.shutdown(false);
         super.cleanup(result);
     }
 
