@@ -35,12 +35,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -56,7 +56,6 @@ import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.AppendBlobCreateOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.AppendBlobClient;
-import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.azure.storage.common.implementation.Constants;
 
 public class AzureWriteFeature implements Write<Void> {
@@ -129,70 +128,17 @@ public class AzureWriteFeature implements Write<Void> {
                 if(status.isAppend()) {
                     // Existing append blob type
                     final AppendBlobClient append = client.getAppendBlobClient();
-                    out = new ProxyOutputStream(append.getBlobOutputStream()) {
-                        @Override
-                        protected void afterWrite(final int n) throws IOException {
-                            // Check if the stream is faulted
-                            this.flush();
-                        }
-                    };
+                    out = this.buffer(append.getBlobOutputStream());
                 }
                 else {
-                    // Existing block blob type
+                    // Overwrite existing blob retaining its type. Type of existing blob cannot be changed in place.
                     final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
-                    if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
-                        final AppendBlobClient append = client.getAppendBlobClient();
-                        out = new ProxyOutputStream(append.getBlobOutputStream(true)) {
-                            @Override
-                            protected void afterWrite(final int n) throws IOException {
-                                // Check if the stream is faulted
-                                this.flush();
-                            }
-                        };
-                    }
-                    else {
-                        final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
-                                .setMetadata(metadata)
-                                .setHeaders(headers)
-                                .setParallelTransferOptions(new ParallelTransferOptions()
-                                        .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
-                        out = client.getBlockBlobClient().getBlobOutputStream(options);
-                    }
+                    out = this.create(client, BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE)), metadata, headers, file);
                 }
             }
             else {
                 // Create new blob with default type set in defaults
-                switch(blobType) {
-                    case APPEND_BLOB: {
-                        final AppendBlobClient append = client.getAppendBlobClient();
-                        final AppendBlobCreateOptions options = new AppendBlobCreateOptions()
-                                .setMetadata(metadata)
-                                .setHeaders(headers);
-                        // Creates a 0-length append blob
-                        final Response<AppendBlobItem> response = append.createWithResponse(options, null, null);
-                        if(log.isDebugEnabled()) {
-                            log.debug("Created append blob {} with status {}", file, response.getStatusCode());
-                        }
-                        out = new ProxyOutputStream(append.getBlobOutputStream()) {
-                            @Override
-                            protected void afterWrite(final int n) throws IOException {
-                                // Check if the stream is faulted
-                                this.flush();
-                            }
-                        };
-                        break;
-                    }
-                    default: {
-                        final BlockBlobClient block = client.getBlockBlobClient();
-                        final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
-                                .setMetadata(metadata)
-                                .setHeaders(headers)
-                                .setParallelTransferOptions(new ParallelTransferOptions()
-                                        .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
-                        out = block.getBlobOutputStream(options);
-                        break;
-                    }
-                }
+                out = this.create(client, blobType, metadata, headers, file);
             }
             return new VoidStatusOutputStream(out) {
                 @Override
@@ -217,6 +163,38 @@ public class AzureWriteFeature implements Write<Void> {
         }
         catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+    }
+
+    /**
+     * The stream of the SDK commits every write as a separate append block which are limited to 50,000 per blob.
+     * Buffer writes to commit blocks of the configured block size.
+     */
+    private OutputStream buffer(final OutputStream proxy) {
+        return new BufferedOutputStream(proxy, preferences.getInteger("azure.upload.blocksize"));
+    }
+
+    private OutputStream create(final BlobClient client, final BlobType type, final Map<String, String> metadata,
+                                final BlobHttpHeaders headers, final Path file) {
+        switch(type) {
+            case APPEND_BLOB: {
+                final AppendBlobClient append = client.getAppendBlobClient();
+                final AppendBlobCreateOptions options = new AppendBlobCreateOptions()
+                        .setMetadata(metadata)
+                        .setHeaders(headers);
+                // Creates a 0-length append blob replacing an existing blob
+                final Response<AppendBlobItem> response = append.createWithResponse(options, null, null);
+                log.debug("Created append blob {} with status {}", file, response.getStatusCode());
+                return this.buffer(append.getBlobOutputStream());
+            }
+            default: {
+                final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
+                        .setMetadata(metadata)
+                        .setHeaders(headers)
+                        .setParallelTransferOptions(new ParallelTransferOptions()
+                                .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
+                return client.getBlockBlobClient().getBlobOutputStream(options);
+            }
         }
     }
 }
