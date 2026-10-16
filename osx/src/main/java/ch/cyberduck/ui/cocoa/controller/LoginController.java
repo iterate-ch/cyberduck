@@ -117,12 +117,12 @@ public class LoginController extends AlertController {
             privateKeyPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
             if(bookmark.getCredentials().isPublicKeyAuthentication()) {
                 final Local key = bookmark.getCredentials().getIdentity();
-                privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()));
                 if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
                     final NSInteger index = new NSInteger(0);
                     privateKeyPopup.insertItemWithTitle_atIndex(key.getAbbreviatedPath(), index);
                     privateKeyPopup.itemAtIndex(index).setRepresentedObject(key.getAbsolute());
                 }
+                privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()));
             }
             else {
                 privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
