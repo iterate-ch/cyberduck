@@ -52,6 +52,19 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
         }
 
+        // Allow to enter password regardless of keychain preference
+        protected override bool PasswordEditable => _options.password();
+
+        protected override void SetPasswordFromKeychain(string password)
+        {
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                base.SetPasswordFromKeychain(password);
+                _host.getCredentials().setPassword(password);
+            }
+            // Otherwise keep password entered for this connection
+        }
+
         public override bool Singleton => true;
 
         public static ConnectionController Instance(WindowController parent)

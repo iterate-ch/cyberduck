@@ -22,9 +22,9 @@ import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -47,13 +47,13 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
     private static final Logger log = LogManager.getLogger(ThirdpartyBookmarkCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
-    private final PasswordStore keychain;
+    private final HostPasswordStore keychain;
 
     public ThirdpartyBookmarkCollection() {
         this.keychain = PasswordStoreFactory.get();
     }
 
-    public ThirdpartyBookmarkCollection(final PasswordStore keychain) {
+    public ThirdpartyBookmarkCollection(final HostPasswordStore keychain) {
         this.keychain = keychain;
     }
 
@@ -149,28 +149,14 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
         bookmark.setComment(comment.toString());
         log.debug("Create new bookmark from import {}", bookmark);
         // Save password if any to Keychain
-        final Credentials credentials = bookmark.getCredentials();
-        if(StringUtils.isNotBlank(credentials.getPassword())) {
-            if(credentials.isPublicKeyAuthentication()) {
-                try {
-                    keychain.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
-                        credentials.getPassword());
-                }
-                catch(AccessDeniedException e) {
-                    log.error("Failure {} saving credentials for {} in password store", e, bookmark);
-                }
-            }
-            else if(!credentials.isAnonymousLogin()) {
-                try {
-                    keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                        bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
-                }
-                catch(AccessDeniedException e) {
-                    log.error("Failure {} saving credentials for {} in password store", e, bookmark);
-                }
-                // Reset password in memory
-                credentials.setPassword(null);
-            }
+        try {
+            keychain.save(bookmark);
+            final Credentials credentials = bookmark.getCredentials();
+            // Reset password in memory
+            credentials.setPassword(null);
+        }
+        catch(AccessDeniedException e) {
+            log.error("Failure {} saving credentials for {} in password store", e, bookmark);
         }
         return super.add(bookmark);
     }

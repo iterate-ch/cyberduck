@@ -126,7 +126,18 @@ namespace Ch.Cyberduck.Core.CredentialManager
         {
             if (!CredDelete(target, CRED_TYPE_GENERIC))
             {
-                var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+                var error = Marshal.GetHRForLastWin32Error();
+                if (error == HRESULT.E_NOTFOUND)
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug($"No credentials found for \"{target}\" to remove");
+                    }
+
+                    return true;
+                }
+
+                var message = Marshal.GetExceptionForHR(error);
                 log.error($"Could not remove credentials \"{target}\": {message.Message}");
                 return false;
             }
