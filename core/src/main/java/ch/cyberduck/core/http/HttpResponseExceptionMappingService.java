@@ -32,10 +32,17 @@ import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public abstract class HttpResponseExceptionMappingService<E extends HttpResponseException> extends AbstractExceptionMappingService<E> {
     private static final Logger log = LogManager.getLogger(HttpResponseExceptionMappingService.class);
@@ -50,6 +57,27 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
     }
 
     public BackgroundException map(final Throwable failure, final StringBuilder buffer, final int statusCode) {
+        return this.map(failure, buffer, statusCode, Collections.emptyMap());
+    }
+
+    /**
+     * @param headers Response headers
+     * @return Delay requested with Retry-After header in seconds
+     */
+    public static Optional<Duration> retryAfter(final Map<String, List<String>> headers) {
+        if(null == headers) {
+            return Optional.empty();
+        }
+        return headers.entrySet().stream()
+                .filter(e -> HttpHeaders.RETRY_AFTER.equalsIgnoreCase(e.getKey()))
+                .flatMap(e -> e.getValue().stream())
+                .map(String::trim)
+                .filter(v -> v.matches("\\d{1,9}"))
+                .map(v -> Duration.ofSeconds(Long.parseLong(v)))
+                .findFirst();
+    }
+
+    public BackgroundException map(final Throwable failure, final StringBuilder buffer, final int statusCode, final Map<String, List<String>> headers) {
         switch(statusCode) {
             case HttpStatus.SC_UNAUTHORIZED:
                 return new LoginFailureException(buffer.toString(), failure);
@@ -83,7 +111,8 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
                 // Too Many Requests. Rate limiting
             case 509:
                 // Bandwidth Limit Exceeded
-                return new RetriableAccessDeniedException(buffer.toString(), failure);
+                return retryAfter(headers).map(delay -> new RetriableAccessDeniedException(buffer.toString(), delay, failure))
+                        .orElseGet(() -> new RetriableAccessDeniedException(buffer.toString(), failure));
             default:
                 return new InteroperabilityException(buffer.toString(), failure);
         }

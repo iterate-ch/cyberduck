@@ -18,6 +18,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
@@ -40,6 +41,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -166,5 +171,33 @@ public class FTPSessionTest extends AbstractFTPTest {
                 ProgressListener.noop);
         c.connect(session, CancelCallback.noop);
         assertTrue(callback.get());
+    }
+
+    @Test
+    public void testConnectRejectedWithServiceNotAvailable() throws Exception {
+        try(final ServerSocket server = new ServerSocket(0)) {
+            final Thread t = new Thread(() -> {
+                try(final Socket socket = server.accept()) {
+                    final OutputStream out = socket.getOutputStream();
+                    out.write("421 Too many connections (25) from this IP\r\n".getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                }
+                catch(Exception e) {
+                    // Ignore
+                }
+            });
+            t.start();
+            final Host host = new Host(new FTPProtocol(), "localhost", server.getLocalPort(), new Credentials("u", "p"));
+            final FTPSession session = new FTPSession(host);
+            try {
+                session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+                fail();
+            }
+            catch(RetriableAccessDeniedException e) {
+                assertTrue(e.getDetail(), e.getDetail().contains("Too many connections (25) from this IP"));
+            }
+            t.join(10000L);
+            assertEquals(Thread.State.TERMINATED, t.getState());
+        }
     }
 }
