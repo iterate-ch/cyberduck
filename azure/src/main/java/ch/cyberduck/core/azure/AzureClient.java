@@ -15,21 +15,52 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.http.HttpPipeline;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.file.datalake.DataLakeServiceClient;
+import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
 
 /**
- * Blob Storage and Data Lake Storage clients sharing the same HTTP pipeline
+ * Blob Storage and Data Lake Storage clients sharing the same HTTP client
  */
 public final class AzureClient {
 
-    private final BlobServiceClient blob;
-    private final DataLakeServiceClient datalake;
+    private final BlobServiceClientBuilder blobBuilder;
+    private final DataLakeServiceClientBuilder datalakeBuilder;
 
-    public AzureClient(final BlobServiceClient blob, final DataLakeServiceClient datalake) {
-        this.blob = blob;
-        this.datalake = datalake;
+    private volatile BlobServiceClient blob;
+    private volatile DataLakeServiceClient datalake;
+
+    public AzureClient(final BlobServiceClientBuilder blobBuilder, final DataLakeServiceClientBuilder datalakeBuilder) {
+        this.blobBuilder = blobBuilder;
+        this.datalakeBuilder = datalakeBuilder;
+        this.blob = blobBuilder.buildClient();
+    }
+
+    /**
+     * Rebuild the clients for the credentials. The credential is also retained by the Data Lake client to compose
+     * the source of a rename.
+     */
+    public void setCredentials(final Credentials credentials) {
+        if(credentials.isTokenAuthentication()) {
+            final AzureSasCredential sas = new AzureSasCredential(credentials.getToken());
+            blobBuilder.credential(sas);
+            datalakeBuilder.credential(sas);
+        }
+        else {
+            final StorageSharedKeyCredential key = new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword());
+            blobBuilder.credential(key);
+            datalakeBuilder.credential(key);
+        }
+        blob = blobBuilder.buildClient();
+        datalake = datalakeBuilder.buildClient();
     }
 
     public BlobServiceClient getBlobServiceClient() {

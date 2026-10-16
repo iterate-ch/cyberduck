@@ -48,7 +48,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -58,46 +57,22 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
-import com.azure.core.http.HttpHeaderName;
-import com.azure.core.http.HttpPipeline;
-import com.azure.core.http.HttpPipelineBuilder;
 import com.azure.core.http.HttpPipelineCallContext;
 import com.azure.core.http.HttpPipelineNextPolicy;
 import com.azure.core.http.HttpPipelineNextSyncPolicy;
 import com.azure.core.http.HttpResponse;
-import com.azure.core.http.policy.AddDatePolicy;
 import com.azure.core.http.policy.AddHeadersPolicy;
-import com.azure.core.http.policy.AzureSasCredentialPolicy;
 import com.azure.core.http.policy.BearerTokenAuthenticationPolicy;
 import com.azure.core.http.policy.HttpPipelinePolicy;
-import com.azure.core.http.policy.RequestIdPolicy;
-import com.azure.core.http.policy.UserAgentPolicy;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.AccountKind;
 import com.azure.storage.blob.models.StorageAccountInfo;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import com.azure.storage.common.implementation.Constants;
-import com.azure.storage.common.policy.MetadataValidationPolicy;
-import com.azure.storage.common.policy.RequestRetryOptions;
-import com.azure.storage.common.policy.RequestRetryPolicy;
-import com.azure.storage.common.policy.ResponseValidationPolicyBuilder;
-import com.azure.storage.common.policy.StorageSharedKeyCredentialPolicy;
 import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
 import reactor.core.publisher.Mono;
 
 public class AzureSession extends HttpSession<AzureClient> {
     private static final Logger log = LogManager.getLogger(AzureSession.class);
-
-    private final CredentialsHttpPipelinePolicy authenticator
-            = new CredentialsHttpPipelinePolicy();
-
-    /**
-     * Retained by the Data Lake client to compose the source of a rename. Updated with the token on login.
-     */
-    private final AzureSasCredential sas
-            = new AzureSasCredential("?");
 
     private final AtomicReference<StorageAccountInfo> storageAccountInfo
             = new AtomicReference<>();
@@ -114,57 +89,19 @@ public class AzureSession extends HttpSession<AzureClient> {
     protected AzureClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         final String endpoint = new HostUrlProvider().withUsername(false).get(host);
-        final HttpPipeline pipeline = new HttpPipelineBuilder()
-                .httpClient(new ApacheHttpClient(pool))
-                .policies(
-                        new EmptyAuthenticationPolicy(),
-                        new UserAgentPolicy(new PreferencesUseragentProvider().get()),
-                        new RequestIdPolicy(),
-                        new RequestRetryPolicy(new RequestRetryOptions()),
-                        new AddDatePolicy(),
-                        new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
-                                Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
-                        ),
-                        new MetadataValidationPolicy(),
-                        authenticator,
-                        new ResponseValidationPolicyBuilder()
-                                .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.CLIENT_REQUEST_ID))
-                                .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256))
-                                .build()
-                )
-                .build();
+        final ApacheHttpClient http = new ApacheHttpClient(pool);
+        final HttpPipelinePolicy user = new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
+                Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get())));
+        final HttpPipelinePolicy empty = new EmptyAuthenticationPolicy();
         return new AzureClient(
-                new BlobServiceClientBuilder()
-                        .endpoint(endpoint).pipeline(pipeline).buildClient(),
-                new DataLakeServiceClientBuilder()
-                        .endpoint(endpoint).pipeline(pipeline).credential(sas).buildClient());
-    }
-
-    private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
-        private Credentials credentials = new Credentials();
-
-        public void setCredentials(final Credentials credentials) {
-            this.credentials = credentials;
-        }
-
-        @Override
-        public Mono<HttpResponse> process(final HttpPipelineCallContext context, final HttpPipelineNextPolicy next) {
-            if(credentials.isTokenAuthentication()) {
-                return new AzureSasCredentialPolicy(new AzureSasCredential(
-                        credentials.getToken())).process(context, next);
-            }
-            return new StorageSharedKeyCredentialPolicy(new StorageSharedKeyCredential(
-                    credentials.getUsername(), credentials.getPassword())).process(context, next);
-        }
+                new BlobServiceClientBuilder().endpoint(endpoint).httpClient(http).addPolicy(empty).addPolicy(user),
+                new DataLakeServiceClientBuilder().endpoint(endpoint).httpClient(http).addPolicy(empty).addPolicy(user));
     }
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        authenticator.setCredentials(credentials);
-        if(credentials.isTokenAuthentication()) {
-            sas.update(StringUtils.removeStart(credentials.getToken(), "?"));
-        }
+        client.setCredentials(credentials);
         try {
             final StorageAccountInfo accountInfo = client.getBlobServiceClient().getAccountInfo();
             storageAccountInfo.set(accountInfo);
