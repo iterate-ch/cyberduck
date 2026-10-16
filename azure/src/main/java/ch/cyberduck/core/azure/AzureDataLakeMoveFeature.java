@@ -27,8 +27,11 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 
@@ -39,6 +42,7 @@ import com.azure.storage.file.datalake.DataLakeFileSystemClient;
  * Atomic rename of files and directories with Data Lake Storage API for accounts with hierarchical namespace enabled
  */
 public class AzureDataLakeMoveFeature implements Move {
+    private static final Logger log = LogManager.getLogger(AzureDataLakeMoveFeature.class);
 
     private final AzureSession session;
     private final PathContainerService containerService
@@ -69,6 +73,11 @@ public class AzureDataLakeMoveFeature implements Move {
             final String target = StringUtils.removeEnd(containerService.getKey(renamed), String.valueOf(Path.DELIMITER));
             final String container = containerService.getContainer(renamed).getName();
             if(file.isDirectory()) {
+                if(status.isExists()) {
+                    // Rename of a file replaces the target but a directory cannot be overwritten (409 Conflict)
+                    log.warn("Delete directory {} to be replaced with {}", renamed, file);
+                    new AzureDataLakeDeleteFeature(session).delete(Collections.singletonList(renamed), connectionCallback, callback);
+                }
                 filesystem.getDirectoryClient(source).rename(container, target);
             }
             else {

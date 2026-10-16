@@ -10,7 +10,6 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
@@ -22,7 +21,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
@@ -79,13 +77,12 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testMoveDirectoryToNonEmptyDirectory() throws Exception {
-        assumeTrue(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path target = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), new Path(target, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertThrows(ConflictException.class, () -> new AzureMoveFeature(session).move(source, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop));
-        new AzureDeleteFeature(session).delete(Arrays.asList(source, target), LoginCallback.noop, new Delete.DisabledCallback());
+        new AzureMoveFeature(session).move(source, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        new AzureDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
