@@ -121,7 +121,7 @@ public class AzureBlobAttributesFinderFeature implements AttributesFinder, Attri
         final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(properties.getContentLength());
         attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
-        attributes.setETag(properties.getETag());
+        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
         if(properties.getContentMd5() != null) {
             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }

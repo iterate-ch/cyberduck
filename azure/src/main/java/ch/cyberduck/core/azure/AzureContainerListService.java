@@ -25,6 +25,8 @@ import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
 import com.azure.core.exception.HttpResponseException;
@@ -48,7 +50,7 @@ public class AzureContainerListService implements RootListService {
                     .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))
                     .setDetails(new BlobContainerListDetails().setRetrieveDeleted(false).setRetrieveMetadata(true)), null)) {
                 final PathAttributes attributes = new DefaultPathAttributes();
-                attributes.setETag(container.getProperties().getETag());
+                attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(container.getProperties().getETag(), "\""), "\""));
                 attributes.setModificationDate(container.getProperties().getLastModified().toInstant().toEpochMilli());
                 containers.add(new Path(PathNormalizer.normalize(container.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 listener.chunk(directory, containers);
