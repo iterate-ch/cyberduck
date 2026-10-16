@@ -58,7 +58,6 @@ import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.AppendBlobCreateOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.AppendBlobClient;
-import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.azure.storage.common.implementation.Constants;
 
 public class AzureWriteFeature implements Write<Void> {
@@ -147,9 +146,7 @@ public class AzureWriteFeature implements Write<Void> {
                     BlobType type = blobType;
                     if(!StringUtils.equals(blobType.name(), existing)) {
                         // Type of existing blob cannot be changed in place
-                        if(log.isWarnEnabled()) {
-                            log.warn("Delete existing blob {} of type {} to replace with type {}", file, existing, blobType);
-                        }
+                        log.warn("Delete existing blob {} of type {} to replace with type {}", file, existing, blobType);
                         try {
                             client.deleteIfExists();
                         }
@@ -207,9 +204,7 @@ public class AzureWriteFeature implements Write<Void> {
                         .setHeaders(headers);
                 // Creates a 0-length append blob replacing an existing blob
                 final Response<AppendBlobItem> response = append.createWithResponse(options, null, null);
-                if(log.isDebugEnabled()) {
-                    log.debug("Created append blob {} with status {}", file, response.getStatusCode());
-                }
+                log.debug("Created append blob {} with status {}", file, response.getStatusCode());
                 return new ProxyOutputStream(append.getBlobOutputStream()) {
                     @Override
                     protected void afterWrite(final int n) throws IOException {
