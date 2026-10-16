@@ -59,7 +59,7 @@ public class AzureBlobDeleteFeature implements Delete {
                         case HttpStatus.SC_NOT_FOUND:
                             if(file.isPlaceholder()) {
                                 // Ignore failure with no placeholder object found
-                                return;
+                                continue;
                             }
                     }
                     throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
