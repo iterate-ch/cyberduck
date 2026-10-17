@@ -18,17 +18,22 @@ package ch.cyberduck.core.signin;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.oauth.LoopbackOAuth2AuthorizationCodeProvider;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.random.SecureRandomProviderFactory;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
+import ch.cyberduck.core.s3.S3LocationFeature;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,12 +51,11 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -71,119 +75,153 @@ import com.nimbusds.jwt.SignedJWT;
 
 public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(AWSConsoleLoginCredentialsStrategy.class);
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final SecureRandom RANDOM = new SecureRandom();
-    static final String CLIENT_ID = "arn:aws:signin:::devtools/same-device";
-    static final String IDENTITY_PROPERTY = "s3.login.identity";
+
+    private static final String CLIENT_ID = "arn:aws:signin:::devtools/same-device";
     private static final String SERVICE = "AWS Console Sign-In";
+    private static final String DPOP_HEADER_NAME = "DPoP";
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     private final HttpClient client;
     private final Host host;
     private final LoginCallback prompt;
-    private final PasswordStore store;
+    private final HostPasswordStore store = PasswordStoreFactory.get();
     private final String endpoint;
 
-    private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
-    private String refreshToken;
-    private ECKey privateKey;
-    private boolean loaded;
-
     public AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host, final LoginCallback prompt) {
-        this(client, host, prompt, PasswordStoreFactory.get());
-    }
-
-    protected AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host,
-                                                 final LoginCallback prompt, final PasswordStore store) {
         this.client = client;
         this.host = host;
         this.prompt = prompt;
-        this.store = store;
-        final String region = StringUtils.defaultIfBlank(host.getRegion(), "us-east-1");
-        if(!StringUtils.containsOnly(region, "abcdefghijklmnopqrstuvwxyz0123456789-")) {
-            throw new IllegalArgumentException("Invalid AWS region");
-        }
-        this.endpoint = String.format("https://%s.signin.aws.amazon.com", region);
+        this.endpoint = String.format("https://%s.signin.aws.amazon.com",
+                StringUtils.defaultIfBlank(host.getRegion(), S3LocationFeature.DEFAULT_REGION.getIdentifier()));
     }
 
     @Override
-    public synchronized Credentials get() throws BackgroundException {
-        if(tokens.isExpired()) {
-            this.load();
-            if(StringUtils.isBlank(refreshToken) || null == privateKey) {
-                tokens = this.authorize();
-            }
-            else {
-                try {
-                    tokens = this.refresh();
+    public Credentials get() throws BackgroundException {
+        lock.lock();
+        try {
+            final Credentials credentials = host.getCredentials();
+            final TemporaryAccessTokens tokens = credentials.getTokens();
+            if(tokens.isExpired()) {
+                log.debug("Refresh expired tokens {} for {}", tokens, host);
+                final AWSConsoleLoginTokens login = this.load(credentials);
+                if(login.validate()) {
+                    log.debug("Refresh expired tokens {} for {}", login, host);
+                    try {
+                        return credentials.setTokens(this.refresh(login.getRefreshToken(), login.getPrivateKey()).getAccessTokens());
+                    }
+                    catch(LoginFailureException | InteroperabilityException e) {
+                        log.warn("AWS sign-in session expired for {}", host);
+                        return credentials.setTokens(this.authorize().getAccessTokens());
+                    }
                 }
-                catch(LoginFailureException e) {
-                    log.warn("AWS sign-in session expired for {}", host);
-                    tokens = this.authorize();
-                }
+                return credentials.setTokens(this.authorize().getAccessTokens());
             }
+            return credentials;
         }
-        return new Credentials().setTokens(tokens).setSaved(false);
+        finally {
+            lock.unlock();
+        }
     }
 
-    protected TemporaryAccessTokens authorize() throws BackgroundException {
-        final ECKey key;
+    /**
+     * Initiates the OAuth 2.0 authorization flow to generate AWS Console login tokens.
+     * This method performs the following steps:
+     * 1. Generates a cryptographic key pair (ECKey) and a random code verifier.
+     * 2. Constructs a code challenge based on the code verifier and sends an authorization
+     * request to the OAuth 2.0 server.
+     * 3. Prompts the user to complete the authentication process.
+     * 4. Validates the authorization code returned, generates an authentication request
+     * with the server, and retrieves AWS Console login tokens.
+     *
+     * @return An instance of {@code AWSConsoleLoginTokens} containing temporary access tokens,
+     * a refresh token, and identity information (ARN and private key) for subsequent
+     * AWS Console login sessions.
+     * @throws BackgroundException If an error occurs during the authorization flow such as
+     *                             network issues, user cancelation, invalid responses, or cryptographic failures.
+     */
+    protected AWSConsoleLoginTokens authorize() throws BackgroundException {
         try {
-            key = new ECKeyGenerator(Curve.P_256).generate();
+            final ECKey key = new ECKeyGenerator(Curve.P_256).generate();
+            final byte[] random = new byte[48];
+            SecureRandomProviderFactory.get().provide().nextBytes(random);
+            final String verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(random);
+            final String challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(
+                    DigestUtils.sha256(verifier.getBytes(StandardCharsets.US_ASCII)));
+            final String state = new UUIDRandomStringService().random();
+            final String redirectUri = OAuth2AuthorizationService.toRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            final String code = new LoopbackOAuth2AuthorizationCodeProvider().prompt(host, prompt,
+                    new URIBuilder(URI.create(String.format("%s/v1/authorize", endpoint)))
+                            .addParameter("response_type", "code")
+                            .addParameter("client_id", CLIENT_ID)
+                            .addParameter("state", state)
+                            .addParameter("code_challenge", challenge)
+                            .addParameter("code_challenge_method", "SHA-256")
+                            .addParameter("scope", "openid")
+                            .addParameter("redirect_uri", redirectUri).toString(), redirectUri, state);
+            if(StringUtils.isBlank(code)) {
+                throw new LoginCanceledException();
+            }
+            final ObjectNode request = MAPPER.createObjectNode()
+                    .put("clientId", CLIENT_ID)
+                    .put("grantType", "authorization_code")
+                    .put("code", code)
+                    .put("codeVerifier", verifier)
+                    .put("redirectUri", redirectUri);
+            return this.save(this.exchange(request, key));
         }
         catch(JOSEException e) {
-            throw failure(e);
+            throw new InteroperabilityException(e.getMessage(), e);
         }
-        final byte[] random = new byte[48];
-        RANDOM.nextBytes(random);
-        final String verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(random);
-        final String challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(
-                DigestUtils.sha256(verifier.getBytes(StandardCharsets.US_ASCII)));
-        final String state = UUID.randomUUID().toString();
-        final AtomicReference<String> redirectUri = new AtomicReference<>();
-        final String code = new LoopbackOAuth2AuthorizationCodeProvider().prompt(host, prompt,
-                        redirect -> {
-                            redirectUri.set(redirect);
-                            return new URIBuilder(URI.create(String.format("%s/v1/authorize", endpoint)))
-                                .addParameter("response_type", "code")
-                                .addParameter("client_id", CLIENT_ID)
-                                .addParameter("state", state)
-                                .addParameter("code_challenge", challenge)
-                                .addParameter("code_challenge_method", "SHA-256")
-                                .addParameter("scope", "openid")
-                                .addParameter("redirect_uri", redirect).toString();
-                        }, state);
-        if(StringUtils.isBlank(code)) {
-            throw new LoginCanceledException();
-        }
-        final ObjectNode request = MAPPER.createObjectNode().put("clientId", CLIENT_ID)
-                .put("grantType", "authorization_code").put("code", code)
-                .put("codeVerifier", verifier).put("redirectUri", redirectUri.get());
-        return this.accept(this.exchange(request, key), key, true);
     }
 
-    private TemporaryAccessTokens refresh() throws BackgroundException {
-        final ObjectNode request = MAPPER.createObjectNode().put("clientId", CLIENT_ID)
-                .put("grantType", "refresh_token").put("refreshToken", refreshToken);
-        return this.accept(this.exchange(request, privateKey), privateKey, false);
+    private AWSConsoleLoginTokens refresh(final String refreshToken, final ECKey privateKey) throws BackgroundException {
+        final ObjectNode request = MAPPER.createObjectNode()
+                .put("clientId", CLIENT_ID)
+                .put("grantType", "refresh_token")
+                .put("refreshToken", refreshToken);
+        return this.save(this.exchange(request, privateKey));
     }
 
-    private JsonNode exchange(final ObjectNode body, final ECKey key) throws BackgroundException {
+    /**
+     * Exchanges an authentication request with the server to retrieve AWS Console login tokens.
+     * The tokens include temporary access credentials and a refresh token that can be used
+     * for subsequent reauthentication requests. Additionally, the method generates a DPoP proof
+     * for the current request using the provided ECKey.
+     *
+     * @param body       The JSON object containing the authentication payload to be sent to the server.
+     * @param privateKey The elliptic curve cryptographic key used to generate the DPoP (Demonstration of Proof-of-Possession) proof.
+     * @return An instance of {@code AWSConsoleLoginTokens} containing temporary access credentials,
+     * a refresh token, and the decoded AWS ARN identity.
+     * @throws BackgroundException If the exchange process fails due to network issues, invalid responses,
+     *                             or errors during authentication.
+     */
+    private AWSConsoleLoginTokens exchange(final ObjectNode body, final ECKey privateKey) throws BackgroundException {
         final String url = String.format("%s/v1/token", endpoint);
         final HttpPost request = new HttpPost(url);
         try {
-            request.setHeader("DPoP", proof(key, url));
+            request.setHeader(DPOP_HEADER_NAME, proof(privateKey, url));
             request.setEntity(new StringEntity(MAPPER.writeValueAsString(body), ContentType.APPLICATION_JSON));
-            return client.execute(request, new AbstractResponseHandler<JsonNode>() {
+            final JsonNode response = client.execute(request, new AbstractResponseHandler<JsonNode>() {
                 @Override
                 public JsonNode handleEntity(final HttpEntity entity) throws IOException {
                     return MAPPER.readTree(entity.getContent());
                 }
             });
+            final String accessKey = response.path("accessToken").path("accessKeyId").asText();
+            final String secretKey = response.path("accessToken").path("secretAccessKey").asText();
+            final String sessionToken = response.path("accessToken").path("sessionToken").asText();
+            final String refreshToken = response.path("refreshToken").asText();
+            // Maximum value is 900 seconds (15 minutes)
+            final long expires = response.path("expiresIn").asLong(-1L);
+            final String identity = arn(response.path("idToken").asText());
+            return new AWSConsoleLoginTokens(identity, privateKey, refreshToken,
+                    new TemporaryAccessTokens(accessKey, secretKey, sessionToken,
+                            System.currentTimeMillis() + expires * 1000));
         }
         catch(HttpResponseException e) {
-            if(e.getStatusCode() >= 400 && e.getStatusCode() < 500 && e.getStatusCode() != 429) {
-                throw failure(e);
-            }
             throw new DefaultHttpResponseExceptionMappingService().map(e);
         }
         catch(IOException e) {
@@ -191,124 +229,132 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         }
     }
 
-    private TemporaryAccessTokens accept(final JsonNode response, final ECKey key,
-                                         final boolean validateIdentity) throws LoginFailureException {
-        if(null == response) {
-            throw failure();
+    private AWSConsoleLoginTokens load(final Credentials credentials) throws AccessDeniedException {
+        final String arn = credentials.getUsername();
+        if(StringUtils.isBlank(arn)) {
+            return AWSConsoleLoginTokens.EMPTY;
         }
-        final JsonNode access = response.path("accessToken");
-        final String accessKey = access.path("accessKeyId").asText();
-        final String secretKey = access.path("secretAccessKey").asText();
-        final String sessionToken = access.path("sessionToken").asText();
-        final String refresh = response.path("refreshToken").asText();
-        final long expires = response.path("expiresIn").asLong(-1L);
-        if(StringUtils.isAnyBlank(accessKey, secretKey, sessionToken, refresh) || expires <= 0L) {
-            throw failure();
+        final String privateKey = store.getPassword(SERVICE, this.account(arn, "DPoP Private Key"));
+        if(StringUtils.isBlank(privateKey)) {
+            return AWSConsoleLoginTokens.EMPTY;
         }
-        if(validateIdentity) {
-            validateIdentity(host, response.path("idToken").asText());
-        }
-        refreshToken = refresh;
-        privateKey = key;
-        this.save();
-        return new TemporaryAccessTokens(accessKey, secretKey, sessionToken,
-                System.currentTimeMillis() + (expires - Math.min(5L * 60L, expires / 2L)) * 1000L);
-    }
-
-    private void load() {
-        if(loaded || !host.getCredentials().isSaved()) {
-            loaded = true;
-            return;
-        }
-        loaded = true;
-        try {
-            refreshToken = store.getPassword(SERVICE, this.account("Refresh Token"));
-            final String key = store.getPassword(SERVICE, this.account("DPoP Private Key"));
-            if(StringUtils.isBlank(refreshToken) || StringUtils.isBlank(key)) {
-                refreshToken = null;
-                return;
-            }
-            privateKey = ECKey.parse(key);
-        }
-        catch(AccessDeniedException | ParseException e) {
-            log.warn("Failure loading AWS sign-in session for {}", host);
-            refreshToken = null;
-            privateKey = null;
-        }
-    }
-
-    private void save() {
-        if(!host.getCredentials().isSaved()) {
-            return;
+        final String refreshToken = store.getPassword(SERVICE, this.account(arn, "Refresh Token"));
+        if(StringUtils.isBlank(refreshToken)) {
+            return AWSConsoleLoginTokens.EMPTY;
         }
         try {
-            store.addPassword(SERVICE, this.account("DPoP Private Key"), privateKey.toJSONString());
-            store.addPassword(SERVICE, this.account("Refresh Token"), refreshToken);
+            return new AWSConsoleLoginTokens(arn, ECKey.parse(privateKey), refreshToken,
+                    credentials.getTokens());
         }
-        catch(AccessDeniedException e) {
-            log.warn("Failure saving AWS sign-in session for {}", host);
+        catch(ParseException e) {
+            throw new AccessDeniedException(e.getMessage(), e);
         }
     }
 
-    private String account(final String secret) {
-        return String.format("%s %s", host.getUuid(), secret);
+    private AWSConsoleLoginTokens save(final AWSConsoleLoginTokens tokens) throws AccessDeniedException {
+        final Credentials credentials = host.getCredentials();
+        credentials.setUsername(tokens.getArn());
+        if(credentials.isSaved()) {
+            store.addPassword(SERVICE, this.account(tokens.getArn(), "DPoP Private Key"), tokens.getPrivateKey().toJSONString());
+            store.addPassword(SERVICE, this.account(tokens.getArn(), "Refresh Token"), tokens.getRefreshToken());
+        }
+        return tokens;
     }
 
-    private static String proof(final ECKey key, final String url) throws LoginFailureException {
+    public static final class AWSConsoleLoginTokens {
+
+        public static final AWSConsoleLoginTokens EMPTY
+                = new AWSConsoleLoginTokens(null, null, null, TemporaryAccessTokens.EMPTY);
+
+        private final String arn;
+        private final ECKey privateKey;
+        private final String refreshToken;
+        private final TemporaryAccessTokens accessTokens;
+
+        public AWSConsoleLoginTokens(final String arn, final ECKey privateKey, final String refreshToken,
+                                     final TemporaryAccessTokens accessTokens) {
+            this.arn = arn;
+            this.privateKey = privateKey;
+            this.refreshToken = refreshToken;
+            this.accessTokens = accessTokens;
+        }
+
+        public TemporaryAccessTokens getAccessTokens() {
+            return accessTokens;
+        }
+
+        public String getArn() {
+            return arn;
+        }
+
+        public String getRefreshToken() {
+            return refreshToken;
+        }
+
+        public ECKey getPrivateKey() {
+            return privateKey;
+        }
+
+        public boolean validate() {
+            return StringUtils.isNotEmpty(arn)
+                    && StringUtils.isNotEmpty(refreshToken)
+                    && privateKey != null;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("AWSConsoleLoginTokens{");
+            sb.append("arn='").append(arn).append('\'');
+            sb.append(", refreshToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(refreshToken)))).append('\'');
+            sb.append(", accessTokens=").append(accessTokens);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    protected String account(final String arn, final String secret) {
+        return String.format("%s (%s)", secret, arn);
+    }
+
+    /**
+     * Generates a DPoP (Demonstration of Proof-of-Possession) proof JWT (JSON Web Token)
+     * used for authenticating HTTP requests. This proof is signed using the provided
+     * ECKey and includes claims such as HTTP method, target URL, issue time, and a unique identifier.
+     *
+     * @param key The elliptic curve cryptographic key used to sign the JWT.
+     * @param url The target URL for which the proof is being generated.
+     * @return The serialized and signed JWT string.
+     * @throws InteroperabilityException If an error occurs while generating or signing the JWT.
+     */
+    protected static String proof(final ECKey key, final String url) throws InteroperabilityException {
         try {
             final SignedJWT jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES256)
-                            .type(new JOSEObjectType("dpop+jwt")).jwk(key.toPublicJWK()).build(),
+                    .type(new JOSEObjectType("dpop+jwt")).jwk(key.toPublicJWK()).build(),
                     new JWTClaimsSet.Builder().claim("htm", "POST").claim("htu", url)
                             .issueTime(new Date()).jwtID(UUID.randomUUID().toString()).build());
             jwt.sign(new ECDSASigner(key));
             return jwt.serialize();
         }
         catch(JOSEException e) {
-            throw failure(e);
+            throw new InteroperabilityException(e.getMessage(), e);
         }
     }
 
-    private static String identity(final String account, final String arn) {
-        String resource = StringUtils.substringAfterLast(arn, ":");
-        if(StringUtils.startsWith(resource, "assumed-role/")) {
-            resource = String.format("role/%s", StringUtils.substringBeforeLast(
-                    StringUtils.removeStart(resource, "assumed-role/"), "/"));
-        }
-        return String.format("%s/%s", account, resource);
-    }
-
-    static void validateIdentity(final Host host, final String idToken) throws LoginFailureException {
+    /**
+     * Decodes a JSON Web Token (JWT) to extract the subject, then parses the Amazon Resource Name (ARN)
+     * from the subject and constructs a formatted identity string by delegating to another identity method.
+     *
+     * @param idToken The JWT to be decoded containing the subject with ARN details.
+     * @return A formatted identity string combining the account and resource details parsed from the ARN.
+     * @throws InteroperabilityException If the JWT cannot be decoded or processed.
+     */
+    protected static String arn(final String idToken) throws InteroperabilityException {
         try {
-            final String arn = JWT.decode(idToken).getSubject();
-            validateIdentity(host, StringUtils.substringBetween(arn, "::", ":"), arn);
+            return JWT.decode(idToken).getSubject();
         }
         catch(JWTDecodeException e) {
-            throw failure(e);
+            log.warn("Failure {} decoding JWT {}", e, idToken);
+            throw new InteroperabilityException(e.getMessage(), e);
         }
-    }
-
-    static void validateIdentity(final Host host, final String account, final String arn) throws LoginFailureException {
-        if(StringUtils.isAnyBlank(account, arn)) {
-            throw failure();
-        }
-        final String selected = identity(account, arn);
-        final String pinned = host.getProperty(IDENTITY_PROPERTY);
-        if(StringUtils.isNotBlank(pinned) && !StringUtils.equals(pinned, selected)) {
-            throw new LoginFailureException(String.format(
-                    "AWS identity %s does not match this bookmark (%s). "
-                            + "Create a new bookmark to use the other identity.", selected, pinned));
-        }
-        host.setProperty(IDENTITY_PROPERTY, selected);
-        if(StringUtils.isBlank(host.getNickname())) {
-            host.setNickname(selected);
-        }
-    }
-
-    private static LoginFailureException failure() {
-        return failure(null);
-    }
-
-    private static LoginFailureException failure(final Throwable cause) {
-        return new LoginFailureException("AWS browser sign-in failed.", cause);
     }
 }

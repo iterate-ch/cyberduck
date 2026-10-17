@@ -297,7 +297,7 @@ public class OAuth2AuthorizationService {
      * @return Redirect URI with port number set for loopback address or original redirect URI
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc8252#section-7.3">Loopback Interface Redirection</a>
      */
-    protected static String toRedirectUri(final String redirectUri) throws BackgroundException {
+    public static String toRedirectUri(final String redirectUri) throws BackgroundException {
         final URI uri;
         try {
             uri = new URI(URIEncoder.decode(redirectUri));
