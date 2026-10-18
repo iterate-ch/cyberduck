@@ -20,6 +20,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -79,7 +81,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private static final String SERVICE = "AWS Console Sign-In";
+    public static final String CLIENT_ID = "arn:aws:signin:::devtools/same-device";
     private static final String DPOP_HEADER_NAME = "DPoP";
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -105,19 +107,29 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
             final TemporaryAccessTokens tokens = credentials.getTokens();
             if(tokens.isExpired()) {
                 log.debug("Refresh expired tokens {} for {}", tokens, host);
-                final AWSConsoleLoginTokens login = this.load(credentials);
-                if(login.validate()) {
-                    log.debug("Refresh expired tokens {} for {}", login, host);
+                // Containing private key and refresh token
+                final OAuthTokens oauth = credentials.getOauth();
+                AWSConsoleLoginTokens console;
+                if(oauth.validate()) {
                     try {
-                        return credentials.setTokens(this.refresh(login.getArn(),
-                                login.getPrivateKey(), login.getRefreshToken()).getAccessTokens());
+                        final AWSConsoleLoginTokens saved = new AWSConsoleLoginTokens(oauth);
+                        log.debug("Refresh expired tokens {} for {} with {}", tokens, host, saved);
+                        console = this.refresh(credentials.getUsername(),
+                                saved.getPrivateKey(), saved.getOauth().getRefreshToken());
                     }
                     catch(LoginFailureException | InteroperabilityException e) {
-                        log.warn("AWS sign-in session expired for {}", host);
-                        return credentials.setTokens(this.authorize(cancel).getAccessTokens());
+                        log.warn("AWS sign-in refresh failed for {}", host);
+                        console = this.authorize(cancel);
                     }
+
                 }
-                return credentials.setTokens(this.authorize(cancel).getAccessTokens());
+                else {
+                    log.warn("No previous AWS sign-in for {}", host);
+                    console = this.authorize(cancel);
+                }
+                return credentials
+                        .setOauth(console.getOauth())
+                        .setTokens(console.getTemporary());
             }
             return credentials;
         }
@@ -229,9 +241,9 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
             else {
                 identity = arn(idToken.asText());
             }
-            return new AWSConsoleLoginTokens(identity, privateKey, refreshToken,
+            return new AWSConsoleLoginTokens(privateKey, refreshToken,
                     new TemporaryAccessTokens(accessKey, secretKey, sessionToken,
-                            System.currentTimeMillis() + expires * 1000));
+                            System.currentTimeMillis() + expires * 1000)).setArn(identity);
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -241,34 +253,18 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         }
     }
 
-    private AWSConsoleLoginTokens load(final Credentials credentials) throws AccessDeniedException {
-        final String arn = credentials.getUsername();
-        if(StringUtils.isBlank(arn)) {
-            return AWSConsoleLoginTokens.EMPTY;
-        }
-        final String privateKey = store.getPassword(SERVICE, this.account(arn, "DPoP Private Key"));
-        if(StringUtils.isBlank(privateKey)) {
-            return AWSConsoleLoginTokens.EMPTY;
-        }
-        final String refreshToken = store.getPassword(SERVICE, this.account(arn, "Refresh Token"));
-        if(StringUtils.isBlank(refreshToken)) {
-            return AWSConsoleLoginTokens.EMPTY;
-        }
-        try {
-            return new AWSConsoleLoginTokens(arn, ECKey.parse(privateKey), refreshToken,
-                    credentials.getTokens());
-        }
-        catch(ParseException e) {
-            throw new AccessDeniedException(e.getMessage(), e);
-        }
-    }
-
-    private AWSConsoleLoginTokens save(final AWSConsoleLoginTokens tokens) throws AccessDeniedException {
+    protected AWSConsoleLoginTokens save(final AWSConsoleLoginTokens tokens) throws AccessDeniedException {
         final Credentials credentials = host.getCredentials();
-        credentials.setUsername(tokens.getArn());
+        if(StringUtils.isNotBlank(tokens.getArn())) {
+            // No id token returned on refresh. Keep previously saved ARN
+            credentials.setUsername(tokens.getArn());
+        }
+        credentials
+                .setOauth(tokens.getOauth())
+                .setTokens(tokens.getTemporary())
+                .setSaved(new LoginOptions().save);
         if(credentials.isSaved()) {
-            store.addPassword(SERVICE, this.account(tokens.getArn(), "DPoP Private Key"), tokens.getPrivateKey().toJSONString());
-            store.addPassword(SERVICE, this.account(tokens.getArn(), "Refresh Token"), tokens.getRefreshToken());
+            store.save(host);
         }
         return tokens;
     }
@@ -276,27 +272,50 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
     public static final class AWSConsoleLoginTokens {
 
         public static final AWSConsoleLoginTokens EMPTY
-                = new AWSConsoleLoginTokens(null, null, null, TemporaryAccessTokens.EMPTY);
+                = new AWSConsoleLoginTokens(null, null, -1L, TemporaryAccessTokens.EMPTY);
+
+        private final OAuthTokens oauth;
+        /**
+         * Temporary short-lived S3 access credentials not saved
+         */
+        private final TemporaryAccessTokens temporary;
 
         private String arn;
 
-        private final ECKey privateKey;
-        private final String refreshToken;
-        private final TemporaryAccessTokens accessTokens;
-
-        public AWSConsoleLoginTokens(final String arn, final ECKey privateKey, final String refreshToken,
-                                     final TemporaryAccessTokens accessTokens) {
-            this.arn = arn;
-            this.privateKey = privateKey;
-            this.refreshToken = refreshToken;
-            this.accessTokens = accessTokens;
+        public AWSConsoleLoginTokens(final OAuthTokens oauth) {
+            this.oauth = oauth;
+            this.temporary = TemporaryAccessTokens.EMPTY;
         }
 
-        public TemporaryAccessTokens getAccessTokens() {
-            return accessTokens;
+        public AWSConsoleLoginTokens(final ECKey privateKey, final String refreshToken,
+                                     final TemporaryAccessTokens temporary) {
+            this(privateKey.toJSONString(), refreshToken, -1L, temporary);
         }
 
-        public AWSConsoleLoginTokens setArn(final String arn) {
+        public AWSConsoleLoginTokens(final String accessToken, final String refreshToken, final Long expiryInMilliseconds,
+                                     final TemporaryAccessTokens temporary) {
+            this.oauth = new OAuthTokens(accessToken, refreshToken, expiryInMilliseconds);
+            this.temporary = temporary;
+        }
+
+        public OAuthTokens getOauth() {
+            return oauth;
+        }
+
+        public TemporaryAccessTokens getTemporary() {
+            return temporary;
+        }
+
+        public ECKey getPrivateKey() throws AccessDeniedException {
+            try {
+                return ECKey.parse(oauth.getAccessToken());
+            }
+            catch(ParseException e) {
+                throw new AccessDeniedException(e.getMessage(), e);
+            }
+        }
+
+        public AWSConsoleLoginTokens setArn(String arn) {
             this.arn = arn;
             return this;
         }
@@ -305,26 +324,12 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
             return arn;
         }
 
-        public String getRefreshToken() {
-            return refreshToken;
-        }
-
-        public ECKey getPrivateKey() {
-            return privateKey;
-        }
-
-        public boolean validate() {
-            return StringUtils.isNotEmpty(arn)
-                    && StringUtils.isNotEmpty(refreshToken)
-                    && privateKey != null;
-        }
-
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("AWSConsoleLoginTokens{");
-            sb.append("arn='").append(arn).append('\'');
-            sb.append(", refreshToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(refreshToken)))).append('\'');
-            sb.append(", accessTokens=").append(accessTokens);
+            sb.append("oauth=").append(oauth);
+            sb.append(", temporary=").append(temporary);
+            sb.append(", arn='").append(arn).append('\'');
             sb.append('}');
             return sb.toString();
         }

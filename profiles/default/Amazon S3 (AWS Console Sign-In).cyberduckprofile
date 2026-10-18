@@ -33,14 +33,16 @@
         <false/>
         <key>Username Configurable</key>
         <false/>
+        <key>Username Placeholder</key>
+        <string>AWS Console Sign-In ARN</string>
         <key>Password Configurable</key>
         <false/>
         <key>Token Configurable</key>
         <false/>
-        <key>OAuth Client Id</key>
+        <key>OAuth Client ID</key>
         <string>arn:aws:signin:::devtools/same-device</string>
         <key>OAuth Configurable</key>
-        <false/>
+        <true/>
         <key>OAuth Authorization Url</key>
         <string>https://signin.aws.amazon.com/v1/authorize</string>
         <key>OAuth Token Url</key>
