@@ -101,7 +101,11 @@ public class SessionPoolFactory {
             default:
                 // Stateless protocol
                 log.info("Create new stateless connection pool for {}", bookmark);
-                final Session<?> session = SessionFactory.create(bookmark, trust, key);
+                final Host host = Arrays.asList(usage).contains(Usage.transfer)
+                        // Closing the session resets credentials. Do not clear those still in use by the browser connection
+                        ? new Host(bookmark).setCredentials(new Credentials(bookmark.getCredentials()))
+                        : bookmark;
+                final Session<?> session = SessionFactory.create(host, trust, key);
                 return new StatelessSessionPool(connect, session, transcript, registry);
         }
     }
