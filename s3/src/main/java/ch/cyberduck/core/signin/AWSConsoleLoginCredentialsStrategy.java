@@ -30,7 +30,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.oauth.LoopbackOAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
@@ -41,13 +40,17 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.AbstractResponseHandler;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -64,6 +67,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
@@ -220,10 +224,30 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         try {
             request.setHeader(DPOP_HEADER_NAME, proof(privateKey, request.getURI().toString()));
             request.setEntity(new StringEntity(MAPPER.writeValueAsString(body), ContentType.APPLICATION_JSON));
-            final JsonNode response = client.execute(request, new AbstractResponseHandler<JsonNode>() {
+            final JsonNode response = client.execute(request, new ResponseHandler<JsonNode>() {
                 @Override
-                public JsonNode handleEntity(final HttpEntity entity) throws IOException {
-                    return MAPPER.readTree(entity.getContent());
+                public JsonNode handleResponse(final HttpResponse response) throws IOException {
+                    final StatusLine status = response.getStatusLine();
+                    final HttpEntity entity = response.getEntity();
+                    if(status.getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
+                        JsonNode details = MissingNode.getInstance();
+                        try {
+                            if(null != entity) {
+                                details = MAPPER.readTree(entity.getContent());
+                            }
+                        }
+                        catch(IOException e) {
+                            log.warn("Failure {} parsing error response", e.toString());
+                        }
+                        finally {
+                            EntityUtils.consumeQuietly(entity);
+                        }
+                        throw new AWSConsoleLoginExceptionMappingService.ErrorResponseException(
+                                status.getStatusCode(), status.getReasonPhrase(),
+                                details.path("error").asText(null),
+                                details.path("message").asText(null));
+                    }
+                    return null == entity ? MissingNode.getInstance() : MAPPER.readTree(entity.getContent());
                 }
             });
             final String accessKey = response.path("accessToken").path("accessKeyId").asText();
@@ -246,7 +270,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
                             System.currentTimeMillis() + expires * 1000)).setArn(identity);
         }
         catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map(e);
+            throw new AWSConsoleLoginExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
