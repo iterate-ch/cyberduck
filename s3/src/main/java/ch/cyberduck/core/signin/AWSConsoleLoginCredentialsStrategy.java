@@ -335,10 +335,6 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         }
     }
 
-    protected String account(final String arn, final String secret) {
-        return String.format("%s (%s)", secret, arn);
-    }
-
     /**
      * Generates a DPoP (Demonstration of Proof-of-Possession) proof JWT (JSON Web Token)
      * used for authenticating HTTP requests. This proof is signed using the provided
