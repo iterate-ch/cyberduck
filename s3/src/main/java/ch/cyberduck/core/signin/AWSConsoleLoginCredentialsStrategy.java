@@ -81,7 +81,6 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private static final String CLIENT_ID = "arn:aws:signin:::devtools/same-device";
     private static final String SERVICE = "AWS Console Sign-In";
     private static final String DPOP_HEADER_NAME = "DPoP";
 
@@ -166,7 +165,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
             final String code = new LoopbackOAuth2AuthorizationCodeProvider().prompt(host, prompt,
                     new URIBuilder(URI.create(String.format("%s/v1/authorize", endpoint)))
                             .addParameter("response_type", "code")
-                            .addParameter("client_id", CLIENT_ID)
+                            .addParameter("client_id", host.getProtocol().getOAuthClientId())
                             .addParameter("state", state)
                             .addParameter("code_challenge", challenge)
                             .addParameter("code_challenge_method", "SHA-256")
@@ -176,7 +175,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
                 throw new LoginCanceledException();
             }
             final ObjectNode request = MAPPER.createObjectNode()
-                    .put("clientId", CLIENT_ID)
+                    .put("clientId", host.getProtocol().getOAuthClientId())
                     .put("grantType", "authorization_code")
                     .put("code", code)
                     .put("codeVerifier", verifier)
@@ -190,7 +189,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
 
     private AWSConsoleLoginTokens refresh(final String arn, final ECKey privateKey, final String refreshToken) throws BackgroundException {
         final ObjectNode request = MAPPER.createObjectNode()
-                .put("clientId", CLIENT_ID)
+                .put("clientId", host.getProtocol().getOAuthClientId())
                 .put("grantType", "refresh_token")
                 .put("refreshToken", refreshToken);
         return this.save(this.exchange(request, privateKey).setArn(arn));

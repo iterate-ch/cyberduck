@@ -37,6 +37,8 @@
         <false/>
         <key>Token Configurable</key>
         <false/>
+        <key>OAuth Client Id</key>
+        <string>arn:aws:signin:::devtools/same-device</string>
         <key>OAuth Configurable</key>
         <false/>
         <key>OAuth Redirect Url</key>
