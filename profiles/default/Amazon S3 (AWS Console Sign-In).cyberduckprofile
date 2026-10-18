@@ -41,6 +41,10 @@
         <string>arn:aws:signin:::devtools/same-device</string>
         <key>OAuth Configurable</key>
         <false/>
+        <key>OAuth Authorization Url</key>
+        <string>https://signin.aws.amazon.com/v1/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://signin.aws.amazon.com/v1/token</string>
         <key>OAuth Redirect Url</key>
         <string>http://127.0.0.1/oauth/callback</string>
         <key>Scopes</key>

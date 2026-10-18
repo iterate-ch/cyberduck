@@ -33,8 +33,6 @@ import ch.cyberduck.core.oauth.LoopbackOAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
-import ch.cyberduck.core.s3.S3LocationFeature;
-
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -90,15 +88,12 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
     private final Host host;
     private final LoginCallback prompt;
     private final HostPasswordStore store = PasswordStoreFactory.get();
-    private final String endpoint;
     private final CancelCallback cancel;
 
     public AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host, final LoginCallback prompt, final CancelCallback cancel) {
         this.client = client;
         this.host = host;
         this.prompt = prompt;
-        this.endpoint = String.format("https://%s.signin.aws.amazon.com",
-                StringUtils.defaultIfBlank(host.getRegion(), S3LocationFeature.DEFAULT_REGION.getIdentifier()));
         this.cancel = cancel;
     }
 
@@ -163,7 +158,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
             final String state = new UUIDRandomStringService().random();
             final String redirectUri = OAuth2AuthorizationService.toRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             final String code = new LoopbackOAuth2AuthorizationCodeProvider().prompt(host, prompt,
-                    new URIBuilder(URI.create(String.format("%s/v1/authorize", endpoint)))
+                    new URIBuilder(URI.create(host.getProtocol().getOAuthAuthorizationUrl()))
                             .addParameter("response_type", "code")
                             .addParameter("client_id", host.getProtocol().getOAuthClientId())
                             .addParameter("state", state)
@@ -209,10 +204,9 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
      *                             or errors during authentication.
      */
     private AWSConsoleLoginTokens exchange(final ObjectNode body, final ECKey privateKey) throws BackgroundException {
-        final String url = String.format("%s/v1/token", endpoint);
-        final HttpPost request = new HttpPost(url);
+        final HttpPost request = new HttpPost(host.getProtocol().getOAuthTokenUrl());
         try {
-            request.setHeader(DPOP_HEADER_NAME, proof(privateKey, url));
+            request.setHeader(DPOP_HEADER_NAME, proof(privateKey, request.getURI().toString()));
             request.setEntity(new StringEntity(MAPPER.writeValueAsString(body), ContentType.APPLICATION_JSON));
             final JsonNode response = client.execute(request, new AbstractResponseHandler<JsonNode>() {
                 @Override
