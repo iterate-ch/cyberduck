@@ -28,6 +28,8 @@ import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +45,7 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
      */
     private final OAuth2RequestInterceptor oauth;
     private final Host host;
+    private final CancelCallback cancel;
 
     private final String region;
     private final String accountId;
@@ -54,10 +57,12 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
     public static final String SSO_ACCOUNT_ACCESS_SCOPE = "sso:account:access";
 
     public IdentityCenterCredentialsStrategy(final OAuth2RequestInterceptor oauth, final Host host,
-                                             final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
+                                             final X509TrustManager trust, final X509KeyManager key,
+                                             final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         super(host, trust, key, prompt);
         this.oauth = oauth;
         this.host = host;
+        this.cancel = cancel;
         this.region = prompt(host, prompt, host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
                 LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
                 host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
@@ -76,7 +81,7 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
             // Get temporary credentials from Identity Center
             if(tokens.isExpired()) {
                 log.debug("Refresh expired tokens {} for {}", tokens, host);
-                final IdentityCenterRoleCredentials role = this.getRoleCredentials(oauth.save(oauth.validate(credentials.getOauth())),
+                final IdentityCenterRoleCredentials role = this.getRoleCredentials(oauth.save(oauth.validate(credentials.getOauth(), cancel)),
                         region, accountId, roleName);
                 log.debug("Received temporary access tokens {}", role);
                 credentials.setTokens(new TemporaryAccessTokens(role.getAccessKeyId(),

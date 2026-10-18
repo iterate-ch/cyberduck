@@ -124,16 +124,6 @@ public class OAuth2AuthorizationService {
     /**
      * Authorize when cached tokens expired otherwise return
      *
-     * @return Tokens retrieved
-     */
-    @Deprecated
-    public OAuthTokens validate(final OAuthTokens saved) throws BackgroundException {
-        return this.validate(saved, CancelCallback.noop);
-    }
-
-    /**
-     * Authorize when cached tokens expired otherwise return
-     *
      * @param cancel Context of the action. No interactive authorization flow for scheduled actions
      * @return Tokens retrieved
      */
@@ -206,11 +196,6 @@ public class OAuth2AuthorizationService {
             store.save(host);
         }
         return tokens;
-    }
-
-    @Deprecated
-    public OAuthTokens authorize() throws BackgroundException {
-        return this.authorize(CancelCallback.noop);
     }
 
     /**

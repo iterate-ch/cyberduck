@@ -301,7 +301,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 log.debug("Add interceptor {}", oauth);
                 configuration.addInterceptorLast(oauth);
                 final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
-                        oauth, host, trust, key, prompt);
+                        oauth, host, trust, key, prompt, cancel);
                 log.debug("Return authenticator {}", strategy);
                 return strategy;
             }
@@ -313,7 +313,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
             final S3CredentialsStrategy strategy
-                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt);
+                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt, cancel);
             log.debug("Return authenticator {}", strategy);
             return strategy;
         }
