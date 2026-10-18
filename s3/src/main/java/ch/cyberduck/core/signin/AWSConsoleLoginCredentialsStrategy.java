@@ -115,7 +115,8 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
                 if(login.validate()) {
                     log.debug("Refresh expired tokens {} for {}", login, host);
                     try {
-                        return credentials.setTokens(this.refresh(login.getRefreshToken(), login.getPrivateKey()).getAccessTokens());
+                        return credentials.setTokens(this.refresh(login.getArn(),
+                                login.getPrivateKey(), login.getRefreshToken()).getAccessTokens());
                     }
                     catch(LoginFailureException | InteroperabilityException e) {
                         log.warn("AWS sign-in session expired for {}", host);
@@ -187,12 +188,12 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         }
     }
 
-    private AWSConsoleLoginTokens refresh(final String refreshToken, final ECKey privateKey) throws BackgroundException {
+    private AWSConsoleLoginTokens refresh(final String arn, final ECKey privateKey, final String refreshToken) throws BackgroundException {
         final ObjectNode request = MAPPER.createObjectNode()
                 .put("clientId", CLIENT_ID)
                 .put("grantType", "refresh_token")
                 .put("refreshToken", refreshToken);
-        return this.save(this.exchange(request, privateKey));
+        return this.save(this.exchange(request, privateKey).setArn(arn));
     }
 
     /**
@@ -226,7 +227,15 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
             final String refreshToken = response.path("refreshToken").asText();
             // Maximum value is 900 seconds (15 minutes)
             final long expires = response.path("expiresIn").asLong(-1L);
-            final String identity = arn(response.path("idToken").asText());
+            final JsonNode idToken = response.path("idToken");
+            final String identity;
+            if(idToken.isMissingNode()) {
+                // No IdToken when refreshing
+                identity = null;
+            }
+            else {
+                identity = arn(idToken.asText());
+            }
             return new AWSConsoleLoginTokens(identity, privateKey, refreshToken,
                     new TemporaryAccessTokens(accessKey, secretKey, sessionToken,
                             System.currentTimeMillis() + expires * 1000));
@@ -276,7 +285,8 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         public static final AWSConsoleLoginTokens EMPTY
                 = new AWSConsoleLoginTokens(null, null, null, TemporaryAccessTokens.EMPTY);
 
-        private final String arn;
+        private String arn;
+
         private final ECKey privateKey;
         private final String refreshToken;
         private final TemporaryAccessTokens accessTokens;
@@ -291,6 +301,11 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
 
         public TemporaryAccessTokens getAccessTokens() {
             return accessTokens;
+        }
+
+        public AWSConsoleLoginTokens setArn(final String arn) {
+            this.arn = arn;
+            return this;
         }
 
         public String getArn() {
