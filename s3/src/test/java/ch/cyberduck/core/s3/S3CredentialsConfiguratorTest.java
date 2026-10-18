@@ -62,7 +62,19 @@ public class S3CredentialsConfiguratorTest {
     }
 
     @Test
-    public void testExplicitProfileForCustomHostname() throws Exception {
+    public void testResetDefaultProfileAfterSwitchingToCustomHostname() throws Exception {
+        final CredentialsConfigurator configurator = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/default/.aws").getAbsolutePath())).reload();
+        final Host host = new Host(new TestProtocol(), "s3.amazonaws.com", new Credentials());
+        host.setCredentials(configurator.configure(host));
+        assertEquals("DEFAULTKEYID", host.getCredentials().getTokens().getAccessKeyId());
+        host.setHostname("s3-location.subdomain.de");
+        final Credentials verify = configurator.configure(host);
+        assertNull(verify.getTokens().getAccessKeyId());
+        assertNull(verify.getProperty("sso_start_url"));
+    }
+
+    @Test
+    public void testExplicitProfileForCustomHostname()throws Exception {
         final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/default/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), "s3-location.subdomain.de", new Credentials("netapp")));
         assertEquals("NETAPPKEYID", verify.getTokens().getAccessKeyId());

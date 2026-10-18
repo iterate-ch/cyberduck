@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
@@ -187,6 +188,14 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         }
         else {
             log.warn("No matching configuration for username {} in {}", credentials.getUsername(), profiles.keySet());
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                // Discard values derived from the default profile by a previous configuration, e.g. before
+                // switching to a third party endpoint. Credentials with a user name are never reset.
+                credentials.setTokens(TemporaryAccessTokens.EMPTY);
+                Stream.of(Profile.STS_ROLE_ARN_PROPERTY_KEY, Profile.STS_MFA_ARN_PROPERTY_KEY,
+                                Profile.SSO_START_URL_KEY, Profile.SSO_REGION_KEY, Profile.SSO_ACCOUNT_ID_KEY, Profile.SSO_ROLE_NAME_KEY)
+                        .forEach(key -> credentials.setProperty(key, null));
+            }
         }
         return credentials;
     }
