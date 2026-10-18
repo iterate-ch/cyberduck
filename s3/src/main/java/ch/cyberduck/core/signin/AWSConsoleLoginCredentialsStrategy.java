@@ -35,6 +35,9 @@ import ch.cyberduck.core.random.SecureRandomProviderFactory;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.s3.S3LocationFeature;
 
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.CancelCallback;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -89,13 +92,15 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
     private final LoginCallback prompt;
     private final HostPasswordStore store = PasswordStoreFactory.get();
     private final String endpoint;
+    private final CancelCallback cancel;
 
-    public AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host, final LoginCallback prompt) {
+    public AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host, final LoginCallback prompt, final CancelCallback cancel) {
         this.client = client;
         this.host = host;
         this.prompt = prompt;
         this.endpoint = String.format("https://%s.signin.aws.amazon.com",
                 StringUtils.defaultIfBlank(host.getRegion(), S3LocationFeature.DEFAULT_REGION.getIdentifier()));
+        this.cancel = cancel;
     }
 
     @Override
@@ -114,10 +119,10 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
                     }
                     catch(LoginFailureException | InteroperabilityException e) {
                         log.warn("AWS sign-in session expired for {}", host);
-                        return credentials.setTokens(this.authorize().getAccessTokens());
+                        return credentials.setTokens(this.authorize(cancel).getAccessTokens());
                     }
                 }
-                return credentials.setTokens(this.authorize().getAccessTokens());
+                return credentials.setTokens(this.authorize(cancel).getAccessTokens());
             }
             return credentials;
         }
@@ -142,7 +147,12 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
      * @throws BackgroundException If an error occurs during the authorization flow such as
      *                             network issues, user cancelation, invalid responses, or cryptographic failures.
      */
-    protected AWSConsoleLoginTokens authorize() throws BackgroundException {
+    protected AWSConsoleLoginTokens authorize(final CancelCallback cancel) throws BackgroundException {
+        if(cancel.getContext() == BackgroundAction.Context.scheduled) {
+            // Do not open web browser when user interaction is not possible
+            log.warn("Skip interactive flow for {} from scheduled action", host);
+            throw new LoginCanceledException();
+        }
         try {
             final ECKey key = new ECKeyGenerator(Curve.P_256).generate();
             final byte[] random = new byte[48];

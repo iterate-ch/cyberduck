@@ -321,7 +321,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getProtocol().getOAuthScopes().contains("openid")) {
                 // AWS Console Sign-In
                 log.debug("Configure AWS Console Sign-In");
-                return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt);
+                return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt, cancel);
             }
             // Try auto-configure
             final String context = preferences.getProperty(Profile.CONTEXT_KEY);
