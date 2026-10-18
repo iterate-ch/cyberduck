@@ -273,13 +273,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(S3Session.isAwsHostname(host.getHostname())) {
-            if(host.getProtocol().getOAuthScopes().contains("openid")) {
-                // AWS Console Sign-In
-                log.debug("Configure AWS Console Sign-In");
-                return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt);
-            }
-        }
         if(host.getProtocol().isOAuthConfigurable()) {
             if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
                 log.debug("Configure SSO");
@@ -325,6 +318,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return strategy;
         }
         if(S3Session.isAwsHostname(host.getHostname())) {
+            if(host.getProtocol().getOAuthScopes().contains("openid")) {
+                // AWS Console Sign-In
+                log.debug("Configure AWS Console Sign-In");
+                return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt);
+            }
             // Try auto-configure
             final String context = preferences.getProperty(Profile.CONTEXT_KEY);
             if(Scheme.isURL(context)) {
