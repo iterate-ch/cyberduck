@@ -3,9 +3,6 @@ using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -28,6 +25,22 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public IEnumerable<BitmapSource> GetDisk(Protocol protocol)
             => Get(protocol, protocol.disk(), "Disk", false, true, out _);
+
+        public BitmapSource GetIcon(LoginOptions options, int size)
+        {
+            if (options.icon() is not { } icon)
+            {
+                return null;
+            }
+
+            var key = icon.GetHashCode();
+            if (!IconCache.TryGetIcon(key, size, out BitmapSource image))
+            {
+                image = Get(key, icon, size, default, true);
+            }
+
+            return image;
+        }
 
         public override BitmapSource GetIcon(Protocol protocol, int size)
             => IconCache.TryGetIcon(protocol, size, out BitmapSource image, "Icon")
