@@ -15,7 +15,6 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -27,19 +26,13 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.EnumSet;
 import java.util.Optional;
 
-import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import com.azure.storage.file.datalake.DataLakeServiceClient;
-import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
 
 public class AzureDirectoryFeature implements Directory<Void> {
 
@@ -53,43 +46,20 @@ public class AzureDirectoryFeature implements Directory<Void> {
 
     @Override
     public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        try {
-            if(containerService.isContainer(folder)) {
+        if(containerService.isContainer(folder)) {
+            try {
                 // Container name must be lower case.
-                session.getClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
+                session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
                 return new Path(folder.getParent(), folder.getName(), folder.getType());
             }
-            else {
-                if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                    final Credentials credentials = session.getHost().getCredentials();
-                    final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
-                            .endpoint(session.getClient().getAccountUrl())
-                            .pipeline(session.getClient().getHttpPipeline());
-                    if(credentials.isTokenAuthentication()) {
-                        builder.credential(new AzureSasCredential(credentials.getToken()));
-                    }
-                    else {
-                        builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
-                    }
-                    final DataLakeServiceClient client = builder.buildClient();
-                    client.getFileSystemClient(containerService.getContainer(folder).getName())
-                            .createDirectory(StringUtils.removeEnd(containerService.getKey(folder), String.valueOf(Path.DELIMITER)));
-                    return new Path(folder.getParent(), folder.getName(), folder.getType());
-                }
-                else {
-                    final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
-                    type.add(Path.Type.placeholder);
-                    return new AzureTouchFeature(session).touch(writer, folder.withType(type),
-                            status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
-                }
+            catch(HttpResponseException e) {
+                throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
             }
         }
-        catch(IllegalArgumentException e) {
-            throw new InteroperabilityException();
+        if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+            return new AzureDataLakeDirectoryFeature(session).mkdir(writer, folder, status);
         }
-        catch(HttpResponseException e) {
-            throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
-        }
+        return new AzureBlobDirectoryFeature(session).mkdir(writer, folder, status);
     }
 
     @Override

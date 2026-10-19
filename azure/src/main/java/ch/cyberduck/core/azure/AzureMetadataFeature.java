@@ -54,10 +54,10 @@ public class AzureMetadataFeature implements Headers {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName()).getProperties().getMetadata();
+                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName()).getProperties().getMetadata();
             }
             else {
-                final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file));
                 final BlobProperties properties = client.getProperties();
                 final Map<String, String> metadata = properties.getMetadata();
@@ -79,11 +79,11 @@ public class AzureMetadataFeature implements Headers {
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .setMetadata(new HashMap<>(status.getMetadata()));
             }
             else {
-                final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file));
                 final HashMap<String, String> pruned = new HashMap<>();
                 for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {

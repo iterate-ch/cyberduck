@@ -27,30 +27,40 @@ import javax.net.ssl.SSLException;
 import java.util.Map;
 
 import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.implementation.models.BlobStorageError;
+import com.azure.storage.file.datalake.implementation.models.DataLakeStorageError;
 
 public class AzureExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
     @Override
     public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
-        switch(failure.getResponse().getStatusCode()) {
-            case 403:
-                if(failure.getValue() instanceof Map) {
-                    final Map messages = (Map) failure.getValue();
-                    if(messages.containsKey("Message")) {
-                        this.append(buffer, messages.get("Message").toString());
-                    }
-                }
-                else {
-                    this.append(buffer, failure.getMessage());
-                }
-                return new LoginFailureException(buffer.toString(), failure);
+        if(failure.getValue() instanceof BlobStorageError) {
+            final BlobStorageError error = (BlobStorageError) failure.getValue();
+            this.append(buffer, error.getMessage());
         }
-        this.append(buffer, failure.getMessage());
+        if(failure.getValue() instanceof DataLakeStorageError) {
+            final DataLakeStorageError error = (DataLakeStorageError) failure.getValue();
+            this.append(buffer, error.getMessage());
+        }
+        if(failure.getValue() instanceof Map) {
+            final Map<?, ?> messages = (Map<?, ?>) failure.getValue();
+            if(messages.containsKey("Message")) {
+                this.append(buffer, messages.get("Message").toString());
+            }
+        }
+        if(buffer.length() == 0) {
+            // No structured error details such as from an intermediary
+            this.append(buffer, failure.getMessage());
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
                 return new SSLExceptionMappingService().map(buffer.toString(), (SSLException) cause);
             }
+        }
+        switch(failure.getResponse().getStatusCode()) {
+            case 403:
+                return new LoginFailureException(buffer.toString(), failure);
         }
         return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getResponse().getStatusCode());
     }

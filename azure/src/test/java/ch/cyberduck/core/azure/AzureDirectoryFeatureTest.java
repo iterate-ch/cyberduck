@@ -8,6 +8,7 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -52,15 +53,21 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path placeholder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(placeholder.getType().contains(Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session).find(placeholder));
+        assertTrue(new DefaultFindFeature(session).find(placeholder));
         assertEquals(PathAttributes.EMPTY, placeholder.attributes());
         final Path file = new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), file, new TransferStatus());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
-        // Still find common prefix
-        assertTrue(new AzureFindFeature(session).find(placeholder));
-        assertEquals(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(placeholder));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        final AzureDeleteFeature delete = new AzureDeleteFeature(session);
+        delete.delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
+        if(delete.features(placeholder).contains(Delete.Flags.recursive)) {
+            assertFalse(new AzureFindFeature(session).find(placeholder));
+        }
+        else {
+            // Still find common prefix
+            assertTrue(new AzureFindFeature(session).find(placeholder));
+            assertEquals(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(placeholder));
+            delete.delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        }
     }
 }

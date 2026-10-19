@@ -81,16 +81,23 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertNotNull(attributes.getETag());
-        assertNotNull(new AzureObjectListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
-        assertNotNull(new AzureObjectListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
-        // Still found as prefix
-        assertNotNull(new AzureObjectListService(session).list(container, new DisabledListProgressListener()).find(new DefaultPathPredicate(intermediate)));
-        assertNotNull(new AzureObjectListService(session).list(intermediate, new DisabledListProgressListener()).find(new DefaultPathPredicate(directory)));
-        // Ignore 404 failures
-        assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(directory));
-        assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(intermediate));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
+        assertNotNull(new AzureListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
+        final AzureDeleteFeature delete = new AzureDeleteFeature(session);
+        delete.delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
+        assertNotNull(new AzureListService(session).list(container, new DisabledListProgressListener()).find(new DefaultPathPredicate(intermediate)));
+        if(delete.features(directory).contains(Delete.Flags.recursive)) {
+            assertThrows(NotfoundException.class, () -> new AzureListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
+            assertNull(new AzureListService(session).list(intermediate, new DisabledListProgressListener()).find(new DefaultPathPredicate(directory)));
+        }
+        else {
+            assertNotNull(new AzureListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
+            // Still found as prefix
+            assertNotNull(new AzureListService(session).list(intermediate, new DisabledListProgressListener()).find(new DefaultPathPredicate(directory)));
+            // Ignore 404 failures
+            assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(directory));
+            assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(intermediate));
+            delete.delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
+        }
+        delete.delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
