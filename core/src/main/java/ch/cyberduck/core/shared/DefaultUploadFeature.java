@@ -36,6 +36,7 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -49,7 +50,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
@@ -85,7 +85,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                 in = local.getInputStream();
             }
             else {
-                in = new DigestInputStream(local.getInputStream(), digest);
+                in = new SkippingDigestInputStream(local.getInputStream(), digest);
             }
             final StatusOutputStream<Reply> out = write.write(file, status, callback);
             new StreamCopier(cancel, progress)
