@@ -20,34 +20,30 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.text.MessageFormat;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
@@ -91,7 +87,10 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                 .transfer(in, new ThrottledOutputStream(out, throttle));
         final Reply response = out.getStatus();
         log.debug("Received response {}", response);
-        this.verify(file, digest, response);
+        if(digest != null) {
+            // Verified when upload is complete comparing with the checksum in the response of the server
+            status.setDigest(this.checksum(digest));
+        }
         return response;
     }
 
@@ -102,39 +101,6 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
      */
     public MessageDigest digest(final Write<Reply> write, final Path file, final TransferStatus status) throws BackgroundException {
         return write.checksum(file, status).digest();
-    }
-
-    public void verify(final Path file, final MessageDigest digest, final Reply response) throws BackgroundException {
-        if(file.getType().contains(Path.Type.encrypted)) {
-            log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-            return;
-        }
-        if(null == digest) {
-            log.debug("Digest disabled for file {}", file);
-            return;
-        }
-        if(null == response) {
-            log.debug("Missing response to verify checksum for {}", file);
-            return;
-        }
-        final Checksum checksum = adapter.toAttributes(response).getChecksum();
-        if(Checksum.NONE.equals(checksum)) {
-            log.debug("Missing checksum for {}", file);
-            return;
-        }
-        // Checksum of the uploaded data calculated while streaming
-        final Checksum expected = this.checksum(digest);
-        if(ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
-            log.warn("Checksum {} returned by server is {} but expected {}", checksum.hash, checksum.algorithm, expected.algorithm);
-        }
-        else {
-            // Compare with the checksum returned by the server
-            if(!checksum.equals(expected)) {
-                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
-                                expected.algorithm.toString(), expected.hash, checksum.hash));
-            }
-        }
     }
 
     /**

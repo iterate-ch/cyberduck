@@ -118,6 +118,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private Checksum checksum = Checksum.NONE;
 
     /**
+     * Checksum of the content calculated while transferring
+     */
+    private Checksum digest = Checksum.NONE;
+
+    /**
      * MIME type
      */
     private String mime;
@@ -222,6 +227,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.canceled.set(copy.canceled.get());
         this.complete.set(copy.complete.get());
         this.checksum = copy.checksum;
+        this.digest = copy.digest;
         this.mime = copy.mime;
         this.remote = copy.remote;
         this.response = copy.response;
@@ -432,6 +438,18 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
 
     public TransferStatus setChecksum(final Checksum checksum) {
         this.checksum = checksum;
+        return this;
+    }
+
+    /**
+     * @return Checksum of the content calculated while transferring
+     */
+    public Checksum getDigest() {
+        return digest;
+    }
+
+    public TransferStatus setDigest(final Checksum digest) {
+        this.digest = digest;
         return this;
     }
 
