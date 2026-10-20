@@ -31,10 +31,6 @@ import java.security.MessageDigest;
 
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
 
-    public S3SingleUploadService(final S3Session session) {
-        super(new S3AttributesAdapter(session.getHost()));
-    }
-
     /**
      * The checksum of the write feature is the SHA-256 for the request signature. Verify with the MD5 returned as ETag.
      */

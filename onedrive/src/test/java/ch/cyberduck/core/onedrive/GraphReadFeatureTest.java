@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -39,6 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -91,7 +91,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new GraphAttributesFinderFeature(session, fileid)).upload(
+        new DefaultUploadFeature<DriveItem.Metadata>().upload(
                 new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
@@ -134,7 +134,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new GraphAttributesFinderFeature(session, fileid)).upload(
+        new DefaultUploadFeature<DriveItem.Metadata>().upload(
                 new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);

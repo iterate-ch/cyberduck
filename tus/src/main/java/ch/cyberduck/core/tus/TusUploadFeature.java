@@ -24,7 +24,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
@@ -78,7 +77,6 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
     private final TusCapabilities capabilities;
 
     public TusUploadFeature(final DAVSession session, final TusCapabilities capabilities) {
-        super(new VoidAttributesAdapter());
         this.session = session;
         this.capabilities = capabilities;
     }

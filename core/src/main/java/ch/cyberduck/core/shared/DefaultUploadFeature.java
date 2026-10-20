@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -47,12 +46,6 @@ import java.security.MessageDigest;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
-
-    private final AttributesAdapter<Reply> adapter;
-
-    public DefaultUploadFeature(final AttributesAdapter<Reply> adapter) {
-        this.adapter = adapter;
-    }
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,

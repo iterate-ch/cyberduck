@@ -51,7 +51,7 @@ public class BoxThresholdUploadService implements Upload<File> {
             }
             // Cannot comply with chunk size requirement from server
         }
-        return new BoxSmallUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, callback);
+        return new BoxSmallUploadService().upload(write, file, local, throttle, progress, listener, status, callback);
     }
 
     protected boolean threshold(final Long length) {

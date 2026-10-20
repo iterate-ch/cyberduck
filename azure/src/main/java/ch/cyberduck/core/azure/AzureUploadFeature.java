@@ -31,7 +31,6 @@ public class AzureUploadFeature extends DefaultUploadFeature<BlobItemProperties>
     private final AzureSession session;
 
     public AzureUploadFeature(final AzureSession session) {
-        super(new AzureBlobAttributesFinderFeature(session));
         this.session = session;
     }
 

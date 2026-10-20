@@ -17,12 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response> {
-
-    public B2SingleUploadService(final B2Session session, final B2VersionIdProvider fileid) {
-        super(new B2AttributesFinderFeature(session, fileid));
-    }
 }

@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -26,7 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class FTPUploadFeature extends DefaultUploadFeature<Void> {
 
     public FTPUploadFeature(final Session<?> session) {
-        super(new VoidAttributesAdapter());
     }
 
     @Override

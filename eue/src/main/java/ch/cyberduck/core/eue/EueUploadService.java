@@ -20,6 +20,5 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
 
     public EueUploadService() {
-        super(new EueAttributesAdapter());
     }
 }

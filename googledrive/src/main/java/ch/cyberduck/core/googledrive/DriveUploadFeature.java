@@ -17,12 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-
 import com.google.api.services.drive.model.File;
 
 public class DriveUploadFeature extends HttpUploadFeature<File> {
-
-    public DriveUploadFeature(final DriveSession session, final DriveFileIdProvider fileid) {
-        super(new DriveAttributesFinderFeature(session, fileid));
-    }
 }

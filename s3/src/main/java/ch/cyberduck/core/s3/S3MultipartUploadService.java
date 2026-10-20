@@ -83,7 +83,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
     }
 
     public S3MultipartUploadService(final S3Session session, final S3AccessControlListFeature acl, final Long partsize, final Integer concurrency) {
-        super(new S3AttributesAdapter(session.getHost()));
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
         this.containerService = new S3PathContainerService(session.getHost());

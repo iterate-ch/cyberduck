@@ -69,7 +69,6 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
     }
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Integer concurrency) {
-        super(new BoxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.concurrency = concurrency;
         this.fileid = fileid;

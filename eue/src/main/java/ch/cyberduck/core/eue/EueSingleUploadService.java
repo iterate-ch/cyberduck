@@ -38,7 +38,6 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
     private final EueResourceIdProvider fileid;
 
     public EueSingleUploadService(final EueSession session, final EueResourceIdProvider fileid) {
-        super(new EueAttributesAdapter());
         this.session = session;
         this.fileid = fileid;
     }

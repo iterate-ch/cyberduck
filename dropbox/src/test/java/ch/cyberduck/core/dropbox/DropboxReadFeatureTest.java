@@ -91,7 +91,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new DropboxAttributesFinderFeature(session)).upload(
+        new DefaultUploadFeature<Metadata>().upload(
                 new DropboxWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);

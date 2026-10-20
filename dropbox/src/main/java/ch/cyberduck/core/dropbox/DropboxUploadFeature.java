@@ -31,7 +31,6 @@ public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
     final DropboxSession session;
 
     public DropboxUploadFeature(final DropboxSession session) {
-        super(new DropboxAttributesFinderFeature(session));
         this.session = session;
     }
 

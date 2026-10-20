@@ -84,7 +84,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
     }
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
-        super(new B2AttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
         this.partSize = partSize;

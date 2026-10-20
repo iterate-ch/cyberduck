@@ -72,7 +72,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                 log.warn("Failure {} using multipart upload. Fallback to single upload.", e.getMessage());
                 status.setAppend(false);
                 try {
-                    return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, listener, status, prompt);
+                    return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
                 }
                 catch(BackgroundException f) {
                     log.warn("Failure {} using single upload. Throw original multipart failure {}", e, e);
@@ -81,7 +81,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             }
         }
         // Use single upload service
-        return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, listener, status, prompt);
+        return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
     }
 
     protected boolean threshold(final TransferStatus status) {

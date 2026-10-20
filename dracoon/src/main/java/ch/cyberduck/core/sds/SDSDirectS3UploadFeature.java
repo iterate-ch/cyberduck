@@ -98,7 +98,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
     }
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Long partsize, final Integer concurrency) {
-        super(new SDSAttributesAdapter(session));
         this.session = session;
         this.nodeid = nodeid;
         this.partsize = partsize;

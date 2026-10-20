@@ -11,7 +11,6 @@ import ch.cyberduck.core.NullUploadFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -241,7 +240,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new DefaultUploadFeature<>(new VoidAttributesAdapter()), new UploadFilterOptions(host).withTemporary(true));
+                new DefaultUploadFeature<>(), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {

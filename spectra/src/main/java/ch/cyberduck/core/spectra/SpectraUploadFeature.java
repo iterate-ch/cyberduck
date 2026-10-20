@@ -26,7 +26,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.s3.S3AttributesAdapter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -39,8 +38,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
 
     private final SpectraBulkService bulk;
 
-    public SpectraUploadFeature(final SpectraSession session, final SpectraBulkService bulk) {
-        super(new S3AttributesAdapter(session.getHost()));
+    public SpectraUploadFeature(final SpectraBulkService bulk) {
         this.bulk = bulk;
     }
 

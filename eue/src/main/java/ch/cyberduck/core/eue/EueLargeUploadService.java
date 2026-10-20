@@ -70,7 +70,6 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long chunksize, final Integer concurrency) {
-        super(new EueAttributesAdapter());
         this.session = session;
         this.chunksize = chunksize;
         this.concurrency = concurrency;

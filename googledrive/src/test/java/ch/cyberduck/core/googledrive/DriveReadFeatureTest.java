@@ -76,7 +76,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         IOUtils.write(content, out);
         out.close();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveUploadFeature(session, fileid).upload(
+        new DriveUploadFeature().upload(
                 new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);

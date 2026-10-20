@@ -19,12 +19,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject> {
-
-    public SwiftSmallObjectUploadFeature(final SwiftSession session) {
-        super(new SwiftAttributesFinderFeature(session));
-    }
 }

@@ -71,7 +71,6 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
     }
 
     public BrickUploadFeature(final BrickSession session, final Long partsize, final Integer concurrency) {
-        super(new BrickAttributesFinderFeature(session));
         this.session = session;
         this.partsize = partsize;
         this.concurrency = concurrency;

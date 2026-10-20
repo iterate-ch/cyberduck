@@ -17,12 +17,7 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 
 public class HttpUploadFeature<Reply> extends DefaultUploadFeature<Reply> {
-
-    public HttpUploadFeature(final AttributesAdapter<Reply> attributes) {
-        super(attributes);
-    }
 }

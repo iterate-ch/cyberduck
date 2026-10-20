@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -37,7 +36,6 @@ public class DAVUploadFeature extends HttpUploadFeature<Void> {
     }
 
     public DAVUploadFeature(final DAVSession session, final DAVSession.HttpCapabilities capabilities) {
-        super(new VoidAttributesAdapter());
         this.capabilities = capabilities;
     }
 
