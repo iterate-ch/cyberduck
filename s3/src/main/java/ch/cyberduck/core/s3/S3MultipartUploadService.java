@@ -218,7 +218,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
                     status.setMetadata(metadata);
                 }
                 final StorageObject part = S3MultipartUploadService.this.upload(
-                        write, file, local, throttle, counter, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
                 log.info("Received response {} for part number {}", part, partNumber);
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber,

@@ -254,7 +254,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
                 status.setHeader(overall.getHeader());
                 status.setFilekey(overall.getFilekey());
                 final Node node = SDSDirectS3UploadFeature.super.upload(
-                        write, file, local, throttle, counter, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
                 log.info("Received response for part number {}", partNumber);
                 // Delete temporary file if any
                 buffer.close();

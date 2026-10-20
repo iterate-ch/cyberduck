@@ -206,7 +206,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 status.setHeader(overall.getHeader());
                 status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
                 return SwiftLargeObjectUploadFeature.this.upload(
-                        write, segment, local, throttle, counter, status, overall, status, callback);
+                        write, segment, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

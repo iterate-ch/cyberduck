@@ -186,7 +186,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
                 parameters.put(UPLOAD_URL, uploadUrl);
                 status.setParameters(parameters);
                 final Void response = TusUploadFeature.this.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response {}", response);
                 return null;
             }

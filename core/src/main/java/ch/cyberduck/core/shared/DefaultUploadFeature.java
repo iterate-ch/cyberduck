@@ -20,6 +20,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,18 +43,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.text.MessageFormat;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                        final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.upload(write, file, local, throttle, listener, status, status, status, callback);
+                        final ProgressListener message, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return this.upload(write, file, local, throttle, message, listener, status, status, status, callback);
     }
 
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                        final StreamListener listener, final TransferStatus status,
+                        final ProgressListener message, final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         final MessageDigest digest;
         // Checksum of segments is not part of the verification of the whole file
@@ -80,6 +82,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
         final Reply response = out.getStatus();
         log.debug("Received response {}", response);
         if(digest != null) {
+            message.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"), file.getName()));
             // Verified when upload is complete comparing with the checksum in the response of the server
             status.setDigest(this.checksum(digest));
         }

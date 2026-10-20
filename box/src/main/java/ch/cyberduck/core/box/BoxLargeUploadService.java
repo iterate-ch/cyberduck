@@ -138,7 +138,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
                 status.setParameters(parameters);
                 final File response = BoxLargeUploadService.this.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", response, partNumber);
                 return new Part(response, status);
             }

@@ -169,7 +169,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 BrickUploadFeature.super.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response for part number {}", partNumber);
                 return status;
             }
