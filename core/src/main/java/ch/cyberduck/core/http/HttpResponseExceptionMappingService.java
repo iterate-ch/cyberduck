@@ -38,7 +38,11 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Clock;
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,9 +66,13 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
 
     /**
      * @param headers Response headers
-     * @return Delay requested with Retry-After header in seconds
+     * @return Delay requested with Retry-After header either in seconds or as HTTP-date
      */
     public static Optional<Duration> retryAfter(final Map<String, List<String>> headers) {
+        return retryAfter(headers, Clock.systemUTC());
+    }
+
+    public static Optional<Duration> retryAfter(final Map<String, List<String>> headers, final Clock clock) {
         if(null == headers) {
             return Optional.empty();
         }
@@ -72,8 +80,20 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
                 .filter(e -> HttpHeaders.RETRY_AFTER.equalsIgnoreCase(e.getKey()))
                 .flatMap(e -> e.getValue().stream())
                 .map(String::trim)
-                .filter(v -> v.matches("\\d{1,9}"))
-                .map(v -> Duration.ofSeconds(Long.parseLong(v)))
+                .map(v -> {
+                    if(v.matches("\\d{1,9}")) {
+                        return Optional.of(Duration.ofSeconds(Long.parseLong(v)));
+                    }
+                    try {
+                        final Duration delay = Duration.between(clock.instant(), ZonedDateTime.parse(v, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant());
+                        return Optional.of(delay.isNegative() ? Duration.ZERO : delay);
+                    }
+                    catch(DateTimeParseException e) {
+                        return Optional.<Duration>empty();
+                    }
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .findFirst();
     }
 

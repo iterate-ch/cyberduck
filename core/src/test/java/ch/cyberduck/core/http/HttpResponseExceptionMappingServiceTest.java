@@ -23,7 +23,10 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.junit.Test;
 
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -50,11 +53,14 @@ public class HttpResponseExceptionMappingServiceTest {
 
     @Test
     public void testTooManyRequestsRetryAfterHttpDate() {
-        final BackgroundException failure = new DefaultHttpResponseExceptionMappingService().map(
-                new HttpResponseException(HttpStatus.SC_TOO_MANY_REQUESTS, "Too Many Requests"), new StringBuilder("Too Many Requests"),
-                HttpStatus.SC_TOO_MANY_REQUESTS, Collections.singletonMap("Retry-After", Collections.singletonList("Wed, 21 Oct 2026 07:28:00 GMT")));
-        assertTrue(failure instanceof RetriableAccessDeniedException);
-        assertEquals(Duration.ofSeconds(PreferencesFactory.get().getLong("connection.retry.delay")), ((RetriableAccessDeniedException) failure).getDelay());
+        final Clock clock = Clock.fixed(Instant.parse("2026-10-21T07:27:30Z"), ZoneOffset.UTC);
+        assertEquals(Optional.of(Duration.ofSeconds(30)), HttpResponseExceptionMappingService.retryAfter(
+                Collections.singletonMap("Retry-After", Collections.singletonList("Wed, 21 Oct 2026 07:28:00 GMT")), clock));
+        // Date in the past
+        assertEquals(Optional.of(Duration.ZERO), HttpResponseExceptionMappingService.retryAfter(
+                Collections.singletonMap("Retry-After", Collections.singletonList("Wed, 21 Oct 2026 07:00:00 GMT")), clock));
+        assertEquals(Optional.empty(), HttpResponseExceptionMappingService.retryAfter(
+                Collections.singletonMap("Retry-After", Collections.singletonList("tomorrow")), clock));
     }
 
     @Test

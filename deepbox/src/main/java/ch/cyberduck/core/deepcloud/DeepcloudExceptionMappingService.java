@@ -72,6 +72,6 @@ public class DeepcloudExceptionMappingService extends AbstractExceptionMappingSe
             }
         }
         final StringBuilder buffer = new StringBuilder();
-        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode(), failure.getResponseHeaders());
     }
 }
