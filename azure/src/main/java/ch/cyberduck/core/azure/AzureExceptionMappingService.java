@@ -17,6 +17,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.ssl.SSLExceptionMappingService;
@@ -29,6 +30,9 @@ import java.util.Map;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.implementation.models.BlobStorageError;
 import com.azure.storage.file.datalake.implementation.models.DataLakeStorageError;
+
+import static com.azure.storage.blob.models.BlobErrorCode.BLOCK_COUNT_EXCEEDS_LIMIT;
+import static com.azure.storage.common.implementation.Constants.HeaderConstants.ERROR_CODE_HEADER_NAME;
 
 public class AzureExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
@@ -59,6 +63,12 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
             }
         }
         switch(failure.getResponse().getStatusCode()) {
+            case 409:
+                if(BLOCK_COUNT_EXCEEDS_LIMIT.getValue().equals(failure.getResponse().getHeaderValue(ERROR_CODE_HEADER_NAME))) {
+                    // Permanent failure. Append blob exceeds the maximum of 50,000 committed blocks.
+                    return new InteroperabilityException(failure.getMessage(), failure);
+                }
+                break;
             case 403:
                 return new LoginFailureException(buffer.toString(), failure);
         }
