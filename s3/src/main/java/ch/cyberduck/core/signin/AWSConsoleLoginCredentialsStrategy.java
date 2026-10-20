@@ -121,7 +121,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
                         console = this.refresh(credentials.getUsername(),
                                 saved.getPrivateKey(), saved.getOauth().getRefreshToken());
                     }
-                    catch(LoginFailureException | InteroperabilityException e) {
+                    catch(LoginFailureException | InteroperabilityException | AccessDeniedException e) {
                         log.warn("AWS sign-in refresh failed for {}", host);
                         console = this.authorize(cancel);
                     }
