@@ -63,7 +63,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
         // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
         // not the MD5 of the object data.
-        if(null == object.getServerSideEncryptionAlgorithm()) {
+        if(null == object.getServerSideEncryptionAlgorithm() || "AES256".equals(object.getServerSideEncryptionAlgorithm())) {
             attributes.setChecksum(Checksum.parse(object.getETag()));
         }
         if(object instanceof S3Object) {
