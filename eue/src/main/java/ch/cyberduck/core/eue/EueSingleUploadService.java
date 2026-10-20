@@ -61,8 +61,6 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
         }
         status.setParameters(Collections.singletonMap(RESOURCE_ID, resourceId));
         status.setUrl(uploadUri);
-        status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
         return super.upload(write, file, local, throttle, progress, listener, status, callback);
     }
-
 }
