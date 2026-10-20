@@ -114,6 +114,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         if(type == Write.class) {
             return (T) new GoogleStorageWriteFeature(this);
         }
+        if(type == Upload.class) {
+            return (T) new GoogleStorageUploadFeature(this);
+        }
         if(type == Find.class) {
             return (T) new GoogleStorageFindFeature(this);
         }
