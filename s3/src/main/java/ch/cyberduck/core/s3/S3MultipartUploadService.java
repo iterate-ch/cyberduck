@@ -55,7 +55,6 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +65,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
+public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3MultipartUploadService.class);
 
     private final S3Session session;
@@ -86,6 +85,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     public S3MultipartUploadService(final S3Session session, final S3AccessControlListFeature acl, final Long partsize, final Integer concurrency) {
+        super(new S3AttributesAdapter(session.getHost()));
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
         this.containerService = new S3PathContainerService(session.getHost());
@@ -95,7 +95,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     @Override
-    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -152,7 +152,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     // Last part can be less than 5 MB. Adjust part size.
                     final long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, multipart, partNumber, offset, length, callback));
+                    parts.add(this.submit(pool, write, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                     remaining -= length;
                     offset += length;
                 }

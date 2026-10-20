@@ -60,7 +60,7 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), ConnectionCallback.noop);
-        final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraBulkService(session));
+        final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraBulkService(session));
         upload.upload(new SpectraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 writeStatus, ConnectionCallback.noop);
         final byte[] buffer = new byte[content.length];
@@ -105,7 +105,7 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         files.put(new TransferItem(test1), status1);
         files.put(new TransferItem(test2), status2);
         bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
-        final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraBulkService(session));
+        final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraBulkService(session));
         upload.upload(new SpectraWriteFeature(session), test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status1, ConnectionCallback.noop);
         upload.upload(new SpectraWriteFeature(session), test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,

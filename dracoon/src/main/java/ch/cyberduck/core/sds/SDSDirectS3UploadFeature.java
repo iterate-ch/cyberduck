@@ -63,7 +63,6 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +77,7 @@ import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDigest> {
+public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectS3UploadFeature.class);
 
     /**
@@ -99,6 +98,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     }
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Long partsize, final Integer concurrency) {
+        super(new SDSAttributesAdapter(session));
         this.session = session;
         this.nodeid = nodeid;
         this.partsize = partsize;
@@ -106,7 +106,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     }
 
     @Override
-    public Node upload(final Write<Node> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public Node upload(final Write<Node> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -148,11 +148,11 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         final FileBuffer buffer = new FileBuffer(temporary);
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
                                 .transfer(in, new BufferOutputStream(buffer));
-                        parts.add(this.submit(pool, new SDSDirectS3WriteFeature(session, nodeid), file, temporary, buffer, throttle, streamListener, status,
+                        parts.add(this.submit(pool, new SDSDirectS3WriteFeature(session, nodeid), file, temporary, buffer, throttle, listener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
                     }
                     else {
-                        parts.add(this.submit(pool, write, file, local, Buffer.noop, throttle, streamListener, status,
+                        parts.add(this.submit(pool, write, file, local, Buffer.noop, throttle, listener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
                     }
                     remaining -= length;

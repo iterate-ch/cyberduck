@@ -30,17 +30,17 @@ public interface Upload<Reply> {
     /**
      * Copy file on disk to server
      *
-     * @param write          Write feature
-     * @param file           File on server
-     * @param local          File on local disk
-     * @param throttle       Bandwidth management
-     * @param progress       Progress callback
-     * @param streamListener Stream copy callback
-     * @param status         Transfer status holder
-     * @param callback       Prompt
+     * @param write    Write feature
+     * @param file     File on server
+     * @param local    File on local disk
+     * @param throttle Bandwidth management
+     * @param progress Progress callback
+     * @param listener Stream copy callback
+     * @param status   Transfer status holder
+     * @param callback Prompt
      * @see AttributesAdapter#toAttributes(Reply)
      */
-    Reply upload(Write<Reply> write, Path file, Local local, BandwidthThrottle throttle, final ProgressListener progress, StreamListener streamListener,
+    Reply upload(Write<Reply> write, Path file, Local local, BandwidthThrottle throttle, final ProgressListener progress, StreamListener listener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     /**

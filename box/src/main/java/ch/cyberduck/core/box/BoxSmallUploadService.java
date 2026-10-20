@@ -18,7 +18,9 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.security.MessageDigest;
+public class BoxSmallUploadService extends HttpUploadFeature<File> {
 
-public class BoxSmallUploadService extends HttpUploadFeature<File, MessageDigest> {
+    public BoxSmallUploadService(final BoxSession session, final BoxFileidProvider fileid) {
+        super(new BoxAttributesFinderFeature(session, fileid));
+    }
 }

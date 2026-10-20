@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -26,9 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.MessageDigest;
-
-public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class DAVUploadFeature extends HttpUploadFeature<Void> {
     private static final Logger log = LogManager.getLogger(DAVUploadFeature.class);
 
     private final DAVSession.HttpCapabilities capabilities;
@@ -38,6 +37,7 @@ public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     }
 
     public DAVUploadFeature(final DAVSession session, final DAVSession.HttpCapabilities capabilities) {
+        super(new VoidAttributesAdapter());
         this.capabilities = capabilities;
     }
 

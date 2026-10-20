@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -59,14 +60,14 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DefaultUploadFeature<Void>(session).upload(
+            new DefaultUploadFeature<Void>(new VoidAttributesAdapter()).upload(
                     new SFTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status,
                     ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            new DefaultUploadFeature<Void>(session).upload(
+            new DefaultUploadFeature<Void>(new VoidAttributesAdapter()).upload(
                     new SFTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status,
                     ConnectionCallback.noop);

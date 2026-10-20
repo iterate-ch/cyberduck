@@ -22,14 +22,15 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobType;
 
-public class AzureUploadFeature extends DefaultUploadFeature<Void> {
+public class AzureUploadFeature extends DefaultUploadFeature<BlobItemProperties> {
 
     private final AzureSession session;
 
     public AzureUploadFeature(final AzureSession session) {
-        super(session);
+        super(new AzureBlobAttributesFinderFeature(session));
         this.session = session;
     }
 

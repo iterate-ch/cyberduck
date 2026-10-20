@@ -168,7 +168,7 @@ public class OwncloudSession extends DAVSession {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
                 return (T) new OcisUploadFeature(this, tus);
             }
-            return (T) new HttpUploadFeature<>();
+            return (T) new HttpUploadFeature<>(new OwncloudAttributesFinderFeature(this));
         }
         if(type == Write.class) {
             return (T) new OwncloudWriteFeature<>(this, this.write());

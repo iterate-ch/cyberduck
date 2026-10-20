@@ -17,6 +17,7 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -25,7 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class LocalUploadFeature extends DefaultUploadFeature<Void> {
 
     public LocalUploadFeature(final Session<?> session) {
-        super(session);
+        super(new VoidAttributesAdapter());
     }
 
     @Override

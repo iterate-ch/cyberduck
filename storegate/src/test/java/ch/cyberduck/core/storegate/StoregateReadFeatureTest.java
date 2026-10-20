@@ -111,7 +111,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<File>(session).upload(
+        new DefaultUploadFeature<>(new StoregateAttributesFinderFeature(session, nodeid)).upload(
                 new StoregateWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, upload,
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
@@ -145,7 +145,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<File>(session).upload(
+        new DefaultUploadFeature<>(new StoregateAttributesFinderFeature(session, nodeid)).upload(
                 new StoregateWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, upload,
                 ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();

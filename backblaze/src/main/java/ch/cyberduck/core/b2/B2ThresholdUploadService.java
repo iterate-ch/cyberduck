@@ -58,13 +58,13 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     }
 
     @Override
-    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                  final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status)) {
-            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
+            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, callback);
         }
         else {
-            return new B2SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
+            return new B2SingleUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, callback);
         }
     }
 

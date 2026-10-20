@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
@@ -57,7 +58,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -67,7 +67,7 @@ import java.util.concurrent.Future;
 
 import static ch.cyberduck.core.tus.TusCapabilities.*;
 
-public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class TusUploadFeature extends HttpUploadFeature<Void> {
     private static final Logger log = LogManager.getLogger(TusUploadFeature.class);
 
     public static final String UPLOAD_URL = "uploadUrl";
@@ -78,12 +78,13 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     private final TusCapabilities capabilities;
 
     public TusUploadFeature(final DAVSession session, final TusCapabilities capabilities) {
+        super(new VoidAttributesAdapter());
         this.session = session;
         this.capabilities = capabilities;
     }
 
     @Override
-    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // In order to achieve parallel upload the Concatenation extension MAY be used.
         final List<Future<Void>> chunks = new ArrayList<>();
@@ -107,7 +108,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         long remaining = status.getLength();
         while(remaining > 0) {
             final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
-            chunks.add(this.submit(write, file, local, throttle, streamListener, status,
+            chunks.add(this.submit(write, file, local, throttle, listener, status,
                     uploadUrl, offset, length, callback));
             remaining -= length;
             offset += length;

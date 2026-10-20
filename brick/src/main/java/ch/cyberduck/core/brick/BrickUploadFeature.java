@@ -47,14 +47,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDigest> {
+public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
     private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
@@ -72,13 +71,14 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
     }
 
     public BrickUploadFeature(final BrickSession session, final Long partsize, final Integer concurrency) {
+        super(new BrickAttributesFinderFeature(session));
         this.session = session;
         this.partsize = partsize;
         this.concurrency = concurrency;
     }
 
     @Override
-    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                              final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -97,7 +97,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 else {
                     length = remaining;
                 }
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;

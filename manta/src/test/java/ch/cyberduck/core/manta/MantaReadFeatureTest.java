@@ -21,6 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -97,7 +98,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(session).upload(
+        new DefaultUploadFeature<>(new VoidAttributesAdapter()).upload(
                 new MantaWriteFeature(session), test,
                 local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -133,7 +134,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(session).upload(
+        new DefaultUploadFeature<>(new VoidAttributesAdapter()).upload(
                 new MantaWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);

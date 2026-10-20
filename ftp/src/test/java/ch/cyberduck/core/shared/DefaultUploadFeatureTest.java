@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
@@ -58,14 +59,14 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            final Void reply = new DefaultUploadFeature<Void>(session).upload(
+            final Void reply = new DefaultUploadFeature<Void>(new VoidAttributesAdapter()).upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            final Void reply = new DefaultUploadFeature<Void>(session).upload(
+            final Void reply = new DefaultUploadFeature<Void>(new VoidAttributesAdapter()).upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     ConnectionCallback.noop);

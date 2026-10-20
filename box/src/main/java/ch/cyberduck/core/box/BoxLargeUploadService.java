@@ -44,7 +44,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest> {
+public class BoxLargeUploadService extends HttpUploadFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";
@@ -70,13 +69,14 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
     }
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Integer concurrency) {
+        super(new BoxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.concurrency = concurrency;
         this.fileid = fileid;
     }
 
     @Override
-    public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -90,7 +90,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             final UploadSession uploadSession = helper.createUploadSession(status, file);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(uploadSession.getPartSize(), remaining);
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadSession.getId(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;

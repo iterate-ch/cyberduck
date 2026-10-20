@@ -74,7 +74,7 @@ public class IRODSUploadFeature implements Upload<List<String>> {
      */
     @Override
     public List<String> upload(final Write<List<String>> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                               final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
+                               final ProgressListener progress, final StreamListener listener, final TransferStatus status,
                                final ConnectionCallback callback) throws BackgroundException {
         try {
             final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
@@ -142,9 +142,9 @@ public class IRODSUploadFeature implements Upload<List<String>> {
                                 setCompletionFlag = true;
                                 break;
                             }
-                            streamListener.recv(bytesRead);
+                            listener.recv(bytesRead);
                             out.write(buffer, 0, bytesRead);
-                            streamListener.sent(bytesRead);
+                            listener.sent(bytesRead);
                         }
                     }
                     finally {
@@ -247,7 +247,7 @@ public class IRODSUploadFeature implements Upload<List<String>> {
                     for(int i = 0; i < threadCount; ++i) {
                         tasks.add(threadPool.execute(new IRODSChunkWorker(
                                 status,
-                                streamListener,
+                                listener,
                                 localFileStreams.get(i),
                                 irodsStreams.get(i),
                                 i * chunkSize,

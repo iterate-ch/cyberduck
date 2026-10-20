@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -31,23 +30,16 @@ import java.util.EnumSet;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 @Category(IntegrationTest.class)
 public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
-
-    @Test
-    public void testDecorate() throws Exception {
-        final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(session).decorate(n, null).getClass());
-    }
 
     @Test(expected = ChecksumException.class)
     public void testPostChecksumFailure() throws Exception {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427f");
         try {
-            new SwiftSmallObjectUploadFeature(session).post(
+            new SwiftSmallObjectUploadFeature(session).verify(
                 new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
             );
         }
@@ -62,7 +54,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
     public void testPostChecksum() throws Exception {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427e");
-        new SwiftSmallObjectUploadFeature(session).post(
+        new SwiftSmallObjectUploadFeature(session).verify(
             new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
         );
     }

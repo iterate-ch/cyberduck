@@ -2536,8 +2536,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                                        new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, pool.getHost()) : pool, cache,
-                                                BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
+                                new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, pool.getHost()) : pool, cache,
+                                        BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                             @Override
                                             public void cleanup(final Map<Path, Path> result) {
                                                 final List<Path> changed = new ArrayList<>();

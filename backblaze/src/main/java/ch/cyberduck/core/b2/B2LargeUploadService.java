@@ -43,7 +43,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,7 +60,7 @@ import synapticloop.b2.response.BaseB2Response;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
+public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2LargeUploadService.class);
 
     /**
@@ -85,6 +84,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     }
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
+        super(new B2AttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
         this.partSize = partSize;
@@ -93,7 +93,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
 
     @Override
     public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                 final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final long partSize;
         if(file.getType().contains(Path.Type.encrypted)) {
             // For uploads to vault part size must be a multiple of 32 * 1024. Recommended partsize from B2 API may not meet that requirement.
@@ -102,7 +102,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         else {
             partSize = this.partSize;
         }
-        return this.upload(write, file, local, throttle, progress, streamListener, status, callback,
+        return this.upload(write, file, local, throttle, progress, listener, status, callback,
                 partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
     }
 
@@ -230,7 +230,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 status.setHeader(overall.getHeader());
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setPart(partNumber);
-                return (B2UploadPartResponse) B2LargeUploadService.this.upload(write, file, local, throttle, counter, status, overall, status, callback);
+                return (B2UploadPartResponse) B2LargeUploadService.this.upload(
+                        write, file, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

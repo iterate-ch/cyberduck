@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
+public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     private final EueSession session;
@@ -70,6 +70,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long chunksize, final Integer concurrency) {
+        super(new EueAttributesAdapter());
         this.session = session;
         this.chunksize = chunksize;
         this.concurrency = concurrency;
@@ -77,7 +78,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -100,7 +101,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             log.debug("Upload {} to {}", file, uploadUri);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
