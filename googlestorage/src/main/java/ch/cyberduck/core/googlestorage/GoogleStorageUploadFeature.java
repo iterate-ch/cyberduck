@@ -17,9 +17,6 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import com.google.api.services.storage.model.StorageObject;
 
@@ -27,15 +24,5 @@ public class GoogleStorageUploadFeature extends DefaultUploadFeature<StorageObje
 
     public GoogleStorageUploadFeature(final GoogleStorageSession session) {
         super(new GoogleStorageAttributesFinderFeature(session));
-    }
-
-    @Override
-    public MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
     }
 }

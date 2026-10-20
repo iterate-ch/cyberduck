@@ -26,10 +26,16 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ClosedChannelException;
+import java.security.MessageDigest;
 
 import com.twmacinta.util.MD5;
 
 public class MD5FastChecksumCompute extends AbstractChecksumCompute {
+
+    @Override
+    public MessageDigest digest() throws ChecksumException {
+        return instance("MD5");
+    }
 
     static {
         // Indicate that the native library should not be loaded

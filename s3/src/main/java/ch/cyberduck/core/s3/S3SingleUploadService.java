@@ -17,13 +17,17 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
 
@@ -31,13 +35,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
         super(new S3AttributesAdapter(session.getHost()));
     }
 
+    /**
+     * The checksum of the write feature is the SHA-256 for the request signature. Verify with the MD5 returned as ETag.
+     */
     @Override
-    public MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
+    public MessageDigest digest(final Write<StorageObject> write, final Path file, final TransferStatus status) throws BackgroundException {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5).digest();
     }
 }

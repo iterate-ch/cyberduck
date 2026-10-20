@@ -22,9 +22,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.codec.binary.Hex;
 
-import java.io.IOException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import com.dropbox.core.v2.files.Metadata;
 
@@ -35,16 +33,6 @@ public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
     public DropboxUploadFeature(final DropboxSession session) {
         super(new DropboxAttributesFinderFeature(session));
         this.session = session;
-    }
-
-    @Override
-    public MessageDigest digest() throws IOException {
-        try {
-            return new DropboxContentHasher(MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0);
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
     }
 
     @Override

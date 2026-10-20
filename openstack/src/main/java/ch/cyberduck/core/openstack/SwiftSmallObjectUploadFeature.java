@@ -19,9 +19,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -29,15 +26,5 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session) {
         super(new SwiftAttributesFinderFeature(session));
-    }
-
-    @Override
-    public MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
     }
 }

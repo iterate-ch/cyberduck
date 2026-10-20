@@ -22,9 +22,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobType;
@@ -48,15 +45,5 @@ public class AzureUploadFeature extends DefaultUploadFeature<BlobItemProperties>
             }
         }
         return Write.override;
-    }
-
-    @Override
-    public MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
     }
 }

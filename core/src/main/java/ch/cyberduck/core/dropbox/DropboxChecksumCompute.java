@@ -16,7 +16,6 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -24,19 +23,16 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class DropboxChecksumCompute extends AbstractChecksumCompute {
 
     @Override
+    public MessageDigest digest() {
+        return new DropboxContentHasher();
+    }
+
+    @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        try {
-            return new Checksum(HashAlgorithm.dropbox_content_hash, this.digest(
-                    this.normalize(in, status), new DropboxContentHasher(
-                            MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0), status));
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new ChecksumException(e);
-        }
+        return new Checksum(HashAlgorithm.dropbox_content_hash, this.digest(this.normalize(in, status), this.digest(), status));
     }
 }

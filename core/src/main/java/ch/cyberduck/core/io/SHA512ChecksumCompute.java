@@ -16,15 +16,21 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
 
 public class SHA512ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
+    public MessageDigest digest() throws ChecksumException {
+        return instance("SHA-512");
+    }
+
+    @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        return new Checksum(HashAlgorithm.sha512, this.digest("SHA-512",
-                this.normalize(in, status), status));
+        return new Checksum(HashAlgorithm.sha512, this.digest(this.normalize(in, status), this.digest(), status));
     }
 }

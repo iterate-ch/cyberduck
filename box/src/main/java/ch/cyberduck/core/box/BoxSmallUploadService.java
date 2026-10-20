@@ -18,23 +18,10 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class BoxSmallUploadService extends HttpUploadFeature<File> {
 
     public BoxSmallUploadService(final BoxSession session, final BoxFileidProvider fileid) {
         super(new BoxAttributesFinderFeature(session, fileid));
-    }
-
-    @Override
-    public MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("SHA-1");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
     }
 }

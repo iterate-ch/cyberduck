@@ -32,6 +32,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
 
+import java.security.MessageDigest;
 import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
@@ -58,6 +59,14 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
             chunk.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), chunk));
             super.upload(write, file, local, throttle, progress, listener, chunk, callback);
         }
+        return null;
+    }
+
+    /**
+     * The ETag returned for a chunk is the checksum of the chunk and not of the whole file
+     */
+    @Override
+    public MessageDigest digest(final Write<StorageObject> write, final Path file, final TransferStatus status) {
         return null;
     }
 }

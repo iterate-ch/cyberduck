@@ -28,8 +28,6 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -44,11 +42,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
@@ -71,43 +67,41 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            final MessageDigest digest;
-            if(PreferencesFactory.get().getBoolean("queue.upload.checksum.calculate")) {
-                digest = this.digest();
-            }
-            else {
-                digest = null;
-            }
-            final InputStream in;
-            // Wrap with digest stream if available
-            if(null == digest) {
-                in = local.getInputStream();
-            }
-            else {
-                in = new SkippingDigestInputStream(local.getInputStream(), digest);
-            }
-            final StatusOutputStream<Reply> out = write.write(file, status, callback);
-            new StreamCopier(cancel, progress)
-                    .withOffset(status.getOffset())
-                    .withLimit(status.getLength())
-                    .withListener(listener)
-                    .transfer(in, new ThrottledOutputStream(out, throttle));
-            final Reply response = out.getStatus();
-            log.debug("Received response {}", response);
-            this.verify(file, digest, response);
-            return response;
+        final MessageDigest digest;
+        // Checksum of segments is not part of the verification of the whole file
+        if(PreferencesFactory.get().getBoolean("queue.upload.checksum.calculate") && !status.isSegment()) {
+            digest = this.digest(write, file, status);
         }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+        else {
+            digest = null;
         }
-        catch(IOException e) {
-            throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
+        final InputStream in;
+        // Wrap with digest stream if available
+        if(null == digest) {
+            in = local.getInputStream();
         }
+        else {
+            in = new SkippingDigestInputStream(local.getInputStream(), digest);
+        }
+        final StatusOutputStream<Reply> out = write.write(file, status, callback);
+        new StreamCopier(cancel, progress)
+                .withOffset(status.getOffset())
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(in, new ThrottledOutputStream(out, throttle));
+        final Reply response = out.getStatus();
+        log.debug("Received response {}", response);
+        this.verify(file, digest, response);
+        return response;
     }
 
-    public MessageDigest digest() throws IOException {
-        return null;
+    /**
+     * @return Message digest to calculate the checksum while streaming the content. Defaults to the algorithm of the
+     * checksum of the write feature. Null to disable verification.
+     * @see Write#checksum(Path, TransferStatus)
+     */
+    public MessageDigest digest(final Write<Reply> write, final Path file, final TransferStatus status) throws BackgroundException {
+        return write.checksum(file, status).digest();
     }
 
     public void verify(final Path file, final MessageDigest digest, final Reply response) throws BackgroundException {
@@ -117,6 +111,10 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
         }
         if(null == digest) {
             log.debug("Digest disabled for file {}", file);
+            return;
+        }
+        if(null == response) {
+            log.debug("Missing response to verify checksum for {}", file);
             return;
         }
         final Checksum checksum = adapter.toAttributes(response).getChecksum();
