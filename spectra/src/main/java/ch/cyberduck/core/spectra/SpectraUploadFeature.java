@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
@@ -47,18 +46,15 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
     @Override
     public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle,
                                 final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(Checksum.NONE == status.getChecksum()) {
+        // Make sure file is available in cache
+        final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
+        for(TransferStatus chunk : chunks) {
             // The client-side checksum is passed to the BlackPearl gateway by supplying the applicable CRC HTTP header.
             // If this is done, the BlackPearl gateway verifies that the data received matches the checksum provided.
             // End-to-end data protection requires that the client provide the CRC when uploading the object and then
             // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
             // verifies the CRC when reading from physical data stores so the gateway can identify problems before
             // transmitting data to the client.
-            status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
-        }
-        // Make sure file is available in cache
-        final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
-        for(TransferStatus chunk : chunks) {
             chunk.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), chunk));
             super.upload(write, file, local, throttle, progress, listener, chunk, callback);
         }
