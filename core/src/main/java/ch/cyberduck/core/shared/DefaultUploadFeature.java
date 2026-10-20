@@ -122,17 +122,17 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
             log.debug("Missing checksum for {}", file);
             return;
         }
-        // Get locally computed MD5 hash.
+        // Checksum of the uploaded data calculated while streaming
         final Checksum expected = this.checksum(digest);
         if(ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
-            log.warn("ETag {} returned by server is {} but expected {}", checksum.hash, checksum.algorithm, expected.algorithm);
+            log.warn("Checksum {} returned by server is {} but expected {}", checksum.hash, checksum.algorithm, expected.algorithm);
         }
         else {
-            // Compare our locally-calculated hash with the ETag returned by S3.
+            // Compare with the checksum returned by the server
             if(!checksum.equals(expected)) {
                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                expected, checksum.hash));
+                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
+                                expected.algorithm.toString(), expected.hash, checksum.hash));
             }
         }
     }

@@ -45,7 +45,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
         }
         catch(ChecksumException e) {
             assertEquals("Upload f failed", e.getMessage());
-            assertEquals("Mismatch between MD5 hash d41d8cd98f00b204e9800998ecf8427e of uploaded data and ETag d41d8cd98f00b204e9800998ecf8427f returned by the server.", e.getDetail());
+            assertEquals("Mismatch between MD5 hash d41d8cd98f00b204e9800998ecf8427e of transferred data and checksum d41d8cd98f00b204e9800998ecf8427f returned by the server.", e.getDetail());
             throw e;
         }
     }

@@ -350,7 +350,7 @@ public class IRODSUploadFeature implements Upload<List<String>> {
         }
         if(!actual.equals(expected)) {
             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and checksum {2} registered by the server",
+                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
                             expected.algorithm, expected.hex, actual.hex));
         }
         log.debug("checksum [{}] of [{}] verified.", actual.hex, file);
