@@ -184,7 +184,12 @@ public class S3UrlProvider implements UrlProvider {
     private String getRegionForBucket(final Path bucket) {
         if(session.isConnected()) {
             try {
-                return new S3LocationFeature(session).getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()).getIdentifier();
+                final String identifier = new S3LocationFeature(session, session.getClient().getRegionEndpointCache())
+                        .getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()).getIdentifier();
+                if(StringUtils.isNotBlank(identifier)) {
+                    return identifier;
+                }
+                log.warn("Unknown region for bucket {}", bucket);
             }
             catch(BackgroundException e) {
                 log.warn("Error {} determine region for bucket {}", e, bucket);
