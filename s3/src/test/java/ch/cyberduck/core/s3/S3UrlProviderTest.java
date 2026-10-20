@@ -95,6 +95,8 @@ public class S3UrlProviderTest extends AbstractS3Test {
     @Test
     public void testHttpUriCustomPort() {
         session.getHost().setPort(8443);
+        // Bucket location lookup is not possible with custom port
+        session.getHost().setRegion("eu-west-1");
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
         assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com:8443/key", http.next().getUrl());
