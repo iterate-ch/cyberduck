@@ -181,7 +181,6 @@ public class S3UrlProvider implements UrlProvider {
         return new PresignedUrl(file, expiry);
     }
 
-
     private String getRegionForBucket(final Path bucket) {
         if(session.isConnected()) {
             try {
@@ -207,11 +206,14 @@ public class S3UrlProvider implements UrlProvider {
         if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
             return session.getHost().getHostname();
         }
-        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-            final String endpoint = HostPreferencesFactory.get(session.getHost()).getProperty("s3.endpoint.format.ipv4");
+        // Not applicable to AWS China partition
+        if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             final String region = this.getRegionForBucket(bucket);
-            log.debug("Apply region {} to endpoint {}", region, endpoint);
-            return String.format("%s.%s", bucket.getName(), String.format(endpoint, region));
+            if(StringUtils.isNotBlank(region)) {
+                final String endpoint = HostPreferencesFactory.get(session.getHost()).getProperty("s3.endpoint.format.ipv4");
+                log.debug("Apply region {} to endpoint {}", region, endpoint);
+                return String.format("%s.%s", bucket.getName(), String.format(endpoint, region));
+            }
         }
         if(StringUtils.equals(session.getHost().getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
             return String.format("%s.%s", bucket.getName(), session.getHost().getHostname());
