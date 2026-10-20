@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -56,6 +55,12 @@ import java.util.stream.Collectors;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
+
+    /**
+     * Value for header {@code x-amz-content-sha256} to exclude the payload from the request signature. No hash of the
+     * file contents must be calculated prior to the transfer.
+     */
+    private static final String UNSIGNED_PAYLOAD = "UNSIGNED-PAYLOAD";
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -117,13 +122,21 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             switch(checksum.algorithm) {
                 case sha256:
                     if(!status.isSegment()) {
-                        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.checksum.header")) {
-                            object.addMetadata("x-amz-checksum-sha256", checksum.base64);
-                        }
+                        // Additional optional checksum verified by the server and stored with the object for integrity
+                        object.addMetadata("x-amz-checksum-sha256", checksum.base64);
                     }
+                    // Payload hash for the request signature
                     object.addMetadata("x-amz-content-sha256", checksum.hash);
                     break;
+                default:
+                    // Set UNSIGNED-PAYLOAD for AWS4 signature calculation when checksum algorithm is wrong
+                    object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
             }
+        }
+        else {
+            // No checksum calculated prior to the transfer. Exclude payload from the request signature and do not
+            // send an additional checksum for the server to verify.
+            object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
             object.setStorageClass(status.getStorageClass());
