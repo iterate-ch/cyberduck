@@ -34,12 +34,16 @@ import org.junit.Test;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class UploadFilterChecksumTest {
 
     private static final Checksum MD5 = new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e");
 
-    private final OverwriteFilter filter = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
+    private final Host host = new Host(new TestProtocol());
+    private final OverwriteFilter filter = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
+            new UploadFilterOptions(host).withChecksum(true));
     private final Path file = new Path("/f", EnumSet.of(Path.Type.file));
 
     private TransferStatus status(final Checksum digest, final Checksum response) {
@@ -82,5 +86,27 @@ public class UploadFilterChecksumTest {
     public void testNotComplete() throws Exception {
         filter.complete(file, new NullLocal("f"), new TransferStatus().setDigest(MD5)
                 .setResponse(new DefaultPathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427f"))), ProgressListener.noop);
+    }
+
+    @Test
+    public void testChecksumMismatchVerificationDisabled() throws Exception {
+        new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host), new UploadFilterOptions(host).withChecksum(false)).complete(
+                file, new NullLocal("f"), status(MD5, new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427f")), ProgressListener.noop);
+    }
+
+    @Test
+    public void testPrepareVerify() throws Exception {
+        assertTrue(filter.prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop).isVerify());
+    }
+
+    @Test
+    public void testPrepareVerifyDisabled() throws Exception {
+        assertFalse(new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host), new UploadFilterOptions(host).withChecksum(false))
+                .prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop).isVerify());
+    }
+
+    @Test
+    public void testPrepareVerifyDirectory() throws Exception {
+        assertFalse(filter.prepare(new Path("/d", EnumSet.of(Path.Type.directory)), new NullLocal("d"), new TransferStatus(), ProgressListener.noop).isVerify());
     }
 }

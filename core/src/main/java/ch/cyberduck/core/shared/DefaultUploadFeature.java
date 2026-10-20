@@ -34,7 +34,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
@@ -58,7 +57,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         final MessageDigest digest;
         // Checksum of segments is not part of the verification of the whole file
-        if(PreferencesFactory.get().getBoolean("queue.upload.checksum.calculate") && !status.isSegment()) {
+        if(status.isVerify()) {
             digest = this.digest(write, file, status);
         }
         else {

@@ -34,7 +34,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -50,7 +49,6 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -277,19 +275,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(options.checksum) {
             if(file.isFile()) {
-                final ChecksumCompute feature = session.getFeature(Write.class).checksum(file, status);
-                if(feature != null) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setChecksum(feature.compute(local.getInputStream(), status));
-                    }
-                    catch(LocalAccessDeniedException e) {
-                        // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
-                        // Lock for files is obtained only later in Transfer#pre
-                        log.warn(e.getMessage());
-                    }
-                }
+                // Calculate checksum while transferring and verify when complete
+                status.setVerify(true);
             }
         }
         return status;
@@ -337,7 +324,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         log.debug("Complete {} with status {}", file.getAbsolute(), status);
         if(status.isComplete()) {
             if(file.isFile()) {
-                this.verify(file, status);
+                if(options.checksum) {
+                    this.verify(file, status);
+                }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = session.getFeature(UnixPermission.class);

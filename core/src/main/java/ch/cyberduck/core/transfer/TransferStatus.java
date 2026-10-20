@@ -123,6 +123,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private Checksum digest = Checksum.NONE;
 
     /**
+     * Calculate the checksum while transferring and verify with the checksum in the response of the server
+     */
+    private boolean verify;
+
+    /**
      * MIME type
      */
     private String mime;
@@ -228,6 +233,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.complete.set(copy.complete.get());
         this.checksum = copy.checksum;
         this.digest = copy.digest;
+        this.verify = copy.verify;
         this.mime = copy.mime;
         this.remote = copy.remote;
         this.response = copy.response;
@@ -450,6 +456,22 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
 
     public TransferStatus setDigest(final Checksum digest) {
         this.digest = digest;
+        return this;
+    }
+
+    /**
+     * @return True to calculate the checksum while transferring and verify with the checksum in the response of the server
+     */
+    public boolean isVerify() {
+        if(this.isSegment()) {
+            return false;
+        }
+        return verify;
+    }
+
+
+    public TransferStatus setVerify(final boolean verify) {
+        this.verify = verify;
         return this;
     }
 
