@@ -183,6 +183,6 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 }
