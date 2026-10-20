@@ -125,7 +125,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
             return;
         }
         // Get locally computed MD5 hash.
-        final Checksum expected = Checksum.parse(Hex.encodeHexString(digest.digest()));
+        final Checksum expected = this.checksum(digest);
         if(ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
             log.warn("ETag {} returned by server is {} but expected {}", checksum.hash, checksum.algorithm, expected.algorithm);
         }
@@ -137,5 +137,14 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                                 expected, checksum.hash));
             }
         }
+    }
+
+    /**
+     * @param digest Digest of the uploaded data
+     * @return Locally calculated checksum with the algorithm inferred from the length of the hash. Override when the
+     * algorithm cannot be determined from the hash.
+     */
+    protected Checksum checksum(final MessageDigest digest) {
+        return Checksum.parse(Hex.encodeHexString(digest.digest()));
     }
 }

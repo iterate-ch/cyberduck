@@ -17,6 +17,10 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+
+import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -41,5 +45,11 @@ public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
         catch(NoSuchAlgorithmException e) {
             throw new IOException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    protected Checksum checksum(final MessageDigest digest) {
+        // Same length as SHA-256 but a different algorithm
+        return new Checksum(HashAlgorithm.dropbox_content_hash, Hex.encodeHexString(digest.digest()));
     }
 }
