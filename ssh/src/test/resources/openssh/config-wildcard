@@ -1,0 +1,16 @@
+Host one
+    User one
+
+Host x
+    IdentityAgent none
+    ProxyJump none
+    ProxyCommand none
+
+Host *
+    User wildcard
+    IdentityAgent /other.sock
+    ProxyJump bastion
+    ProxyCommand ssh -W %h:%p bastion.example.org
+
+Host two
+    User two

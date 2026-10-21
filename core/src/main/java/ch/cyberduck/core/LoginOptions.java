@@ -36,13 +36,13 @@ public final class LoginOptions {
     public boolean token = false;
     public boolean oauth = false;
     /**
-     * Enable option to save password in keychain
+     * Enable option to save password in keychain. Defaults to global preference.
      */
-    public boolean keychain = true;
+    public boolean keychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
     /**
      * Save in keychain checked by default
      */
-    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
+    public boolean save = keychain;
     /**
      * Enable option to select public key
      */

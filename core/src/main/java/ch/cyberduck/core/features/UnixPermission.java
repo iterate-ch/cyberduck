@@ -17,10 +17,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
@@ -40,23 +37,10 @@ public interface UnixPermission {
 
     void setUnixPermission(Path file, TransferStatus status) throws BackgroundException;
 
-    Preferences preferences = PreferencesFactory.get();
-
-
     /**
      * @param workdir Parent folder
      * @param type    File or folder
      * @return Default mask for new file or folder
      */
-    default Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
-        if(preferences.getBoolean("queue.upload.permissions.default")) {
-            if(type.contains(Path.Type.file)) {
-                return new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default"));
-            }
-            else {
-                return new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default"));
-            }
-        }
-        return Permission.EMPTY;
-    }
+    Permission getDefault(Path workdir, EnumSet<Path.Type> type);
 }

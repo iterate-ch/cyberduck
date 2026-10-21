@@ -1,0 +1,51 @@
+package ch.cyberduck.core.azure;
+
+/*
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.Collections;
+import java.util.Optional;
+
+public class AzureBlobMoveFeature implements Move {
+
+    private final AzureBlobCopyFeature proxy;
+    private final AzureBlobDeleteFeature delete;
+
+    public AzureBlobMoveFeature(final AzureSession session) {
+        this.proxy = new AzureBlobCopyFeature(session);
+        this.delete = new AzureBlobDeleteFeature(session);
+    }
+
+    @Override
+    public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
+        proxy.preflight(source, target);
+        delete.preflight(source);
+    }
+
+    @Override
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+        final Path copy = proxy.copy(file, renamed, status, connectionCallback, StreamListener.noop);
+        delete.delete(Collections.singletonList(file), connectionCallback, callback);
+        return copy;
+    }
+}

@@ -1,0 +1,25 @@
+Host include-host-b
+    User override
+    Include include-a include-b
+
+Host include-host-a
+    User override
+    IdentityAgent SSH2
+
+Host host-a.example.com
+    User override
+    IdentityAgent SSH3
+
+Host first
+    Include include-identityagent
+
+Host with-agent
+    IdentityAgent SSH_AUTH_SOCK
+
+Host *
+    Include include-identityagent
+    Include included
+    User main
+
+Host second
+    IdentityAgent SSH_AUTH_SOCK

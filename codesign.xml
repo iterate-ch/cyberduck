@@ -46,10 +46,14 @@
                else="${setup}/app/default.provisionprofile">
         <isset property="env.CODESIGN_PROVISIONPROFILE_NAME"/>
     </condition>
-    <condition property="codesign.entitlements" value="${setup}/app/${env.CODESIGN_ENTITLEMENTS_NAME}"
-               else="${setup}/app/default.entitlements">
+    <condition property="codesign.entitlements" value="${setup}/app/${env.CODESIGN_ENTITLEMENTS_NAME}">
         <isset property="env.CODESIGN_ENTITLEMENTS_NAME"/>
     </condition>
+    <!-- Allow debugger to attach (get-task-allow) in debug configuration only -->
+    <condition property="codesign.entitlements" value="${setup}/app/debug.entitlements">
+        <equals arg1="${configuration}" arg2="debug"/>
+    </condition>
+    <property name="codesign.entitlements" value="${setup}/app/default.entitlements"/>
     <!-- Enable hardened runtime -->
     <property name="codesign.options" value="--force --options runtime"/>
     <condition property="codesign.arg"

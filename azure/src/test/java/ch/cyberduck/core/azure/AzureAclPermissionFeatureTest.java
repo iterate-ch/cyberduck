@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 
 @Category(IntegrationTest.class)
@@ -26,6 +27,7 @@ public class AzureAclPermissionFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testWriteContainer() throws Exception {
+        assumeFalse(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
         {

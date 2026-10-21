@@ -28,3 +28,11 @@ Host proxycommand-host
 Host proxycommand-none
     HostName another-hostname
     ProxyCommand none
+
+Host quote
+    User "
+
+Host comment # comment
+    User alice # comment
+    IdentityAgent "/tmp/a # b"
+    ProxyCommand nc %h %p # passed to the shell

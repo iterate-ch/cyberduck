@@ -40,11 +40,6 @@ namespace Ch.Cyberduck.Core
             RunWithFallback(x => x.addPassword, (Action<Scheme, int, string, string, string> callback) => callback(scheme, port, hostname, user, password));
         }
 
-        void HostPasswordStore.delete(Host bookmark)
-        {
-            RunWithFallback(x => x.delete, (Action<Host> callback) => callback(bookmark));
-        }
-
         void PasswordStore.deletePassword(string serviceName, string user)
         {
             RunWithFallback(x => x.deletePassword, (Action<string, string> callback) => callback(serviceName, user));
@@ -53,6 +48,21 @@ namespace Ch.Cyberduck.Core
         void PasswordStore.deletePassword(Scheme scheme, int port, string hostname, string user)
         {
             RunWithFallback(x => x.deletePassword, (Action<Scheme, int, string, string> callback) => callback(scheme, port, hostname, user));
+        }
+
+        void HostPasswordStore.addLoginPassword(Host bookmark, string password)
+        {
+            RunWithFallback(x => x.addLoginPassword, (Action<Host, string> callback) => callback(bookmark, password));
+        }
+
+        void HostPasswordStore.delete(Host bookmark)
+        {
+            RunWithFallback(x => x.delete, (Action<Host> callback) => callback(bookmark));
+        }
+
+        void HostPasswordStore.deleteLoginPassword(Host bookmark)
+        {
+            RunWithFallback(x => x.deleteLoginPassword, (Action<Host> callback) => callback(bookmark));
         }
 
         string HostPasswordStore.findLoginPassword(Host bookmark)

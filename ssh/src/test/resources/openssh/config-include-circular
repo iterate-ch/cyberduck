@@ -1,4 +1,0 @@
-Include config-include-circular
-
-Host circular-host
-    HostName circular.example.com

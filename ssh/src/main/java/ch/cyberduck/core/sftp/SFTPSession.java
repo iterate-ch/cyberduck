@@ -44,7 +44,6 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
-import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -288,16 +287,7 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-            switch(Platform.getDefault()) {
-                case windows:
-                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
-                    defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
-                    break;
-            }
-            String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
-            if(null == configuration) {
-                configuration = System.getenv("SSH_AUTH_SOCK");
-            }
+            final String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
             if(configuration != null) {
                 final String identityAgent = LocalFactory.get(configuration).getAbsolute();
                 log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());

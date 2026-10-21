@@ -16,10 +16,11 @@ namespace Ch.Cyberduck.Core.Local
     public class SystemLocalTest
     {
         const string PIPE_NAME = @"\\.\pipe\openssh-ssh-agent";
+        const string PAGEANT_PIPE_NAME = "//./pipe/pageant.name.hash";
         const string WSL_PATH = @"\\wsl$\test\";
 
         [Test]
-        public void EnsureNioDoesntFail([Values(PIPE_NAME, WSL_PATH, "X:\\C$")] string path)
+        public void EnsureNioDoesntFail([Values(PIPE_NAME, WSL_PATH, PAGEANT_PIPE_NAME, "X:\\C$")] string path)
         {
             _ = Paths.get(path).toFile();
         }
@@ -55,13 +56,15 @@ namespace Ch.Cyberduck.Core.Local
                 /* 00 */ "C:\\C:",
                 /* 01 */ @"\\?\C:",
                 /* 02 */ @"\\?\C:\",
-                /* 03 */ @"C:\\A\\B"
+                /* 03 */ @"C:\\A\\B",
+                /* 04 */ PAGEANT_PIPE_NAME
             ])] string path,
             [Values([
                 /* 00 */ "C:\\C_",
                 /* 01 */ "C:\\",
                 /* 02 */ "C:\\",
-                /* 03 */ @"C:\A\B"
+                /* 03 */ @"C:\A\B",
+                /* 04 */ @"\\.\pipe\pageant.name.hash"
             ])] string expected)
         {
             Assert.That(new SystemLocal(path).getAbsolute(), Is.EqualTo(expected));

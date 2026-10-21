@@ -15,49 +15,17 @@ package ch.cyberduck.core.azure;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.CancellingListProgressListener;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import com.azure.core.credential.AzureSasCredential;
-import com.azure.core.exception.HttpResponseException;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.models.BlobContainerProperties;
-import com.azure.storage.blob.models.BlobItemProperties;
-import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import com.azure.storage.file.datalake.DataLakeServiceClient;
-import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
-import com.azure.storage.file.datalake.models.PathItem;
-import com.azure.storage.file.datalake.models.PathProperties;
-
-public class AzureAttributesFinderFeature implements AttributesFinder, AttributesAdapter<BlobItemProperties> {
-    private static final Logger log = LogManager.getLogger(AzureAttributesFinderFeature.class);
-
-    private final AzureSession session;
-    private final PathContainerService containerService
-            = new DirectoryDelimiterPathContainerService();
+public class AzureAttributesFinderFeature implements AttributesFinder {
 
     public static final String KEY_BLOB_TYPE = "blob_type";
+
+    private final AzureSession session;
 
     public AzureAttributesFinderFeature(final AzureSession session) {
         this.session = session;
@@ -65,114 +33,9 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
-            return PathAttributes.EMPTY;
+        if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+            return new AzureDataLakeAttributesFinderFeature(session).find(file, listener);
         }
-        try {
-            if(containerService.isContainer(file)) {
-                final PathAttributes attributes = new DefaultPathAttributes();
-                final BlobContainerClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName());
-                final BlobContainerProperties properties = client.getProperties();
-                attributes.setETag(properties.getETag());
-                attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
-                return attributes;
-            }
-            if(file.isDirectory()) {
-                if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                    final Credentials credentials = session.getHost().getCredentials();
-                    final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
-                            .endpoint(session.getClient().getAccountUrl())
-                            .pipeline(session.getClient().getHttpPipeline());
-                    if(credentials.isTokenAuthentication()) {
-                        builder.credential(new AzureSasCredential(credentials.getToken()));
-                    }
-                    else {
-                        builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
-                    }
-                    final DataLakeServiceClient client = builder.buildClient();
-                    final PathProperties properties = client
-                            .getFileSystemClient(containerService.getContainer(file).getName())
-                            .getDirectoryClient(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)))
-                            .getProperties();
-                    return this.toAttributes(properties);
-                }
-            }
-            if(file.isFile() || file.isPlaceholder()) {
-                try {
-                    final BlobProperties properties = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
-                            .getBlobClient(containerService.getKey(file)).getBlockBlobClient().getProperties();
-                    return this.toAttributes(properties);
-                }
-                catch(HttpResponseException e) {
-                    switch(e.getResponse().getStatusCode()) {
-                        case HttpStatus.SC_NOT_FOUND:
-                            if(file.isPlaceholder()) {
-                                // Ignore failure and look for common prefix
-                                break;
-                            }
-                        default:
-                            throw e;
-                    }
-                }
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Search for common prefix %s", file));
-            }
-            try {
-                new AzureObjectListService(session).list(file, new CancellingListProgressListener());
-                return PathAttributes.EMPTY;
-            }
-            catch(ListCanceledException l) {
-                // Found common prefix
-                return PathAttributes.EMPTY;
-            }
-        }
-        catch(HttpResponseException e) {
-            throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-        }
-    }
-
-    public PathAttributes toAttributes(final BlobProperties properties) {
-        final PathAttributes attributes = new DefaultPathAttributes();
-        attributes.setSize(properties.getBlobSize());
-        attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
-        if(properties.getContentMd5() != null) {
-            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
-        }
-        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
-        final Map<String, String> custom = new HashMap<>();
-        custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
-        attributes.setCustom(custom);
-        return attributes;
-    }
-
-    public PathAttributes toAttributes(final PathProperties properties) {
-        final PathAttributes attributes = new DefaultPathAttributes();
-        attributes.setSize(properties.getFileSize());
-        attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
-        if(properties.getContentMd5() != null) {
-            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
-        }
-        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
-        return attributes;
-    }
-
-    public PathAttributes toAttributes(final PathItem item) {
-        final PathAttributes attributes = new DefaultPathAttributes();
-        attributes.setSize(item.getContentLength());
-        attributes.setModificationDate(item.getLastModified().toInstant().toEpochMilli());
-        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(item.getETag(), "\""), "\""));
-        return attributes;
-    }
-
-    public PathAttributes toAttributes(final BlobItemProperties properties) {
-        final PathAttributes attributes = new DefaultPathAttributes();
-        attributes.setSize(properties.getContentLength());
-        attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
-        attributes.setETag(properties.getETag());
-        if(properties.getContentMd5() != null) {
-            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
-        }
-        return attributes;
+        return new AzureBlobAttributesFinderFeature(session).find(file, listener);
     }
 }

@@ -31,6 +31,7 @@ import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Ignore;
@@ -69,7 +70,7 @@ public class WritePermissionWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature(host) {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
@@ -125,7 +126,7 @@ public class WritePermissionWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature(host) {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
@@ -195,7 +196,7 @@ public class WritePermissionWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature(host) {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
@@ -255,7 +256,7 @@ public class WritePermissionWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
-                    return (T) new UnixPermission() {
+                    return (T) new DefaultUnixPermissionFeature(host) {
                         @Override
                         public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();

@@ -17,6 +17,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.ssl.SSLExceptionMappingService;
@@ -27,30 +28,49 @@ import javax.net.ssl.SSLException;
 import java.util.Map;
 
 import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.implementation.models.BlobStorageError;
+import com.azure.storage.file.datalake.implementation.models.DataLakeStorageError;
+
+import static com.azure.storage.blob.models.BlobErrorCode.BLOCK_COUNT_EXCEEDS_LIMIT;
+import static com.azure.storage.common.implementation.Constants.HeaderConstants.ERROR_CODE_HEADER_NAME;
 
 public class AzureExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
 
     @Override
     public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
-        switch(failure.getResponse().getStatusCode()) {
-            case 403:
-                if(failure.getValue() instanceof Map) {
-                    final Map messages = (Map) failure.getValue();
-                    if(messages.containsKey("Message")) {
-                        this.append(buffer, messages.get("Message").toString());
-                    }
-                }
-                else {
-                    this.append(buffer, failure.getMessage());
-                }
-                return new LoginFailureException(buffer.toString(), failure);
+        if(failure.getValue() instanceof BlobStorageError) {
+            final BlobStorageError error = (BlobStorageError) failure.getValue();
+            this.append(buffer, error.getMessage());
         }
-        this.append(buffer, failure.getMessage());
+        if(failure.getValue() instanceof DataLakeStorageError) {
+            final DataLakeStorageError error = (DataLakeStorageError) failure.getValue();
+            this.append(buffer, error.getMessage());
+        }
+        if(failure.getValue() instanceof Map) {
+            final Map<?, ?> messages = (Map<?, ?>) failure.getValue();
+            if(messages.containsKey("Message")) {
+                this.append(buffer, messages.get("Message").toString());
+            }
+        }
+        if(buffer.length() == 0) {
+            // No structured error details such as from an intermediary
+            this.append(buffer, failure.getMessage());
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
                 return new SSLExceptionMappingService().map(buffer.toString(), (SSLException) cause);
             }
+        }
+        switch(failure.getResponse().getStatusCode()) {
+            case 409:
+                if(BLOCK_COUNT_EXCEEDS_LIMIT.getValue().equals(failure.getResponse().getHeaderValue(ERROR_CODE_HEADER_NAME))) {
+                    // Permanent failure. Append blob exceeds the maximum of 50,000 committed blocks.
+                    return new InteroperabilityException(failure.getMessage(), failure);
+                }
+                break;
+            case 403:
+                return new LoginFailureException(buffer.toString(), failure);
         }
         return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getResponse().getStatusCode());
     }

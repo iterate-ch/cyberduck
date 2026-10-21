@@ -18,12 +18,12 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>9.6.0-SNAPSHOT</version>
+        <version>9.7.0-SNAPSHOT</version>
     </parent>
     <artifactId>azure</artifactId>
     <properties>
-        <azure-storage-blob-version>12.35.1</azure-storage-blob-version>
-        <azure-storage-file-datalake-version>12.28.1</azure-storage-file-datalake-version>
+        <azure-storage-blob-version>12.36.0</azure-storage-blob-version>
+        <azure-storage-file-datalake-version>12.29.0</azure-storage-file-datalake-version>
     </properties>
 
     <dependencies>

@@ -62,7 +62,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertTrue(new CryptoListService(session, new S3ObjectListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new S3ObjectListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         session.getRegistry().clear();

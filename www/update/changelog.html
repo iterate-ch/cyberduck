@@ -91,6 +91,9 @@
     <li><span class="label label-success">Feature</span> Upgrade runtime
         (macOS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/17509">#17509</a>)
     </li>
+    <li><span class="label label-success">Feature</span> Support <code>ProxyCommand</code> from ssh_config
+        (SFTP) (<a target="_blank" href="https://trac.cyberduck.io/ticket/8688">#8688</a>)
+    </li>
     <li><span class="label label-warning">Bugfix</span> Switch default type for uploads to block blob
         (Azure) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18386">#18386</a>)
     </li>
@@ -111,6 +114,22 @@
     </li>
     <li><span class="label label-warning">Bugfix</span> Error on startup after installing from website
         (CLI, Windows) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18408">#18408</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Support Pageant through OpenSSH agent named pipe configured in
+        ssh_config, replacing the Pageant connector (SFTP, Windows)
+        (<a target="_blank" href="https://trac.cyberduck.io/ticket/18479">#18479</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Disable SSH agent with <code>IdentityAgent none</code> in
+        ssh_config (SFTP)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Resolve username from server after OAuth authorization
+        (Nextcloud, ownCloud) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18456">#18456</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Verify server-side checksum after upload
+        (iRODS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18457">#18457</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Reuse TLS session for data connections with TLS 1.3
+        (FTP-SSL)
     </li>
 </ul>
 

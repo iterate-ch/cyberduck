@@ -18,8 +18,8 @@ package ch.cyberduck.core.importer;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
@@ -46,7 +46,7 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
         super();
     }
 
-    public XmlBookmarkCollection(final PasswordStore keychain) {
+    public XmlBookmarkCollection(final HostPasswordStore keychain) {
         super(keychain);
     }
 

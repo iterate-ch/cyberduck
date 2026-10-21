@@ -19,25 +19,49 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 public interface HostPasswordStore extends PasswordStore {
+
+    /**
+     * @see Protocol#isPasswordConfigurable()
+     */
+    void addLoginPassword(Host bookmark, String password);
+
+    /**
+     * @see Protocol#isPasswordConfigurable()
+     */
     String findLoginPassword(Host bookmark);
 
+    /**
+     * @see Protocol#isPasswordConfigurable()
+     */
+    void deleteLoginPassword(Host bookmark);
+
+    /**
+     * @see Protocol#isTokenConfigurable() ()
+     */
     String findLoginToken(Host bookmark);
 
+    /**
+     * @see Protocol#isPrivateKeyConfigurable() ()
+     */
     String findPrivateKeyPassphrase(Host bookmark);
 
+    /**
+     * @see Protocol#isOAuthConfigurable() ()
+     */
     OAuthTokens findOAuthTokens(Host bookmark);
 
     /**
-     * Adds the password to the login keychain
+     * Adds the credentials to the store
      *
      * @param bookmark Hostname
+     * @throws LocalAccessDeniedException Failure accessing store
      * @throws LocalAccessDeniedException Failure accessing store
      * @see ch.cyberduck.core.Host#getCredentials()
      */
     void save(Host bookmark) throws AccessDeniedException;
 
     /**
-     * Delete password in login keychain if any
+     * Delete password in the store if any
      *
      * @param bookmark Hostname
      * @throws LocalAccessDeniedException Failure accessing store

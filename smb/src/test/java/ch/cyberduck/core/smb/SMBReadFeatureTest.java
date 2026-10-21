@@ -28,16 +28,19 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -49,6 +52,27 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class SMBReadFeatureTest extends AbstractSMBTest {
+
+    @Test
+    public void testReleaseShareOnFailure() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        // Exceed read buffer size to require multiple read requests
+        final byte[] content = RandomUtils.nextBytes(4 * 1024 * 1024);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content),
+                new SMBWriteFeature(session).write(test, status, ConnectionCallback.noop));
+        final InputStream in = new SMBReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
+        assertNotEquals(-1, in.read(new byte[1024]));
+        // Disconnect share with open file handle to fail subsequent read requests
+        final SMBSession.DiskShareWrapper share = session.openShare(test);
+        share.get().close();
+        session.releaseShare(share);
+        final Exception failure = assertThrows(Exception.class, () -> IOUtils.toByteArray(in));
+        assertShareAvailable(test);
+        assertTrue(failure instanceof IOException);
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {

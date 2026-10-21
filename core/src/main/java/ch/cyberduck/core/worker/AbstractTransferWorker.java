@@ -212,7 +212,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             this.await();
             transfer.post(source, destination, table, error, progress, connect);
             // Close transfer thread pool
-            this.shutdown();
+            this.shutdown(true);
         }
         finally {
             this.release(source, Connection.source, null);
@@ -541,7 +541,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         return ConcurrentUtils.constantFuture(null);
     }
 
-    protected void shutdown() {
+    /**
+     * @param gracefully Await completion of submitted tasks. Otherwise discard queued and interrupt running tasks
+     *                   without waiting for termination
+     */
+    protected void shutdown(final boolean gracefully) {
         // No-op
     }
 

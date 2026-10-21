@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.6.0-SNAPSHOT</version>
+    <version>9.7.0-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -94,7 +94,7 @@
         <bouncycastle-version>1.86</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>2.2.0</google-http-client.version>
-        <jwt.version>4.6.1</jwt.version>
+        <jwt.version>4.6.2</jwt.version>
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
         <jansi.version>2.4.2</jansi.version>
@@ -123,7 +123,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.14</version>
+                <version>1.18.15</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -173,7 +173,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.22.1</version>
+                <version>1.23.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
@@ -258,7 +258,7 @@
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>stax2-api</artifactId>
-                <version>4.3.1</version>
+                <version>4.3.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -318,7 +318,7 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.14.4</version>
+                <version>2.15.0</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
@@ -727,7 +727,7 @@
                         <dependency>
                             <groupId>org.apache.maven.doxia</groupId>
                             <artifactId>doxia-module-markdown</artifactId>
-                            <version>2.1.0</version>
+                            <version>2.2.0</version>
                         </dependency>
                     </dependencies>
                     <configuration>

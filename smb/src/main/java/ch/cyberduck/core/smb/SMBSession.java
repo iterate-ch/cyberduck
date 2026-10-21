@@ -319,6 +319,10 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     public void releaseShare(final DiskShareWrapper share) throws BackgroundException {
+        if(null == share) {
+            // Not obtained or already released
+            return;
+        }
         final String shareName = share.get().getSmbPath().getShareName();
         lock.lock();
         try {
