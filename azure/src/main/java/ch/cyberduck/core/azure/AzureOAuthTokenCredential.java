@@ -36,12 +36,12 @@ import reactor.core.publisher.Mono;
  */
 public final class AzureOAuthTokenCredential implements TokenCredential {
 
-    private final OAuth2AuthorizationService authorization;
+    private final OAuth2AuthorizationService oauth;
     private final Credentials credentials;
     private final CancelCallback cancel;
 
-    public AzureOAuthTokenCredential(final OAuth2AuthorizationService authorization, final Credentials credentials, final CancelCallback cancel) {
-        this.authorization = authorization;
+    public AzureOAuthTokenCredential(final OAuth2AuthorizationService oauth, final Credentials credentials, final CancelCallback cancel) {
+        this.oauth = oauth;
         this.credentials = credentials;
         this.cancel = cancel;
     }
@@ -58,7 +58,7 @@ public final class AzureOAuthTokenCredential implements TokenCredential {
 
     private synchronized AccessToken get() {
         try {
-            final OAuthTokens tokens = authorization.validate(credentials.getOauth(), cancel);
+            final OAuthTokens tokens = oauth.save(oauth.validate(credentials.getOauth(), cancel));
             credentials.setOauth(tokens);
             return new AccessToken(tokens.getAccessToken(),
                     OffsetDateTime.ofInstant(Instant.ofEpochMilli(tokens.getExpiryInMilliseconds()), ZoneOffset.UTC));
