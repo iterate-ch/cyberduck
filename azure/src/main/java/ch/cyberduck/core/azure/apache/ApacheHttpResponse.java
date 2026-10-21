@@ -72,4 +72,10 @@ final class ApacheHttpResponse extends HttpResponse {
     public Mono<String> getBodyAsString(Charset charset) {
         return getBodyAsByteArray().map(bytes -> new String(bytes, charset));
     }
+
+    @Override
+    public void close() {
+        // Release the connection when the body is never read, such as on retry after authentication challenge
+        EntityUtils.consumeQuietly(entity);
+    }
 }

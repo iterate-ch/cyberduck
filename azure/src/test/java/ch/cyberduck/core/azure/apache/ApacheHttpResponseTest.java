@@ -21,12 +21,15 @@ import org.apache.http.message.BasicHttpResponse;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.azure.core.http.HttpMethod;
 import com.azure.core.http.HttpRequest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ApacheHttpResponseTest {
 
@@ -39,5 +42,20 @@ public class ApacheHttpResponseTest {
         r.getBody();
         r.getBodyAsByteArray();
         assertEquals("<xml/>", r.getBodyAsString().block());
+    }
+
+    @Test
+    public void testCloseReleasesEntity() {
+        final AtomicBoolean closed = new AtomicBoolean();
+        final BasicHttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, 401, "Unauthorized");
+        response.setEntity(new InputStreamEntity(new ByteArrayInputStream("<Error/>".getBytes(StandardCharsets.UTF_8)) {
+            @Override
+            public void close() throws IOException {
+                closed.set(true);
+                super.close();
+            }
+        }));
+        new ApacheHttpResponse(new HttpRequest(HttpMethod.GET, "https://localhost/"), response).close();
+        assertTrue(closed.get());
     }
 }
