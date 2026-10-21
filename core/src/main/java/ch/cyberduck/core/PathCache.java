@@ -42,6 +42,13 @@ public class PathCache extends AbstractCache<Path> {
         super(size, expireDuration);
     }
 
+    /**
+     * @param expireAfterAccess Expire after last access when true. Expire after caching when false
+     */
+    public PathCache(final int size, final Long expireDuration, final boolean expireAfterAccess) {
+        super(size, expireDuration, expireAfterAccess);
+    }
+
     @Override
     public CacheReference<Path> reference(final Path file) {
         if(null == file) {
