@@ -26,6 +26,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.azure.apache.ApacheHttpClient;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -41,6 +42,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -77,6 +79,11 @@ public class AzureSession extends HttpSession<AzureClient> {
     private final AtomicReference<StorageAccountInfo> storageAccountInfo
             = new AtomicReference<>();
 
+    /**
+     * Set when authenticating with Microsoft Entra ID
+     */
+    private OAuth2RequestInterceptor authorizationService;
+
     public AzureSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
@@ -86,8 +93,12 @@ public class AzureSession extends HttpSession<AzureClient> {
     }
 
     @Override
-    protected AzureClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected AzureClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws LoginCanceledException {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
+        if(host.getProtocol().isOAuthConfigurable()) {
+            authorizationService = new OAuth2RequestInterceptor(pool.build(), host, prompt, cancel)
+                    .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        }
         final String endpoint = new HostUrlProvider().withUsername(false).get(host);
         final ApacheHttpClient http = new ApacheHttpClient(pool);
         final HttpPipelinePolicy user = new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
@@ -101,7 +112,13 @@ public class AzureSession extends HttpSession<AzureClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        client.setCredentials(credentials);
+        if(host.getProtocol().isOAuthConfigurable()) {
+            credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
+            client.setCredentials(new AzureOAuthTokenCredential(authorizationService, credentials, cancel));
+        }
+        else {
+            client.setCredentials(credentials);
+        }
         try {
             final StorageAccountInfo accountInfo = client.getBlobServiceClient().getAccountInfo();
             storageAccountInfo.set(accountInfo);

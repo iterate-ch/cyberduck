@@ -62,6 +62,12 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
                 return new SSLExceptionMappingService().map(buffer.toString(), (SSLException) cause);
             }
         }
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof BackgroundException) {
+                // Failure retrieving access token
+                return (BackgroundException) cause;
+            }
+        }
         switch(failure.getResponse().getStatusCode()) {
             case 409:
                 if(BLOCK_COUNT_EXCEEDS_LIMIT.getValue().equals(failure.getResponse().getHeaderValue(ERROR_CODE_HEADER_NAME))) {
