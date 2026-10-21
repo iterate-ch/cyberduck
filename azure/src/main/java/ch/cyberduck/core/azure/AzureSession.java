@@ -60,7 +60,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.HttpPipelineCallContext;
 import com.azure.core.http.HttpPipelineNextPolicy;
 import com.azure.core.http.HttpPipelineNextSyncPolicy;
@@ -132,7 +131,7 @@ public class AzureSession extends HttpSession<AzureClient> {
                 log.info("Connected to account of kind {}", kind);
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map(e);
         }
     }

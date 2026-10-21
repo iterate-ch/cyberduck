@@ -32,7 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.MessageFormat;
 import java.util.Optional;
 
-import com.azure.core.exception.HttpResponseException;
 
 public class AzureDirectoryFeature implements Directory<Void> {
 
@@ -52,7 +51,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(folder).getName()).create();
                 return new Path(folder.getParent(), folder.getName(), folder.getType());
             }
-            catch(HttpResponseException e) {
+            catch(RuntimeException e) {
                 throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
             }
         }

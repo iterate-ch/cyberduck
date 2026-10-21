@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobContainerAccessPolicies;
 import com.azure.storage.blob.models.PublicAccessType;
@@ -94,7 +93,7 @@ public class AzureAclPermissionFeature implements AclPermission {
             }
             return Acl.EMPTY;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
@@ -117,7 +116,7 @@ public class AzureAclPermissionFeature implements AclPermission {
                 }
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }

@@ -50,5 +50,8 @@ public class AzureBlobFindFeature implements Find {
         catch(NotfoundException e) {
             return false;
         }
+        catch(RuntimeException e) {
+            throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
     }
 }

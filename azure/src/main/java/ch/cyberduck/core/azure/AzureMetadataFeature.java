@@ -29,7 +29,6 @@ import org.apache.http.HttpHeaders;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.BlobProperties;
@@ -70,7 +69,7 @@ public class AzureMetadataFeature implements Headers {
                 return metadata;
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
@@ -102,7 +101,7 @@ public class AzureMetadataFeature implements Headers {
                 client.setMetadata(pruned);
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }

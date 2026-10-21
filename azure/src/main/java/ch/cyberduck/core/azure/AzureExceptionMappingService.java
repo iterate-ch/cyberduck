@@ -16,15 +16,18 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.ssl.SSLExceptionMappingService;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.net.ssl.SSLException;
+import java.io.IOException;
 import java.util.Map;
 
 import com.azure.core.exception.HttpResponseException;
@@ -34,10 +37,31 @@ import com.azure.storage.file.datalake.implementation.models.DataLakeStorageErro
 import static com.azure.storage.blob.models.BlobErrorCode.BLOCK_COUNT_EXCEEDS_LIMIT;
 import static com.azure.storage.common.implementation.Constants.HeaderConstants.ERROR_CODE_HEADER_NAME;
 
-public class AzureExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
+public class AzureExceptionMappingService extends AbstractExceptionMappingService<RuntimeException> {
 
     @Override
-    public BackgroundException map(final HttpResponseException failure) {
+    public BackgroundException map(final RuntimeException failure) {
+        if(failure instanceof HttpResponseException) {
+            return this.map((HttpResponseException) failure);
+        }
+        // Failure without response wrapped by the SDK, such as connection or SSL failure or retrieving access token
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof BackgroundException) {
+                return (BackgroundException) cause;
+            }
+        }
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof SSLException) {
+                return new SSLExceptionMappingService().map((SSLException) cause);
+            }
+            if(cause instanceof IOException) {
+                return new DefaultIOExceptionMappingService().map((IOException) cause);
+            }
+        }
+        return new DefaultExceptionMappingService().map(failure);
+    }
+
+    private BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
         if(failure.getValue() instanceof BlobStorageError) {
             final BlobStorageError error = (BlobStorageError) failure.getValue();

@@ -65,5 +65,8 @@ public class AzureDataLakeFindFeature implements Find {
             }
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+        catch(RuntimeException e) {
+            throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
     }
 }

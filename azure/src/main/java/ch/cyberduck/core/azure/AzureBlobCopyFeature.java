@@ -36,7 +36,6 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.Optional;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.core.util.polling.SyncPoller;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.BlobCopyInfo;
@@ -74,7 +73,7 @@ public class AzureBlobCopyFeature implements Copy {
             listener.sent(status.getLength());
             return new Path(copy).withAttributes(PathAttributes.EMPTY);
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }

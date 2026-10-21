@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.file.datalake.DataLakeFileSystemClient;
 
 /**
@@ -85,7 +84,7 @@ public class AzureDataLakeMoveFeature implements Move {
             }
             return new Path(renamed).withAttributes(file.attributes());
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
