@@ -50,6 +50,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -113,6 +114,10 @@ public class AzureSession extends HttpSession<AzureClient> {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isOAuthConfigurable()) {
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                // Set the storage account name to keep tokens separate for every account
+                credentials.setUsername(client.getBlobServiceClient().getAccountName());
+            }
             credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
             client.setCredentials(new AzureOAuthTokenCredential(authorizationService, credentials, cancel));
         }
