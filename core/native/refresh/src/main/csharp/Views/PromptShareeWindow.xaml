@@ -13,7 +13,7 @@
                               SizeToContent="Height"
                               Title="{xaml:Text 'Create Download Share', Table=Share}"
                               WindowStartupLocation="CenterScreen"
-                              Width="300">
+                              Width="450">
     <controls:DialogContentControl x:Name="LayoutRoot">
         <HeaderedContentControl.Header>
             <HeaderedContentControl Style="{StaticResource LabeledControlStyle}">
