@@ -23,6 +23,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -48,6 +49,18 @@ public class OwncloudSpacesTest {
         assertEquals("/dav/spaces/storage-users-1$00000000-1111-2222-3333-444444444444", spaces.getPersonal());
         assertEquals("/dav/spaces/a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668", spaces.getShares());
         assertEquals(1, spaces.getProjects().size());
+    }
+
+    @Test
+    public void testWithDrivesPersonalRemoved() throws Exception {
+        final OwncloudSpaces spaces = spaces();
+        assertNotNull(spaces.getPersonal());
+        // Personal space disabled or role changed to User Light
+        spaces.withDrives(Collections.emptyList());
+        assertNull(spaces.getPersonal());
+        assertNull(spaces.toServer(OwncloudSpaces.PERSONAL_FOLDER));
+        // Fallback for share jail is retained
+        assertEquals("/dav/spaces/a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668", spaces.getShares());
     }
 
     @Test

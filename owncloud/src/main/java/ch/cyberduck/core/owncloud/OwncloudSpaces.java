@@ -98,6 +98,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
         final List<Drives.Drive> available = drives.stream().filter(drive -> null != drive.driveType
                 && null != drive.root && null == drive.root.deleted
                 && StringUtils.isNotBlank(drive.root.webDavUrl)).collect(Collectors.toList());
+        String personal = null;
         for(Drives.Drive drive : available) {
             switch(drive.driveType) {
                 case DRIVE_TYPE_PERSONAL:
@@ -126,6 +127,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
             }
             unique.put(entry.getKey(), entry.getValue().get(0));
         }
+        this.personal = personal;
         projects = unique.values().stream().collect(Collectors.toMap(drive -> drive.name, drive -> toPath(drive.root.webDavUrl)));
         log.debug("Mapped personal space {}, shares {} and project spaces {}", personal, shares, projects);
         return unique.values().stream().collect(Collectors.toList());
