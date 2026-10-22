@@ -463,9 +463,6 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * @return True to calculate the checksum while transferring and verify with the checksum in the response of the server
      */
     public boolean isVerify() {
-        if(this.isSegment()) {
-            return false;
-        }
         return verify;
     }
 

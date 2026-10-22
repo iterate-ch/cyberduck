@@ -42,6 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
@@ -58,7 +59,6 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                         final ProgressListener message, final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         final MessageDigest digest;
-        // Checksum of segments is not part of the verification of the whole file
         if(status.isVerify()) {
             digest = this.digest(write, file, status);
         }
@@ -70,7 +70,12 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
         if(null == digest) {
             in = local.getInputStream();
         }
+        else if(status.isSegment()) {
+            // Only the content of the segment with offset and length is part of the checksum
+            in = new DigestInputStream(local.getInputStream(), digest);
+        }
         else {
+            // Include content skipped when resuming in the checksum of the whole file
             in = new SkippingDigestInputStream(local.getInputStream(), digest);
         }
         final StatusOutputStream<Reply> out = write.write(file, status, callback);
