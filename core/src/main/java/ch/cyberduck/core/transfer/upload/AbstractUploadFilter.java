@@ -402,13 +402,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             return;
         }
         if(ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
-            log.warn("Checksum {} returned by server is {} but expected {}", checksum.hash, checksum.algorithm, expected.algorithm);
+            log.warn("Checksum {} returned by server is {} but expected {}", checksum.hex, checksum.algorithm, expected.algorithm);
             return;
         }
         if(!checksum.equals(expected)) {
             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                     MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
-                            expected.algorithm.toString(), expected.hash, checksum.hash));
+                            expected.algorithm.toString(), expected.hex, checksum.hex));
         }
         log.debug("Verified checksum {} for {}", checksum, file);
     }
