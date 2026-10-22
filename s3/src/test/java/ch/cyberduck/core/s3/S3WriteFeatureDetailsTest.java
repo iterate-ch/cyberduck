@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -66,9 +67,29 @@ public class S3WriteFeatureDetailsTest {
     }
 
     @Test
-    public void testOtherAlgorithm() {
-        final S3Object object = details(new TransferStatus().setChecksum(new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e")));
+    public void testMD5() {
+        final S3Object object = details(new TransferStatus().setChecksum(new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e", "1B2M2Y8AsgTpgAmY7PhCfg==")));
+        // Required for upload to bucket with Object Lock
+        assertEquals("1B2M2Y8AsgTpgAmY7PhCfg==", object.getMetadata("Content-MD5"));
         assertEquals("UNSIGNED-PAYLOAD", object.getMetadata("x-amz-content-sha256"));
+        assertFalse(object.containsMetadata("x-amz-checksum-sha256"));
+    }
+
+    @Test
+    public void testOtherAlgorithm() {
+        final S3Object object = details(new TransferStatus().setChecksum(new Checksum(HashAlgorithm.sha1, "da39a3ee5e6b4b0d3255bfef95601890afd80709")));
+        assertEquals("UNSIGNED-PAYLOAD", object.getMetadata("x-amz-content-sha256"));
+        assertFalse(object.containsMetadata("x-amz-checksum-sha256"));
+        assertFalse(object.containsMetadata("Content-MD5"));
+    }
+
+    @Test
+    public void testSegmentUnsignedPayloadWithContentMD5() {
+        // Content-MD5 is required for parts of upload to bucket with Object Lock
+        final S3Object object = details(new TransferStatus().setSegment(true)
+                .setMetadata(Collections.singletonMap("Content-MD5", "1B2M2Y8AsgTpgAmY7PhCfg==")));
+        assertEquals("UNSIGNED-PAYLOAD", object.getMetadata("x-amz-content-sha256"));
+        assertEquals("1B2M2Y8AsgTpgAmY7PhCfg==", object.getMetadata("Content-MD5"));
         assertFalse(object.containsMetadata("x-amz-checksum-sha256"));
     }
 }

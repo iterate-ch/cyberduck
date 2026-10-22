@@ -90,7 +90,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     private final class MultipartOutputStream extends OutputStream {
@@ -108,7 +108,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         private final AtomicReference<MultipartCompleted> response = new AtomicReference<>();
 
         private final ChecksumCompute md5 = ChecksumComputeFactory.get(HashAlgorithm.md5);
-        private final ChecksumCompute sha256 = ChecksumComputeFactory.get(HashAlgorithm.sha256);
 
         private Long offset = 0L;
         private int partNumber;
@@ -134,11 +133,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         parameters.put("uploadId", multipart.getUploadId());
                         parameters.put("partNumber", String.valueOf(++partNumber));
                         final TransferStatus status = new TransferStatus().setParameters(parameters).setLength(len);
-                        switch(session.getSignatureVersion()) {
-                            case AWS4HMACSHA256:
-                                status.setChecksum(sha256.compute(new ByteArrayInputStream(content, off, len), status));
-                                break;
-                        }
                         status.setParent(overall);
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);

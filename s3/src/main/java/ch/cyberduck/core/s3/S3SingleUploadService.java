@@ -21,21 +21,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
 
-import java.security.MessageDigest;
-
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
-
-    /**
-     * The checksum of the write feature is the SHA-256 for the request signature. Verify with the MD5 returned as ETag.
-     */
-    @Override
-    public MessageDigest digest(final Write<StorageObject> write, final Path file, final TransferStatus status) throws BackgroundException {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5).digest();
-    }
 }

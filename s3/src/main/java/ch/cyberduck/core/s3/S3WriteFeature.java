@@ -34,8 +34,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
@@ -44,11 +42,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -128,8 +122,13 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     // Payload hash for the request signature
                     object.addMetadata("x-amz-content-sha256", checksum.hash);
                     break;
+                case md5:
+                    // Verified by the server and required for upload to a bucket with Object Lock
+                    object.addMetadata("Content-MD5", checksum.base64);
+                    object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
+                    break;
                 default:
-                    // Set UNSIGNED-PAYLOAD for AWS4 signature calculation when checksum algorithm is wrong
+                    // Set UNSIGNED-PAYLOAD for AWS4 signature calculation when checksum algorithm is not supported
                     object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
             }
         }
@@ -175,30 +174,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new ChecksumCompute() {
-            @Override
-            public Set<Checksum> computeAll(final InputStream in, final TransferStatus status) throws BackgroundException {
-                final HashSet<Checksum> checksums = new HashSet<>(Arrays.asList(
-                        ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ProxyInputStream(in) {
-                            @Override
-                            public void close() throws IOException {
-                                in.reset();
-                            }
-                        }, status),
-                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ProxyInputStream(in) {
-                            @Override
-                            public void close() throws IOException {
-                                in.reset();
-                            }
-                        }, status)));
-                IOUtils.closeQuietly(in);
-                return checksums;
-            }
-
-            @Override
-            public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-                return ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in, status);
-            }
-        };
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 }
