@@ -206,6 +206,9 @@ public class OwncloudSession extends DAVSession {
                 return (T) new OwncloudSpacesWriteFeature<>(this, this.write());
             }
             if(type == Quota.class) {
+                if(null == spaces.getPersonal()) {
+                    return (T) (Quota) () -> Quota.unknown;
+                }
                 // Home is root with virtual folders
                 return (T) new DAVQuotaFeature(this, () -> OwncloudSpaces.PERSONAL_FOLDER);
             }
