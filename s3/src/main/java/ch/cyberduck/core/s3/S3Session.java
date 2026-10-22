@@ -50,6 +50,7 @@ import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
+import ch.cyberduck.core.signin.AWSConsoleLoginCredentialsStrategy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -273,36 +274,43 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
-            if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
-                log.debug("Configure SSO");
-                final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
-                final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
-                if(!profiles.isEmpty()) {
-                    if(StringUtils.isBlank(host.getCredentials().getUsername())) {
-                        try {
-                            final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
-                                    profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
-                                    LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
-                            log.debug("Configuring credentials from profile {}", profile);
-                            host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+            if(S3Session.isAwsHostname(host.getHostname())) {
+                if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
+                    log.debug("Configure SSO");
+                    final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
+                    final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
+                    if(!profiles.isEmpty()) {
+                        if(StringUtils.isBlank(host.getCredentials().getUsername())) {
+                            try {
+                                final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
+                                        profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
+                                        LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
+                                log.debug("Configuring credentials from profile {}", profile);
+                                host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+                            }
+                            catch(ConnectionCanceledException e) {
+                                // Continue with manual configuration
+                            }
                         }
-                        catch(ConnectionCanceledException e) {
-                            // Continue with manual configuration
+                        else {
+                            // Copy properties from AWS CLI profile
+                            host.setCredentials(configurator.configure(host));
                         }
                     }
-                    else {
-                        // Copy properties from AWS CLI profile
-                        host.setCredentials(configurator.configure(host));
-                    }
+                    final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt, cancel)
+                            .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
+                    log.debug("Add interceptor {}", oauth);
+                    configuration.addInterceptorLast(oauth);
+                    final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
+                            oauth, host, trust, key, prompt, cancel);
+                    log.debug("Return authenticator {}", strategy);
+                    return strategy;
                 }
-                final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt, cancel)
-                        .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
-                log.debug("Add interceptor {}", oauth);
-                configuration.addInterceptorLast(oauth);
-                final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
-                        oauth, host, trust, key, prompt);
-                log.debug("Return authenticator {}", strategy);
-                return strategy;
+                if(AWSConsoleLoginCredentialsStrategy.CLIENT_ID.equals(host.getProtocol().getOAuthClientId())) {
+                    // AWS Console Sign-In
+                    log.debug("Configure AWS Console Sign-In");
+                    return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt, cancel);
+                }
             }
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                     .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -312,7 +320,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
             final S3CredentialsStrategy strategy
-                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt);
+                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt, cancel);
             log.debug("Return authenticator {}", strategy);
             return strategy;
         }

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import org.apache.commons.lang3.StringUtils;
 
 import com.azure.core.credential.AzureSasCredential;
+import com.azure.core.credential.TokenCredential;
 import com.azure.core.http.HttpPipeline;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
@@ -59,6 +60,19 @@ public final class AzureClient {
             blobBuilder.credential(key);
             datalakeBuilder.credential(key);
         }
+        this.build();
+    }
+
+    /**
+     * Rebuild the clients to authorize requests with a bearer token such as from Microsoft Entra ID
+     */
+    public void setCredentials(final TokenCredential token) {
+        blobBuilder.credential(token);
+        datalakeBuilder.credential(token);
+        this.build();
+    }
+
+    private void build() {
         blob = blobBuilder.buildClient();
         datalake = datalakeBuilder.buildClient();
     }

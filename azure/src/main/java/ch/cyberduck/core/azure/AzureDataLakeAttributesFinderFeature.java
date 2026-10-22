@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.Checksum;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.file.datalake.models.PathItem;
 import com.azure.storage.file.datalake.models.PathProperties;
 
@@ -60,7 +59,7 @@ public class AzureDataLakeAttributesFinderFeature implements AttributesFinder, A
                     .getDirectoryClient(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)))
                     .getProperties());
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }

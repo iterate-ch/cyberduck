@@ -143,4 +143,18 @@ public class AzureExceptionMappingServiceTest {
             return Mono.empty();
         }
     }
+
+    @Test
+    public void testWrappedConnectFailure() {
+        final BackgroundException e = new AzureExceptionMappingService().map(
+                new RuntimeException(new java.net.ConnectException("Connection refused")));
+        assertTrue(e.getClass().getName(), e instanceof ch.cyberduck.core.exception.ConnectionRefusedException);
+    }
+
+    @Test
+    public void testWrappedLoginCanceled() {
+        final BackgroundException e = new AzureExceptionMappingService().map(
+                new RuntimeException(new ch.cyberduck.core.exception.LoginCanceledException()));
+        assertTrue(e.getClass().getName(), e instanceof ch.cyberduck.core.exception.LoginCanceledException);
+    }
 }

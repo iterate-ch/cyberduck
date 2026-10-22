@@ -46,7 +46,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.rest.Response;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.AppendBlobItem;
@@ -161,7 +160,7 @@ public class AzureWriteFeature implements Write<Void> {
                 }
             };
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }

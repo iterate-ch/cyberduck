@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.storage.file.datalake.DataLakeFileSystemClient;
 import com.azure.storage.file.datalake.models.ListPathsOptions;
@@ -76,7 +75,7 @@ public class AzureDataLakeListService implements ListService {
             }
             return children;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

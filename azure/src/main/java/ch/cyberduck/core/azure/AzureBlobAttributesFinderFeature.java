@@ -98,7 +98,7 @@ public class AzureBlobAttributesFinderFeature implements AttributesFinder, Attri
                 return PathAttributes.EMPTY;
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }

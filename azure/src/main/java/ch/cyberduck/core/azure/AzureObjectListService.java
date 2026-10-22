@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
@@ -107,7 +106,7 @@ public class AzureObjectListService implements ListService {
             }
             return children;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

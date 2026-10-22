@@ -26,7 +26,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.azure.core.exception.HttpResponseException;
 
 /**
  * Create directories with Data Lake Storage API for accounts with hierarchical namespace enabled
@@ -51,7 +50,7 @@ public class AzureDataLakeDirectoryFeature implements Directory<Void> {
         catch(IllegalArgumentException e) {
             throw new InteroperabilityException();
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
