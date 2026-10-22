@@ -125,8 +125,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             throw new InteroperabilityException(String.format("No support for %s", Extension.creation));
         }
         // Create an Upload URL
-        final HttpPost request = new HttpPost(new DefaultUrlProvider(session.getHost()).toUrl(file.getParent(),
-                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+        final HttpPost request = new HttpPost(this.toCreationUrl(file.getParent()));
         request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
         // The Upload-Length header indicates the size of the entire upload in bytes
         request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getParent().getLength()));
@@ -210,6 +209,15 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             preferences.deleteProperty(property);
             return Write.override;
         }
+    }
+
+    /**
+     * @param directory Parent folder of file to upload
+     * @return URL to create new upload resource
+     */
+    protected String toCreationUrl(final Path directory) {
+        return new DefaultUrlProvider(session.getHost()).toUrl(directory,
+                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
     /**

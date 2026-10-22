@@ -55,7 +55,7 @@ public class DAVFindFeature implements Find {
         try {
             try {
                 try {
-                    final HttpHead request = new HttpHead(new DAVPathEncoder().encode(file));
+                    final HttpHead request = new HttpHead(new DAVPathEncoder(session).encode(file));
                     for(Header header : this.headers()) {
                         request.addHeader(header);
                     }

@@ -1,0 +1,47 @@
+package ch.cyberduck.core.owncloud;
+
+/*
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
+import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Optional;
+
+/**
+ * Deny creating folders in virtual folders
+ */
+public class OwncloudSpacesDirectoryFeature extends DAVDirectoryFeature {
+
+    public OwncloudSpacesDirectoryFeature(final DAVSession session) {
+        super(session);
+    }
+
+    @Override
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(OwncloudSpaces.isVirtual(workdir)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot create folder {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
+        }
+        super.preflight(workdir, filename);
+    }
+}

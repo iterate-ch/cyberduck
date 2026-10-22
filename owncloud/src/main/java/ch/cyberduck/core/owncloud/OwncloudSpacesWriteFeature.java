@@ -1,0 +1,73 @@
+package ch.cyberduck.core.owncloud;
+
+/*
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.EnumSet;
+import java.util.Optional;
+
+/**
+ * Deny uploading files to virtual folders
+ */
+public class OwncloudSpacesWriteFeature<Reply> implements Write<Reply> {
+
+    private final DAVSession session;
+    private final Write<Reply> proxy;
+
+    public OwncloudSpacesWriteFeature(final DAVSession session, final Write<Reply> proxy) {
+        this.session = session;
+        this.proxy = proxy;
+    }
+
+    @Override
+    public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return proxy.write(file, status, callback);
+    }
+
+    @Override
+    public boolean random(final Path file) {
+        return proxy.random(file);
+    }
+
+    @Override
+    public boolean timestamp(final Path file) {
+        return proxy.timestamp(file);
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return proxy.checksum(file, status);
+    }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        new OwncloudSpacesTouchFeature(session).preflight(file.getParent(), Optional.of(file.getName()));
+        proxy.preflight(file);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return proxy.features(file);
+    }
+}

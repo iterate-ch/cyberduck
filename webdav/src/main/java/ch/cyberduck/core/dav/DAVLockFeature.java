@@ -35,7 +35,7 @@ public class DAVLockFeature implements Lock<String> {
     @Override
     public String lock(final Path file) throws BackgroundException {
         try {
-            return session.getClient().lock(new DAVPathEncoder().encode(file));
+            return session.getClient().lock(new DAVPathEncoder(session).encode(file));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
@@ -48,7 +48,7 @@ public class DAVLockFeature implements Lock<String> {
     @Override
     public void unlock(final Path file, final String token) throws BackgroundException {
         try {
-            session.getClient().unlock(new DAVPathEncoder().encode(file), token);
+            session.getClient().unlock(new DAVPathEncoder(session).encode(file), token);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);

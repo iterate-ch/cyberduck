@@ -151,7 +151,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0, Collections.unmodifiableSet(Stream.concat(Stream.concat(
+        return session.getClient().list(new DAVPathEncoder(session).encode(file), 0, Collections.unmodifiableSet(Stream.concat(Stream.concat(
                 Stream.of(GUID_QN), ALL_ACL_QN.stream()), Stream.of(FILEID_QN)
         ).collect(Collectors.toSet())));
     }

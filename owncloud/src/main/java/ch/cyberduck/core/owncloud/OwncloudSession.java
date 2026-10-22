@@ -24,20 +24,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVLockFeature;
+import ch.cyberduck.core.dav.DAVPathMapper;
+import ch.cyberduck.core.dav.DAVQuotaFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Share;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -51,6 +43,7 @@ import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
 import ch.cyberduck.core.ocs.OcsUserRequest;
 import ch.cyberduck.core.ocs.OcsUserResponseHandler;
+import ch.cyberduck.core.owncloud.model.Drives;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -69,6 +62,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 
 import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 
@@ -77,6 +71,12 @@ public class OwncloudSession extends DAVSession {
 
     protected final TusCapabilities tus = new TusCapabilities();
     protected final OcsCapabilities ocs = new OcsCapabilities();
+    protected final OwncloudSpaces spaces = new OwncloudSpaces();
+
+    /**
+     * Show storage spaces in virtual folders
+     */
+    private boolean virtual;
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -128,11 +128,86 @@ public class OwncloudSession extends DAVSession {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        if(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable")) {
+            try {
+                this.drives();
+                virtual = true;
+            }
+            catch(BackgroundException e) {
+                log.warn("Failure {} retrieving spaces. Disable virtual folders", e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Retrieve spaces of user and update mapping to WebDAV root
+     *
+     * @return Project spaces
+     */
+    public List<Drives.Drive> drives() throws BackgroundException {
+        try {
+            final OwncloudDrivesRequest request = new OwncloudDrivesRequest(host);
+            log.debug("Query spaces at {}", request);
+            return spaces.withDrives(client.execute(request, new OwncloudDrivesResponseHandler()));
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public DAVPathMapper getMapper() {
+        if(virtual) {
+            return spaces;
+        }
+        return super.getMapper();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(virtual) {
+            if(type == Home.class) {
+                return (T) new OwncloudSpacesHomeFeature(host, spaces);
+            }
+            if(type == ListService.class) {
+                return (T) new OwncloudSpacesListService(this, new NextcloudListService(this));
+            }
+            if(type == AttributesFinder.class) {
+                return (T) new OwncloudSpacesAttributesFinderFeature(this);
+            }
+            if(type == Find.class) {
+                return (T) new OwncloudSpacesFindFeature(this);
+            }
+            if(type == Directory.class) {
+                return (T) new OwncloudSpacesDirectoryFeature(this);
+            }
+            if(type == Touch.class) {
+                return (T) new OwncloudSpacesTouchFeature(this);
+            }
+            if(type == Delete.class) {
+                return (T) new OwncloudSpacesDeleteFeature(this);
+            }
+            if(type == Move.class) {
+                return (T) new OwncloudSpacesMoveFeature(this);
+            }
+            if(type == Copy.class) {
+                return (T) new OwncloudSpacesCopyFeature(this);
+            }
+            if(type == Share.class) {
+                return (T) new OwncloudSpacesShareFeature(this);
+            }
+            if(type == Write.class) {
+                return (T) new OwncloudSpacesWriteFeature<>(this, this.write());
+            }
+            if(type == Quota.class) {
+                // Home is root with virtual folders
+                return (T) new DAVQuotaFeature(this, () -> OwncloudSpaces.PERSONAL_FOLDER);
+            }
+        }
         if(type == Home.class) {
             return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new OwncloudHomeFeature(host));
         }
@@ -158,10 +233,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new HttpUploadFeature<>();
         }
         if(type == Write.class) {
-            if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new TusWriteFeature(this, tus);
-            }
-            return (T) new NextcloudWriteFeature(this);
+            return (T) this.write();
         }
         if(type == UrlProvider.class) {
             return (T) new NextcloudUrlProvider(this);
@@ -185,5 +257,12 @@ public class OwncloudSession extends DAVSession {
             return (T) new OwncloudTimestampFeature(this);
         }
         return super._getFeature(type);
+    }
+
+    private Write<Void> write() {
+        if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
+            return new TusWriteFeature(this, tus);
+        }
+        return new NextcloudWriteFeature(this);
     }
 }

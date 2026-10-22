@@ -78,7 +78,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
     @Override
     public boolean isSupported(final Path file, final Type type) {
         try {
-            if(new SimplePathPredicate(NextcloudHomeFeature.Context.files.home(session.getHost()).find()).test(file)) {
+            if(new SimplePathPredicate(this.home()).test(file)) {
                 // You cannot share your root folder
                 return false;
             }
@@ -101,11 +101,11 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
                 return Collections.singleton(Sharee.world);
             default:
                 final Host bookmark = session.getHost();
-                final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
+                final String request = String.format("https://%s%s/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
                         bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
                         SHARE_TYPE_USER // User
-                ));
-                final HttpGet resource = new HttpGet(request.toString());
+                );
+                final HttpGet resource = new HttpGet(request);
                 resource.setHeader("OCS-APIRequest", "true");
                 resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
                 final Set<Sharee> sharees = new LinkedHashSet<>(
@@ -133,7 +133,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
-                URIEncoder.encode(PathRelativizer.relativize(NextcloudHomeFeature.Context.files.home(bookmark).find().getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(this.home().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 Sharee.world.equals(sharee) ? StringUtils.EMPTY : sharee.getIdentifier()
         ));
@@ -164,7 +164,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
-                URIEncoder.encode(PathRelativizer.relativize(NextcloudHomeFeature.Context.files.home(bookmark).find().getAbsolute(), file.getAbsolute())),
+                URIEncoder.encode(PathRelativizer.relativize(this.home().getAbsolute(), file.getAbsolute())),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 SHARE_PERMISSIONS_CREATE
         ));
@@ -186,12 +186,12 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
                         final XmlMapper mapper = new XmlMapper();
                         final Share value = mapper.readValue(entity.getContent(), Share.class);
                         // Additional request, because permissions are ignored in POST
-                        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares/%s?permissions=%d",
+                        final String request = String.format("https://%s/ocs/v1.php/apps/files_sharing/api/v1/shares/%s?permissions=%d",
                                 bookmark.getHostname(),
                                 value.data.id,
                                 SHARE_PERMISSIONS_CREATE
-                        ));
-                        final HttpPut put = new HttpPut(request.toString());
+                        );
+                        final HttpPut put = new HttpPut(request);
                         put.setHeader("OCS-APIRequest", "true");
                         put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
                         session.getClient().execute(put, new VoidResponseHandler());
@@ -209,5 +209,12 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    /**
+     * @return Folder to resolve path of shared file relative to
+     */
+    protected Path home() throws BackgroundException {
+        return NextcloudHomeFeature.Context.files.home(session.getHost()).find();
     }
 }

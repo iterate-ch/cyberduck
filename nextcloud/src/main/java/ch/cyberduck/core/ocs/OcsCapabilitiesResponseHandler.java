@@ -17,13 +17,14 @@ package ch.cyberduck.core.ocs;
 
 import ch.cyberduck.core.ocs.model.Capabilities;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabilities> {
     private static final Logger log = LogManager.getLogger(OcsCapabilitiesResponseHandler.class);
@@ -62,6 +63,11 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                             }
                         }
                     }
+                    if(value.data.capabilities.spaces != null) {
+                        capabilities.withSpaces(toBoolean(value.data.capabilities.spaces.enabled));
+                        capabilities.withProjects(toBoolean(value.data.capabilities.spaces.projects));
+                        capabilities.withSharejail(toBoolean(value.data.capabilities.spaces.sharejail));
+                    }
                 }
             }
         }
@@ -70,5 +76,12 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
         }
         log.debug("Determined OCS capabilities {}", capabilities);
         return capabilities;
+    }
+
+    /**
+     * @param value Either numeric or literal boolean value
+     */
+    private static boolean toBoolean(final String value) {
+        return StringUtils.equals("1", value) || Boolean.parseBoolean(value);
     }
 }
