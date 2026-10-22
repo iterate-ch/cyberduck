@@ -23,7 +23,6 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.models.BlobAnalyticsLogging;
 import com.azure.storage.blob.models.BlobRetentionPolicy;
 import com.azure.storage.blob.models.BlobServiceProperties;
@@ -51,7 +50,7 @@ public class AzureLoggingFeature implements Logging {
             );
             return configuration;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
@@ -69,7 +68,7 @@ public class AzureLoggingFeature implements Logging {
             );
             session.getClient().getBlobServiceClient().setProperties(properties);
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }

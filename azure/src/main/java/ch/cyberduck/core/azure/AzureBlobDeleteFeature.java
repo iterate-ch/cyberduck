@@ -64,6 +64,9 @@ public class AzureBlobDeleteFeature implements Delete {
                     }
                     throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
+                catch(RuntimeException e) {
+                    throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
             }
         }
         for(Path file : containers) {
@@ -71,7 +74,7 @@ public class AzureBlobDeleteFeature implements Delete {
             try {
                 session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName()).delete();
             }
-            catch(HttpResponseException e) {
+            catch(RuntimeException e) {
                 throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }

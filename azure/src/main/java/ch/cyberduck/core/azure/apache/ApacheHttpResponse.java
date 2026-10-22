@@ -23,7 +23,6 @@ import org.apache.http.util.EntityUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ final class ApacheHttpResponse extends HttpResponse {
     private final HttpHeaders headers;
     private final HttpEntity entity;
 
-    protected ApacheHttpResponse(HttpRequest request, org.apache.http.HttpResponse apacheResponse) {
+    ApacheHttpResponse(HttpRequest request, org.apache.http.HttpResponse apacheResponse) {
         super(request);
         this.statusCode = apacheResponse.getStatusLine().getStatusCode();
         this.headers = new HttpHeaders();
@@ -62,11 +61,8 @@ final class ApacheHttpResponse extends HttpResponse {
         if (null == entity) {
             return Mono.empty();
         }
-        try {
-            return Mono.just(EntityUtils.toByteArray(entity));
-        } catch (IOException e) {
-            return Mono.error(e);
-        }
+        // Defer reading until subscribed to read the streaming entity only once
+        return Mono.fromCallable(() -> EntityUtils.toByteArray(entity));
     }
 
     public Mono<String> getBodyAsString() {
@@ -75,5 +71,11 @@ final class ApacheHttpResponse extends HttpResponse {
 
     public Mono<String> getBodyAsString(Charset charset) {
         return getBodyAsByteArray().map(bytes -> new String(bytes, charset));
+    }
+
+    @Override
+    public void close() {
+        // Release the connection when the body is never read, such as on retry after authentication challenge
+        EntityUtils.consumeQuietly(entity);
     }
 }

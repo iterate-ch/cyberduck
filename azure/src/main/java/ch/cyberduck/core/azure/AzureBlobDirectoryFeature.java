@@ -26,7 +26,6 @@ import org.apache.commons.io.input.NullInputStream;
 
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 
 public class AzureBlobDirectoryFeature implements Directory<Void> {
 
@@ -47,7 +46,7 @@ public class AzureBlobDirectoryFeature implements Directory<Void> {
         catch(IllegalArgumentException e) {
             throw new InteroperabilityException();
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }

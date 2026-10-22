@@ -30,7 +30,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.core.util.Context;
 
 /**
@@ -67,7 +66,7 @@ public class AzureDataLakeDeleteFeature implements Delete {
                                 .deleteFile(key);
                     }
                 }
-                catch(HttpResponseException e) {
+                catch(RuntimeException e) {
                     throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
             }
@@ -77,7 +76,7 @@ public class AzureDataLakeDeleteFeature implements Delete {
             try {
                 session.getClient().getDataLakeServiceClient().getFileSystemClient(containerService.getContainer(file).getName()).delete();
             }
-            catch(HttpResponseException e) {
+            catch(RuntimeException e) {
                 throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }

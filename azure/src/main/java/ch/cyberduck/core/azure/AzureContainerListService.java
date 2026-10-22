@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.models.BlobContainerItem;
 import com.azure.storage.blob.models.BlobContainerListDetails;
 import com.azure.storage.blob.models.ListBlobContainersOptions;
@@ -57,7 +56,7 @@ public class AzureContainerListService implements RootListService {
             }
             return containers;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
