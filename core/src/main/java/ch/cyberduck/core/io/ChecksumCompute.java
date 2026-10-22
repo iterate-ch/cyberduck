@@ -29,8 +29,6 @@ import org.apache.commons.codec.binary.Hex;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.util.Collections;
-import java.util.Set;
 
 public interface ChecksumCompute {
 
@@ -41,10 +39,6 @@ public interface ChecksumCompute {
      */
     default MessageDigest digest() throws ChecksumException {
         return null;
-    }
-
-    default Set<Checksum> computeAll(InputStream in, TransferStatus status) throws BackgroundException {
-        return Collections.singleton(this.compute(in, status));
     }
 
     /**
