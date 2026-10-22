@@ -887,17 +887,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public VersionsInfoTab Versions => versionsInfoTab;
 
-        public MetadataViewModel MetadataViewModel
-        {
-            get => metadataInfoTab?.ViewModel;
-            set
-            {
-                if(metadataInfoTab is not null)
-                {
-                    metadataInfoTab.ViewModel = value;
-                }
-            }
-        }
+        public MetadataInfoTab Metadata => metadataInfoTab;
 
         public event VoidHandler DistributionDefaultRootChanged = delegate { };
 

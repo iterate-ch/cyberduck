@@ -1,7 +1,7 @@
-﻿using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Reactive.Linq;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
+using ReactiveUI;
 
 namespace Ch.Cyberduck.Core.Refresh.Views
 {

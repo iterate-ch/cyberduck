@@ -1,82 +1,101 @@
-﻿<local:VersionsInfoTabBase x:Class="Ch.Cyberduck.Core.Refresh.Views.VersionsInfoTab"
-                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                           xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
-                           xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
-                           xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                           mc:Ignorable="d"
-                           d:DesignHeight="450"
-                           d:DesignWidth="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+﻿<UserControl x:Class="Ch.Cyberduck.Core.Refresh.Views.VersionsInfoTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Ch.Cyberduck.Core.Refresh.ViewModels.Info"
+             xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
+             xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance vm:VersionsViewModel}">
+    <HeaderedContentControl Style="{DynamicResource TitledTabStyle}">
+        <HeaderedContentControl.Header>
+            <TextBlock Text="{xaml:Text 'Versions',Table=Info}"
+                       x:Name="VersionsTitle"
+                       Style="{StaticResource SubtitleTextBlockStyle}" />
+        </HeaderedContentControl.Header>
 
-        <TextBlock Text="{xaml:Text Versions, Table=Info}"
-                   FontWeight="Bold"
-                   Margin="11,7,11,2"
-                   Grid.Row="0" />
-        <DataGrid x:Name="VersionGrid"
-                  AutoGenerateColumns="False"
-                  CanUserResizeRows="False"
-                  IsReadOnly="True"
-                  Margin="11,2,11,0"
-                  SelectionMode="Single"
-                  SelectionUnit="FullRow"
+        <Grid Margin="{DynamicResource UIItemNegativeSpacing}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Margin="{DynamicResource UIItemSpacing}"
+                    Grid.Row="0">
+                <DataGrid x:Name="VersionGrid"
+                          ItemsSource="{Binding Versions}"
+                          SelectedItem="{Binding SelectedVersion}"
+                          AutoGenerateColumns="False"
+                          CanUserResizeRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          SelectionUnit="FullRow"
+                          Margin="{DynamicResource TabContentPadding}"
+                          AutomationProperties.LabeledBy="{Binding ElementName=VersionsTitle}"
+                          Grid.Row="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="{xaml:Text 'Modified', Table=Info}"
+                                            Binding="{Binding Timestamp}"
+                                            ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                            Width="*" />
+                        <DataGridTextColumn Header="{xaml:Text 'Checksum', Table=Info}"
+                                            Binding="{Binding Checksum}"
+                                            ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                            Width="*" />
+                        <DataGridTextColumn Header="{xaml:Text 'Size', Table=Info}"
+                                            Binding="{Binding Size}"
+                                            ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                            Width="*" />
+                        <DataGridTextColumn Header="{xaml:Text 'Owner', Table=Info}"
+                                            Binding="{Binding Owner}"
+                                            ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                            Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <Menu Style="{StaticResource DialogMenuStyle}"
+                  Margin="{DynamicResource UIItemSpacing}"
                   Grid.Row="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="{xaml:Text 'Modified', Table=Info}"
-                                    Binding="{Binding Timestamp}"
-                                    Width="*" />
-                <DataGridTextColumn Header="{xaml:Text 'Checksum', Table=Info}"
-                                    Binding="{Binding Checksum}"
-                                    Width="*" />
-                <DataGridTextColumn Header="{xaml:Text 'Size', Table=Info}"
-                                    Binding="{Binding Size}"
-                                    Width="*" />
-                <DataGridTextColumn Header="{xaml:Text 'Owner', Table=Info}"
-                                    Binding="{Binding Owner}"
-                                    Width="*" />
-            </DataGrid.Columns>
-        </DataGrid>
+                <MenuItem x:Name="RevertButton"
+                          Command="{Binding RevertVersionCommand}"
+                          Style="{DynamicResource DialogMenuItemButton}"
+                          AutomationProperties.Name="{xaml:Text Revert,Table=Info}">
+                    <MenuItem.Header>
+                        <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   Text="&#xE81C;" />
+                    </MenuItem.Header>
+                </MenuItem>
 
-        <Border BorderThickness="0,1,0,0"
-                Padding="11"
-                Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                Grid.Row="2">
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Left">
-                <Button x:Name="RevertButton"
-                        Content="&#xE81C;"
-                        FontFamily="Segoe MDL2 Assets"
-                        Height="23"
-                        Margin="0,0,3.5,0"
-                        ToolTip="{xaml:Text 'Revert',Table=Info}"
-                        Width="25" />
-                <Button x:Name="RemoveButton"
-                        Content="&#xE738;"
-                        FontFamily="Segoe MDL2 Assets"
-                        Height="23"
-                        Margin="3.5,0"
-                        ToolTip="{xaml:Text 'Delete',Table=Info}"
-                        Width="25" />
-                <Button x:Name="OpenButton"
-                        Content="&#xE890;"
-                        FontFamily="Segoe MDL2 Assets"
-                        Height="23"
-                        Margin="3.5,0,0,0"
-                        ToolTip="{xaml:Text 'Open',Table=Localizable}"
-                        Width="25" />
-            </StackPanel>
-        </Border>
+                <MenuItem x:Name="RemoveButton"
+                          Command="{Binding DeleteVersionCommand}"
+                          Style="{DynamicResource DialogMenuItemStyle}"
+                          AutomationProperties.Name="{xaml:Text Delete,Table=Info}">
+                    <MenuItem.Header>
+                        <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   Text="&#xE74D;" />
+                    </MenuItem.Header>
+                </MenuItem>
 
-        <xctk:BusyIndicator x:Name="Status"
-                            BusyContent="{x:Null}"
-                            Grid.RowSpan="3" />
-    </Grid>
-</local:VersionsInfoTabBase>
+                <MenuItem x:Name="OpenButton"
+                          Command="{Binding RevealVersionCommand}"
+                          Style="{DynamicResource DialogMenuItemButton}"
+                          AutomationProperties.Name="{xaml:Text Open,Table=Localizable}">
+                    <MenuItem.Header>
+                        <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   Text="&#xE890;" />
+                    </MenuItem.Header>
+                </MenuItem>
+            </Menu>
+
+            <xctk:BusyIndicator x:Name="Status"
+                                IsBusy="{Binding Busy}"
+                                BusyContent="{x:Null}"
+                                Grid.RowSpan="2" />
+        </Grid>
+    </HeaderedContentControl>
+</UserControl>
