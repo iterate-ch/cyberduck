@@ -81,6 +81,8 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
 
     boolean isPrivateKeyConfigurable();
 
+    boolean isKerberosConfigurable();
+
     boolean isRoleConfigurable();
 
     boolean isMultiFactorConfigurable();

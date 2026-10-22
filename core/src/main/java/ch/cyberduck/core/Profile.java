@@ -122,6 +122,7 @@ public class Profile implements Protocol {
     public static final String OAUTH_CONFIGURABLE_KEY = "OAuth Configurable";
     public static final String CERTIFICATE_CONFIGURABLE_KEY = "Certificate Configurable";
     public static final String PRIVATE_KEY_CONFIGURABLE_KEY = "Private Key Configurable";
+    public static final String KERBEROS_CONFIGURABLE_KEY = "Kerberos Configurable";
     public static final String ROLE_KEY_CONFIGURABLE_KEY = "Role Configurable";
     public static final String MULTIFACTOR_KEY_CONFIGURABLE_KEY = "Multi Factor Configurable";
 
@@ -148,6 +149,7 @@ public class Profile implements Protocol {
                 case OAUTH_CONFIGURABLE_KEY:
                 case CERTIFICATE_CONFIGURABLE_KEY:
                 case PRIVATE_KEY_CONFIGURABLE_KEY:
+                case KERBEROS_CONFIGURABLE_KEY:
                 case BUNDLED_KEY:
                 case DEPRECATED_KEY:
                 case OAUTH_PKCE_KEY:
@@ -518,6 +520,15 @@ public class Profile implements Protocol {
         final Boolean v = this.bool(PRIVATE_KEY_CONFIGURABLE_KEY);
         if(null == v) {
             return parent.isPrivateKeyConfigurable();
+        }
+        return v;
+    }
+
+    @Override
+    public boolean isKerberosConfigurable() {
+        final Boolean v = this.bool(KERBEROS_CONFIGURABLE_KEY);
+        if(null == v) {
+            return parent.isKerberosConfigurable();
         }
         return v;
     }

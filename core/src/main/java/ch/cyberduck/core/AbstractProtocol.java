@@ -159,6 +159,9 @@ public abstract class AbstractProtocol implements Protocol {
         if(this.isPrivateKeyConfigurable()) {
             dict.setBooleanForKey(this.isPrivateKeyConfigurable(), PRIVATE_KEY_CONFIGURABLE_KEY);
         }
+        if(this.isKerberosConfigurable()) {
+            dict.setBooleanForKey(this.isKerberosConfigurable(), KERBEROS_CONFIGURABLE_KEY);
+        }
         if(!this.getProperties().isEmpty()) {
             dict.setStringListForKey(this.getProperties().entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue())).collect(Collectors.toList()), PROPERTIES_KEY);
         }
@@ -288,6 +291,11 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isPrivateKeyConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isKerberosConfigurable() {
         return false;
     }
 
