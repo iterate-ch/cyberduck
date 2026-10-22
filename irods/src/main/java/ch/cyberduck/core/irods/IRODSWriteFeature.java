@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -58,7 +59,7 @@ public class IRODSWriteFeature implements Write<List<String>> {
                 @Override
                 public void close() throws IOException {
                     // Instruct the server to compute and register a checksum for the replica on close
-                    stream.close(IRODSUploadFeature.closeInstructions(IRODSUploadFeature.hasChecksum(status)));
+                    stream.close(IRODSUploadFeature.closeInstructions(status.getChecksum() != Checksum.NONE));
                     try {
                         // Set the latest attributes of the data object registered by the server
                         reply = IRODSAttributesFinderFeature.query(conn.getRcComm(), file.getAbsolute());
