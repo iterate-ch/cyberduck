@@ -17,9 +17,18 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Home;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class PathCache extends AbstractCache<Path> {
+    private static final Logger log = LogManager.getLogger(PathCache.class);
 
     private static final CacheReference<Path> NULL_KEY = new DefaultPathPredicate(Home.root());
 
@@ -27,6 +36,16 @@ public class PathCache extends AbstractCache<Path> {
         @Override
         public AttributedList<Path> put(final Path key, final AttributedList<Path> children) {
             return AttributedList.emptyList();
+        }
+
+        @Override
+        public void lock(final Path parent) {
+            // Nothing cached to wait for
+        }
+
+        @Override
+        public void unlock(final Path parent) {
+            //
         }
     };
 
@@ -55,5 +74,52 @@ public class PathCache extends AbstractCache<Path> {
             return NULL_KEY;
         }
         return new DefaultPathPredicate(file);
+    }
+
+    /**
+     * Locks for directories currently looked up. Removed when no longer held or awaited.
+     */
+    private final Map<CacheReference<Path>, DirectoryLock> locks = new ConcurrentHashMap<>();
+
+    private static final class DirectoryLock {
+        private final ReentrantLock lock = new ReentrantLock();
+        /**
+         * Number of acquisitions held or awaited
+         */
+        private int references;
+    }
+
+    @Override
+    public void lock(final Path directory) throws ConnectionCanceledException {
+        final CacheReference<Path> reference = null == directory ? NULL_KEY : new SimplePathPredicate(directory);
+        final DirectoryLock entry = locks.compute(reference, (key, value) -> {
+            final DirectoryLock l = null == value ? new DirectoryLock() : value;
+            l.references++;
+            return l;
+        });
+        try {
+            entry.lock.lockInterruptibly();
+        }
+        catch(InterruptedException e) {
+            this.release(reference);
+            Thread.currentThread().interrupt();
+            throw new ConnectionCanceledException(e);
+        }
+    }
+
+    @Override
+    public void unlock(final Path directory) {
+        final CacheReference<Path> reference = null == directory ? NULL_KEY : new SimplePathPredicate(directory);
+        final DirectoryLock entry = locks.get(reference);
+        if(null == entry || !entry.lock.isHeldByCurrentThread()) {
+            log.error("Directory {} not locked by current thread", directory);
+            return;
+        }
+        entry.lock.unlock();
+        this.release(reference);
+    }
+
+    private void release(final CacheReference<Path> reference) {
+        locks.compute(reference, (key, value) -> null == value || --value.references <= 0 ? null : value);
     }
 }
