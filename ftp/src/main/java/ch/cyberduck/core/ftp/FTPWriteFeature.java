@@ -31,8 +31,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.SocketTimeoutException;
-import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FTPWriteFeature implements Write<Void> {
@@ -78,20 +76,12 @@ public class FTPWriteFeature implements Write<Void> {
     }
 
     private final class ReadReplyOutputStream extends VoidStatusOutputStream {
-        private final long idleMillis;
-        private long lastIdleTimeMillis = System.currentTimeMillis();
-
         private final AtomicBoolean close;
         private final TransferStatus status;
 
         public ReadReplyOutputStream(final OutputStream proxy, final TransferStatus status) {
-            this(proxy, status, session.getClient().getControlKeepAliveTimeoutDuration());
-        }
-
-        public ReadReplyOutputStream(final OutputStream proxy, final TransferStatus status, final Duration idleDuration) {
             super(proxy);
             this.status = status;
-            this.idleMillis = idleDuration.toMillis();
             this.close = new AtomicBoolean();
         }
 
@@ -105,8 +95,9 @@ public class FTPWriteFeature implements Write<Void> {
                 super.close();
                 if(session.isConnected()) {
                     // Read 226 status after closing stream
-                    if(!FTPReply.isPositiveCompletion(session.getClient().getReply())) {
-                        final String text = session.getClient().getReplyString();
+                    final int reply = session.getClient().getTransferReply();
+                    if(!FTPReply.isPositiveCompletion(reply)) {
+                        final String text = session.getClient().getTransferReplyString();
                         if(status.isSegment()) {
                             // Ignore 451 and 426 response because stream was prematurely closed
                             log.warn("Ignore unexpected reply {} when completing file segment {}", text, status);
@@ -116,7 +107,7 @@ public class FTPWriteFeature implements Write<Void> {
                         }
                         else {
                             log.warn("Unexpected reply {} when completing file download with status {}", text, status);
-                            throw new FTPException(session.getClient().getReplyCode(), text);
+                            throw new FTPException(reply, text);
                         }
                     }
                 }
@@ -128,21 +119,7 @@ public class FTPWriteFeature implements Write<Void> {
 
         @Override
         protected void afterWrite(final int n) throws IOException {
-            if(idleMillis > 0) {
-                final long nowMillis = System.currentTimeMillis();
-                if(nowMillis - lastIdleTimeMillis > idleMillis) {
-                    try {
-                        session.getClient().noop();
-                    }
-                    catch(final SocketTimeoutException e) {
-                        log.warn("Timeout waiting for keepalive reply");
-                    }
-                    catch(final IOException e) {
-                        // Ignored
-                    }
-                    lastIdleTimeMillis = nowMillis;
-                }
-            }
+            session.getClient().keepAlive();
             super.afterWrite(n);
         }
     }

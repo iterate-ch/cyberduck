@@ -32,8 +32,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.time.Duration;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -88,19 +86,12 @@ public class FTPReadFeature implements Read {
     }
 
     private final class ReadReplyInputStream extends ProxyInputStream {
-        private final long idleMillis;
-        private long lastIdleTimeMillis = System.currentTimeMillis();
         private final AtomicBoolean close;
         private final TransferStatus status;
 
         public ReadReplyInputStream(final InputStream proxy, final TransferStatus status) {
-            this(proxy, status, session.getClient().getControlKeepAliveTimeoutDuration());
-        }
-
-        public ReadReplyInputStream(final InputStream proxy, final TransferStatus status, final Duration idleDuration) {
             super(proxy);
             this.status = status;
-            this.idleMillis = idleDuration.toMillis();
             this.close = new AtomicBoolean();
         }
 
@@ -114,8 +105,9 @@ public class FTPReadFeature implements Read {
                 super.close();
                 if(session.isConnected()) {
                     // Read 226 status after closing stream
-                    if(!FTPReply.isPositiveCompletion(session.getClient().getReply())) {
-                        final String text = session.getClient().getReplyString();
+                    final int reply = session.getClient().getTransferReply();
+                    if(!FTPReply.isPositiveCompletion(reply)) {
+                        final String text = session.getClient().getTransferReplyString();
                         if(status.isSegment()) {
                             // Ignore 451 and 426 response because stream was prematurely closed
                             log.warn("Ignore unexpected reply {} when completing file segment {}", text, status);
@@ -125,7 +117,7 @@ public class FTPReadFeature implements Read {
                         }
                         else {
                             log.warn("Unexpected reply {} when completing file download with status {}", text, status);
-                            throw new FTPException(session.getClient().getReplyCode(), text);
+                            throw new FTPException(reply, text);
                         }
                     }
                 }
@@ -137,22 +129,8 @@ public class FTPReadFeature implements Read {
 
         @Override
         protected void afterRead(final int n) throws IOException {
-            if(idleMillis > 0) {
-                if(IOUtils.EOF != n) {
-                    final long nowMillis = System.currentTimeMillis();
-                    if(nowMillis - lastIdleTimeMillis > idleMillis) {
-                        try {
-                            session.getClient().noop();
-                        }
-                        catch(final SocketTimeoutException e) {
-                            log.warn("Timeout waiting for keepalive reply");
-                        }
-                        catch(final IOException e) {
-                            // Ignored
-                        }
-                        lastIdleTimeMillis = nowMillis;
-                    }
-                }
+            if(IOUtils.EOF != n) {
+                session.getClient().keepAlive();
             }
             super.afterRead(n);
         }
