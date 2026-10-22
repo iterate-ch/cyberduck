@@ -73,7 +73,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
     /**
      * Project space name mapped to WebDAV path
      */
-    private Map<String, String> projects = Collections.emptyMap();
+    private volatile Map<String, String> projects = Collections.emptyMap();
 
     public OwncloudSpaces() {
         this(null, String.format("/dav/spaces/%s", SHARE_JAIL_ID));
@@ -94,7 +94,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
      * @param drives Drives of user
      * @return Project spaces available
      */
-    public synchronized List<Drives.Drive> withDrives(final List<Drives.Drive> drives) {
+    public List<Drives.Drive> withDrives(final List<Drives.Drive> drives) {
         final List<Drives.Drive> available = drives.stream().filter(drive -> null != drive.driveType
                 && null != drive.root && null == drive.root.deleted
                 && StringUtils.isNotBlank(drive.root.webDavUrl)).collect(Collectors.toList());
@@ -149,7 +149,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
      * @param file Path in browser
      * @return Path on server or null if not within a known space
      */
-    public synchronized Path toServer(final Path file) {
+    public Path toServer(final Path file) {
         final String absolute = file.getAbsolute();
         if(null != personal) {
             final String path = this.toServer(absolute, PERSONAL_FOLDER.getAbsolute(), personal);
@@ -189,7 +189,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
      * @param aliases Additional WebDAV paths of personal space
      * @return Path in browser or null if not within a known space
      */
-    public synchronized Path toVirtual(final String path, final String... aliases) {
+    public Path toVirtual(final String path, final String... aliases) {
         final String normalized = PathNormalizer.normalize(path);
         // Most specific root first
         final Map<String, String> roots = new TreeMap<>(Comparator.comparingInt(String::length).reversed().thenComparing(Comparator.naturalOrder()));
@@ -224,15 +224,15 @@ public final class OwncloudSpaces implements DAVPathMapper {
                 || new SimplePathPredicate(SHARES_FOLDER).test(file);
     }
 
-    public synchronized String getPersonal() {
+    public String getPersonal() {
         return personal;
     }
 
-    public synchronized String getShares() {
+    public String getShares() {
         return shares;
     }
 
-    public synchronized Map<String, String> getProjects() {
+    public Map<String, String> getProjects() {
         return projects;
     }
 
