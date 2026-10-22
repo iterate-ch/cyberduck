@@ -38,7 +38,7 @@ public class OwncloudSpacesShareFeature extends NextcloudShareFeature {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        if(OwncloudSpaces.isVirtual(file) || OwncloudSpaces.isContainer(file)) {
+        if(OwncloudSpaces.isVirtual(file) || new OwncloudSpacesPathContainerService().isContainer(file)) {
             // Root folder of personal space, project space or share
             return false;
         }

@@ -224,35 +224,6 @@ public final class OwncloudSpaces implements DAVPathMapper {
                 || new SimplePathPredicate(SHARES_FOLDER).test(file);
     }
 
-    /**
-     * @param file Path in browser
-     * @return Root folder of personal space, project space or share containing file. Null for virtual folders
-     */
-    public static Path getContainer(final Path file) {
-        if(isVirtual(file)) {
-            return null;
-        }
-        Path container = file;
-        while(!container.getParent().isRoot()) {
-            if(isVirtual(container.getParent())) {
-                return container;
-            }
-            container = container.getParent();
-        }
-        return container;
-    }
-
-    /**
-     * @return True if file is root folder of any space or share
-     */
-    public static boolean isContainer(final Path file) {
-        final Path container = getContainer(file);
-        if(null == container) {
-            return false;
-        }
-        return new SimplePathPredicate(container).test(file);
-    }
-
     public synchronized String getPersonal() {
         return personal;
     }

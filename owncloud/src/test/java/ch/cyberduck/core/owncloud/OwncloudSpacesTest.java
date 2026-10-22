@@ -104,21 +104,10 @@ public class OwncloudSpacesTest {
     }
 
     @Test
-    public void testContainer() {
+    public void testIsVirtual() {
         assertTrue(OwncloudSpaces.isVirtual(new Path("/", EnumSet.of(Path.Type.directory))));
         assertTrue(OwncloudSpaces.isVirtual(OwncloudSpaces.SPACES_FOLDER));
         assertTrue(OwncloudSpaces.isVirtual(OwncloudSpaces.SHARES_FOLDER));
         assertFalse(OwncloudSpaces.isVirtual(OwncloudSpaces.PERSONAL_FOLDER));
-        assertNull(OwncloudSpaces.getContainer(OwncloudSpaces.SPACES_FOLDER));
-        assertEquals(OwncloudSpaces.PERSONAL_FOLDER.getAbsolute(), OwncloudSpaces.getContainer(new Path(OwncloudSpaces.PERSONAL_FOLDER, "a/b", EnumSet.of(Path.Type.file))).getAbsolute());
-        final Path space = new Path(OwncloudSpaces.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
-        assertEquals(space.getAbsolute(), OwncloudSpaces.getContainer(new Path(space, "a/b", EnumSet.of(Path.Type.file))).getAbsolute());
-        final Path share = new Path(OwncloudSpaces.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
-        assertEquals(share.getAbsolute(), OwncloudSpaces.getContainer(new Path(share, "a", EnumSet.of(Path.Type.file))).getAbsolute());
-        assertTrue(OwncloudSpaces.isContainer(OwncloudSpaces.PERSONAL_FOLDER));
-        assertTrue(OwncloudSpaces.isContainer(space));
-        assertTrue(OwncloudSpaces.isContainer(share));
-        assertFalse(OwncloudSpaces.isContainer(new Path(share, "a", EnumSet.of(Path.Type.file))));
-        assertFalse(OwncloudSpaces.isContainer(OwncloudSpaces.SHARES_FOLDER));
     }
 }

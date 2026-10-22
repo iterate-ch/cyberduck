@@ -35,7 +35,7 @@ public class OwncloudSpacesDeleteFeature extends NextcloudDeleteFeature {
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
-        if(OwncloudSpaces.isVirtual(file) || OwncloudSpaces.isContainer(file)) {
+        if(OwncloudSpaces.isVirtual(file) || new OwncloudSpacesPathContainerService().isContainer(file)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }

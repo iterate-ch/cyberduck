@@ -38,7 +38,8 @@ public class OwncloudSpacesMoveFeature extends DAVMoveFeature {
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(OwncloudSpaces.isVirtual(source) || OwncloudSpaces.isContainer(source)) {
+        final OwncloudSpacesPathContainerService container = new OwncloudSpacesPathContainerService();
+        if(OwncloudSpaces.isVirtual(source) || container.isContainer(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
@@ -47,7 +48,7 @@ public class OwncloudSpacesMoveFeature extends DAVMoveFeature {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
-            if(!new SimplePathPredicate(OwncloudSpaces.getContainer(source)).test(OwncloudSpaces.getContainer(target.get()))) {
+            if(!new SimplePathPredicate(container.getContainer(source)).test(container.getContainer(target.get()))) {
                 throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
