@@ -152,9 +152,9 @@ public class FTPReadFeature implements Read {
                         }
                         lastIdleTimeMillis = nowMillis;
                     }
-                    super.afterRead(n);
                 }
             }
+            super.afterRead(n);
         }
     }
 }
