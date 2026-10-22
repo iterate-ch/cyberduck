@@ -78,7 +78,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
     @Override
     public boolean isSupported(final Path file, final Type type) {
         try {
-            if(new SimplePathPredicate(this.home()).test(file)) {
+            if(new SimplePathPredicate(NextcloudHomeFeature.Context.files.home(session.getHost()).find()).test(file)) {
                 // You cannot share your root folder
                 return false;
             }
@@ -131,9 +131,9 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
+        final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
-                URIEncoder.encode(PathRelativizer.relativize(this.home().getAbsolute(), file.getAbsolute())),
+                this.toReference(file),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 Sharee.world.equals(sharee) ? StringUtils.EMPTY : sharee.getIdentifier()
         ));
@@ -162,9 +162,9 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
+        final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?%s&shareType=%d&permissions=%d",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
-                URIEncoder.encode(PathRelativizer.relativize(this.home().getAbsolute(), file.getAbsolute())),
+                this.toReference(file),
                 Sharee.world.equals(sharee) ? SHARE_TYPE_PUBLIC_LINK : SHARE_TYPE_USER,
                 SHARE_PERMISSIONS_CREATE
         ));
@@ -212,9 +212,10 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
     }
 
     /**
-     * @return Folder to resolve path of shared file relative to
+     * @return Query parameter identifying file to share
      */
-    protected Path home() throws BackgroundException {
-        return NextcloudHomeFeature.Context.files.home(session.getHost()).find();
+    protected String toReference(final Path file) throws BackgroundException {
+        return String.format("path=%s", URIEncoder.encode(PathRelativizer.relativize(
+                NextcloudHomeFeature.Context.files.home(session.getHost()).find().getAbsolute(), file.getAbsolute())));
     }
 }

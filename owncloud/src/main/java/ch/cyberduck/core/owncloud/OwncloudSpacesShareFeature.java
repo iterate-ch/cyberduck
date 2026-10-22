@@ -16,28 +16,43 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Sharing is only supported for files in personal space
+ * Identify file to share by resource identifier which is unique across spaces
  */
 public class OwncloudSpacesShareFeature extends NextcloudShareFeature {
 
+    private final DAVSession session;
+
     public OwncloudSpacesShareFeature(final DAVSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        if(!file.isChild(OwncloudSpaces.PERSONAL_FOLDER)) {
+        if(OwncloudSpaces.isVirtual(file) || OwncloudSpaces.isContainer(file)) {
+            // Root folder of personal space, project space or share
+            return false;
+        }
+        if(file.isChild(OwncloudSpaces.SHARES_FOLDER)) {
+            // No resharing
             return false;
         }
         return super.isSupported(file, type);
     }
 
     @Override
-    protected Path home() {
-        return OwncloudSpaces.PERSONAL_FOLDER;
+    protected String toReference(final Path file) throws BackgroundException {
+        final String id = StringUtils.isNotBlank(file.attributes().getFileId()) ? file.attributes().getFileId() :
+                session.getFeature(AttributesFinder.class).find(file).getFileId();
+        return String.format("space=%s", URIEncoder.encode(id));
     }
 }
