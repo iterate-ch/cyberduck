@@ -118,6 +118,8 @@ public class OwncloudSession extends DAVSession {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        // Session is reused when reconnecting. Verify login with default home and discover spaces again
+        virtual = false;
         super.login(prompt, cancel);
         try {
             client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
