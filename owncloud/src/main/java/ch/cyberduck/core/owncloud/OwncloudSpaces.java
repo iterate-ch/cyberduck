@@ -188,19 +188,19 @@ public final class OwncloudSpaces implements DAVPathMapper {
 
     /**
      * @param path    Path on server
-     * @param aliases Additional WebDAV paths of personal space
+     * @param aliases Additional WebDAV paths of personal space. Ignored without personal space
      * @return Path in browser or null if not within a known space
      */
     public Path toVirtual(final String path, final String... aliases) {
         final String normalized = PathNormalizer.normalize(path);
         // Most specific root first
         final Map<String, String> roots = new TreeMap<>(Comparator.comparingInt(String::length).reversed().thenComparing(Comparator.naturalOrder()));
-        for(String alias : aliases) {
-            if(StringUtils.isNotBlank(alias)) {
-                roots.put(PathNormalizer.normalize(alias), PERSONAL_FOLDER.getAbsolute());
-            }
-        }
         if(null != personal) {
+            for(String alias : aliases) {
+                if(StringUtils.isNotBlank(alias)) {
+                    roots.put(PathNormalizer.normalize(alias), PERSONAL_FOLDER.getAbsolute());
+                }
+            }
             roots.put(personal, PERSONAL_FOLDER.getAbsolute());
         }
         if(null != shares) {

@@ -68,7 +68,8 @@ public class OwncloudSpacesHomeFeature extends AbstractHomeFeature {
             }
             log.warn("No space found for {}", home);
         }
-        if(StringUtils.isNotBlank(host.getDefaultPath()) && !StringUtils.startsWith(host.getDefaultPath(), String.valueOf(Path.DELIMITER))) {
+        if(StringUtils.isNotBlank(host.getDefaultPath()) && !StringUtils.startsWith(host.getDefaultPath(), String.valueOf(Path.DELIMITER))
+                && null != spaces.getPersonal()) {
             // Relative to personal space
             return PathNormalizer.compose(OwncloudSpaces.PERSONAL_FOLDER, host.getDefaultPath());
         }

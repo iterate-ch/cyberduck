@@ -30,6 +30,10 @@ public class OwncloudSpacesHomeFeatureTest {
     private final OwncloudSpaces spaces = new OwncloudSpaces("/dav/spaces/s$p", "/dav/spaces/j$j");
 
     private Path find(final String defaultPath) throws Exception {
+        return this.find(spaces, defaultPath);
+    }
+
+    private Path find(final OwncloudSpaces spaces, final String defaultPath) throws Exception {
         final Host host = new Host(new OwncloudProtocol(), "example.com", new Credentials("jane"));
         host.setDefaultPath(defaultPath);
         return new OwncloudSpacesHomeFeature(host, spaces).find();
@@ -45,5 +49,16 @@ public class OwncloudSpacesHomeFeatureTest {
         assertEquals(new Path(OwncloudSpaces.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("d").getAbsolute());
         assertEquals(OwncloudSpaces.SHARES_FOLDER.getAbsolute(), this.find(OwncloudSpaces.SHARES_FOLDER.getAbsolute()).getAbsolute());
         assertEquals("/", this.find("/unknown").getAbsolute());
+    }
+
+    @Test
+    public void testFindNoPersonalSpace() throws Exception {
+        // Role User Light
+        final OwncloudSpaces spaces = new OwncloudSpaces(null, "/dav/spaces/j$j");
+        assertEquals("/", this.find(spaces, "/remote.php/webdav/").getAbsolute());
+        assertEquals("/", this.find(spaces, "/remote.php/dav/files/jane/d").getAbsolute());
+        assertEquals("/", this.find(spaces, "d").getAbsolute());
+        assertEquals("/", this.find(spaces, OwncloudSpaces.PERSONAL_FOLDER.getAbsolute()).getAbsolute());
+        assertEquals(new Path(OwncloudSpaces.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find(spaces, "/dav/spaces/j$j/s").getAbsolute());
     }
 }
