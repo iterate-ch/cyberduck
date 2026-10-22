@@ -43,7 +43,10 @@ public class OwncloudSpacesListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             final AttributedList<Path> list = new AttributedList<>();
-            list.add(OwncloudSpaces.PERSONAL_FOLDER);
+            if(null != session.spaces.getPersonal()) {
+                // No personal space for users with role User Light
+                list.add(OwncloudSpaces.PERSONAL_FOLDER);
+            }
             if(session.ocs.projects) {
                 list.add(OwncloudSpaces.SPACES_FOLDER);
             }
