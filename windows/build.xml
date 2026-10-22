@@ -84,12 +84,20 @@
         </taskdef>
 
         <echo message="Calculating DSA signature..."/>
-        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
+        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" errorproperty="signature.dsa.error"
+              resultproperty="signature.dsa.result" failonerror="false">
             <arg value="-o"/>
             <arg value="pipefail"/>
             <arg value="-c"/>
             <arg value="openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -sha1 -sign '${www.update}/private.pem' | openssl enc -base64"/>
         </exec>
+        <fail message="Signing failed with exit code ${signature.dsa.result}: ${signature.dsa.error}">
+            <condition>
+                <not>
+                    <equals arg1="${signature.dsa.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
 
         <!-- prepare WinSparkle stuff -->

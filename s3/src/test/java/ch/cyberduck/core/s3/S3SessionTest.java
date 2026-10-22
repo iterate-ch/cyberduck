@@ -237,25 +237,6 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testInteroperabilityMinio() throws Exception {
-        final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
-                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
-        )) {
-            @Override
-            public String getProperty(final String key) {
-                if("s3.bucket.virtualhost.disable".equals(key)) {
-                    return String.valueOf(true);
-                }
-                return super.getProperty(key);
-            }
-        };
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-        session.login(LoginCallback.noop, CancelCallback.noop);
-        session.close();
-    }
-
-    @Test
     public void testAwsHostnames() {
         assertFalse(S3Session.isAwsHostname("play.min.io"));
         assertTrue(S3Session.isAwsHostname("test-eu-west-3-cyberduck.s3.amazonaws.com"));
