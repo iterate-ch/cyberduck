@@ -26,6 +26,8 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
@@ -134,6 +136,11 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
             }
         };
         return this.write(file, status, command);
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return new SHA1ChecksumCompute();
     }
 
     @Override
