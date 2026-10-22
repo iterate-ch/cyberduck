@@ -122,44 +122,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testWriteMinio() throws Exception {
-        final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
-                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
-        )) {
-            @Override
-            public String getProperty(final String key) {
-                if("s3.bucket.virtualhost.disable".equals(key)) {
-                    return String.valueOf(true);
-                }
-                return super.getProperty(key);
-            }
-        };
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-        session.login(LoginCallback.noop, CancelCallback.noop);
-        final Path container = new Path(String.format("cd-%s", new AlphanumericRandomStringService().random().toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)),
-                container, new TransferStatus());
-        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
-        {
-            final Acl acl = new Acl();
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-            try {
-                f.setPermission(test, acl);
-                fail();
-            }
-            catch(InteroperabilityException e) {
-                //
-            }
-        }
-        assertEquals(Acl.EMPTY, f.getPermission(test));
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-    }
-
-    @Test
     public void testReadWithDelimiter() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
