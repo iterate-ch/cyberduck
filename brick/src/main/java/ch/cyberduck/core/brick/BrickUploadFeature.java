@@ -137,7 +137,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
     protected FileEntity completeUpload(final Path file, final String ref, final TransferStatus status, final List<TransferStatus> checksums) throws BackgroundException {
         try {
             return new FilesApi(session.getClient()).postFilesPath(new FilesPathBody()
-                    .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
+                    .etagsEtag(checksums.stream().map(s -> s.getDigest().hex).collect(Collectors.toList()))
                     .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                     .providedMtime(null != status.getModified() ? new DateTime(status.getModified()) : null)
                     .ref(ref)
@@ -164,7 +164,8 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
                         .setSegment(true)
                         .setLength(length)
                         .setOffset(offset);
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                // Calculate checksum of the part while streaming as it is required only when completing the upload
+                status.setVerify(true);
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());

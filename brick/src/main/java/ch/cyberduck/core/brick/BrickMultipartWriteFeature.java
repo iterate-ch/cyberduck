@@ -213,6 +213,6 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum);
+        return EnumSet.of(Flags.timestamp);
     }
 }
