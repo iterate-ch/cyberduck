@@ -32,23 +32,24 @@ import java.util.Optional;
  */
 public class OwncloudSpacesMoveFeature extends DAVMoveFeature {
 
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+
     public OwncloudSpacesMoveFeature(final DAVSession session) {
         super(session);
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        final OwncloudSpacesPathContainerService container = new OwncloudSpacesPathContainerService();
-        if(OwncloudSpaces.isVirtual(source) || container.isContainer(source)) {
+        if(containerService.isVirtual(source) || containerService.isContainer(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot rename {0}", "Error"), source.getName())).withFile(source);
         }
         if(target.isPresent()) {
-            if(OwncloudSpaces.isVirtual(target.get().getParent())) {
+            if(containerService.isVirtual(target.get().getParent())) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
-            if(!new SimplePathPredicate(container.getContainer(source)).test(container.getContainer(target.get()))) {
+            if(!new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target.get()))) {
                 throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }

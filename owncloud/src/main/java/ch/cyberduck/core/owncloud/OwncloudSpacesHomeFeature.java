@@ -40,6 +40,7 @@ public class OwncloudSpacesHomeFeature extends AbstractHomeFeature {
 
     private final Host host;
     private final OwncloudSpaces spaces;
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
 
     public OwncloudSpacesHomeFeature(final Host host, final OwncloudSpaces spaces) {
         this.host = host;
@@ -53,7 +54,7 @@ public class OwncloudSpacesHomeFeature extends AbstractHomeFeature {
             if(null == home) {
                 continue;
             }
-            if(OwncloudSpaces.isVirtual(home) || null != spaces.toServer(home)) {
+            if(containerService.isVirtual(home) || null != spaces.toServer(home)) {
                 // Path within virtual folder
                 return home;
             }

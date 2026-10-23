@@ -32,13 +32,15 @@ import java.util.Optional;
  */
 public class OwncloudSpacesTouchFeature extends DAVTouchFeature {
 
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+
     public OwncloudSpacesTouchFeature(final DAVSession session) {
         super(session);
     }
 
     @Override
     public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
-        if(OwncloudSpaces.isVirtual(workdir)) {
+        if(containerService.isVirtual(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot create {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
         }

@@ -115,12 +115,4 @@ public class OwncloudSpacesTest {
                 spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000001/d", "/dav/spaces").getAbsolute());
         assertNull(spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000003"));
     }
-
-    @Test
-    public void testIsVirtual() {
-        assertTrue(OwncloudSpaces.isVirtual(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertTrue(OwncloudSpaces.isVirtual(OwncloudSpaces.SPACES_FOLDER));
-        assertTrue(OwncloudSpaces.isVirtual(OwncloudSpaces.SHARES_FOLDER));
-        assertFalse(OwncloudSpaces.isVirtual(OwncloudSpaces.PERSONAL_FOLDER));
-    }
 }

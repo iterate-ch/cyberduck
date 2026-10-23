@@ -29,13 +29,15 @@ import java.text.MessageFormat;
  */
 public class OwncloudSpacesDeleteFeature extends NextcloudDeleteFeature {
 
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+
     public OwncloudSpacesDeleteFeature(final DAVSession session) {
         super(session);
     }
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
-        if(OwncloudSpaces.isVirtual(file) || new OwncloudSpacesPathContainerService().isContainer(file)) {
+        if(containerService.isVirtual(file) || containerService.isContainer(file)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }

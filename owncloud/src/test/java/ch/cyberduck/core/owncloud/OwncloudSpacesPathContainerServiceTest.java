@@ -30,6 +30,15 @@ public class OwncloudSpacesPathContainerServiceTest {
     private final Path share = new Path(OwncloudSpaces.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
 
     @Test
+    public void testIsVirtual() {
+        assertTrue(container.isVirtual(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(container.isVirtual(OwncloudSpaces.SPACES_FOLDER));
+        assertTrue(container.isVirtual(OwncloudSpaces.SHARES_FOLDER));
+        assertFalse(container.isVirtual(OwncloudSpaces.PERSONAL_FOLDER));
+        assertFalse(container.isVirtual(new Path(OwncloudSpaces.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
     public void testIsContainer() {
         assertTrue(container.isContainer(OwncloudSpaces.PERSONAL_FOLDER));
         assertTrue(container.isContainer(space));

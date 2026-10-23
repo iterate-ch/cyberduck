@@ -18,7 +18,6 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVPathMapper;
 import ch.cyberduck.core.owncloud.model.Drives;
 
@@ -215,15 +214,6 @@ public final class OwncloudSpaces implements DAVPathMapper {
             }
         }
         return null;
-    }
-
-    /**
-     * @return True for root and folders listing spaces or shares
-     */
-    public static boolean isVirtual(final Path file) {
-        return file.isRoot()
-                || new SimplePathPredicate(SPACES_FOLDER).test(file)
-                || new SimplePathPredicate(SHARES_FOLDER).test(file);
     }
 
     public String getPersonal() {

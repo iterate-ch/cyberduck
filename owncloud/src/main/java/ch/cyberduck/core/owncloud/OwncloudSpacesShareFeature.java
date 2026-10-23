@@ -29,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OwncloudSpacesShareFeature extends NextcloudShareFeature {
 
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+
     private final DAVSession session;
 
     public OwncloudSpacesShareFeature(final DAVSession session) {
@@ -38,7 +40,7 @@ public class OwncloudSpacesShareFeature extends NextcloudShareFeature {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        if(OwncloudSpaces.isVirtual(file) || new OwncloudSpacesPathContainerService().isContainer(file)) {
+        if(containerService.isVirtual(file) || containerService.isContainer(file)) {
             // Root folder of personal space, project space or share
             return false;
         }

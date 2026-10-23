@@ -30,18 +30,20 @@ import java.util.Optional;
  */
 public class OwncloudSpacesCopyFeature extends DAVCopyFeature {
 
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+
     public OwncloudSpacesCopyFeature(final DAVSession session) {
         super(session);
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(OwncloudSpaces.isVirtual(source)) {
+        if(containerService.isVirtual(source)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot copy {0}", "Error"), source.getName())).withFile(source);
         }
         if(target.isPresent()) {
-            if(OwncloudSpaces.isVirtual(target.get().getParent())) {
+            if(containerService.isVirtual(target.get().getParent())) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot copy {0}", "Error"), source.getName())).withFile(source);
             }

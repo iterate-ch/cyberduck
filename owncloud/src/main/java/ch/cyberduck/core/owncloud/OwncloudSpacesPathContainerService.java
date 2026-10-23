@@ -24,6 +24,15 @@ import ch.cyberduck.core.SimplePathPredicate;
  */
 public class OwncloudSpacesPathContainerService extends DefaultPathContainerService {
 
+    /**
+     * @return True for root and folders listing spaces or shares
+     */
+    public boolean isVirtual(final Path file) {
+        return file.isRoot()
+                || new SimplePathPredicate(OwncloudSpaces.SPACES_FOLDER).test(file)
+                || new SimplePathPredicate(OwncloudSpaces.SHARES_FOLDER).test(file);
+    }
+
     @Override
     public boolean isContainer(final Path file) {
         if(file.isRoot()) {

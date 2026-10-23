@@ -22,13 +22,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class OwncloudSpacesAttributesFinderFeature extends OwncloudAttributesFinderFeature {
 
+    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+
     public OwncloudSpacesAttributesFinderFeature(final OwncloudSession session) {
         super(session);
     }
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(OwncloudSpaces.isVirtual(file)) {
+        if(containerService.isVirtual(file)) {
             return PathAttributes.EMPTY;
         }
         return super.find(file, listener);
