@@ -73,11 +73,6 @@ public class OwncloudSession extends DAVSession {
     protected final OcsCapabilities ocs = new OcsCapabilities();
     protected final OwncloudSpaces spaces = new OwncloudSpaces();
 
-    /**
-     * Show storage spaces in virtual folders
-     */
-    private boolean virtual;
-
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -119,10 +114,11 @@ public class OwncloudSession extends DAVSession {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         // Session is reused when reconnecting. Verify login with default home and discover spaces again
-        virtual = false;
+        ocs.withSpaces(false);
         super.login(prompt, cancel);
         try {
-            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
+            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs))
+                    .withSpaces(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable"));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -130,13 +126,13 @@ public class OwncloudSession extends DAVSession {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        if(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable")) {
+        if(ocs.spaces) {
             try {
                 this.drives();
-                virtual = true;
             }
             catch(BackgroundException e) {
                 log.warn("Failure {} retrieving spaces. Disable virtual folders", e.getMessage());
+                ocs.withSpaces(false);
             }
         }
     }
@@ -162,7 +158,7 @@ public class OwncloudSession extends DAVSession {
 
     @Override
     public DAVPathMapper getMapper() {
-        if(virtual) {
+        if(ocs.spaces) {
             return spaces;
         }
         return super.getMapper();
@@ -171,7 +167,7 @@ public class OwncloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(virtual) {
+        if(ocs.spaces) {
             if(type == Home.class) {
                 return (T) new OwncloudSpacesHomeFeature(host, spaces);
             }
