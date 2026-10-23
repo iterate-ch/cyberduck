@@ -26,16 +26,21 @@ import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
 import java.util.EnumSet;
 
 public class CryptoWriteFeature<Reply> implements Write<Reply> {
@@ -71,12 +76,28 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             }
             final StatusOutputStream<Reply> stream = proxy.write(cryptomator.encrypt(session, file),
                     new CryptoTransferStatus(cryptomator, file, status), callback);
+            // The checksum must be calculated for the encrypted content sent to the server and not for the content
+            // read from the local file. Therefore the digest is applied here, below encryption.
+            final MessageDigest digest = status.isVerify() ? proxy.checksum(file, status).digest() : null;
+            final OutputStream ciphertext = null == digest ? stream : new DigestOutputStream(stream, digest);
             if(status.getOffset() == 0L) {
-                stream.write(status.getHeader().array());
+                ciphertext.write(status.getHeader().array());
             }
-            return new StatusOutputStream<Reply>(new CryptoOutputStream(stream,
+            return new StatusOutputStream<Reply>(new CryptoOutputStream(ciphertext,
                     cryptomator.getFileContentCryptor(), cryptomator.getFileHeaderCryptor().decryptHeader(status.getHeader()),
                     status.getNonces(), cryptomator.numberOfChunks(status.getOffset()))) {
+                // Digest can only be completed once. Cleared when the stream is closed.
+                private MessageDigest pending = digest;
+
+                @Override
+                public void close() throws IOException {
+                    super.close();
+                    if(pending != null) {
+                        status.setDigest(Checksum.parse(Hex.encodeHexString(pending.digest())));
+                        pending = null;
+                    }
+                }
+
                 @Override
                 public Reply getStatus() throws BackgroundException {
                     return stream.getStatus();

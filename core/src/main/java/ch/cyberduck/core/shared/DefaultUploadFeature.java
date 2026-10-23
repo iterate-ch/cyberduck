@@ -60,7 +60,12 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         final MessageDigest digest;
         if(status.isVerify()) {
-            digest = this.digest(write, file, status);
+            if(!write.checksum(file, status).isTransformed()) {
+                digest = this.digest(write, file, status);
+            }
+            else {
+                digest = null;
+            }
         }
         else {
             digest = null;

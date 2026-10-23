@@ -69,6 +69,11 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
     }
 
     @Override
+    public boolean isTransformed() {
+        return true;
+    }
+
+    @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), new TransferStatus())) {
             return Checksum.NONE;
