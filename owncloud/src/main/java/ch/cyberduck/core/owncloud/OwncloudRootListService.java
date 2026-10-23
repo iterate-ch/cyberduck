@@ -45,26 +45,25 @@ public class OwncloudRootListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(!session.ocs.spaces) {
-            return delegate.list(directory, listener);
-        }
-        if(directory.isRoot()) {
-            final AttributedList<Path> list = new AttributedList<>();
-            if(null != session.mapper.getPersonal()) {
-                // No personal space for users with role User Light
-                list.add(OwncloudPathMapper.PERSONAL_FOLDER);
+        if(session.ocs.spaces) {
+            if(directory.isRoot()) {
+                final AttributedList<Path> list = new AttributedList<>();
+                if(null != session.mapper.getPersonal()) {
+                    // No personal space for users with role User Light
+                    list.add(OwncloudPathMapper.PERSONAL_FOLDER);
+                }
+                if(session.ocs.projects) {
+                    list.add(OwncloudPathMapper.SPACES_FOLDER);
+                }
+                if(session.ocs.sharejail) {
+                    list.add(OwncloudPathMapper.SHARES_FOLDER);
+                }
+                listener.chunk(directory, list);
+                return list;
             }
-            if(session.ocs.projects) {
-                list.add(OwncloudPathMapper.SPACES_FOLDER);
+            if(new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(directory)) {
+                return new OwncloudDrivesListService(session).list(directory, listener);
             }
-            if(session.ocs.sharejail) {
-                list.add(OwncloudPathMapper.SHARES_FOLDER);
-            }
-            listener.chunk(directory, list);
-            return list;
-        }
-        if(new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(directory)) {
-            return new OwncloudDrivesListService(session).list(directory, listener);
         }
         return delegate.list(directory, listener);
     }
