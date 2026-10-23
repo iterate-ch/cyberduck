@@ -69,7 +69,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }
-            final StatusOutputStream<Reply> stream = proxy.write(vault.encrypt(session, file),
+            // Segment paths are derived from the already encrypted file path by the upload feature
+            final Path target = status.isSegment() ? file : vault.encrypt(session, file);
+            final StatusOutputStream<Reply> stream = proxy.write(target,
                     new CryptoTransferStatus(vault, file, status), callback);
             if(status.getOffset() == 0L) {
                 stream.write(status.getHeader().array());

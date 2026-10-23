@@ -69,7 +69,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }
-            final StatusOutputStream<Reply> stream = proxy.write(cryptomator.encrypt(session, file),
+            final StatusOutputStream<Reply> stream = proxy.write(status.isSegment() ? file : cryptomator.encrypt(session, file),
                     new CryptoTransferStatus(cryptomator, file, status), callback);
             if(status.getOffset() == 0L) {
                 stream.write(status.getHeader().array());

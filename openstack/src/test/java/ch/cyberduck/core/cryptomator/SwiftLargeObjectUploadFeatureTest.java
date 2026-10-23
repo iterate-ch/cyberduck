@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
@@ -37,6 +38,7 @@ import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftFindFeature;
 import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
 import ch.cyberduck.core.openstack.SwiftListService;
+import ch.cyberduck.core.openstack.SwiftSegmentService;
 import ch.cyberduck.core.openstack.SwiftReadFeature;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftWriteFeature;
@@ -58,6 +60,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -96,6 +99,14 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(writeStatus.isComplete());
         assertEquals(content.length, writeStatus.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new SwiftFindFeature(session)).find(test));
+        // Segments must be located below the encrypted parent folder of the file
+        final Path encrypted = cryptomator.encrypt(session, test);
+        final String prefix = new DefaultPathContainerService().getKey(encrypted.getParent()) + "/.file-segments/";
+        final List<Path> segments = new SwiftSegmentService(session, regionService).list(encrypted);
+        assertFalse(segments.isEmpty());
+        for(final Path segment : segments) {
+            assertTrue(segment.getName(), new DefaultPathContainerService().getKey(segment).startsWith(prefix));
+        }
         assertEquals(content.length, new CryptoListService(session, new SwiftListService(session, regionService), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().setLength(content.length);
