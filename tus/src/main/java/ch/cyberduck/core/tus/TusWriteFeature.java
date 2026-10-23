@@ -29,7 +29,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -140,11 +140,14 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
             return ChecksumComputeFactory.get(capabilities.hashAlgorithm);
         }
         log.debug("No checksum support in capabilities {}", capabilities);
-        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
+        return new DisabledChecksumCompute();
     }
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum, Flags.mime);
+        if(capabilities.extensions.contains(Extension.checksum)) {
+            return EnumSet.of(Flags.checksum, Flags.mime);
+        }
+        return EnumSet.of(Flags.mime);
     }
 }
