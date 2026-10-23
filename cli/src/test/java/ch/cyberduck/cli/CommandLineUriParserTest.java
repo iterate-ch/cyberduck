@@ -61,6 +61,14 @@ public class CommandLineUriParserTest {
     }
 
     @Test
+    public void testCertificate() throws Exception {
+        final CommandLine input = new PosixParser().parse(TerminalOptionsBuilder.options(), new String[]{"--list", "ftps://cyberduck.io/", "--certificate", "alias"});
+        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singleton(new FTPTLSProtocol())));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
+        assertEquals("alias", new CommandLineUriParser(input, factory).parse("ftps://cyberduck.io/").getCredentials().getCertificate());
+    }
+
+    @Test
     public void testProfile() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});

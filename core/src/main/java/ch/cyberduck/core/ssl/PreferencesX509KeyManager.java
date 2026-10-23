@@ -24,13 +24,31 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.net.Socket;
+import java.security.Principal;
+
 public class PreferencesX509KeyManager extends KeychainX509KeyManager {
 
     private final Preferences preferences
         = PreferencesFactory.get();
 
+    private final Host bookmark;
+
     public PreferencesX509KeyManager(final Host bookmark, final CertificateStore callback) {
         super(new DisabledCertificateIdentityCallback(), bookmark, callback);
+        this.bookmark = bookmark;
+    }
+
+    @Override
+    public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
+        final String alias = bookmark.getCredentials().getCertificate();
+        if(StringUtils.isNotBlank(alias)) {
+            // Explicit selection overrides alias saved in preferences
+            return alias;
+        }
+        return super.chooseClientAlias(keyTypes, issuers, socket);
     }
 
     @Override
