@@ -34,7 +34,6 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
-import ch.cyberduck.core.nextcloud.NextcloudListService;
 import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
@@ -171,9 +170,6 @@ public class OwncloudSession extends DAVSession {
             if(type == Home.class) {
                 return (T) new OwncloudSpacesHomeFeature(host, spaces);
             }
-            if(type == ListService.class) {
-                return (T) new OwncloudSpacesListService(this, new NextcloudListService(this));
-            }
             if(type == AttributesFinder.class) {
                 return (T) new OwncloudSpacesAttributesFinderFeature(this);
             }
@@ -213,7 +209,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new OwncloudHomeFeature(host));
         }
         if(type == ListService.class) {
-            return (T) new NextcloudListService(this);
+            return (T) new OwncloudRootListService(this);
         }
         if(type == Touch.class) {
             return (T) new DAVTouchFeature(this);

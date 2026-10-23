@@ -31,7 +31,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class OwncloudSpacesListServiceTest {
+public class OwncloudRootListServiceTest {
 
     private static Drives.Drive drive(final String type, final String id) {
         final Drives.Drive drive = new Drives.Drive();
@@ -55,7 +55,7 @@ public class OwncloudSpacesListServiceTest {
     public void testListRoot() throws Exception {
         final OwncloudSession session = session();
         session.spaces.withDrives(Collections.singletonList(drive(OwncloudSpaces.DRIVE_TYPE_PERSONAL, "p")));
-        final AttributedList<Path> list = new OwncloudSpacesListService(session, null).list(
+        final AttributedList<Path> list = new OwncloudRootListService(session, null).list(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertEquals(3, list.size());
         assertTrue(list.contains(OwncloudSpaces.PERSONAL_FOLDER));
@@ -68,9 +68,27 @@ public class OwncloudSpacesListServiceTest {
         // Role User Light
         final OwncloudSession session = session();
         session.spaces.withDrives(Collections.singletonList(drive(OwncloudSpaces.DRIVE_TYPE_PROJECT, "iterate")));
-        final AttributedList<Path> list = new OwncloudSpacesListService(session, null).list(
+        final AttributedList<Path> list = new OwncloudRootListService(session, null).list(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertEquals(2, list.size());
         assertFalse(list.contains(OwncloudSpaces.PERSONAL_FOLDER));
+    }
+
+    @Test
+    public void testListNoSpaces() throws Exception {
+        final OwncloudSession session = session();
+        session.ocs.withSpaces(false);
+        final AttributedList<Path> files = new AttributedList<>();
+        final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
+        // Delegate to list service without virtual folders
+        assertSame(files, new OwncloudRootListService(session, (d, l) -> files).list(directory, new DisabledListProgressListener()));
+    }
+
+    @Test
+    public void testListWithinSpace() throws Exception {
+        final OwncloudSession session = session();
+        final AttributedList<Path> files = new AttributedList<>();
+        final Path directory = new Path(OwncloudSpaces.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
+        assertSame(files, new OwncloudRootListService(session, (d, l) -> files).list(directory, new DisabledListProgressListener()));
     }
 }
