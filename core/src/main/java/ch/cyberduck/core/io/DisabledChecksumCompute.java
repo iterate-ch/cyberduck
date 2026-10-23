@@ -16,13 +16,20 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
 
 public class DisabledChecksumCompute implements ChecksumCompute {
+
+    @Override
+    public MessageDigest digest() throws ChecksumException {
+        return null;
+    }
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {

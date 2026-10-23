@@ -37,8 +37,15 @@ public interface ChecksumCompute {
      * available
      * @throws ChecksumException Algorithm not available
      */
-    default MessageDigest digest() throws ChecksumException {
-        return null;
+    MessageDigest digest() throws ChecksumException;
+
+    /**
+     * @return True if the content is transformed, such as encrypted, by the write feature before it is sent to the
+     * server. The digest must then not be applied to the local content but to the content sent to the server by the
+     * write feature.
+     */
+    default boolean isTransformed() {
+        return false;
     }
 
     /**
