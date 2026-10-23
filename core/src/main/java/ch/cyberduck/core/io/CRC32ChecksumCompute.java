@@ -23,9 +23,16 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.zip.CRC32;
 
 public class CRC32ChecksumCompute extends AbstractChecksumCompute {
+
+    @Override
+    public MessageDigest digest() throws ChecksumException {
+        return new CRC32MessageDigest();
+    }
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
@@ -46,5 +53,38 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
             IOUtils.closeQuietly(normalized);
         }
         return new Checksum(HashAlgorithm.crc32, String.format("%08x", crc32.getValue()));
+    }
+
+    /**
+     * Message digest adapter for {@link CRC32} returning the checksum as 4 bytes in big-endian order
+     */
+    public static final class CRC32MessageDigest extends MessageDigest {
+        private final CRC32 crc32 = new CRC32();
+
+        public CRC32MessageDigest() {
+            super("CRC32");
+        }
+
+        @Override
+        protected void engineUpdate(final byte input) {
+            crc32.update(input);
+        }
+
+        @Override
+        protected void engineUpdate(final byte[] input, final int offset, final int len) {
+            crc32.update(input, offset, len);
+        }
+
+        @Override
+        protected byte[] engineDigest() {
+            final byte[] digest = ByteBuffer.allocate(4).putInt((int) crc32.getValue()).array();
+            this.engineReset();
+            return digest;
+        }
+
+        @Override
+        protected void engineReset() {
+            crc32.reset();
+        }
     }
 }
