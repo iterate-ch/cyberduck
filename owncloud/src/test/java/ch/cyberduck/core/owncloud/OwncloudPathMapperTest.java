@@ -17,6 +17,7 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.owncloud.model.Drives;
 
 import org.apache.http.entity.ContentType;
@@ -32,7 +33,7 @@ import static org.junit.Assert.*;
 public class OwncloudPathMapperTest {
 
     private static OwncloudPathMapper spaces() throws Exception {
-        final OwncloudPathMapper spaces = new OwncloudPathMapper();
+        final OwncloudPathMapper spaces = new OwncloudPathMapper(new OcsCapabilities().withSpaces(true));
         spaces.withDrives(new OwncloudDrivesResponseHandler().handleEntity(
                 new StringEntity(OwncloudDrivesResponseHandlerTest.JSON, ContentType.APPLICATION_JSON)));
         return spaces;
@@ -40,7 +41,7 @@ public class OwncloudPathMapperTest {
 
     @Test
     public void testWithDrives() throws Exception {
-        final OwncloudPathMapper spaces = new OwncloudPathMapper();
+        final OwncloudPathMapper spaces = new OwncloudPathMapper(new OcsCapabilities().withSpaces(true));
         final List<Drives.Drive> projects = spaces.withDrives(new OwncloudDrivesResponseHandler().handleEntity(
                 new StringEntity(OwncloudDrivesResponseHandlerTest.JSON, ContentType.APPLICATION_JSON)));
         // Disabled space and spaces with clashing names are ignored
@@ -86,7 +87,7 @@ public class OwncloudPathMapperTest {
 
     @Test
     public void testEncode() {
-        final DAVPathEncoder encoder = new DAVPathEncoder(new OwncloudPathMapper("/dav/spaces/s$p", "/dav/spaces/j$j"));
+        final DAVPathEncoder encoder = new DAVPathEncoder(new OwncloudPathMapper(new OcsCapabilities().withSpaces(true), "/dav/spaces/s$p", "/dav/spaces/j$j"));
         assertEquals("/dav/spaces/s%24p/", encoder.encode(OwncloudPathMapper.PERSONAL_FOLDER));
         assertEquals("/dav/spaces/s%24p/a%20b/", encoder.encode(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a b", EnumSet.of(Path.Type.directory))));
         assertEquals("/dav/spaces/s%24p/a%20b/f", encoder.encode(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a b/f", EnumSet.of(Path.Type.file))));
@@ -114,5 +115,12 @@ public class OwncloudPathMapperTest {
         assertEquals(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory)).getAbsolute(),
                 spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000001/d", "/dav/spaces").getAbsolute());
         assertNull(spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000003"));
+    }
+
+    @Test
+    public void testMapNoSpaces() {
+        final OwncloudPathMapper mapper = new OwncloudPathMapper(new OcsCapabilities(), "/dav/spaces/s$p", "/dav/spaces/j$j");
+        final Path file = new Path(OwncloudPathMapper.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file));
+        assertSame(file, mapper.map(file));
     }
 }

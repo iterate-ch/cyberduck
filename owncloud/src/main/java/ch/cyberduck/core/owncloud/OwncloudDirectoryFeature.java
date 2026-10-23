@@ -31,22 +31,18 @@ import java.util.Optional;
  */
 public class OwncloudDirectoryFeature extends DAVDirectoryFeature {
 
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
-
-    private final OwncloudSession session;
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudDirectoryFeature(final OwncloudSession session) {
         super(session);
-        this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
     @Override
     public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
-        if(session.ocs.spaces) {
-            if(containerService.isVirtual(workdir)) {
-                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Cannot create folder {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
-            }
+        if(containerService.isVirtual(workdir)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot create folder {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
         }
         super.preflight(workdir, filename);
     }

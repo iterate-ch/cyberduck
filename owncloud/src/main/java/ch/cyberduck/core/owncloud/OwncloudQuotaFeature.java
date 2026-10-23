@@ -35,7 +35,7 @@ public class OwncloudQuotaFeature implements Quota {
         if(!session.ocs.spaces) {
             return new DAVQuotaFeature(session).get();
         }
-        if(null == session.mapper.getPersonal()) {
+        if(null == session.getMapper().getPersonal()) {
             // No personal space for users with role User Light
             return Quota.unknown;
         }

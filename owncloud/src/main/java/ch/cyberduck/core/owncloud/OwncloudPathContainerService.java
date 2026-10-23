@@ -18,23 +18,36 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 
 /**
  * Root folder of personal space, project space or share is container
  */
 public class OwncloudPathContainerService extends DefaultPathContainerService {
 
+    private final OcsCapabilities ocs;
+
+    public OwncloudPathContainerService(final OcsCapabilities ocs) {
+        this.ocs = ocs;
+    }
+
     /**
-     * @return True for root and folders listing spaces or shares
+     * @return True for root and folders listing spaces or shares. Always false when spaces are not supported
      */
     public boolean isVirtual(final Path file) {
-        return file.isRoot()
-                || new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(file)
-                || new SimplePathPredicate(OwncloudPathMapper.SHARES_FOLDER).test(file);
+        if(ocs.spaces) {
+            return file.isRoot()
+                    || new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(file)
+                    || new SimplePathPredicate(OwncloudPathMapper.SHARES_FOLDER).test(file);
+        }
+        return false;
     }
 
     @Override
     public boolean isContainer(final Path file) {
+        if(!ocs.spaces) {
+            return false;
+        }
         if(file.isRoot()) {
             return false;
         }

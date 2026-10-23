@@ -48,7 +48,7 @@ public class OwncloudRootListService implements ListService {
         if(session.ocs.spaces) {
             if(directory.isRoot()) {
                 final AttributedList<Path> list = new AttributedList<>();
-                if(null != session.mapper.getPersonal()) {
+                if(null != session.getMapper().getPersonal()) {
                     // No personal space for users with role User Light
                     list.add(OwncloudPathMapper.PERSONAL_FOLDER);
                 }

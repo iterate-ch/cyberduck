@@ -29,27 +29,23 @@ import java.util.Optional;
  */
 public class OwncloudCopyFeature extends DAVCopyFeature {
 
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
-
-    private final OwncloudSession session;
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudCopyFeature(final OwncloudSession session) {
         super(session);
-        this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(session.ocs.spaces) {
-            if(containerService.isVirtual(source)) {
+        if(containerService.isVirtual(source)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot copy {0}", "Error"), source.getName())).withFile(source);
+        }
+        if(target.isPresent()) {
+            if(containerService.isVirtual(target.get().getParent())) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot copy {0}", "Error"), source.getName())).withFile(source);
-            }
-            if(target.isPresent()) {
-                if(containerService.isVirtual(target.get().getParent())) {
-                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Cannot copy {0}", "Error"), source.getName())).withFile(source);
-                }
             }
         }
         super.preflight(source, target);

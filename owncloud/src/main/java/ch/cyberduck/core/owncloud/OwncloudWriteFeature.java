@@ -33,12 +33,11 @@ import java.util.EnumSet;
  */
 public class OwncloudWriteFeature<Reply> implements Write<Reply> {
 
-    private final OwncloudSession session;
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
+    private final OwncloudPathContainerService containerService;
     private final Write<Reply> proxy;
 
     public OwncloudWriteFeature(final OwncloudSession session, final Write<Reply> proxy) {
-        this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
         this.proxy = proxy;
     }
 
@@ -64,11 +63,9 @@ public class OwncloudWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
-        if(session.ocs.spaces) {
-            if(containerService.isVirtual(file.getParent())) {
-                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Upload {0} failed", "Error"), file.getName())).withFile(file.getParent());
-            }
+        if(containerService.isVirtual(file.getParent())) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Upload {0} failed", "Error"), file.getName())).withFile(file.getParent());
         }
         proxy.preflight(file);
     }

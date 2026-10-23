@@ -28,22 +28,23 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OwncloudShareFeature extends NextcloudShareFeature {
 
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
+    private final OwncloudPathContainerService containerService;
 
     private final OwncloudSession session;
 
     public OwncloudShareFeature(final OwncloudSession session) {
         super(session);
         this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        if(containerService.isVirtual(file) || containerService.isContainer(file)) {
+            // Root folder of personal space, project space or share
+            return false;
+        }
         if(session.ocs.spaces) {
-            if(containerService.isVirtual(file) || containerService.isContainer(file)) {
-                // Root folder of personal space, project space or share
-                return false;
-            }
             if(file.isChild(OwncloudPathMapper.SHARES_FOLDER)) {
                 // No resharing
                 return false;

@@ -54,7 +54,7 @@ public class OwncloudRootListServiceTest {
     @Test
     public void testListRoot() throws Exception {
         final OwncloudSession session = session();
-        session.mapper.withDrives(Collections.singletonList(drive(OwncloudPathMapper.DRIVE_TYPE_PERSONAL, "p")));
+        session.getMapper().withDrives(Collections.singletonList(drive(OwncloudPathMapper.DRIVE_TYPE_PERSONAL, "p")));
         final AttributedList<Path> list = new OwncloudRootListService(session, null).list(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertEquals(3, list.size());
@@ -67,7 +67,7 @@ public class OwncloudRootListServiceTest {
     public void testListRootNoPersonalSpace() throws Exception {
         // Role User Light
         final OwncloudSession session = session();
-        session.mapper.withDrives(Collections.singletonList(drive(OwncloudPathMapper.DRIVE_TYPE_PROJECT, "iterate")));
+        session.getMapper().withDrives(Collections.singletonList(drive(OwncloudPathMapper.DRIVE_TYPE_PROJECT, "iterate")));
         final AttributedList<Path> list = new OwncloudRootListService(session, null).list(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertEquals(2, list.size());

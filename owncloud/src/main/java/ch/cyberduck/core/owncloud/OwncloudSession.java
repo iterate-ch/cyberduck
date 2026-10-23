@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVLockFeature;
-import ch.cyberduck.core.dav.DAVPathMapper;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
@@ -62,7 +61,7 @@ public class OwncloudSession extends DAVSession {
 
     protected final TusCapabilities tus = new TusCapabilities();
     protected final OcsCapabilities ocs = new OcsCapabilities();
-    protected final OwncloudPathMapper mapper = new OwncloudPathMapper();
+    private final OwncloudPathMapper mapper = new OwncloudPathMapper(ocs);
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -123,18 +122,15 @@ public class OwncloudSession extends DAVSession {
     }
 
     @Override
-    public DAVPathMapper getMapper() {
-        if(ocs.spaces) {
-            return mapper;
-        }
-        return super.getMapper();
+    public OwncloudPathMapper getMapper() {
+        return mapper;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new OwncloudHomeFeature(host, ocs, mapper);
+            return (T) new OwncloudHomeFeature(host, ocs, this.getMapper());
         }
         if(type == ListService.class) {
             return (T) new OwncloudRootListService(this);

@@ -38,7 +38,7 @@ public class OwncloudHomeFeature extends NextcloudHomeFeature {
     private final Host bookmark;
     private final OcsCapabilities ocs;
     private final OwncloudPathMapper mapper;
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudHomeFeature(final Host bookmark) {
         this(bookmark, OcsCapabilities.none, null);
@@ -49,6 +49,7 @@ public class OwncloudHomeFeature extends NextcloudHomeFeature {
         this.bookmark = bookmark;
         this.ocs = ocs;
         this.mapper = mapper;
+        this.containerService = new OwncloudPathContainerService(ocs);
     }
 
     /**

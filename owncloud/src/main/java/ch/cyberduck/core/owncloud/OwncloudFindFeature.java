@@ -22,21 +22,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class OwncloudFindFeature extends DAVFindFeature {
 
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
-
-    private final OwncloudSession session;
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudFindFeature(final OwncloudSession session) {
         super(session);
-        this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(session.ocs.spaces) {
-            if(containerService.isVirtual(file)) {
-                return true;
-            }
+        if(containerService.isVirtual(file)) {
+            return true;
         }
         return super.find(file, listener);
     }

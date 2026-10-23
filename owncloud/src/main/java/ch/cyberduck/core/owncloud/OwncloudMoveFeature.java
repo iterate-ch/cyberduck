@@ -31,31 +31,27 @@ import java.util.Optional;
  */
 public class OwncloudMoveFeature extends DAVMoveFeature {
 
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
-
-    private final OwncloudSession session;
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudMoveFeature(final OwncloudSession session) {
         super(session);
-        this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(session.ocs.spaces) {
-            if(containerService.isVirtual(source) || containerService.isContainer(source)) {
+        if(containerService.isVirtual(source) || containerService.isContainer(source)) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Cannot rename {0}", "Error"), source.getName())).withFile(source);
+        }
+        if(target.isPresent()) {
+            if(containerService.isVirtual(target.get().getParent())) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
-            if(target.isPresent()) {
-                if(containerService.isVirtual(target.get().getParent())) {
-                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Cannot rename {0}", "Error"), source.getName())).withFile(source);
-                }
-                if(!new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target.get()))) {
-                    throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Cannot rename {0}", "Error"), source.getName())).withFile(source);
-                }
+            if(!new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target.get()))) {
+                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString(
+                        "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
         }
         super.preflight(source, target);

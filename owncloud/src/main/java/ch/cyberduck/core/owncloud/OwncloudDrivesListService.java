@@ -65,7 +65,7 @@ public class OwncloudDrivesListService implements ListService {
         try {
             final OwncloudDrivesRequest request = new OwncloudDrivesRequest(session.getHost());
             log.debug("Query spaces at {}", request);
-            return session.mapper.withDrives(session.getClient().execute(request, new OwncloudDrivesResponseHandler()));
+            return session.getMapper().withDrives(session.getClient().execute(request, new OwncloudDrivesResponseHandler()));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);

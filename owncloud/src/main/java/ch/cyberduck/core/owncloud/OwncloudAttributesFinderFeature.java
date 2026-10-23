@@ -37,19 +37,18 @@ import com.github.sardine.DavResource;
 public class OwncloudAttributesFinderFeature extends NextcloudAttributesFinderFeature {
 
     private final OwncloudSession session;
-    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudAttributesFinderFeature(OwncloudSession session) {
         super(session);
         this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(session.ocs.spaces) {
-            if(containerService.isVirtual(file)) {
-                return PathAttributes.EMPTY;
-            }
+        if(containerService.isVirtual(file)) {
+            return PathAttributes.EMPTY;
         }
         return super.find(file, listener);
     }

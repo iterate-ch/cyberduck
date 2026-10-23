@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.dav.DAVPathMapper;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.owncloud.model.Drives;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,15 +75,18 @@ public final class OwncloudPathMapper implements DAVPathMapper {
      */
     private volatile Map<String, String> projects = Collections.emptyMap();
 
-    public OwncloudPathMapper() {
-        this(null, String.format("/dav/spaces/%s", SHARE_JAIL_ID));
+    private final OcsCapabilities ocs;
+
+    public OwncloudPathMapper(final OcsCapabilities ocs) {
+        this(ocs, null, String.format("/dav/spaces/%s", SHARE_JAIL_ID));
     }
 
     /**
      * @param personal Default WebDAV path of personal space
      * @param shares   Default WebDAV path of share jail
      */
-    public OwncloudPathMapper(final String personal, final String shares) {
+    public OwncloudPathMapper(final OcsCapabilities ocs, final String personal, final String shares) {
+        this.ocs = ocs;
         this.personal = personal;
         this.shares = shares;
     }
@@ -134,16 +138,19 @@ public final class OwncloudPathMapper implements DAVPathMapper {
 
     /**
      * @param file Path in browser
-     * @return Path on server or unchanged if not within a known space such as for versions
+     * @return Path on server or unchanged if not within a known space such as for versions or when spaces are not supported
      */
     @Override
     public Path map(final Path file) {
-        final Path server = this.toServer(file);
-        if(null == server) {
-            log.debug("No space found for {}", file);
-            return file;
+        if(ocs.spaces) {
+            final Path server = this.toServer(file);
+            if(null == server) {
+                log.debug("No space found for {}", file);
+                return file;
+            }
+            return server;
         }
-        return server;
+        return file;
     }
 
     /**

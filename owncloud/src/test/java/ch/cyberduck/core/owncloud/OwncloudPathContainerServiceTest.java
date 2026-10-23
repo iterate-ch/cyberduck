@@ -16,6 +16,7 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ import static org.junit.Assert.*;
 
 public class OwncloudPathContainerServiceTest {
 
-    private final OwncloudPathContainerService container = new OwncloudPathContainerService();
+    private final OwncloudPathContainerService container = new OwncloudPathContainerService(new OcsCapabilities().withSpaces(true));
     private final Path space = new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
     private final Path share = new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
 
@@ -66,5 +67,14 @@ public class OwncloudPathContainerServiceTest {
     public void testGetKey() {
         assertEquals("a/b", container.getKey(new Path(space, "a/b", EnumSet.of(Path.Type.file))));
         assertNull(container.getKey(space));
+    }
+
+    @Test
+    public void testNoSpaces() {
+        final OwncloudPathContainerService container = new OwncloudPathContainerService(new OcsCapabilities());
+        assertFalse(container.isVirtual(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(container.isVirtual(OwncloudPathMapper.SPACES_FOLDER));
+        assertFalse(container.isContainer(OwncloudPathMapper.PERSONAL_FOLDER));
+        assertFalse(container.isContainer(space));
     }
 }

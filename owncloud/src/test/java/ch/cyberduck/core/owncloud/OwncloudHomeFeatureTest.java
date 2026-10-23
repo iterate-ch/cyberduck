@@ -28,7 +28,8 @@ import static org.junit.Assert.assertEquals;
 
 public class OwncloudHomeFeatureTest {
 
-    private final OwncloudPathMapper mapper = new OwncloudPathMapper("/dav/spaces/s$p", "/dav/spaces/j$j");
+    private final OcsCapabilities ocs = new OcsCapabilities().withSpaces(true);
+    private final OwncloudPathMapper mapper = new OwncloudPathMapper(ocs, "/dav/spaces/s$p", "/dav/spaces/j$j");
 
     private Path find(final String defaultPath) throws Exception {
         return this.find(mapper, defaultPath);
@@ -37,7 +38,7 @@ public class OwncloudHomeFeatureTest {
     private Path find(final OwncloudPathMapper mapper, final String defaultPath) throws Exception {
         final Host host = new Host(new OwncloudProtocol(), "example.com", new Credentials("jane"));
         host.setDefaultPath(defaultPath);
-        return new OwncloudHomeFeature(host, new OcsCapabilities().withSpaces(true), mapper).find();
+        return new OwncloudHomeFeature(host, ocs, mapper).find();
     }
 
     @Test
@@ -55,7 +56,7 @@ public class OwncloudHomeFeatureTest {
     @Test
     public void testFindNoPersonalSpace() throws Exception {
         // Role User Light
-        final OwncloudPathMapper mapper = new OwncloudPathMapper(null, "/dav/spaces/j$j");
+        final OwncloudPathMapper mapper = new OwncloudPathMapper(ocs, null, "/dav/spaces/j$j");
         assertEquals("/", this.find(mapper, "/remote.php/webdav/").getAbsolute());
         assertEquals("/", this.find(mapper, "/remote.php/dav/files/jane/d").getAbsolute());
         assertEquals("/", this.find(mapper, "d").getAbsolute());
