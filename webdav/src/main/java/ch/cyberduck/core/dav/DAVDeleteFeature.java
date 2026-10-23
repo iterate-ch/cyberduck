@@ -78,10 +78,10 @@ public class DAVDeleteFeature implements Delete {
     }
 
     protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
-        final HttpDelete request = new HttpDelete(new DAVPathEncoder().encode(file));
+        final HttpDelete request = new HttpDelete(new DAVPathEncoder(session).encode(file));
         if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
             // Indicate that the client has knowledge of that state token
-            request.setHeader(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId()));
+            request.setHeader(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId()));
         }
         return request;
     }

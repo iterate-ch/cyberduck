@@ -41,7 +41,7 @@ public class CteraListService extends DAVListService {
 
     @Override
     protected List<DavResource> propfind(final Path directory) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.unmodifiableSet(Stream.concat(Stream.concat(
+        return session.getClient().list(new DAVPathEncoder(session).encode(directory), 1, Collections.unmodifiableSet(Stream.concat(Stream.concat(
                 Stream.of(GUID_QN), ALL_ACL_QN.stream()), Stream.of(FILEID_QN)
         ).collect(Collectors.toSet())));
     }

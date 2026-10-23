@@ -39,7 +39,7 @@ public class DAVDirectoryFeature implements Directory<Void> {
     @Override
     public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().createDirectory(new DAVPathEncoder().encode(folder));
+            session.getClient().createDirectory(new DAVPathEncoder(session).encode(folder));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot create folder {0}", e, folder);

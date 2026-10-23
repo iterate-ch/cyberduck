@@ -37,6 +37,6 @@ public class MicrosoftIISDAVListService extends DAVListService {
 
     @Override
     protected List<DavResource> propfind(final Path directory) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(directory), 1, true);
+        return session.getClient().list(new DAVPathEncoder(session).encode(directory), 1, true);
     }
 }

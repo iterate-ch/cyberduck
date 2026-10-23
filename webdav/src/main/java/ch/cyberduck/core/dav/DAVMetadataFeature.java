@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,8 +42,6 @@ import java.util.Map;
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
-
-import javax.xml.namespace.QName;
 
 public class DAVMetadataFeature implements Headers {
     private static final Logger log = LogManager.getLogger(DAVMetadataFeature.class);
@@ -61,7 +60,7 @@ public class DAVMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file), 0);
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder(session).encode(file), 0);
             for(DavResource resource : resources) {
                 return resource.getCustomProps();
             }
@@ -103,12 +102,12 @@ public class DAVMetadataFeature implements Headers {
             }
             final Map<String, String> headers;
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-                headers = Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId()));
+                headers = Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId()));
             }
             else {
                 headers = Collections.emptyMap();
             }
-            session.getClient().patch(new DAVPathEncoder().encode(file), setProps, removeProps, headers);
+            session.getClient().patch(new DAVPathEncoder(session).encode(file), setProps, removeProps, headers);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
