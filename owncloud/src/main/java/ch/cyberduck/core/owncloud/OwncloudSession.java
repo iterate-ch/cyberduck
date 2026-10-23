@@ -38,7 +38,6 @@ import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
 import ch.cyberduck.core.ocs.OcsUserRequest;
 import ch.cyberduck.core.ocs.OcsUserResponseHandler;
-import ch.cyberduck.core.owncloud.model.Drives;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -55,7 +54,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 
 import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 
@@ -120,26 +118,7 @@ public class OwncloudSession extends DAVSession {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         if(ocs.spaces) {
-            this.drives();
-        }
-    }
-
-    /**
-     * Retrieve spaces of user and update mapping to WebDAV root
-     *
-     * @return Project spaces
-     */
-    public List<Drives.Drive> drives() throws BackgroundException {
-        try {
-            final OwncloudDrivesRequest request = new OwncloudDrivesRequest(host);
-            log.debug("Query spaces at {}", request);
-            return mapper.withDrives(client.execute(request, new OwncloudDrivesResponseHandler()));
-        }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            new OwncloudDrivesListService(this).drives();
         }
     }
 
