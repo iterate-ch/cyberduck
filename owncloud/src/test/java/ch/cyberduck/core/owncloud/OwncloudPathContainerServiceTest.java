@@ -27,39 +27,39 @@ import static org.junit.Assert.*;
 public class OwncloudPathContainerServiceTest {
 
     private final OwncloudPathContainerService container = new OwncloudPathContainerService(new OcsCapabilities().withSpaces(true));
-    private final Path space = new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
-    private final Path share = new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
+    private final Path space = new Path(OwncloudPathContainerService.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
+    private final Path share = new Path(OwncloudPathContainerService.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
 
     @Test
     public void testIsVirtual() {
         assertTrue(container.isVirtual(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertTrue(container.isVirtual(OwncloudPathMapper.SPACES_FOLDER));
-        assertTrue(container.isVirtual(OwncloudPathMapper.SHARES_FOLDER));
-        assertFalse(container.isVirtual(OwncloudPathMapper.PERSONAL_FOLDER));
-        assertFalse(container.isVirtual(new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory))));
+        assertTrue(container.isVirtual(OwncloudPathContainerService.SPACES_FOLDER));
+        assertTrue(container.isVirtual(OwncloudPathContainerService.SHARES_FOLDER));
+        assertFalse(container.isVirtual(OwncloudPathContainerService.PERSONAL_FOLDER));
+        assertFalse(container.isVirtual(new Path(OwncloudPathContainerService.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testIsContainer() {
-        assertTrue(container.isContainer(OwncloudPathMapper.PERSONAL_FOLDER));
+        assertTrue(container.isContainer(OwncloudPathContainerService.PERSONAL_FOLDER));
         assertTrue(container.isContainer(space));
         assertTrue(container.isContainer(share));
         assertFalse(container.isContainer(new Path(share, "a", EnumSet.of(Path.Type.file))));
-        assertFalse(container.isContainer(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.directory))));
+        assertFalse(container.isContainer(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.directory))));
         // Virtual folders
         assertFalse(container.isContainer(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertFalse(container.isContainer(OwncloudPathMapper.SPACES_FOLDER));
-        assertFalse(container.isContainer(OwncloudPathMapper.SHARES_FOLDER));
+        assertFalse(container.isContainer(OwncloudPathContainerService.SPACES_FOLDER));
+        assertFalse(container.isContainer(OwncloudPathContainerService.SHARES_FOLDER));
     }
 
     @Test
     public void testGetContainer() {
-        assertEquals(OwncloudPathMapper.PERSONAL_FOLDER.getAbsolute(),
-                container.getContainer(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a/b", EnumSet.of(Path.Type.file))).getAbsolute());
+        assertEquals(OwncloudPathContainerService.PERSONAL_FOLDER.getAbsolute(),
+                container.getContainer(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "a/b", EnumSet.of(Path.Type.file))).getAbsolute());
         assertEquals(space.getAbsolute(), container.getContainer(new Path(space, "a/b", EnumSet.of(Path.Type.file))).getAbsolute());
         assertEquals(share.getAbsolute(), container.getContainer(new Path(share, "a", EnumSet.of(Path.Type.file))).getAbsolute());
         // Virtual folders
-        assertTrue(container.getContainer(OwncloudPathMapper.SPACES_FOLDER).isRoot());
+        assertTrue(container.getContainer(OwncloudPathContainerService.SPACES_FOLDER).isRoot());
         assertTrue(container.getContainer(new Path("/", EnumSet.of(Path.Type.directory))).isRoot());
     }
 
@@ -73,8 +73,8 @@ public class OwncloudPathContainerServiceTest {
     public void testNoSpaces() {
         final OwncloudPathContainerService container = new OwncloudPathContainerService(new OcsCapabilities());
         assertFalse(container.isVirtual(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertFalse(container.isVirtual(OwncloudPathMapper.SPACES_FOLDER));
-        assertFalse(container.isContainer(OwncloudPathMapper.PERSONAL_FOLDER));
+        assertFalse(container.isVirtual(OwncloudPathContainerService.SPACES_FOLDER));
+        assertFalse(container.isContainer(OwncloudPathContainerService.PERSONAL_FOLDER));
         assertFalse(container.isContainer(space));
     }
 }

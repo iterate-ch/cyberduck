@@ -48,21 +48,21 @@ public class OwncloudRootListService implements ListService {
         if(session.ocs.spaces) {
             if(directory.isRoot()) {
                 final AttributedList<Path> list = new AttributedList<>();
-                if(null != session.getMapper().getPersonal()) {
+                if(null != session.drives.getPersonal()) {
                     // No personal space for users with role User Light
-                    list.add(OwncloudPathMapper.PERSONAL_FOLDER);
+                    list.add(OwncloudPathContainerService.PERSONAL_FOLDER);
                 }
                 if(session.ocs.projects) {
-                    list.add(OwncloudPathMapper.SPACES_FOLDER);
+                    list.add(OwncloudPathContainerService.SPACES_FOLDER);
                 }
                 if(session.ocs.sharejail) {
-                    list.add(OwncloudPathMapper.SHARES_FOLDER);
+                    list.add(OwncloudPathContainerService.SHARES_FOLDER);
                 }
                 listener.chunk(directory, list);
                 return list;
             }
-            if(new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(directory)) {
-                return new OwncloudDrivesListService(session).list(directory, listener);
+            if(new SimplePathPredicate(OwncloudPathContainerService.SPACES_FOLDER).test(directory)) {
+                return session.drives.list(directory, listener);
             }
         }
         return delegate.list(directory, listener);

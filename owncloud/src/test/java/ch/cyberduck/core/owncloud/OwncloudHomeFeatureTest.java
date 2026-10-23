@@ -19,6 +19,8 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ocs.OcsCapabilities;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 
@@ -28,14 +30,16 @@ import static org.junit.Assert.assertEquals;
 
 public class OwncloudHomeFeatureTest {
 
-    private final OcsCapabilities ocs = new OcsCapabilities().withSpaces(true);
-    private final OwncloudPathMapper mapper = new OwncloudPathMapper(ocs, "/dav/spaces/s$p", "/dav/spaces/j$j");
+    private final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("jane")),
+            new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    private final OcsCapabilities ocs = session.ocs.withSpaces(true);
+    private final OwncloudDrivesListService mapper = new OwncloudDrivesListService(session, "/dav/spaces/s$p", "/dav/spaces/j$j");
 
     private Path find(final String defaultPath) throws Exception {
         return this.find(mapper, defaultPath);
     }
 
-    private Path find(final OwncloudPathMapper mapper, final String defaultPath) throws Exception {
+    private Path find(final OwncloudDrivesListService mapper, final String defaultPath) throws Exception {
         final Host host = new Host(new OwncloudProtocol(), "example.com", new Credentials("jane"));
         host.setDefaultPath(defaultPath);
         return new OwncloudHomeFeature(host, ocs, mapper).find();
@@ -44,24 +48,24 @@ public class OwncloudHomeFeatureTest {
     @Test
     public void testFind() throws Exception {
         assertEquals("/", this.find(null).getAbsolute());
-        assertEquals(OwncloudPathMapper.PERSONAL_FOLDER.getAbsolute(), this.find("/remote.php/webdav/").getAbsolute());
-        assertEquals(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("/remote.php/dav/files/jane/d").getAbsolute());
-        assertEquals(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("/dav/spaces/s$p/d").getAbsolute());
-        assertEquals(new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("/dav/spaces/j$j/s").getAbsolute());
-        assertEquals(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("d").getAbsolute());
-        assertEquals(OwncloudPathMapper.SHARES_FOLDER.getAbsolute(), this.find(OwncloudPathMapper.SHARES_FOLDER.getAbsolute()).getAbsolute());
+        assertEquals(OwncloudPathContainerService.PERSONAL_FOLDER.getAbsolute(), this.find("/remote.php/webdav/").getAbsolute());
+        assertEquals(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("/remote.php/dav/files/jane/d").getAbsolute());
+        assertEquals(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("/dav/spaces/s$p/d").getAbsolute());
+        assertEquals(new Path(OwncloudPathContainerService.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("/dav/spaces/j$j/s").getAbsolute());
+        assertEquals(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find("d").getAbsolute());
+        assertEquals(OwncloudPathContainerService.SHARES_FOLDER.getAbsolute(), this.find(OwncloudPathContainerService.SHARES_FOLDER.getAbsolute()).getAbsolute());
         assertEquals("/", this.find("/unknown").getAbsolute());
     }
 
     @Test
     public void testFindNoPersonalSpace() throws Exception {
         // Role User Light
-        final OwncloudPathMapper mapper = new OwncloudPathMapper(ocs, null, "/dav/spaces/j$j");
+        final OwncloudDrivesListService mapper = new OwncloudDrivesListService(session, null, "/dav/spaces/j$j");
         assertEquals("/", this.find(mapper, "/remote.php/webdav/").getAbsolute());
         assertEquals("/", this.find(mapper, "/remote.php/dav/files/jane/d").getAbsolute());
         assertEquals("/", this.find(mapper, "d").getAbsolute());
-        assertEquals("/", this.find(mapper, OwncloudPathMapper.PERSONAL_FOLDER.getAbsolute()).getAbsolute());
-        assertEquals(new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find(mapper, "/dav/spaces/j$j/s").getAbsolute());
+        assertEquals("/", this.find(mapper, OwncloudPathContainerService.PERSONAL_FOLDER.getAbsolute()).getAbsolute());
+        assertEquals(new Path(OwncloudPathContainerService.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)).getAbsolute(), this.find(mapper, "/dav/spaces/j$j/s").getAbsolute());
     }
 
     @Test

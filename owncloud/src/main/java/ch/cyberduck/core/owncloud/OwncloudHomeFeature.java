@@ -37,14 +37,14 @@ public class OwncloudHomeFeature extends NextcloudHomeFeature {
 
     private final Host bookmark;
     private final OcsCapabilities ocs;
-    private final OwncloudPathMapper mapper;
+    private final OwncloudDrivesListService mapper;
     private final OwncloudPathContainerService containerService;
 
     public OwncloudHomeFeature(final Host bookmark) {
         this(bookmark, OcsCapabilities.none, null);
     }
 
-    public OwncloudHomeFeature(final Host bookmark, final OcsCapabilities ocs, final OwncloudPathMapper mapper) {
+    public OwncloudHomeFeature(final Host bookmark, final OcsCapabilities ocs, final OwncloudDrivesListService mapper) {
         super(bookmark);
         this.bookmark = bookmark;
         this.ocs = ocs;
@@ -87,7 +87,7 @@ public class OwncloudHomeFeature extends NextcloudHomeFeature {
         if(StringUtils.isNotBlank(bookmark.getDefaultPath()) && !StringUtils.startsWith(bookmark.getDefaultPath(), String.valueOf(Path.DELIMITER))
                 && null != mapper.getPersonal()) {
             // Relative to personal space
-            return PathNormalizer.compose(OwncloudPathMapper.PERSONAL_FOLDER, bookmark.getDefaultPath());
+            return PathNormalizer.compose(OwncloudPathContainerService.PERSONAL_FOLDER, bookmark.getDefaultPath());
         }
         // Virtual folders in root
         return Home.root();

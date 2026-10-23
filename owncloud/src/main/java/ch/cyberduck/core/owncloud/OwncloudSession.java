@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVLockFeature;
+import ch.cyberduck.core.dav.DAVPathMapper;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
@@ -61,7 +62,7 @@ public class OwncloudSession extends DAVSession {
 
     protected final TusCapabilities tus = new TusCapabilities();
     protected final OcsCapabilities ocs = new OcsCapabilities();
-    private final OwncloudPathMapper mapper = new OwncloudPathMapper(ocs);
+    protected final OwncloudDrivesListService drives = new OwncloudDrivesListService(this);
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -117,20 +118,21 @@ public class OwncloudSession extends DAVSession {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         if(ocs.spaces) {
-            new OwncloudDrivesListService(this).drives();
+            // Map virtual folders to WebDAV root of spaces prior to first request
+            drives.refresh();
         }
     }
 
     @Override
-    public OwncloudPathMapper getMapper() {
-        return mapper;
+    public DAVPathMapper getMapper() {
+        return drives;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Home.class) {
-            return (T) new OwncloudHomeFeature(host, ocs, this.getMapper());
+            return (T) new OwncloudHomeFeature(host, ocs, drives);
         }
         if(type == ListService.class) {
             return (T) new OwncloudRootListService(this);

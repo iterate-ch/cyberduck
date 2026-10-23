@@ -39,21 +39,21 @@ public class OwncloudShareFeatureTest {
         session.ocs.withSpaces(true);
     }
 
-    private final Path space = new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
-    private final Path share = new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
+    private final Path space = new Path(OwncloudPathContainerService.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
+    private final Path share = new Path(OwncloudPathContainerService.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
 
     @Test
     public void testIsSupported() {
-        assertTrue(feature.isSupported(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
+        assertTrue(feature.isSupported(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
         assertTrue(feature.isSupported(new Path(space, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
         assertTrue(feature.isSupported(new Path(space, "d", EnumSet.of(Path.Type.directory)), Share.Type.upload));
         assertFalse(feature.isSupported(new Path(space, "f", EnumSet.of(Path.Type.file)), Share.Type.upload));
         // Virtual folders
         assertFalse(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory)), Share.Type.download));
-        assertFalse(feature.isSupported(OwncloudPathMapper.SPACES_FOLDER, Share.Type.download));
-        assertFalse(feature.isSupported(OwncloudPathMapper.SHARES_FOLDER, Share.Type.download));
+        assertFalse(feature.isSupported(OwncloudPathContainerService.SPACES_FOLDER, Share.Type.download));
+        assertFalse(feature.isSupported(OwncloudPathContainerService.SHARES_FOLDER, Share.Type.download));
         // Root folder of spaces
-        assertFalse(feature.isSupported(OwncloudPathMapper.PERSONAL_FOLDER, Share.Type.download));
+        assertFalse(feature.isSupported(OwncloudPathContainerService.PERSONAL_FOLDER, Share.Type.download));
         assertFalse(feature.isSupported(space, Share.Type.download));
         assertFalse(feature.isSupported(share, Share.Type.download));
         // No resharing

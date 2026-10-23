@@ -45,7 +45,7 @@ public class OwncloudShareFeature extends NextcloudShareFeature {
             return false;
         }
         if(session.ocs.spaces) {
-            if(file.isChild(OwncloudPathMapper.SHARES_FOLDER)) {
+            if(file.isChild(OwncloudPathContainerService.SHARES_FOLDER)) {
                 // No resharing
                 return false;
             }

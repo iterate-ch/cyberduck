@@ -39,9 +39,9 @@ public class OwncloudWriteFeatureTest {
 
     @Test
     public void testPreflight() throws Exception {
-        feature.preflight(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)));
-        feature.preflight(new Path(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
-        feature.preflight(new Path(new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(new Path(OwncloudPathContainerService.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(new Path(OwncloudPathContainerService.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -51,17 +51,17 @@ public class OwncloudWriteFeatureTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testPreflightSpaces() throws Exception {
-        feature.preflight(new Path(OwncloudPathMapper.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathContainerService.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testPreflightShares() throws Exception {
-        feature.preflight(new Path(OwncloudPathMapper.SHARES_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathContainerService.SHARES_FOLDER, "f", EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testPreflightNoSpaces() throws Exception {
         session.ocs.withSpaces(false);
-        feature.preflight(new Path(OwncloudPathMapper.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathContainerService.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
     }
 }

@@ -16,14 +16,30 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.DefaultPathContainerService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.ocs.OcsCapabilities;
+
+import java.util.EnumSet;
 
 /**
  * Root folder of personal space, project space or share is container
  */
 public class OwncloudPathContainerService extends DefaultPathContainerService {
+
+    public static final Path PERSONAL_FOLDER
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Personal", "ownCloud")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+
+    public static final Path SPACES_FOLDER
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Spaces", "ownCloud")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+
+    public static final Path SHARES_FOLDER
+            = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shares", "ownCloud")),
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
     private final OcsCapabilities ocs;
 
@@ -37,8 +53,8 @@ public class OwncloudPathContainerService extends DefaultPathContainerService {
     public boolean isVirtual(final Path file) {
         if(ocs.spaces) {
             return file.isRoot()
-                    || new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(file)
-                    || new SimplePathPredicate(OwncloudPathMapper.SHARES_FOLDER).test(file);
+                    || new SimplePathPredicate(SPACES_FOLDER).test(file)
+                    || new SimplePathPredicate(SHARES_FOLDER).test(file);
         }
         return false;
     }
@@ -51,10 +67,10 @@ public class OwncloudPathContainerService extends DefaultPathContainerService {
         if(file.isRoot()) {
             return false;
         }
-        if(new SimplePathPredicate(OwncloudPathMapper.PERSONAL_FOLDER).test(file)) {
+        if(new SimplePathPredicate(PERSONAL_FOLDER).test(file)) {
             return true;
         }
-        return new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(file.getParent())
-                || new SimplePathPredicate(OwncloudPathMapper.SHARES_FOLDER).test(file.getParent());
+        return new SimplePathPredicate(SPACES_FOLDER).test(file.getParent())
+                || new SimplePathPredicate(SHARES_FOLDER).test(file.getParent());
     }
 }

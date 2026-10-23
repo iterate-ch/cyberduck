@@ -35,11 +35,11 @@ public class OwncloudQuotaFeature implements Quota {
         if(!session.ocs.spaces) {
             return new DAVQuotaFeature(session).get();
         }
-        if(null == session.getMapper().getPersonal()) {
+        if(null == session.drives.getPersonal()) {
             // No personal space for users with role User Light
             return Quota.unknown;
         }
         // Home is root with virtual folders
-        return new DAVQuotaFeature(session, () -> OwncloudPathMapper.PERSONAL_FOLDER).get();
+        return new DAVQuotaFeature(session, () -> OwncloudPathContainerService.PERSONAL_FOLDER).get();
     }
 }

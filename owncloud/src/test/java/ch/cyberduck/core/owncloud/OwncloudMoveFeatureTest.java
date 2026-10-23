@@ -38,35 +38,35 @@ public class OwncloudMoveFeatureTest {
         session.ocs.withSpaces(true);
     }
 
-    private final Path space = new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
+    private final Path space = new Path(OwncloudPathContainerService.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
 
     @Test
     public void testPreflightWithinSpace() throws Exception {
         feature.preflight(new Path(space, "a", EnumSet.of(Path.Type.file)), Optional.of(new Path(space, "d/b", EnumSet.of(Path.Type.file))));
-        feature.preflight(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.file)),
-                Optional.of(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "b", EnumSet.of(Path.Type.file))));
+        feature.preflight(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.file)),
+                Optional.of(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "b", EnumSet.of(Path.Type.file))));
     }
 
     @Test(expected = UnsupportedException.class)
     public void testPreflightBetweenSpaces() throws Exception {
         feature.preflight(new Path(space, "a", EnumSet.of(Path.Type.file)),
-                Optional.of(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.file))));
+                Optional.of(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.file))));
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testPreflightRenameSpace() throws Exception {
-        feature.preflight(space, Optional.of(new Path(OwncloudPathMapper.SPACES_FOLDER, "renamed", EnumSet.of(Path.Type.directory))));
+        feature.preflight(space, Optional.of(new Path(OwncloudPathContainerService.SPACES_FOLDER, "renamed", EnumSet.of(Path.Type.directory))));
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testPreflightTargetVirtual() throws Exception {
-        feature.preflight(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.directory)),
-                Optional.of(new Path(OwncloudPathMapper.SHARES_FOLDER, "a", EnumSet.of(Path.Type.directory))));
+        feature.preflight(new Path(OwncloudPathContainerService.PERSONAL_FOLDER, "a", EnumSet.of(Path.Type.directory)),
+                Optional.of(new Path(OwncloudPathContainerService.SHARES_FOLDER, "a", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testPreflightNoSpaces() throws Exception {
         session.ocs.withSpaces(false);
-        feature.preflight(space, Optional.of(new Path(OwncloudPathMapper.SPACES_FOLDER, "renamed", EnumSet.of(Path.Type.directory))));
+        feature.preflight(space, Optional.of(new Path(OwncloudPathContainerService.SPACES_FOLDER, "renamed", EnumSet.of(Path.Type.directory))));
     }
 }

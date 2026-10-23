@@ -54,24 +54,24 @@ public class OwncloudRootListServiceTest {
     @Test
     public void testListRoot() throws Exception {
         final OwncloudSession session = session();
-        session.getMapper().withDrives(Collections.singletonList(drive(OwncloudPathMapper.DRIVE_TYPE_PERSONAL, "p")));
+        session.drives.withDrives(Collections.singletonList(drive(OwncloudDrivesListService.DRIVE_TYPE_PERSONAL, "p")));
         final AttributedList<Path> list = new OwncloudRootListService(session, null).list(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertEquals(3, list.size());
-        assertTrue(list.contains(OwncloudPathMapper.PERSONAL_FOLDER));
-        assertTrue(list.contains(OwncloudPathMapper.SPACES_FOLDER));
-        assertTrue(list.contains(OwncloudPathMapper.SHARES_FOLDER));
+        assertTrue(list.contains(OwncloudPathContainerService.PERSONAL_FOLDER));
+        assertTrue(list.contains(OwncloudPathContainerService.SPACES_FOLDER));
+        assertTrue(list.contains(OwncloudPathContainerService.SHARES_FOLDER));
     }
 
     @Test
     public void testListRootNoPersonalSpace() throws Exception {
         // Role User Light
         final OwncloudSession session = session();
-        session.getMapper().withDrives(Collections.singletonList(drive(OwncloudPathMapper.DRIVE_TYPE_PROJECT, "iterate")));
+        session.drives.withDrives(Collections.singletonList(drive(OwncloudDrivesListService.DRIVE_TYPE_PROJECT, "iterate")));
         final AttributedList<Path> list = new OwncloudRootListService(session, null).list(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertEquals(2, list.size());
-        assertFalse(list.contains(OwncloudPathMapper.PERSONAL_FOLDER));
+        assertFalse(list.contains(OwncloudPathContainerService.PERSONAL_FOLDER));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class OwncloudRootListServiceTest {
     public void testListWithinSpace() throws Exception {
         final OwncloudSession session = session();
         final AttributedList<Path> files = new AttributedList<>();
-        final Path directory = new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
+        final Path directory = new Path(OwncloudPathContainerService.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
         assertSame(files, new OwncloudRootListService(session, (d, l) -> files).list(directory, new DisabledListProgressListener()));
     }
 }
