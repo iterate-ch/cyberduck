@@ -17,8 +17,7 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVTouchFeature;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -28,21 +27,26 @@ import java.text.MessageFormat;
 import java.util.Optional;
 
 /**
- * Deny creating files in virtual folders
+ * Deny creating folders in virtual folders
  */
-public class OwncloudSpacesTouchFeature extends DAVTouchFeature {
+public class OwncloudDirectoryFeature extends DAVDirectoryFeature {
 
-    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
 
-    public OwncloudSpacesTouchFeature(final DAVSession session) {
+    private final OwncloudSession session;
+
+    public OwncloudDirectoryFeature(final OwncloudSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
     public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
-        if(containerService.isVirtual(workdir)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot create {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
+        if(session.ocs.spaces) {
+            if(containerService.isVirtual(workdir)) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                        "Cannot create folder {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
+            }
         }
         super.preflight(workdir, filename);
     }

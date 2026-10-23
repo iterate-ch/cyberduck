@@ -17,33 +17,34 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-
-import org.apache.commons.lang3.StringUtils;
+import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 
 /**
- * Deny creating folders in virtual folders
+ * Deny deleting virtual folders and root folder of spaces and shares
  */
-public class OwncloudSpacesDirectoryFeature extends DAVDirectoryFeature {
+public class OwncloudDeleteFeature extends NextcloudDeleteFeature {
 
-    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
 
-    public OwncloudSpacesDirectoryFeature(final DAVSession session) {
+    private final OwncloudSession session;
+
+    public OwncloudDeleteFeature(final OwncloudSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
-    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
-        if(containerService.isVirtual(workdir)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot create folder {0}", "Error"), filename.orElse(StringUtils.EMPTY))).withFile(workdir);
+    public void preflight(final Path file) throws BackgroundException {
+        if(session.ocs.spaces) {
+            if(containerService.isVirtual(file) || containerService.isContainer(file)) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                        "Cannot delete {0}", "Error"), file.getName())).withFile(file);
+            }
         }
-        super.preflight(workdir, filename);
+        super.preflight(file);
     }
 }

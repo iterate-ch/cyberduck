@@ -19,7 +19,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVMoveFeature;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -30,28 +29,33 @@ import java.util.Optional;
 /**
  * Deny renaming virtual folders and root folder of spaces and shares. Server side move is not supported between spaces.
  */
-public class OwncloudSpacesMoveFeature extends DAVMoveFeature {
+public class OwncloudMoveFeature extends DAVMoveFeature {
 
-    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
 
-    public OwncloudSpacesMoveFeature(final DAVSession session) {
+    private final OwncloudSession session;
+
+    public OwncloudMoveFeature(final OwncloudSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(containerService.isVirtual(source) || containerService.isContainer(source)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot rename {0}", "Error"), source.getName())).withFile(source);
-        }
-        if(target.isPresent()) {
-            if(containerService.isVirtual(target.get().getParent())) {
+        if(session.ocs.spaces) {
+            if(containerService.isVirtual(source) || containerService.isContainer(source)) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot rename {0}", "Error"), source.getName())).withFile(source);
             }
-            if(!new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target.get()))) {
-                throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Cannot rename {0}", "Error"), source.getName())).withFile(source);
+            if(target.isPresent()) {
+                if(containerService.isVirtual(target.get().getParent())) {
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                            "Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                }
+                if(!new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target.get()))) {
+                    throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString(
+                            "Cannot rename {0}", "Error"), source.getName())).withFile(source);
+                }
             }
         }
         super.preflight(source, target);

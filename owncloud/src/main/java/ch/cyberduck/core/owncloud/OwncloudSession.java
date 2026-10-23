@@ -25,16 +25,12 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVPathMapper;
-import ch.cyberduck.core.dav.DAVQuotaFeature;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
-import ch.cyberduck.core.nextcloud.NextcloudShareFeature;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
@@ -44,8 +40,6 @@ import ch.cyberduck.core.ocs.OcsUserRequest;
 import ch.cyberduck.core.ocs.OcsUserResponseHandler;
 import ch.cyberduck.core.owncloud.model.Drives;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.shared.DelegatingHomeFeature;
-import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -70,7 +64,7 @@ public class OwncloudSession extends DAVSession {
 
     protected final TusCapabilities tus = new TusCapabilities();
     protected final OcsCapabilities ocs = new OcsCapabilities();
-    protected final OwncloudSpaces spaces = new OwncloudSpaces();
+    protected final OwncloudPathMapper mapper = new OwncloudPathMapper();
 
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -139,7 +133,7 @@ public class OwncloudSession extends DAVSession {
         try {
             final OwncloudDrivesRequest request = new OwncloudDrivesRequest(host);
             log.debug("Query spaces at {}", request);
-            return spaces.withDrives(client.execute(request, new OwncloudDrivesResponseHandler()));
+            return mapper.withDrives(client.execute(request, new OwncloudDrivesResponseHandler()));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -152,7 +146,7 @@ public class OwncloudSession extends DAVSession {
     @Override
     public DAVPathMapper getMapper() {
         if(ocs.spaces) {
-            return spaces;
+            return mapper;
         }
         return super.getMapper();
     }
@@ -160,56 +154,32 @@ public class OwncloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(ocs.spaces) {
-            if(type == Home.class) {
-                return (T) new OwncloudSpacesHomeFeature(host, spaces);
-            }
-            if(type == AttributesFinder.class) {
-                return (T) new OwncloudSpacesAttributesFinderFeature(this);
-            }
-            if(type == Find.class) {
-                return (T) new OwncloudSpacesFindFeature(this);
-            }
-            if(type == Directory.class) {
-                return (T) new OwncloudSpacesDirectoryFeature(this);
-            }
-            if(type == Touch.class) {
-                return (T) new OwncloudSpacesTouchFeature(this);
-            }
-            if(type == Delete.class) {
-                return (T) new OwncloudSpacesDeleteFeature(this);
-            }
-            if(type == Move.class) {
-                return (T) new OwncloudSpacesMoveFeature(this);
-            }
-            if(type == Copy.class) {
-                return (T) new OwncloudSpacesCopyFeature(this);
-            }
-            if(type == Share.class) {
-                return (T) new OwncloudSpacesShareFeature(this);
-            }
-            if(type == Write.class) {
-                return (T) new OwncloudSpacesWriteFeature<>(this, this.write());
-            }
-            if(type == Quota.class) {
-                if(null == spaces.getPersonal()) {
-                    return (T) (Quota) () -> Quota.unknown;
-                }
-                // Home is root with virtual folders
-                return (T) new DAVQuotaFeature(this, () -> OwncloudSpaces.PERSONAL_FOLDER);
-            }
-        }
         if(type == Home.class) {
-            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new OwncloudHomeFeature(host));
+            return (T) new OwncloudHomeFeature(host, ocs, mapper);
         }
         if(type == ListService.class) {
             return (T) new OwncloudRootListService(this);
         }
-        if(type == Touch.class) {
-            return (T) new DAVTouchFeature(this);
-        }
         if(type == AttributesFinder.class) {
             return (T) new OwncloudAttributesFinderFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new OwncloudFindFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new OwncloudDirectoryFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new OwncloudTouchFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new OwncloudMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new OwncloudCopyFeature(this);
+        }
+        if(type == Quota.class) {
+            return (T) new OwncloudQuotaFeature(this);
         }
         if(type == Lock.class) {
             if(!ocs.locking) {
@@ -224,13 +194,13 @@ public class OwncloudSession extends DAVSession {
             return (T) new HttpUploadFeature<>();
         }
         if(type == Write.class) {
-            return (T) this.write();
+            return (T) new OwncloudWriteFeature<>(this, this.write());
         }
         if(type == UrlProvider.class) {
             return (T) new NextcloudUrlProvider(this);
         }
         if(type == Share.class) {
-            return (T) new NextcloudShareFeature(this);
+            return (T) new OwncloudShareFeature(this);
         }
         if(type == Versioning.class) {
             if(!ocs.versioning) {
@@ -239,7 +209,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new OwncloudVersioningFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new NextcloudDeleteFeature(this);
+            return (T) new OwncloudDeleteFeature(this);
         }
         if(type == Read.class) {
             return (T) new OwncloudReadFeature(this);

@@ -16,26 +16,28 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.Optional;
 
 /**
  * Deny uploading files to virtual folders
  */
-public class OwncloudSpacesWriteFeature<Reply> implements Write<Reply> {
+public class OwncloudWriteFeature<Reply> implements Write<Reply> {
 
-    private final DAVSession session;
+    private final OwncloudSession session;
+    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
     private final Write<Reply> proxy;
 
-    public OwncloudSpacesWriteFeature(final DAVSession session, final Write<Reply> proxy) {
+    public OwncloudWriteFeature(final OwncloudSession session, final Write<Reply> proxy) {
         this.session = session;
         this.proxy = proxy;
     }
@@ -62,7 +64,12 @@ public class OwncloudSpacesWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
-        new OwncloudSpacesTouchFeature(session).preflight(file.getParent(), Optional.of(file.getName()));
+        if(session.ocs.spaces) {
+            if(containerService.isVirtual(file.getParent())) {
+                throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                        "Upload {0} failed", "Error"), file.getName())).withFile(file.getParent());
+            }
+        }
         proxy.preflight(file);
     }
 

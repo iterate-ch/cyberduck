@@ -17,21 +17,26 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public class OwncloudSpacesAttributesFinderFeature extends OwncloudAttributesFinderFeature {
+public class OwncloudFindFeature extends DAVFindFeature {
 
-    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
 
-    public OwncloudSpacesAttributesFinderFeature(final OwncloudSession session) {
+    private final OwncloudSession session;
+
+    public OwncloudFindFeature(final OwncloudSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
-    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(containerService.isVirtual(file)) {
-            return PathAttributes.EMPTY;
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(session.ocs.spaces) {
+            if(containerService.isVirtual(file)) {
+                return true;
+            }
         }
         return super.find(file, listener);
     }

@@ -22,15 +22,15 @@ import ch.cyberduck.core.SimplePathPredicate;
 /**
  * Root folder of personal space, project space or share is container
  */
-public class OwncloudSpacesPathContainerService extends DefaultPathContainerService {
+public class OwncloudPathContainerService extends DefaultPathContainerService {
 
     /**
      * @return True for root and folders listing spaces or shares
      */
     public boolean isVirtual(final Path file) {
         return file.isRoot()
-                || new SimplePathPredicate(OwncloudSpaces.SPACES_FOLDER).test(file)
-                || new SimplePathPredicate(OwncloudSpaces.SHARES_FOLDER).test(file);
+                || new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(file)
+                || new SimplePathPredicate(OwncloudPathMapper.SHARES_FOLDER).test(file);
     }
 
     @Override
@@ -38,10 +38,10 @@ public class OwncloudSpacesPathContainerService extends DefaultPathContainerServ
         if(file.isRoot()) {
             return false;
         }
-        if(new SimplePathPredicate(OwncloudSpaces.PERSONAL_FOLDER).test(file)) {
+        if(new SimplePathPredicate(OwncloudPathMapper.PERSONAL_FOLDER).test(file)) {
             return true;
         }
-        return new SimplePathPredicate(OwncloudSpaces.SPACES_FOLDER).test(file.getParent())
-                || new SimplePathPredicate(OwncloudSpaces.SHARES_FOLDER).test(file.getParent());
+        return new SimplePathPredicate(OwncloudPathMapper.SPACES_FOLDER).test(file.getParent())
+                || new SimplePathPredicate(OwncloudPathMapper.SHARES_FOLDER).test(file.getParent());
     }
 }

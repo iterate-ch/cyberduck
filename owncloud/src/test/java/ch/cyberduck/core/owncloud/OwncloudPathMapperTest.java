@@ -29,10 +29,10 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class OwncloudSpacesTest {
+public class OwncloudPathMapperTest {
 
-    private static OwncloudSpaces spaces() throws Exception {
-        final OwncloudSpaces spaces = new OwncloudSpaces();
+    private static OwncloudPathMapper spaces() throws Exception {
+        final OwncloudPathMapper spaces = new OwncloudPathMapper();
         spaces.withDrives(new OwncloudDrivesResponseHandler().handleEntity(
                 new StringEntity(OwncloudDrivesResponseHandlerTest.JSON, ContentType.APPLICATION_JSON)));
         return spaces;
@@ -40,7 +40,7 @@ public class OwncloudSpacesTest {
 
     @Test
     public void testWithDrives() throws Exception {
-        final OwncloudSpaces spaces = new OwncloudSpaces();
+        final OwncloudPathMapper spaces = new OwncloudPathMapper();
         final List<Drives.Drive> projects = spaces.withDrives(new OwncloudDrivesResponseHandler().handleEntity(
                 new StringEntity(OwncloudDrivesResponseHandlerTest.JSON, ContentType.APPLICATION_JSON)));
         // Disabled space and spaces with clashing names are ignored
@@ -53,65 +53,65 @@ public class OwncloudSpacesTest {
 
     @Test
     public void testWithDrivesPersonalRemoved() throws Exception {
-        final OwncloudSpaces spaces = spaces();
+        final OwncloudPathMapper spaces = spaces();
         assertNotNull(spaces.getPersonal());
         // Personal space disabled or role changed to User Light
         spaces.withDrives(Collections.emptyList());
         assertNull(spaces.getPersonal());
-        assertNull(spaces.toServer(OwncloudSpaces.PERSONAL_FOLDER));
+        assertNull(spaces.toServer(OwncloudPathMapper.PERSONAL_FOLDER));
         // Fallback for share jail is retained
         assertEquals("/dav/spaces/a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668", spaces.getShares());
     }
 
     @Test
     public void testToServer() throws Exception {
-        final OwncloudSpaces spaces = spaces();
+        final OwncloudPathMapper spaces = spaces();
         assertEquals("/dav/spaces/storage-users-1$00000000-1111-2222-3333-444444444444",
-                spaces.toServer(OwncloudSpaces.PERSONAL_FOLDER).getAbsolute());
+                spaces.toServer(OwncloudPathMapper.PERSONAL_FOLDER).getAbsolute());
         assertEquals("/dav/spaces/storage-users-1$00000000-1111-2222-3333-444444444444/a/f",
-                spaces.toServer(new Path(OwncloudSpaces.PERSONAL_FOLDER, "a/f", EnumSet.of(Path.Type.file))).getAbsolute());
+                spaces.toServer(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a/f", EnumSet.of(Path.Type.file))).getAbsolute());
         assertEquals("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000001",
-                spaces.toServer(new Path(OwncloudSpaces.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory))).getAbsolute());
+                spaces.toServer(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory))).getAbsolute());
         assertEquals("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000001/d",
-                spaces.toServer(new Path(OwncloudSpaces.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory))).getAbsolute());
+                spaces.toServer(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory))).getAbsolute());
         assertEquals("/dav/spaces/a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668/s/f",
-                spaces.toServer(new Path(OwncloudSpaces.SHARES_FOLDER, "s/f", EnumSet.of(Path.Type.file))).getAbsolute());
+                spaces.toServer(new Path(OwncloudPathMapper.SHARES_FOLDER, "s/f", EnumSet.of(Path.Type.file))).getAbsolute());
         // Name prefix of space
-        assertNull(spaces.toServer(new Path(OwncloudSpaces.SPACES_FOLDER, "iterate2", EnumSet.of(Path.Type.directory))));
-        assertNull(spaces.toServer(new Path(OwncloudSpaces.SPACES_FOLDER, "Clash", EnumSet.of(Path.Type.directory))));
-        assertNull(spaces.toServer(OwncloudSpaces.SPACES_FOLDER));
+        assertNull(spaces.toServer(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate2", EnumSet.of(Path.Type.directory))));
+        assertNull(spaces.toServer(new Path(OwncloudPathMapper.SPACES_FOLDER, "Clash", EnumSet.of(Path.Type.directory))));
+        assertNull(spaces.toServer(OwncloudPathMapper.SPACES_FOLDER));
         assertNull(spaces.toServer(new Path("/", EnumSet.of(Path.Type.directory))));
         assertNull(spaces.toServer(new Path("/remote.php/dav/meta/1/v", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testEncode() {
-        final DAVPathEncoder encoder = new DAVPathEncoder(new OwncloudSpaces("/dav/spaces/s$p", "/dav/spaces/j$j"));
-        assertEquals("/dav/spaces/s%24p/", encoder.encode(OwncloudSpaces.PERSONAL_FOLDER));
-        assertEquals("/dav/spaces/s%24p/a%20b/", encoder.encode(new Path(OwncloudSpaces.PERSONAL_FOLDER, "a b", EnumSet.of(Path.Type.directory))));
-        assertEquals("/dav/spaces/s%24p/a%20b/f", encoder.encode(new Path(OwncloudSpaces.PERSONAL_FOLDER, "a b/f", EnumSet.of(Path.Type.file))));
-        assertEquals("/dav/spaces/j%24j/s/f", encoder.encode(new Path(OwncloudSpaces.SHARES_FOLDER, "s/f", EnumSet.of(Path.Type.file))));
+        final DAVPathEncoder encoder = new DAVPathEncoder(new OwncloudPathMapper("/dav/spaces/s$p", "/dav/spaces/j$j"));
+        assertEquals("/dav/spaces/s%24p/", encoder.encode(OwncloudPathMapper.PERSONAL_FOLDER));
+        assertEquals("/dav/spaces/s%24p/a%20b/", encoder.encode(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a b", EnumSet.of(Path.Type.directory))));
+        assertEquals("/dav/spaces/s%24p/a%20b/f", encoder.encode(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "a b/f", EnumSet.of(Path.Type.file))));
+        assertEquals("/dav/spaces/j%24j/s/f", encoder.encode(new Path(OwncloudPathMapper.SHARES_FOLDER, "s/f", EnumSet.of(Path.Type.file))));
         // Unknown space
-        assertEquals(String.format("%s/x/f", OwncloudSpaces.SPACES_FOLDER.getAbsolute()),
-                encoder.encode(new Path(OwncloudSpaces.SPACES_FOLDER, "x/f", EnumSet.of(Path.Type.file))));
+        assertEquals(String.format("%s/x/f", OwncloudPathMapper.SPACES_FOLDER.getAbsolute()),
+                encoder.encode(new Path(OwncloudPathMapper.SPACES_FOLDER, "x/f", EnumSet.of(Path.Type.file))));
         // Path outside of virtual folders
         assertEquals("/remote.php/dav/meta/1/v/2", encoder.encode(new Path("/remote.php/dav/meta/1/v/2", EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testToVirtual() throws Exception {
-        final OwncloudSpaces spaces = spaces();
-        assertEquals(OwncloudSpaces.PERSONAL_FOLDER.getAbsolute(),
+        final OwncloudPathMapper spaces = spaces();
+        assertEquals(OwncloudPathMapper.PERSONAL_FOLDER.getAbsolute(),
                 spaces.toVirtual("/dav/spaces/storage-users-1$00000000-1111-2222-3333-444444444444/").getAbsolute());
-        assertEquals(new Path(OwncloudSpaces.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory)).getAbsolute(),
+        assertEquals(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory)).getAbsolute(),
                 spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000001/d").getAbsolute());
-        assertEquals(new Path(OwncloudSpaces.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(),
+        assertEquals(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "d", EnumSet.of(Path.Type.directory)).getAbsolute(),
                 spaces.toVirtual("/remote.php/dav/files/jane/d", "remote.php/webdav", "remote.php/dav/files/jane").getAbsolute());
-        assertEquals(OwncloudSpaces.PERSONAL_FOLDER.getAbsolute(),
+        assertEquals(OwncloudPathMapper.PERSONAL_FOLDER.getAbsolute(),
                 spaces.toVirtual("/remote.php/webdav/", "remote.php/webdav").getAbsolute());
         assertNull(spaces.toVirtual("/remote.php/webdav"));
         // Alias from workaround with nextcloud.root.webdav.user=/dav/spaces in bookmark
-        assertEquals(new Path(OwncloudSpaces.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory)).getAbsolute(),
+        assertEquals(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate/d", EnumSet.of(Path.Type.directory)).getAbsolute(),
                 spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000001/d", "/dav/spaces").getAbsolute());
         assertNull(spaces.toVirtual("/dav/spaces/storage-users-1$aaaaaaaa-0000-0000-0000-000000000003"));
     }

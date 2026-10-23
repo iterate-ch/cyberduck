@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 /**
  * Maps virtual folders for personal space, project spaces and shares to WebDAV root of storage spaces
  */
-public final class OwncloudSpaces implements DAVPathMapper {
-    private static final Logger log = LogManager.getLogger(OwncloudSpaces.class);
+public final class OwncloudPathMapper implements DAVPathMapper {
+    private static final Logger log = LogManager.getLogger(OwncloudPathMapper.class);
 
     public static final Path PERSONAL_FOLDER
             = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Personal", "ownCloud")),
@@ -74,7 +74,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
      */
     private volatile Map<String, String> projects = Collections.emptyMap();
 
-    public OwncloudSpaces() {
+    public OwncloudPathMapper() {
         this(null, String.format("/dav/spaces/%s", SHARE_JAIL_ID));
     }
 
@@ -82,7 +82,7 @@ public final class OwncloudSpaces implements DAVPathMapper {
      * @param personal Default WebDAV path of personal space
      * @param shares   Default WebDAV path of share jail
      */
-    public OwncloudSpaces(final String personal, final String shares) {
+    public OwncloudPathMapper(final String personal, final String shares) {
         this.personal = personal;
         this.shares = shares;
     }

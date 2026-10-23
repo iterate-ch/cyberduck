@@ -27,17 +27,21 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-public class OwncloudSpacesWriteFeatureTest {
+public class OwncloudWriteFeatureTest {
 
     private final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("u")),
             new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    private final OwncloudSpacesWriteFeature<Void> feature = new OwncloudSpacesWriteFeature<>(session, new NextcloudWriteFeature(session));
+    private final OwncloudWriteFeature<Void> feature = new OwncloudWriteFeature<>(session, new NextcloudWriteFeature(session));
+
+    {
+        session.ocs.withSpaces(true);
+    }
 
     @Test
     public void testPreflight() throws Exception {
-        feature.preflight(new Path(OwncloudSpaces.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)));
-        feature.preflight(new Path(new Path(OwncloudSpaces.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
-        feature.preflight(new Path(new Path(OwncloudSpaces.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -47,11 +51,17 @@ public class OwncloudSpacesWriteFeatureTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testPreflightSpaces() throws Exception {
-        feature.preflight(new Path(OwncloudSpaces.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathMapper.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testPreflightShares() throws Exception {
-        feature.preflight(new Path(OwncloudSpaces.SHARES_FOLDER, "f", EnumSet.of(Path.Type.file)));
+        feature.preflight(new Path(OwncloudPathMapper.SHARES_FOLDER, "f", EnumSet.of(Path.Type.file)));
+    }
+
+    @Test
+    public void testPreflightNoSpaces() throws Exception {
+        session.ocs.withSpaces(false);
+        feature.preflight(new Path(OwncloudPathMapper.SPACES_FOLDER, "f", EnumSet.of(Path.Type.file)));
     }
 }

@@ -18,7 +18,6 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVCopyFeature;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -28,24 +27,29 @@ import java.util.Optional;
 /**
  * Deny copying virtual folders or into virtual folders
  */
-public class OwncloudSpacesCopyFeature extends DAVCopyFeature {
+public class OwncloudCopyFeature extends DAVCopyFeature {
 
-    private final OwncloudSpacesPathContainerService containerService = new OwncloudSpacesPathContainerService();
+    private final OwncloudPathContainerService containerService = new OwncloudPathContainerService();
 
-    public OwncloudSpacesCopyFeature(final DAVSession session) {
+    private final OwncloudSession session;
+
+    public OwncloudCopyFeature(final OwncloudSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        if(containerService.isVirtual(source)) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot copy {0}", "Error"), source.getName())).withFile(source);
-        }
-        if(target.isPresent()) {
-            if(containerService.isVirtual(target.get().getParent())) {
+        if(session.ocs.spaces) {
+            if(containerService.isVirtual(source)) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                         "Cannot copy {0}", "Error"), source.getName())).withFile(source);
+            }
+            if(target.isPresent()) {
+                if(containerService.isVirtual(target.get().getParent())) {
+                    throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
+                            "Cannot copy {0}", "Error"), source.getName())).withFile(source);
+                }
             }
         }
         super.preflight(source, target);

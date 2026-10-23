@@ -28,11 +28,11 @@ import java.util.EnumSet;
 /**
  * List project spaces
  */
-public class OwncloudSpacesListService implements ListService {
+public class OwncloudDrivesListService implements ListService {
 
     private final OwncloudSession session;
 
-    public OwncloudSpacesListService(final OwncloudSession session) {
+    public OwncloudDrivesListService(final OwncloudSession session) {
         this.session = session;
     }
 

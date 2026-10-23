@@ -29,27 +29,31 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class OwncloudSpacesShareFeatureTest {
+public class OwncloudShareFeatureTest {
 
-    private final OwncloudSpacesShareFeature feature = new OwncloudSpacesShareFeature(
-            new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("u")),
-                    new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+    private final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("u")),
+            new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    private final OwncloudShareFeature feature = new OwncloudShareFeature(session);
 
-    private final Path space = new Path(OwncloudSpaces.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
-    private final Path share = new Path(OwncloudSpaces.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
+    {
+        session.ocs.withSpaces(true);
+    }
+
+    private final Path space = new Path(OwncloudPathMapper.SPACES_FOLDER, "iterate", EnumSet.of(Path.Type.directory));
+    private final Path share = new Path(OwncloudPathMapper.SHARES_FOLDER, "s", EnumSet.of(Path.Type.directory));
 
     @Test
     public void testIsSupported() {
-        assertTrue(feature.isSupported(new Path(OwncloudSpaces.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
+        assertTrue(feature.isSupported(new Path(OwncloudPathMapper.PERSONAL_FOLDER, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
         assertTrue(feature.isSupported(new Path(space, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
         assertTrue(feature.isSupported(new Path(space, "d", EnumSet.of(Path.Type.directory)), Share.Type.upload));
         assertFalse(feature.isSupported(new Path(space, "f", EnumSet.of(Path.Type.file)), Share.Type.upload));
         // Virtual folders
         assertFalse(feature.isSupported(new Path("/", EnumSet.of(Path.Type.directory)), Share.Type.download));
-        assertFalse(feature.isSupported(OwncloudSpaces.SPACES_FOLDER, Share.Type.download));
-        assertFalse(feature.isSupported(OwncloudSpaces.SHARES_FOLDER, Share.Type.download));
+        assertFalse(feature.isSupported(OwncloudPathMapper.SPACES_FOLDER, Share.Type.download));
+        assertFalse(feature.isSupported(OwncloudPathMapper.SHARES_FOLDER, Share.Type.download));
         // Root folder of spaces
-        assertFalse(feature.isSupported(OwncloudSpaces.PERSONAL_FOLDER, Share.Type.download));
+        assertFalse(feature.isSupported(OwncloudPathMapper.PERSONAL_FOLDER, Share.Type.download));
         assertFalse(feature.isSupported(space, Share.Type.download));
         assertFalse(feature.isSupported(share, Share.Type.download));
         // No resharing
