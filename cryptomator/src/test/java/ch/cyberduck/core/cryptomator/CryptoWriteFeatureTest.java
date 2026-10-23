@@ -20,6 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
@@ -27,16 +28,20 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
-
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -123,6 +128,22 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         }
     };
 
+    private final AtomicReference<Checksum> sent = new AtomicReference<>();
+
+    private final Write<Void> md5proxy = new Write<Void>() {
+        @Override
+        public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+            // Checksum sent with the request
+            sent.set(status.getChecksum());
+            return proxy.write(file, status, callback);
+        }
+
+        @Override
+        public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+            return ChecksumComputeFactory.get(HashAlgorithm.md5);
+        }
+    };
+
     private NullSession session() {
         return new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -195,5 +216,46 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         // Digest is applied by the write feature to the encrypted content
         assertTrue(compute.isTransformed());
         assertEquals("SHA-256", compute.digest().getAlgorithm());
+    }
+
+    @Test
+    public void testPrecalculatedChecksumMatchesWrittenContent() throws Exception {
+        for(int length : new int[]{0, 1, 100, 32768, 32769, 100000, 5242880}) {
+            final NullSession session = this.session();
+            final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+            provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+            final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+            final CryptoWriteFeature<Void> feature = new CryptoWriteFeature<>(session, md5proxy, cryptomator);
+            final byte[] content = RandomUtils.nextBytes(length);
+            final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
+            final TransferStatus status = new TransferStatus().setLength(content.length);
+            // Calculated prior to the transfer as in the upload filter
+            status.setChecksum(feature.checksum(file, status).compute(new ByteArrayInputStream(content), status));
+            final OutputStream out = feature.write(file, status, ConnectionCallback.noop);
+            out.write(content);
+            out.close();
+            assertEquals(String.format("Length %d", length),
+                    ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()).hex, status.getChecksum().hex);
+        }
+    }
+
+    @Test
+    public void testTouchChecksumMatchesWrittenContent() throws Exception {
+        final NullSession session = this.session();
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, md5proxy, cryptomator);
+        // Same as S3TouchFeature
+        final Touch<Void> touch = new Touch<Void>() {
+            @Override
+            public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
+                return new DefaultTouchFeature<Void>(session).touch(writer, file,
+                        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status)));
+            }
+        };
+        sent.set(null);
+        new CryptoTouchFeature<>(session, touch, cryptomator).touch(writer, new Path(vault, "t", EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()).hex, sent.get().hex);
     }
 }
