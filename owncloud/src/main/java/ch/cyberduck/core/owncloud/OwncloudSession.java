@@ -126,13 +126,7 @@ public class OwncloudSession extends DAVSession {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         if(ocs.spaces) {
-            try {
-                this.drives();
-            }
-            catch(BackgroundException e) {
-                log.warn("Failure {} retrieving spaces. Disable virtual folders", e.getMessage());
-                ocs.withSpaces(false);
-            }
+            this.drives();
         }
     }
 
