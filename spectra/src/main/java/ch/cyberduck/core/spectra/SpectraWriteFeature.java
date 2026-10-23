@@ -28,6 +28,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
+import java.util.EnumSet;
+
 public class SpectraWriteFeature extends S3WriteFeature {
 
     private final PathContainerService containerService;
@@ -57,6 +59,11 @@ public class SpectraWriteFeature extends S3WriteFeature {
             }
         }
         return object;
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.checksum, Flags.mime);
     }
 
     @Override
