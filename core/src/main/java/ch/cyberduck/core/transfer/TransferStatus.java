@@ -115,15 +115,23 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private final CountDownLatch done
             = new CountDownLatch(1);
 
+    /**
+     * Checksum of the content calculated prior to the transfer to send with the upload request, allowing the server
+     * to verify the data received. Checksum#NONE if not calculated.
+     *
+     * @see ch.cyberduck.core.features.Write.Flags#checksum
+     */
     private Checksum checksum = Checksum.NONE;
 
     /**
-     * Checksum of the content calculated while transferring
+     * Checksum of the content calculated while transferring. Compared with the checksum in the response of the
+     * server when the transfer is complete. Checksum#NONE if not calculated.
      */
     private Checksum digest = Checksum.NONE;
 
     /**
-     * Calculate the checksum while transferring and verify with the checksum in the response of the server
+     * Calculate the checksum of the content while transferring to verify with the checksum in the response of the
+     * server when the transfer is complete.
      */
     private boolean verify;
 
@@ -438,35 +446,52 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
+    /**
+     * @return Checksum of the content calculated prior to the transfer to send with the upload request or
+     * Checksum#NONE if not calculated
+     */
     public Checksum getChecksum() {
         return checksum;
     }
 
+    /**
+     * @param checksum Checksum of the content calculated prior to the transfer to send with the upload request
+     * @return This status
+     */
     public TransferStatus setChecksum(final Checksum checksum) {
         this.checksum = checksum;
         return this;
     }
 
     /**
-     * @return Checksum of the content calculated while transferring
+     * @return Checksum of the content calculated while transferring or Checksum#NONE if not calculated
      */
     public Checksum getDigest() {
         return digest;
     }
 
+    /**
+     * @param digest Checksum of the content calculated while transferring
+     * @return This status
+     */
     public TransferStatus setDigest(final Checksum digest) {
         this.digest = digest;
         return this;
     }
 
     /**
-     * @return True to calculate the checksum while transferring and verify with the checksum in the response of the server
+     * @return True to calculate the checksum of the content while transferring and verify with the checksum in the
+     * response of the server when the transfer is complete
      */
     public boolean isVerify() {
         return verify;
     }
 
-
+    /**
+     * @param verify True to calculate the checksum of the content while transferring and verify with the checksum in
+     *               the response of the server when the transfer is complete
+     * @return This status
+     */
     public TransferStatus setVerify(final boolean verify) {
         this.verify = verify;
         return this;
