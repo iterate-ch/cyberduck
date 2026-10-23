@@ -3,6 +3,11 @@ package ch.cyberduck.core;
 import org.junit.Test;
 
 import java.util.EnumSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 
@@ -93,5 +98,85 @@ public class PathCacheTest {
         assertTrue(cache.isCached(f));
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
         assertTrue(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testUnlockAfterFileIdResolved() throws Exception {
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/d", EnumSet.of(Path.Type.directory));
+        cache.lock(directory);
+        // Attributes of the directory are changed while looking up the contents, such as the file id resolved when listing
+        directory.attributes().setFileId("f");
+        cache.unlock(directory);
+        // Lock is released
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            assertTrue(executor.submit(() -> {
+                final Path other = new Path("/d", EnumSet.of(Path.Type.directory));
+                cache.lock(other);
+                cache.unlock(other);
+                return true;
+            }).get(2, TimeUnit.SECONDS));
+        }
+        finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testLockExclusiveRegardlessOfFileId() throws Exception {
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/d", EnumSet.of(Path.Type.directory));
+        cache.lock(directory);
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            final Future<Boolean> waiting = executor.submit(() -> {
+                final Path other = new Path("/d", EnumSet.of(Path.Type.directory));
+                other.attributes().setFileId("f");
+                cache.lock(other);
+                cache.unlock(other);
+                return true;
+            });
+            try {
+                waiting.get(300, TimeUnit.MILLISECONDS);
+                fail("Expected to wait for lock of the same directory");
+            }
+            catch(TimeoutException e) {
+                // Expected
+            }
+            cache.unlock(directory);
+            assertTrue(waiting.get(2, TimeUnit.SECONDS));
+        }
+        finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testUnlockNotLocked() throws Exception {
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/d", EnumSet.of(Path.Type.directory));
+        // Log error only
+        cache.unlock(directory);
+        cache.lock(directory);
+        cache.unlock(directory);
+        cache.unlock(directory);
+    }
+
+    @Test
+    public void testUnlockNotOwner() throws Exception {
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/d", EnumSet.of(Path.Type.directory));
+        cache.lock(directory);
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            // Not held by thread. Log error only
+            executor.submit(() -> cache.unlock(directory)).get(2, TimeUnit.SECONDS);
+        }
+        finally {
+            executor.shutdownNow();
+        }
+        // Still locked by owner
+        cache.unlock(directory);
     }
 }
