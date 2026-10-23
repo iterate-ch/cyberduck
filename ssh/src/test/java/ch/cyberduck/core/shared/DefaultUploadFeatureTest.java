@@ -20,11 +20,15 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
@@ -36,14 +40,17 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
 public class DefaultUploadFeatureTest extends AbstractSFTPTest {
@@ -80,5 +87,62 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
+    }
+
+    private final NullWriteFeature write = new NullWriteFeature() {
+        @Override
+        public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+            return new MD5ChecksumCompute();
+        }
+    };
+
+    private Checksum md5(final byte[] content, final int from, final int to) throws Exception {
+        return new MD5ChecksumCompute().compute(new ByteArrayInputStream(Arrays.copyOfRange(content, from, to)), new TransferStatus());
+    }
+
+    private Checksum upload(final byte[] content, final TransferStatus status) throws Exception {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try {
+            final OutputStream out = local.getOutputStream(false);
+            out.write(content);
+            out.close();
+            new DefaultUploadFeature<Void>().upload(write, new Path("/f", EnumSet.of(Path.Type.file)), local,
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
+            return status.getDigest();
+        }
+        finally {
+            local.delete();
+        }
+    }
+
+    private static byte[] content() {
+        final byte[] content = new byte[100];
+        for(int i = 0; i < content.length; i++) {
+            content[i] = (byte) i;
+        }
+        return content;
+    }
+
+    @Test
+    public void testDigestWholeFile() throws Exception {
+        final byte[] content = content();
+        assertEquals(md5(content, 0, 100), upload(content, new TransferStatus().setVerify(true).setLength(100L)));
+    }
+
+    @Test
+    public void testDigestResumeIncludesSkippedContent() throws Exception {
+        final byte[] content = content();
+        assertEquals(md5(content, 0, 100), upload(content, new TransferStatus().setVerify(true).setOffset(10L).setLength(90L)));
+    }
+
+    @Test
+    public void testDigestSegmentOnlyRange() throws Exception {
+        final byte[] content = content();
+        assertEquals(md5(content, 10, 30), upload(content, new TransferStatus().setVerify(true).setSegment(true).setOffset(10L).setLength(20L)));
+    }
+
+    @Test
+    public void testNoDigestWithoutVerify() throws Exception {
+        assertEquals(Checksum.NONE, upload(content(), new TransferStatus().setLength(100L)));
     }
 }
