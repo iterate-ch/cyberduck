@@ -15,24 +15,12 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusUploadFeature;
 
 public class OcisUploadFeature extends TusUploadFeature {
 
-    private final OwncloudSession session;
-
     public OcisUploadFeature(final OwncloudSession session, final TusCapabilities capabilities) {
         super(session, capabilities);
-        this.session = session;
-    }
-
-    @Override
-    protected String toCreationUrl(final Path directory) {
-        return String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
-                new DAVPathEncoder(session).encode(directory));
     }
 }
