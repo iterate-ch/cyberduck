@@ -75,7 +75,7 @@ public class FTPWriteFeature implements Write<Void> {
         }
     }
 
-    public final class ReadReplyOutputStream extends VoidStatusOutputStream {
+    private final class ReadReplyOutputStream extends VoidStatusOutputStream {
         private final AtomicBoolean close;
         private final TransferStatus status;
 
@@ -95,8 +95,9 @@ public class FTPWriteFeature implements Write<Void> {
                 super.close();
                 if(session.isConnected()) {
                     // Read 226 status after closing stream
-                    if(!FTPReply.isPositiveCompletion(session.getClient().getReply())) {
-                        final String text = session.getClient().getReplyString();
+                    final int reply = session.getClient().getTransferReply();
+                    if(!FTPReply.isPositiveCompletion(reply)) {
+                        final String text = session.getClient().getTransferReplyString();
                         if(status.isSegment()) {
                             // Ignore 451 and 426 response because stream was prematurely closed
                             log.warn("Ignore unexpected reply {} when completing file segment {}", text, status);
@@ -106,7 +107,7 @@ public class FTPWriteFeature implements Write<Void> {
                         }
                         else {
                             log.warn("Unexpected reply {} when completing file download with status {}", text, status);
-                            throw new FTPException(session.getClient().getReplyCode(), text);
+                            throw new FTPException(reply, text);
                         }
                     }
                 }
@@ -114,6 +115,12 @@ public class FTPWriteFeature implements Write<Void> {
             finally {
                 close.set(true);
             }
+        }
+
+        @Override
+        protected void afterWrite(final int n) throws IOException {
+            session.getClient().keepAlive();
+            super.afterWrite(n);
         }
     }
 }
