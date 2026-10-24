@@ -181,7 +181,10 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
                         .setOffset(offset)
                         .setLength(length);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                // Optional checksum of the chunk for the server to verify
+                if(write.features(file).contains(Write.Flags.checksum)) {
+                    status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                }
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_URL, uploadUrl);
                 status.setParameters(parameters);
