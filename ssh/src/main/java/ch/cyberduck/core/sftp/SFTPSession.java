@@ -92,7 +92,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = LogManager.getLogger(SFTPSession.class);
 
-    private SFTPEngine sftp;
+    private LoggingSFTPEngine sftp;
     private StateDisconnectListener disconnectListener;
     private NegotiatedAlgorithms algorithms;
     private OpenSSHProxyCommandConnector proxycommand;
@@ -474,7 +474,10 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPMoveFeature(this);
         }
         if(type == Copy.class) {
-            return (T) new SFTPCopyFeature(this);
+            if(null != sftp && sftp.isExtensionSupported(SFTPCopyFeature.EXTENSION)) {
+                return (T) new SFTPCopyFeature(this);
+            }
+            // Fallback to download and upload when server does not advertise extension
         }
         if(type == UnixPermission.class) {
             return (T) new SFTPUnixPermissionFeature(this);
@@ -529,6 +532,26 @@ public class SFTPSession extends Session<SSHClient> {
         public LoggingSFTPEngine(final SSHClient client, final TranscriptListener transcript) throws SSHException {
             super(client, String.valueOf(Path.DELIMITER));
             this.transcript = transcript;
+        }
+
+        @Override
+        public LoggingSFTPEngine init() throws IOException {
+            super.init();
+            return this;
+        }
+
+        @Override
+        protected LoggingSFTPEngine init(final int requestedVersion) throws IOException {
+            super.init(requestedVersion);
+            return this;
+        }
+
+        /**
+         * @param name Extension name as advertised by the server in the version packet
+         * @return True if the server advertised the given extension
+         */
+        public boolean isExtensionSupported(final String name) {
+            return serverExtensions.containsKey(name);
         }
 
         @Override
