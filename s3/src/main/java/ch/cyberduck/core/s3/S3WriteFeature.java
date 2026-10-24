@@ -44,7 +44,6 @@ import org.jets3t.service.model.StorageObject;
 
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
