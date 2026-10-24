@@ -185,6 +185,29 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     }
 
     @Test
+    public void testMultiplePartsObjectLock() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
+        final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomUtils.nextBytes(5242881);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final BytecountStreamListener count = new BytecountStreamListener();
+        // Content-MD5 is required for every part uploaded to a bucket with Object Lock
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, null);
+        assertEquals(content.length, count.getSent());
+        assertTrue(status.isComplete());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
     public void testMultiplePartsWithSHA256Checksum() throws Exception {
         // 5L * 1024L * 1024L
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

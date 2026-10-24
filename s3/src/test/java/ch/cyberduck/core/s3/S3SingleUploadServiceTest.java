@@ -23,6 +23,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -114,6 +115,32 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(random.length, attributes.getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testUploadObjectLock() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3SingleUploadService service = new S3SingleUploadService();
+        final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID() + ".txt";
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final byte[] random = RandomUtils.nextBytes(1000);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final S3WriteFeature writer = new S3WriteFeature(session, acl);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
+        // Content-MD5 is required for upload to a bucket with Object Lock and calculated prior to the transfer
+        status.setChecksum(writer.checksum(test, status).compute(local.getInputStream(), status));
+        assertEquals(HashAlgorithm.md5, status.getChecksum().algorithm);
+        service.upload(writer, test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
+        assertTrue(status.isComplete());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals(random.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
