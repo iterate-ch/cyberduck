@@ -122,6 +122,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().setLength(len);
+                        // Optional checksum of the segment for the server to verify
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file, status)
                                 .compute(new ByteArrayInputStream(content, off, len), status));
                         // Segment name with left padded segment number
