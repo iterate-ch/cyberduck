@@ -41,7 +41,7 @@ public class FTPExceptionMappingServiceTest {
     public void testServiceNotAvailable() {
         final BackgroundException failure = new FTPExceptionMappingService().map(new FTPException(421, "Too many connections (25) from this IP"));
         assertTrue(failure instanceof ConnectionRefusedException);
-        assertEquals("Too many connections (25) from this IP. Please contact your web hosting service provider for assistance.", failure.getDetail());
+        assertEquals("Too many connections (25) from this IP. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", failure.getDetail());
     }
 
     @Test
