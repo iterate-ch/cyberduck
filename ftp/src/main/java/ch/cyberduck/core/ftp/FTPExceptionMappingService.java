@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.MalformedServerReplyException;
@@ -82,8 +81,7 @@ public class FTPExceptionMappingService extends AbstractExceptionMappingService<
                 // Requested action not taken. File unavailable (e.g., file not found, no access)
                 return new NotfoundException(buffer.toString(), e);
             case FTPReply.SERVICE_NOT_AVAILABLE:
-                // Service not available. For example too many connections from this IP address
-                return new RetriableAccessDeniedException(buffer.toString(), e);
+                return new ConnectionRefusedException(buffer.toString(), e);
         }
         return new InteroperabilityException(buffer.toString(), e);
     }

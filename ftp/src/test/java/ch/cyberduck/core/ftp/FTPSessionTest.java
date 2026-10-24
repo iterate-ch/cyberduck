@@ -18,7 +18,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
@@ -193,7 +192,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
                 fail();
             }
-            catch(RetriableAccessDeniedException e) {
+            catch(ConnectionRefusedException e) {
                 assertTrue(e.getDetail(), e.getDetail().contains("Too many connections (25) from this IP"));
             }
             t.join(10000L);
