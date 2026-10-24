@@ -52,6 +52,22 @@ public class HttpResponseExceptionMappingServiceTest {
     }
 
     @Test
+    public void testServiceUnavailableRetryAfter() {
+        final BackgroundException failure = new DefaultHttpResponseExceptionMappingService().map(
+                new HttpResponseException(HttpStatus.SC_SERVICE_UNAVAILABLE, "Service Unavailable"), new StringBuilder("Service Unavailable"),
+                HttpStatus.SC_SERVICE_UNAVAILABLE, Collections.singletonMap("Retry-After", Collections.singletonList("11")));
+        assertTrue(failure instanceof RetriableAccessDeniedException);
+        assertEquals(11L, ((RetriableAccessDeniedException) failure).getDelay().getSeconds());
+    }
+
+    @Test
+    public void testServiceUnavailable() {
+        final BackgroundException failure = new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(HttpStatus.SC_SERVICE_UNAVAILABLE, "Service Unavailable"));
+        assertTrue(failure instanceof RetriableAccessDeniedException);
+        assertEquals(Duration.ofSeconds(PreferencesFactory.get().getLong("connection.retry.delay")), ((RetriableAccessDeniedException) failure).getDelay());
+    }
+
+    @Test
     public void testTooManyRequestsRetryAfterHttpDate() {
         final Clock clock = Clock.fixed(Instant.parse("2026-10-21T07:27:30Z"), ZoneOffset.UTC);
         assertEquals(Optional.of(Duration.ofSeconds(30)), HttpResponseExceptionMappingService.retryAfter(

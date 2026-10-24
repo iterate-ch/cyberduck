@@ -124,9 +124,9 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_LOCKED:
                 return new LockedException(buffer.toString(), failure);
             case HttpStatus.SC_BAD_GATEWAY:
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
                 return new ConnectionRefusedException(buffer.toString(), failure);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case HttpStatus.SC_TOO_MANY_REQUESTS:
                 // Too Many Requests. Rate limiting
             case 509:
