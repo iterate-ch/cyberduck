@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -132,7 +133,8 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                                     HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
                 }
             }
-            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
+            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size,
+                    new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64()));
             // Mark parent status as complete
             status.setResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
             return object;

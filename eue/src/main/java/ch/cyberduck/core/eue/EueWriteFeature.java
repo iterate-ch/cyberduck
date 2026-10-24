@@ -30,6 +30,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -115,7 +116,18 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                             }
                             try {
                                 if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                                    return new Chunk(resourceId, status.getPart(), status.getLength(), status.getChecksum());
+                                    if(status.isSegment()) {
+                                        // Checksum of the part is required to complete the chunked upload
+                                        return new Chunk(resourceId, status.getPart(), status.getLength(), status.getChecksum());
+                                    }
+                                    if(null == response.getEntity()) {
+                                        return new Chunk(resourceId, status.getLength(), Checksum.NONE);
+                                    }
+                                    // Checksum calculated by the server for the complete file
+                                    final EueUploadHelper.UploadResponse uploaded = EueUploadHelper.parseUploadCompletedResponse(response);
+                                    final Checksum returned = StringUtils.isBlank(uploaded.getCdash64()) ? Checksum.NONE
+                                            : new Checksum(HashAlgorithm.cdash64, uploaded.getCdash64());
+                                    return new Chunk(resourceId, null == uploaded.getTotalSze() ? status.getLength() : uploaded.getTotalSze(), returned);
                                 }
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 throw new EueExceptionMappingService().map(response);
@@ -172,22 +184,22 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         private final String resourceId;
         private final Integer partnumber;
         private final Long length;
-        private final String cdash64;
         private final Checksum checksum;
 
-        public Chunk(final String resourceId, final Long length, final String cdash64) {
-            this.resourceId = resourceId;
-            this.partnumber = -1;
-            this.length = length;
-            this.cdash64 = cdash64;
-            this.checksum = Checksum.NONE;
+        /**
+         * @param checksum Checksum of the file returned by the server
+         */
+        public Chunk(final String resourceId, final Long length, final Checksum checksum) {
+            this(resourceId, -1, length, checksum);
         }
 
+        /**
+         * @param checksum Checksum of the part
+         */
         public Chunk(final String resourceId, final Integer partnumber, final Long length, final Checksum checksum) {
             this.resourceId = resourceId;
             this.partnumber = partnumber;
             this.length = length;
-            this.cdash64 = StringUtils.EMPTY;
             this.checksum = checksum;
         }
 
@@ -204,7 +216,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         }
 
         public String getCdash64() {
-            return cdash64;
+            return HashAlgorithm.cdash64 == checksum.algorithm ? checksum.hash : StringUtils.EMPTY;
         }
 
         public Checksum getChecksum() {

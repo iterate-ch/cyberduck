@@ -83,7 +83,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
-        assertEquals(checksum, out.getStatus().getChecksum());
+        assertEquals(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)), out.getStatus().getChecksum());
+        this.assertResponseMatchesFinder(fileid, file, status);
         assertEquals(content.length, out.getStatus().getLength(), 0L);
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(attr.getFileId(), out.getStatus().getResourceId());
@@ -113,7 +114,8 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
-        assertEquals(checksum, out.getStatus().getChecksum());
+        assertEquals(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)), out.getStatus().getChecksum());
+        this.assertResponseMatchesFinder(fileid, file, status);
         assertEquals(content.length, out.getStatus().getLength(), 0L);
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(attr.getFileId(), out.getStatus().getResourceId());

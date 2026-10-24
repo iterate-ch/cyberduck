@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -251,7 +252,8 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                                     HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
                                 }
                             }
-                            result.set(new EueWriteFeature.Chunk(resourceId, offset, cdash64));
+                            result.set(new EueWriteFeature.Chunk(resourceId, offset,
+                                    new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64())));
                         }
                         catch(BackgroundException e) {
                             throw new IOException(e);
