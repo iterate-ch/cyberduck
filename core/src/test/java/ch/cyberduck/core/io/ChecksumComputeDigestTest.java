@@ -26,9 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class ChecksumComputeDigestTest {
 
@@ -49,6 +47,7 @@ public class ChecksumComputeDigestTest {
         assertDigest(new SHA256ChecksumCompute());
         assertDigest(new SHA512ChecksumCompute());
         assertDigest(new DropboxChecksumCompute());
+        assertDigest(new CRC32ChecksumCompute());
     }
 
     @Test
@@ -61,6 +60,5 @@ public class ChecksumComputeDigestTest {
     @Test
     public void testNoDigest() throws Exception {
         assertNull(new DisabledChecksumCompute().digest());
-        assertNull(new CRC32ChecksumCompute().digest());
     }
 }
