@@ -16,26 +16,17 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.codec.binary.Hex;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
 
-public class DropboxUploadFeature extends HttpUploadFeature<Metadata, MessageDigest> {
-    private static final Logger log = LogManager.getLogger(DropboxUploadFeature.class);
+public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
 
     final DropboxSession session;
 
@@ -44,32 +35,8 @@ public class DropboxUploadFeature extends HttpUploadFeature<Metadata, MessageDig
     }
 
     @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-        if(null == digest) {
-            log.warn("Checksum calculation disabled");
-            return super.decorate(in, null);
-        }
-        else {
-            return new DigestInputStream(in, digest);
-        }
-    }
-
-    @Override
-    protected MessageDigest digest() throws IOException {
-        MessageDigest digest = null;
-        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
-            try {
-                digest = new DropboxContentHasher(MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0);
-            }
-            catch(NoSuchAlgorithmException e) {
-                throw new IOException(e.getMessage(), e);
-            }
-        }
-        return digest;
-    }
-
-    @Override
-    protected void post(final Path file, final MessageDigest digest, final Metadata response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(((FileMetadata) response).getContentHash()));
+    protected Checksum checksum(final MessageDigest digest) {
+        // Same length as SHA-256 but a different algorithm
+        return new Checksum(HashAlgorithm.dropbox_content_hash, Hex.encodeHexString(digest.digest()));
     }
 }

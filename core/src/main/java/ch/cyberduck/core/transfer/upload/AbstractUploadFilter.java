@@ -32,6 +32,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
@@ -48,6 +49,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
@@ -56,6 +58,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -274,18 +277,25 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(options.checksum) {
             if(file.isFile()) {
-                final ChecksumCompute feature = session.getFeature(Write.class).checksum(file, status);
-                if(feature != null) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setChecksum(feature.compute(local.getInputStream(), status));
+                final Write<?> writer = session.getFeature(Write.class);
+                if(writer.features(file).contains(Write.Flags.checksum)) {
+                    final ChecksumCompute feature = writer.checksum(file, status);
+                    if(feature != null) {
+                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                                file.getName()));
+                        try {
+                            status.setChecksum(feature.compute(local.getInputStream(), status));
+                        }
+                        catch(LocalAccessDeniedException e) {
+                            // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
+                            // Lock for files is obtained only later in Transfer#pre
+                            log.warn(e.getMessage());
+                        }
                     }
-                    catch(LocalAccessDeniedException e) {
-                        // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
-                        // Lock for files is obtained only later in Transfer#pre
-                        log.warn(e.getMessage());
-                    }
+                }
+                else {
+                    // Calculate checksum while transferring and verify when complete
+                    status.setVerify(true);
                 }
             }
         }
@@ -333,6 +343,17 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         log.debug("Complete {} with status {}", file.getAbsolute(), status);
         if(status.isComplete()) {
+            if(file.isFile()) {
+                if(options.checksum) {
+                    // Checksum calculated while streaming or otherwise prior to the transfer
+                    if(status.isVerify()) {
+                        this.verify(file, status.getDigest(), status.getResponse().getChecksum());
+                    }
+                    else {
+                        this.verify(file, status.getChecksum(), status.getResponse().getChecksum());
+                    }
+                }
+            }
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = session.getFeature(UnixPermission.class);
                 if(feature != null) {
@@ -386,5 +407,29 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
+    }
+
+    /**
+     * Compare the checksum calculated while transferring with the checksum in the response of the server
+     */
+    protected void verify(final Path file, final Checksum expected, final Checksum response) throws BackgroundException {
+        if(Checksum.NONE.equals(expected)) {
+            log.debug("Checksum not calculated for {}", file);
+            return;
+        }
+        if(Checksum.NONE.equals(response)) {
+            log.debug("Missing checksum in response for {}", file);
+            return;
+        }
+        if(ObjectUtils.notEqual(expected.algorithm, response.algorithm)) {
+            log.warn("Checksum {} returned by server is {} but expected {}", response.hex, response.algorithm, expected.algorithm);
+            return;
+        }
+        if(!response.equals(expected)) {
+            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
+                            expected.algorithm.toString(), expected.hex, response.hex));
+        }
+        log.debug("Verified checksum {} for {}", response, file);
     }
 }

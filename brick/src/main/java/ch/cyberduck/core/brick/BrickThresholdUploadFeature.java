@@ -36,9 +36,9 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
     }
 
     @Override
-    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > 0) {
-            return new BrickUploadFeature(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
+            return new BrickUploadFeature(session).upload(write, file, local, throttle, progress, listener, status, callback);
         }
         else {
             new BrickTouchFeature(session).touch(write, file, status);

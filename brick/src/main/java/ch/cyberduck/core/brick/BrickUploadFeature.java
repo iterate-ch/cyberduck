@@ -47,14 +47,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDigest> {
+public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
     private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
@@ -78,7 +77,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
     }
 
     @Override
-    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                              final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -97,7 +96,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 else {
                     length = remaining;
                 }
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
@@ -138,7 +137,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
     protected FileEntity completeUpload(final Path file, final String ref, final TransferStatus status, final List<TransferStatus> checksums) throws BackgroundException {
         try {
             return new FilesApi(session.getClient()).postFilesPath(new FilesPathBody()
-                    .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
+                    .etagsEtag(checksums.stream().map(s -> s.getDigest().hex).collect(Collectors.toList()))
                     .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                     .providedMtime(null != status.getModified() ? new DateTime(status.getModified()) : null)
                     .ref(ref)
@@ -165,12 +164,13 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                         .setSegment(true)
                         .setLength(length)
                         .setOffset(offset);
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                // Calculate checksum of the part while streaming as it is required only when completing the upload
+                status.setVerify(true);
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 BrickUploadFeature.super.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response for part number {}", partNumber);
                 return status;
             }

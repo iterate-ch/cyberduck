@@ -17,20 +17,16 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -48,7 +44,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -89,24 +84,6 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                             case HttpStatus.SC_OK:
                                 log.info("Received response {} for part number {}", response, status.getPart());
                                 // Upload complete
-                                if(response.containsHeader("ETag")) {
-                                    if(file.getType().contains(Path.Type.encrypted)) {
-                                        log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-                                    }
-                                    else {
-                                        if(HashAlgorithm.md5.equals(status.getChecksum().algorithm)) {
-                                            final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
-                                            if(!status.getChecksum().equals(etag)) {
-                                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                                        MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                                                etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
-                                            }
-                                        }
-                                    }
-                                }
-                                else {
-                                    log.debug("No ETag header in response available");
-                                }
                                 return null;
                             default:
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
@@ -172,6 +149,6 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum);
+        return EnumSet.of(Flags.timestamp);
     }
 }

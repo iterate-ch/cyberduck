@@ -43,15 +43,15 @@ public class BoxThresholdUploadService implements Upload<File> {
     }
 
     @Override
-    public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status.getLength())) {
             if(Vault.DISABLED == registry.find(session, file)) {
-                return new BoxLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
+                return new BoxLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, callback);
             }
             // Cannot comply with chunk size requirement from server
         }
-        return new BoxSmallUploadService().upload(write, file, local, throttle, progress, streamListener, status, callback);
+        return new BoxSmallUploadService().upload(write, file, local, throttle, progress, listener, status, callback);
     }
 
     protected boolean threshold(final Long length) {

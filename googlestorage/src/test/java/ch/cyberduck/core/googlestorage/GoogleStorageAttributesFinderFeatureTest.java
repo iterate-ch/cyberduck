@@ -29,7 +29,6 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -71,12 +70,13 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
     public void testPreviousVersionReferences() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final String versionId = new GoogleStorageAttributesFinderFeature(session).find(test).getVersionId();
+        final PathAttributes attr = new GoogleStorageAttributesFinderFeature(session).find(test);
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attr.getChecksum().hex);
+        final String versionId = attr.getVersionId();
         assertEquals(test.attributes().getVersionId(), versionId);
         final byte[] content = RandomUtils.nextBytes(512);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();

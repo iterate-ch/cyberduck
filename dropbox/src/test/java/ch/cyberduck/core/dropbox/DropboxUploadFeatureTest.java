@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,7 +39,8 @@ import java.util.EnumSet;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DropboxUploadFeatureTest extends AbstractDropboxTest {
@@ -71,11 +71,5 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         assertEquals(((FileMetadata) metadata).getContentHash(), attributes.getChecksum().hash);
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
-    }
-
-    @Test
-    public void testDecorate() throws Exception {
-        final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new DropboxUploadFeature(session).decorate(n, null).getClass());
     }
 }

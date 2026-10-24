@@ -85,7 +85,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final BytecountStreamListener count = new BytecountStreamListener();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature<StorageObject> m = new CryptoUploadFeature<>(session,
-                new S3SingleUploadService(session),
+                new S3SingleUploadService(),
                 cryptomator);
         m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, writeStatus, null);
         assertEquals(content.length, count.getSent());

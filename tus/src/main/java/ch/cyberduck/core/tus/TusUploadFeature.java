@@ -57,7 +57,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ import java.util.concurrent.Future;
 
 import static ch.cyberduck.core.tus.TusCapabilities.*;
 
-public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class TusUploadFeature extends HttpUploadFeature<Void> {
     private static final Logger log = LogManager.getLogger(TusUploadFeature.class);
 
     public static final String UPLOAD_URL = "uploadUrl";
@@ -83,7 +82,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     }
 
     @Override
-    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // In order to achieve parallel upload the Concatenation extension MAY be used.
         final List<Future<Void>> chunks = new ArrayList<>();
@@ -107,7 +106,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         long remaining = status.getLength();
         while(remaining > 0) {
             final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
-            chunks.add(this.submit(write, file, local, throttle, streamListener, status,
+            chunks.add(this.submit(write, file, local, throttle, listener, status,
                     uploadUrl, offset, length, callback));
             remaining -= length;
             offset += length;
@@ -182,12 +181,15 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                         .setOffset(offset)
                         .setLength(length);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                // Optional checksum of the chunk for the server to verify
+                if(write.features(file).contains(Write.Flags.checksum)) {
+                    status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                }
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_URL, uploadUrl);
                 status.setParameters(parameters);
                 final Void response = TusUploadFeature.this.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response {}", response);
                 return null;
             }

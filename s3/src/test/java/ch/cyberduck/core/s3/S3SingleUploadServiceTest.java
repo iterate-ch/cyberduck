@@ -15,7 +15,6 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -24,6 +23,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,23 +40,16 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test
-    public void testDecorate() throws Exception {
-        final NullInputStream n = new NullInputStream(1L);
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
-        assertSame(NullInputStream.class, new S3SingleUploadService(session
-        ).decorate(n, null).getClass());
-    }
-
-    @Test
     public void testUpload() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final S3SingleUploadService service = new S3SingleUploadService();
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -83,7 +75,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSSE() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final S3SingleUploadService service = new S3SingleUploadService();
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -107,7 +99,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadWithSHA256Checksum() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final S3SingleUploadService service = new S3SingleUploadService();
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -127,9 +119,35 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         local.delete();
     }
 
+    @Test
+    public void testUploadObjectLock() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3SingleUploadService service = new S3SingleUploadService();
+        final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID() + ".txt";
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final byte[] random = RandomUtils.nextBytes(1000);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final S3WriteFeature writer = new S3WriteFeature(session, acl);
+        final TransferStatus status = new TransferStatus().setLength(random.length);
+        // Content-MD5 is required for upload to a bucket with Object Lock and calculated prior to the transfer
+        status.setChecksum(writer.checksum(test, status).compute(local.getInputStream(), status));
+        assertEquals(HashAlgorithm.md5, status.getChecksum().algorithm);
+        service.upload(writer, test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
+        assertTrue(status.isComplete());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals(random.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        final S3SingleUploadService m = new S3SingleUploadService(session);
+        final S3SingleUploadService m = new S3SingleUploadService();
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

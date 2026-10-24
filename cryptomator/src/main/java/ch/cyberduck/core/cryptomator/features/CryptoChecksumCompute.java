@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -61,6 +62,15 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
     public CryptoChecksumCompute(final ChecksumCompute delegate, final AbstractVault CryptoVaultInterface) {
         this.cryptomator = CryptoVaultInterface;
         this.delegate = delegate;
+    }
+
+    public MessageDigest digest() throws ChecksumException {
+        return delegate.digest();
+    }
+
+    @Override
+    public boolean isTransformed() {
+        return true;
     }
 
     @Override

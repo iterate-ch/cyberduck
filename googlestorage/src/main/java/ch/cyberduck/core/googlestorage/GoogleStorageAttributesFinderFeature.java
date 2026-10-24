@@ -33,6 +33,8 @@ import ch.cyberduck.core.io.Checksum;
 
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -194,7 +196,10 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                 }
             });
         }
-        attributes.setChecksum(Checksum.parse(object.getMd5Hash()));
+        if(object.getMd5Hash() != null) {
+            // MD5 hash of the data encoded using base64
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(object.getMd5Hash()))));
+        }
         if(object.getMetadata() != null) {
             attributes.setMetadata(object.getMetadata());
         }

@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -56,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
+public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     private final EueSession session;
@@ -77,7 +78,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -100,7 +101,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             log.debug("Upload {} to {}", file, uploadUri);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
@@ -128,11 +129,12 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 }
                 else {
                     throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                            MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
                                     HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
                 }
             }
-            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
+            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size,
+                    new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64()));
             // Mark parent status as complete
             status.setResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
             return object;
@@ -170,7 +172,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", chunk, partNumber);
                 return chunk;
             }

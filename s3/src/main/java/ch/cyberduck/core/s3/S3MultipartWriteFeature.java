@@ -1,12 +1,10 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -34,7 +32,6 @@ import org.jets3t.service.model.StorageObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -93,7 +90,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     private final class MultipartOutputStream extends OutputStream {
@@ -109,9 +106,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<ServiceException> canceled = new AtomicReference<>();
         private final AtomicReference<MultipartCompleted> response = new AtomicReference<>();
-
-        private final ChecksumCompute md5 = ChecksumComputeFactory.get(HashAlgorithm.md5);
-        private final ChecksumCompute sha256 = ChecksumComputeFactory.get(HashAlgorithm.sha256);
 
         private Long offset = 0L;
         private int partNumber;
@@ -137,15 +131,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         parameters.put("uploadId", multipart.getUploadId());
                         parameters.put("partNumber", String.valueOf(++partNumber));
                         final TransferStatus status = new TransferStatus().setParameters(parameters).setLength(len);
-                        switch(session.getSignatureVersion()) {
-                            case AWS4HMACSHA256:
-                                status.setChecksum(sha256.compute(new ByteArrayInputStream(content, off, len), status));
-                                break;
-                        }
                         status.setParent(overall);
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);
-                        part.addMetadata(HttpHeaders.CONTENT_MD5, md5.compute(new ByteArrayInputStream(content, off, len), status).base64);
+                        part.addMetadata(HttpHeaders.CONTENT_MD5, checksum(file, overall).compute(new ByteArrayInputStream(content, off, len), status).base64);
                         try {
                             final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(
@@ -195,29 +184,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                 }
                 final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
                 log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
-                if(file.getType().contains(Path.Type.encrypted)) {
-                    log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-                }
-                else {
-                    if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                        final StringBuilder concat = new StringBuilder();
-                        for(MultipartPart part : completed) {
-                            concat.append(part.getEtag());
-                        }
-                        final String expected = String.format("%s-%d",
-                                ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString()), completed.size());
-                        final String reference = StringUtils.remove(complete.getEtag(), "\"");
-                        if(!StringUtils.equalsIgnoreCase(expected, reference)) {
-                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                            expected, reference));
-                        }
-                    }
-                }
                 response.set(complete);
-            }
-            catch(BackgroundException e) {
-                throw new IOException(e);
             }
             catch(ServiceException e) {
                 throw new IOException(e.getErrorMessage(), new S3ExceptionMappingService().map(e));

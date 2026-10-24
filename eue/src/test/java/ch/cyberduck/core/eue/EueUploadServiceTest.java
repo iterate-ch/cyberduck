@@ -44,7 +44,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueUploadService s = new EueUploadService(session);
+        final EueUploadService s = new EueUploadService();
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
@@ -59,6 +59,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        this.assertResponseMatchesFinder(fileid, file, status);
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];

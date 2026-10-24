@@ -133,7 +133,8 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(content.length, count.getSent());
             in.close();
             out.close();
-            assertEquals(checksum, out.getStatus().getChecksum());
+            assertEquals(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)), out.getStatus().getChecksum());
+            this.assertResponseMatchesFinder(fileid, file, status);
             assertNotEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
             resourceId = status.getResponse().getFileId();
             assertTrue(new EueFindFeature(session, fileid).find(file));
@@ -164,7 +165,8 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(content.length, count.getSent());
             in.close();
             out.close();
-            assertEquals(checksum, out.getStatus().getChecksum());
+            assertEquals(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)), out.getStatus().getChecksum());
+            this.assertResponseMatchesFinder(fileid, file, status);
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertNotEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);

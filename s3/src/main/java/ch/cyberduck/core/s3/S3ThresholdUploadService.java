@@ -62,17 +62,17 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public StorageObject upload(final Write<StorageObject> write, final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(this.threshold(status)) {
             try {
-                return new S3MultipartUploadService(session, acl).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+                return new S3MultipartUploadService(session, acl).upload(write, file, local, throttle, progress, listener, status, prompt);
             }
             catch(NotfoundException | InteroperabilityException e) {
                 log.warn("Failure {} using multipart upload. Fallback to single upload.", e.getMessage());
                 status.setAppend(false);
                 try {
-                    return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+                    return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
                 }
                 catch(BackgroundException f) {
                     log.warn("Failure {} using single upload. Throw original multipart failure {}", e, e);
@@ -81,7 +81,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             }
         }
         // Use single upload service
-        return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+        return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
     }
 
     protected boolean threshold(final TransferStatus status) {

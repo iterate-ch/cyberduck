@@ -17,11 +17,8 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.security.MessageDigest;
+public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
 
-public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
-
-    public EueUploadService(final EueSession session) {
-
+    public EueUploadService() {
     }
 }

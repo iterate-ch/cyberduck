@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -33,6 +34,7 @@ import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 
 public class IRODSWriteFeature implements Write<List<String>> {
@@ -58,7 +60,7 @@ public class IRODSWriteFeature implements Write<List<String>> {
                 @Override
                 public void close() throws IOException {
                     // Instruct the server to compute and register a checksum for the replica on close
-                    stream.close(IRODSUploadFeature.closeInstructions(IRODSUploadFeature.hasChecksum(status)));
+                    stream.close(IRODSUploadFeature.closeInstructions(status.getChecksum() != Checksum.NONE));
                     try {
                         // Set the latest attributes of the data object registered by the server
                         reply = IRODSAttributesFinderFeature.query(conn.getRcComm(), file.getAbsolute());
@@ -86,6 +88,11 @@ public class IRODSWriteFeature implements Write<List<String>> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Uploading {0} failed", e, file);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.checksum);
     }
 
     /**

@@ -121,13 +121,13 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService,
                 1024L * 1024L, 1) {
             @Override
-            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener message, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 1L * 1024L * 1024L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.upload(write, file, local, throttle, message, listener, status, cancel, progress, callback);
             }
         };
         final BytecountStreamListener listener = new BytecountStreamListener();

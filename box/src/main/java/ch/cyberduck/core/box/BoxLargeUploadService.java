@@ -32,7 +32,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -44,7 +43,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +52,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest> {
+public class BoxLargeUploadService extends HttpUploadFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";
@@ -76,12 +74,12 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
     }
 
     @Override
-    public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             if(status.getChecksum().algorithm != HashAlgorithm.sha1) {
-                status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), status));
+                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
             }
             final List<Future<Part>> parts = new ArrayList<>();
             long offset = 0;
@@ -90,7 +88,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             final UploadSession uploadSession = helper.createUploadSession(status, file);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(uploadSession.getPartSize(), remaining);
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadSession.getId(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
@@ -139,7 +137,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
                 status.setParameters(parameters);
                 final File response = BoxLargeUploadService.this.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", response, partNumber);
                 return new Part(response, status);
             }

@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -247,11 +248,12 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                 }
                                 else {
                                     throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                            MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                            MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
                                                     HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
                                 }
                             }
-                            result.set(new EueWriteFeature.Chunk(resourceId, offset, cdash64));
+                            result.set(new EueWriteFeature.Chunk(resourceId, offset,
+                                    new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64())));
                         }
                         catch(BackgroundException e) {
                             throw new IOException(e);

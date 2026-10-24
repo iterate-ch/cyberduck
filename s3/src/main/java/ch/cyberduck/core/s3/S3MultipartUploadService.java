@@ -27,15 +27,11 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -55,18 +51,15 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Future;
 
-public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
+public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3MultipartUploadService.class);
 
     private final S3Session session;
@@ -95,7 +88,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     @Override
-    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -152,7 +145,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     // Last part can be less than 5 MB. Adjust part size.
                     final long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, multipart, partNumber, offset, length, callback));
+                    parts.add(this.submit(pool, write, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                     remaining -= length;
                     offset += length;
                 }
@@ -166,26 +159,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     file.getName()));
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             log.info("Completed multipart upload for {} with {} parts and checksum {}", complete.getObjectKey(), completed.size(), complete.getEtag());
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-            }
-            else {
-                if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    completed.sort(new MultipartPart.PartNumberComparator());
-                    final StringBuilder concat = new StringBuilder();
-                    for(MultipartPart part : completed) {
-                        concat.append(part.getEtag());
-                    }
-                    final String expected = String.format("%s-%d",
-                            ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString()), completed.size());
-                    final String reference = StringUtils.remove(complete.getEtag(), "\"");
-                    if(!StringUtils.equalsIgnoreCase(expected, reference)) {
-                        throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        expected, reference));
-                    }
-                }
-            }
             final StorageObject object = new StorageObject(containerService.getKey(file));
             object.setETag(complete.getEtag());
             object.setContentLength(size);
@@ -228,20 +201,12 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 status.setParameters(requestParameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                final Set<Checksum> checksum = write.checksum(file, status).computeAll(local.getInputStream(), status);
-                switch(session.getSignatureVersion()) {
-                    case AWS4HMACSHA256:
-                        checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.sha256)).findFirst().ifPresent(status::setChecksum);
-                        break;
-                }
-                final Optional<Checksum> md5 = checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.md5)).findFirst();
-                if(md5.isPresent()) {
-                    final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
-                    metadata.put(HttpHeaders.CONTENT_MD5, md5.get().base64);
-                    status.setMetadata(metadata);
-                }
+                final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
+                // Content-MD5 is required for upload to a bucket with Object Lock. The payload is not signed.
+                metadata.put(HttpHeaders.CONTENT_MD5, write.checksum(file, status).compute(local.getInputStream(), status).base64);
+                status.setMetadata(metadata);
                 final StorageObject part = S3MultipartUploadService.this.upload(
-                        write, file, local, throttle, counter, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
                 log.info("Received response {} for part number {}", part, partNumber);
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber,
@@ -271,5 +236,4 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         }
         return Write.override;
     }
-
 }
