@@ -16,6 +16,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -24,10 +25,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
-import net.schmizz.sshj.sftp.PacketType;
 import net.schmizz.sshj.sftp.Request;
 
 public class SFTPCopyFeature implements Copy {
+
+    /**
+     * Extension name from draft-ietf-secsh-filexfer-extensions
+     */
+    public static final String EXTENSION = "copy-file";
 
     private final SFTPSession session;
 
@@ -38,15 +43,15 @@ public class SFTPCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try {
-            final Request request = session.sftp().newExtendedRequest("copy-file")
+            final Request request = session.sftp().newExtendedRequest(EXTENSION)
                     .putString(source.getAbsolute())
                     .putString(target.getAbsolute())
                     .putBoolean(status.isExists());
-            session.sftp().request(request).retrieve().ensurePacketTypeIs(PacketType.STATUS);
+            session.sftp().request(request).retrieve().ensureStatusPacketIsOK();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
         }
-        return null;
+        return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes()));
     }
 }
