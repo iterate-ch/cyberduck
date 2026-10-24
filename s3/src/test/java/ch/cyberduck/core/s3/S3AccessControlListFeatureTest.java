@@ -20,18 +20,12 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -62,6 +56,23 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotEquals(Acl.EMPTY, f.getPermission(container));
         assertEquals(Acl.EMPTY, f.getDefault(container));
+    }
+
+    @Test
+    public void testBucketOwnerEnforced() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck-ownerenforced", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        // ACLs are disabled for objects in bucket with owner enforced
+        assertEquals(Acl.EMPTY, f.getDefault(file));
+        // Bucket ACL is still read but cannot be edited
+        final Acl bucketAcl = f.getPermission(container);
+        assertNotEquals(Acl.EMPTY, bucketAcl);
+        assertFalse(bucketAcl.isEditable());
+        // Reading object ACL is skipped
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, f), file, new TransferStatus());
+        assertEquals(Acl.EMPTY, f.getPermission(file));
+        new S3DefaultDeleteFeature(session, f).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
