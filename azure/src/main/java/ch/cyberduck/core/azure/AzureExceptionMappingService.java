@@ -29,10 +29,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.implementation.models.BlobStorageError;
 import com.azure.storage.file.datalake.implementation.models.DataLakeStorageError;
+import com.azure.core.http.HttpHeader;
 
 import static com.azure.storage.blob.models.BlobErrorCode.BLOCK_COUNT_EXCEEDS_LIMIT;
 import static com.azure.storage.common.implementation.Constants.HeaderConstants.ERROR_CODE_HEADER_NAME;
@@ -102,6 +105,8 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
             case 403:
                 return new LoginFailureException(buffer.toString(), failure);
         }
-        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getResponse().getStatusCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getResponse().getStatusCode(),
+                StreamSupport.stream(failure.getResponse().getHeaders().spliterator(), false)
+                        .collect(Collectors.toMap(HttpHeader::getName, HttpHeader::getValuesList, (a, b) -> a)));
     }
 }

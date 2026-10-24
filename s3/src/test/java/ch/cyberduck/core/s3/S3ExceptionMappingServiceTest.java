@@ -20,9 +20,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
@@ -33,6 +35,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -67,6 +70,17 @@ public class S3ExceptionMappingServiceTest {
         f.setErrorMessage("m");
         f.setResponseCode(400);
         assertTrue(new S3ExceptionMappingService().map(f) instanceof InteroperabilityException);
+    }
+
+    @Test
+    public void testTooManyRequestsRetryAfter() {
+        final ServiceException f = new ServiceException("m", "<null/>");
+        f.setResponseCode(429);
+        f.setErrorMessage("m");
+        f.setResponseHeaders(Collections.singletonMap("Retry-After", "9"));
+        final BackgroundException failure = new S3ExceptionMappingService().map(f);
+        assertTrue(failure instanceof RetriableAccessDeniedException);
+        assertEquals(9L, ((RetriableAccessDeniedException) failure).getDelay().getSeconds());
     }
 
     @Test

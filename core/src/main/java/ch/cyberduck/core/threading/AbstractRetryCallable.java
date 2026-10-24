@@ -84,8 +84,8 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 break;
             case application:
                 if(failure instanceof RetriableAccessDeniedException) {
-                    // Explicitly retry
-                    delay = (int) ((RetriableAccessDeniedException) failure).getDelay().getSeconds();
+                    // Explicitly retry after the delay requested by the server but not sooner than the backoff
+                    delay = Math.max((int) ((RetriableAccessDeniedException) failure).getDelay().getSeconds(), backoff);
                     break;
                 }
             default:

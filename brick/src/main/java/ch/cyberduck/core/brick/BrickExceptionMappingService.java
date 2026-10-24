@@ -82,7 +82,7 @@ public class BrickExceptionMappingService extends AbstractExceptionMappingServic
                 }
                 return new LockedException(StringUtils.EMPTY, failure);
         }
-        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode(), failure.getResponseHeaders());
     }
 
     private void parse(final StringBuilder buffer, final String message) {
