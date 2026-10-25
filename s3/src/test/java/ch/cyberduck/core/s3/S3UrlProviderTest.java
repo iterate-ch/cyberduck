@@ -49,14 +49,16 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
-    public void testWebURL() {
+    public void testWebURL() throws Exception {
+        // Region is read from cache only
+        new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation("test-eu-west-1-cyberduck");
         {
             final DescriptiveUrlBag list = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                     EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http));
             assertEquals(2, list.size());
             final Iterator<DescriptiveUrl> provider = list.iterator();
-            assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
-            assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("http://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", provider.next().getUrl());
         }
         session.getHost().setWebURL("https://cdn.cyberduck.io/");
         {
@@ -64,8 +66,8 @@ public class S3UrlProviderTest extends AbstractS3Test {
                     EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http));
             assertEquals(3, list.size());
             final Iterator<DescriptiveUrl> provider = list.iterator();
-            assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
-            assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", provider.next().getUrl());
+            assertEquals("http://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", provider.next().getUrl());
             assertEquals("https://cdn.cyberduck.io/test-eu-west-1-cyberduck/key", provider.next().getUrl());
         }
     }
@@ -85,11 +87,32 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
-    public void testHttpURL() {
+    public void testHttpURL() throws Exception {
+        // Region is read from cache only
+        new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation("test-eu-west-1-cyberduck");
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
-        assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", http.next().getUrl());
-        assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", http.next().getUrl());
+        assertEquals("https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", http.next().getUrl());
+    }
+
+    @Test
+    public void testHttpURLUnknownRegion() {
+        // Not connected and region cannot be determined
+        final S3Session unconnected = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(unconnected, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
+                EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
+        assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
+    }
+
+    @Test
+    public void testHttpURLConfiguredRegion() {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
+        host.setRegion("eu-west-1");
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(new S3Session(host), Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
+                EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
+        assertEquals("https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
@@ -99,8 +122,8 @@ public class S3UrlProviderTest extends AbstractS3Test {
         session.getHost().setRegion("eu-west-1");
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
-        assertEquals("https://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com:8443/key", http.next().getUrl());
-        assertEquals("http://test-eu-west-1-cyberduck.s3.eu-west-1.amazonaws.com/key", http.next().getUrl());
+        assertEquals("https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com:8443/key", http.next().getUrl());
+        assertEquals("http://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", http.next().getUrl());
     }
 
     @Test
