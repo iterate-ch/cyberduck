@@ -67,6 +67,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hierynomus.sshj.key.KeyAlgorithm;
+import com.hierynomus.sshj.key.KeyAlgorithms;
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
 import net.schmizz.keepalive.KeepAliveProvider;
@@ -75,12 +77,15 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.Factory.Named;
+import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.connection.channel.direct.DirectConnection;
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
 import net.schmizz.sshj.sftp.SFTPException;
+import net.schmizz.sshj.signature.Signature;
+import net.schmizz.sshj.signature.SignatureRSA;
 import net.schmizz.sshj.transport.DisconnectListener;
 import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import net.schmizz.sshj.transport.Transport;
@@ -136,6 +141,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         configuration.setKeepAliveProvider(heartbeat);
         configuration.setCipherFactories(this.lowestPriorityForCBC(configuration.getCipherFactories()));
+        configuration.setKeyAlgorithms(withRsaSha2Certificates(configuration.getKeyAlgorithms()));
         return this.connect(key, prompt, configuration);
     }
 
@@ -428,6 +434,60 @@ public class SFTPSession extends Session<SSHClient> {
             proxycommand.close();
         }
         super.disconnect();
+    }
+
+    /**
+     * Offer RSA certificates with a SHA-2 signature which are not part of the default configuration. Required for
+     * servers refusing the SHA-1 signature of ssh-rsa-cert-v01@openssh.com such as Azure Blob Storage.
+     *
+     * @see <a href="https://github.com/hierynomus/sshj/issues/1069">sshj#1069</a>
+     */
+    static List<Named<KeyAlgorithm>> withRsaSha2Certificates(final List<Named<KeyAlgorithm>> factories) {
+        final List<String> names = factories.stream().map(Named::getName).collect(Collectors.toList());
+        final List<Named<KeyAlgorithm>> missing = new ArrayList<>();
+        if(!names.contains("rsa-sha2-512-cert-v01@openssh.com")) {
+            missing.add(new KeyAlgorithms.Factory("rsa-sha2-512-cert-v01@openssh.com",
+                    new RsaCertificateSignatureFactory("rsa-sha2-512-cert-v01@openssh.com", "SHA512withRSA", "rsa-sha2-512"),
+                    KeyType.RSA_CERT));
+        }
+        if(!names.contains("rsa-sha2-256-cert-v01@openssh.com")) {
+            missing.add(new KeyAlgorithms.Factory("rsa-sha2-256-cert-v01@openssh.com",
+                    new RsaCertificateSignatureFactory("rsa-sha2-256-cert-v01@openssh.com", "SHA256withRSA", "rsa-sha2-256"),
+                    KeyType.RSA_CERT));
+        }
+        if(missing.isEmpty()) {
+            return factories;
+        }
+        // Ahead of legacy SHA-1 certificate
+        int index = names.indexOf(KeyType.RSA_CERT.toString());
+        if(index < 0) {
+            index = factories.size();
+        }
+        final List<Named<KeyAlgorithm>> result = new ArrayList<>(factories);
+        result.addAll(index, missing);
+        return result;
+    }
+
+    private static final class RsaCertificateSignatureFactory implements Named<Signature> {
+        private final String name;
+        private final String algorithm;
+        private final String signature;
+
+        private RsaCertificateSignatureFactory(final String name, final String algorithm, final String signature) {
+            this.name = name;
+            this.algorithm = algorithm;
+            this.signature = signature;
+        }
+
+        @Override
+        public Signature create() {
+            return new SignatureRSA(algorithm, KeyType.RSA_CERT, signature);
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 
     private List<Named<Cipher>> lowestPriorityForCBC(final List<Named<Cipher>> factories) {
