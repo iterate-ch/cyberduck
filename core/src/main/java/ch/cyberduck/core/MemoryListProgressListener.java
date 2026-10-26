@@ -34,7 +34,7 @@ public class MemoryListProgressListener extends ProxyListProgressListener {
     }
 
     @Override
-    public ListProgressListener reset() throws ConnectionCanceledException {
+    public ListProgressListener reset() throws BackgroundException {
         contents.set(AttributedList.emptyList());
         super.reset();
         return this;

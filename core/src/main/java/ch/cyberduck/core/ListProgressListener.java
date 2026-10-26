@@ -54,7 +54,7 @@ public interface ListProgressListener extends ProgressListener {
      * @return Self
      * @throws ConnectionCanceledException Interrupt reading from server if possible
      */
-    default ListProgressListener reset() throws ConnectionCanceledException {
+    default ListProgressListener reset() throws BackgroundException {
         return this;
     }
 }
