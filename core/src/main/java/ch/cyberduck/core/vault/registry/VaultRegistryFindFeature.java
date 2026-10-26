@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -86,9 +87,13 @@ public class VaultRegistryFindFeature implements Find {
                     }
                 }
                 if(memory.getContents() != AttributedList.<Path>emptyList()) {
-                    // No vault found. Contents of the directory are not encrypted
+                    // No vault found or unlock canceled. Contents of the directory are not encrypted
                     listener.chunk(directory, memory.getContents());
                     return detect.find(file, capture);
+                }
+                if(detection.isCached(directory)) {
+                    // Parent directory not found
+                    throw new NotfoundException(directory.getAbsolute());
                 }
             }
         }

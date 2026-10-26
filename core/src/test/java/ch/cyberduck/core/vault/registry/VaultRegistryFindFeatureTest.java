@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -130,5 +131,44 @@ public class VaultRegistryFindFeatureTest {
         assertEquals(1, lists.get());
         // Contents of directory with vault are encrypted and not found by cleartext name
         assertFalse(cache.isCached(directory));
+    }
+
+    @Test
+    public void testListMissingParentDirectoryOnceWithAutodetect() throws Exception {
+        final AtomicInteger lists = new AtomicInteger();
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
+                lists.incrementAndGet();
+                throw new NotfoundException(folder.getAbsolute());
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == VaultProvider.class) {
+                    return (T) new DisabledVaultProvider() {
+                        @Override
+                        public VaultVersion find(final Path directory, final Find find, final ListProgressListener listener) throws BackgroundException {
+                            // Look up multiple vault markers
+                            find.find(new Path(directory, "masterkey.cryptomator", EnumSet.of(Path.Type.file)), listener);
+                            find.find(new Path(directory, "vault.uvf", EnumSet.of(Path.Type.file)), listener);
+                            return null;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        final PathCache cache = new PathCache(10);
+        final Find find = new CachingFindFeature(session, cache);
+        final Path directory = new Path("/new", EnumSet.of(Path.Type.directory));
+        assertFalse(find.find(new Path(directory, "f", EnumSet.of(Path.Type.file))));
+        assertEquals(1, lists.get());
+        assertTrue(cache.isCached(directory));
+        // Subsequent lookup in same missing directory served from cache
+        assertFalse(find.find(new Path(directory, "g", EnumSet.of(Path.Type.file))));
+        assertEquals(1, lists.get());
     }
 }
