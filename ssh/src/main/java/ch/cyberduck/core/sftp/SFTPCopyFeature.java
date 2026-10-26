@@ -16,7 +16,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -49,7 +48,7 @@ public class SFTPCopyFeature implements Copy {
                     .putBoolean(status.isExists());
             session.sftp().request(request).retrieve().ensureStatusPacketIsOK();
             listener.sent(status.getLength());
-            return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes()));
+            return new Path(target).withAttributes(new SFTPAttributesFinderFeature(session).find(target));
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
