@@ -88,7 +88,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.mime);
+        return EnumSet.of(Flags.timestamp, Flags.checksumRequired, Flags.checksumResponse, Flags.mime);
     }
 
     private class MultipartDelayedHttpEntityCallable extends DelayedHttpEntityCallable<File> {

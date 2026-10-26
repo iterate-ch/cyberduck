@@ -168,7 +168,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.acl, Flags.mime);
+        return EnumSet.of(Flags.timestamp, Flags.checksumRequired, Flags.checksumResponse, Flags.acl, Flags.mime);
     }
 
     @Override

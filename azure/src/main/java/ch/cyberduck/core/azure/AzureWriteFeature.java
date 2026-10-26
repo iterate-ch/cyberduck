@@ -81,7 +81,7 @@ public class AzureWriteFeature implements Write<Void> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum);
+        return EnumSet.of(Flags.checksumOptional);
     }
 
     @Override

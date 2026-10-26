@@ -80,7 +80,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.checksumResponse);
     }
 
     private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<Metadata> {

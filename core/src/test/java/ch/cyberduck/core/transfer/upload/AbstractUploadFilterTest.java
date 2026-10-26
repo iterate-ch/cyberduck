@@ -35,6 +35,7 @@ import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +52,7 @@ public class AbstractUploadFilterTest {
     private final Host host = new Host(new TestProtocol());
     private final Path file = new Path("/f", EnumSet.of(Path.Type.file));
 
-    private OverwriteFilter filter(final boolean checksum, final boolean flag) {
+    private OverwriteFilter filter(final boolean checksum, final Write.Flags... flags) {
         return new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
@@ -60,7 +61,7 @@ public class AbstractUploadFilterTest {
                     return (T) new NullWriteFeature() {
                         @Override
                         public EnumSet<Flags> features(final Path file) {
-                            return flag ? EnumSet.of(Flags.checksum) : EnumSet.noneOf(Flags.class);
+                            return flags.length == 0 ? EnumSet.noneOf(Flags.class) : EnumSet.copyOf(Arrays.asList(flags));
                         }
 
                         @Override
@@ -92,7 +93,7 @@ public class AbstractUploadFilterTest {
 
     private void assertMismatch(final TransferStatus status) throws Exception {
         try {
-            this.filter(true, false).complete(file, new NullLocal("f"), status, ProgressListener.noop);
+            this.filter(true).complete(file, new NullLocal("f"), status, ProgressListener.noop);
             fail();
         }
         catch(ChecksumException e) {
@@ -103,7 +104,7 @@ public class AbstractUploadFilterTest {
 
     @Test
     public void testDigestMatch() throws Exception {
-        this.filter(true, false).complete(file, new NullLocal("f"), this.streamed(MD5, MD5), ProgressListener.noop);
+        this.filter(true).complete(file, new NullLocal("f"), this.streamed(MD5, MD5), ProgressListener.noop);
     }
 
     @Test
@@ -113,22 +114,22 @@ public class AbstractUploadFilterTest {
 
     @Test
     public void testDigestDifferentAlgorithm() throws Exception {
-        this.filter(true, false).complete(file, new NullLocal("f"), this.streamed(MD5, SHA1), ProgressListener.noop);
+        this.filter(true).complete(file, new NullLocal("f"), this.streamed(MD5, SHA1), ProgressListener.noop);
     }
 
     @Test
     public void testDigestMissingChecksumInResponse() throws Exception {
-        this.filter(true, false).complete(file, new NullLocal("f"), this.streamed(MD5, Checksum.NONE), ProgressListener.noop);
+        this.filter(true).complete(file, new NullLocal("f"), this.streamed(MD5, Checksum.NONE), ProgressListener.noop);
     }
 
     @Test
     public void testDigestNotCalculated() throws Exception {
-        this.filter(true, false).complete(file, new NullLocal("f"), this.streamed(Checksum.NONE, MD5), ProgressListener.noop);
+        this.filter(true).complete(file, new NullLocal("f"), this.streamed(Checksum.NONE, MD5), ProgressListener.noop);
     }
 
     @Test
     public void testPrecalculatedMatch() throws Exception {
-        this.filter(true, true).complete(file, new NullLocal("f"), this.precalculated(MD5, MD5), ProgressListener.noop);
+        this.filter(true, Write.Flags.checksumOptional).complete(file, new NullLocal("f"), this.precalculated(MD5, MD5), ProgressListener.noop);
     }
 
     @Test
@@ -138,62 +139,87 @@ public class AbstractUploadFilterTest {
 
     @Test
     public void testPrecalculatedDifferentAlgorithm() throws Exception {
-        this.filter(true, true).complete(file, new NullLocal("f"), this.precalculated(MD5, SHA1), ProgressListener.noop);
+        this.filter(true, Write.Flags.checksumOptional).complete(file, new NullLocal("f"), this.precalculated(MD5, SHA1), ProgressListener.noop);
     }
 
     @Test
     public void testPrecalculatedMissingChecksumInResponse() throws Exception {
-        this.filter(true, true).complete(file, new NullLocal("f"), this.precalculated(MD5, Checksum.NONE), ProgressListener.noop);
+        this.filter(true, Write.Flags.checksumOptional).complete(file, new NullLocal("f"), this.precalculated(MD5, Checksum.NONE), ProgressListener.noop);
     }
 
     @Test
     public void testPrecalculatedNotCalculated() throws Exception {
-        this.filter(true, true).complete(file, new NullLocal("f"), this.precalculated(Checksum.NONE, MD5), ProgressListener.noop);
+        this.filter(true, Write.Flags.checksumOptional).complete(file, new NullLocal("f"), this.precalculated(Checksum.NONE, MD5), ProgressListener.noop);
     }
 
     @Test
     public void testDigestIgnoredWithoutVerify() throws Exception {
         // Checksum calculated prior to the transfer is verified when not calculated while streaming
-        this.filter(true, true).complete(file, new NullLocal("f"), new TransferStatus().setDigest(MD5_OTHER).setChecksum(MD5)
+        this.filter(true, Write.Flags.checksumOptional).complete(file, new NullLocal("f"), new TransferStatus().setDigest(MD5_OTHER).setChecksum(MD5)
                 .setResponse(new DefaultPathAttributes().setChecksum(MD5)).setComplete(), ProgressListener.noop);
     }
 
     @Test
     public void testChecksumIgnoredWithVerify() throws Exception {
         // Checksum calculated while streaming is verified
-        this.filter(true, false).complete(file, new NullLocal("f"), new TransferStatus().setVerify(true).setDigest(MD5).setChecksum(MD5_OTHER)
+        this.filter(true).complete(file, new NullLocal("f"), new TransferStatus().setVerify(true).setDigest(MD5).setChecksum(MD5_OTHER)
                 .setResponse(new DefaultPathAttributes().setChecksum(MD5)).setComplete(), ProgressListener.noop);
     }
 
     @Test
     public void testNotComplete() throws Exception {
-        this.filter(true, false).complete(file, new NullLocal("f"), new TransferStatus().setVerify(true).setDigest(MD5)
+        this.filter(true).complete(file, new NullLocal("f"), new TransferStatus().setVerify(true).setDigest(MD5)
                 .setResponse(new DefaultPathAttributes().setChecksum(MD5_OTHER)), ProgressListener.noop);
     }
 
     @Test
     public void testMismatchVerificationDisabled() throws Exception {
-        this.filter(false, false).complete(file, new NullLocal("f"), this.streamed(MD5, MD5_OTHER), ProgressListener.noop);
-        this.filter(false, true).complete(file, new NullLocal("f"), this.precalculated(MD5, MD5_OTHER), ProgressListener.noop);
+        this.filter(false).complete(file, new NullLocal("f"), this.streamed(MD5, MD5_OTHER), ProgressListener.noop);
+        this.filter(false, Write.Flags.checksumOptional).complete(file, new NullLocal("f"), this.precalculated(MD5, MD5_OTHER), ProgressListener.noop);
     }
 
     @Test
-    public void testPrepareVerifyWithoutChecksumFlag() throws Exception {
-        final TransferStatus status = this.filter(true, false).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
+    public void testPrepareNothingWithoutFlags() throws Exception {
+        final TransferStatus status = this.filter(true).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
+        assertFalse(status.isVerify());
+        assertEquals(Checksum.NONE, status.getChecksum());
+    }
+
+    @Test
+    public void testPrepareVerifyWithChecksumResponse() throws Exception {
+        final TransferStatus status = this.filter(true, Write.Flags.checksumResponse).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
         assertTrue(status.isVerify());
         assertEquals(Checksum.NONE, status.getChecksum());
     }
 
     @Test
-    public void testPrepareChecksumWithChecksumFlag() throws Exception {
-        final TransferStatus status = this.filter(true, true).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
+    public void testPrepareChecksumOptional() throws Exception {
+        final TransferStatus status = this.filter(true, Write.Flags.checksumOptional).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
         assertFalse(status.isVerify());
         assertEquals(HashAlgorithm.md5, status.getChecksum().algorithm);
     }
 
     @Test
+    public void testPrepareChecksumOptionalAndResponse() throws Exception {
+        // Calculated prior to the transfer and not while streaming
+        final TransferStatus status = this.filter(true, Write.Flags.checksumOptional, Write.Flags.checksumResponse).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
+        assertFalse(status.isVerify());
+        assertEquals(HashAlgorithm.md5, status.getChecksum().algorithm);
+    }
+
+    @Test
+    public void testPrepareChecksumRequired() throws Exception {
+        // Calculated regardless of the preference
+        for(boolean preference : new boolean[]{true, false}) {
+            final TransferStatus status = this.filter(preference, Write.Flags.checksumRequired).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
+            assertFalse(status.isVerify());
+            assertEquals(HashAlgorithm.md5, status.getChecksum().algorithm);
+        }
+    }
+
+    @Test
     public void testPrepareDisabled() throws Exception {
-        for(boolean flag : new boolean[]{true, false}) {
+        for(Write.Flags flag : new Write.Flags[]{Write.Flags.checksumOptional, Write.Flags.checksumResponse}) {
             final TransferStatus status = this.filter(false, flag).prepare(file, new NullLocal("f"), new TransferStatus(), ProgressListener.noop);
             assertFalse(status.isVerify());
             assertEquals(Checksum.NONE, status.getChecksum());
@@ -202,7 +228,7 @@ public class AbstractUploadFilterTest {
 
     @Test
     public void testPrepareDirectory() throws Exception {
-        for(boolean flag : new boolean[]{true, false}) {
+        for(Write.Flags flag : new Write.Flags[]{Write.Flags.checksumRequired, Write.Flags.checksumOptional, Write.Flags.checksumResponse}) {
             final TransferStatus status = this.filter(true, flag).prepare(new Path("/d", EnumSet.of(Path.Type.directory)), new NullLocal("d"), new TransferStatus(), ProgressListener.noop);
             assertFalse(status.isVerify());
             assertEquals(Checksum.NONE, status.getChecksum());

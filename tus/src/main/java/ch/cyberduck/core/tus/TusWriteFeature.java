@@ -146,7 +146,7 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     @Override
     public EnumSet<Flags> features(final Path file) {
         if(capabilities.extensions.contains(Extension.checksum)) {
-            return EnumSet.of(Flags.checksum, Flags.mime);
+            return EnumSet.of(Flags.checksumOptional, Flags.mime);
         }
         return EnumSet.of(Flags.mime);
     }

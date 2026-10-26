@@ -92,7 +92,7 @@ public class IRODSWriteFeature implements Write<List<String>> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum);
+        return EnumSet.of(Flags.checksumOptional);
     }
 
     /**

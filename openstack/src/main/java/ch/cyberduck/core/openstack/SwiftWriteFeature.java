@@ -111,6 +111,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum);
+        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
     }
 }

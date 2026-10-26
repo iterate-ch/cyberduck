@@ -119,7 +119,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * Checksum of the content calculated prior to the transfer to send with the upload request, allowing the server
      * to verify the data received. Checksum#NONE if not calculated.
      *
-     * @see ch.cyberduck.core.features.Write.Flags#checksum
+     * @see ch.cyberduck.core.features.Write.Flags#checksumRequired
+     * @see ch.cyberduck.core.features.Write.Flags#checksumOptional
      */
     private Checksum checksum = Checksum.NONE;
 

@@ -275,28 +275,29 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
-        if(options.checksum) {
-            if(file.isFile()) {
-                final Write<?> writer = session.getFeature(Write.class);
-                if(writer.features(file).contains(Write.Flags.checksum)) {
-                    final ChecksumCompute feature = writer.checksum(file, status);
-                    if(feature != null) {
-                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                                file.getName()));
-                        try {
-                            status.setChecksum(feature.compute(local.getInputStream(), status));
-                        }
-                        catch(LocalAccessDeniedException e) {
-                            // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
-                            // Lock for files is obtained only later in Transfer#pre
-                            log.warn(e.getMessage());
-                        }
+        if(file.isFile()) {
+            final Write<?> writer = session.getFeature(Write.class);
+            final EnumSet<Write.Flags> flags = writer.features(file);
+            // Checksum required for the upload is calculated regardless of the preference
+            if(flags.contains(Write.Flags.checksumRequired)
+                    || (options.checksum && flags.contains(Write.Flags.checksumOptional))) {
+                final ChecksumCompute feature = writer.checksum(file, status);
+                if(feature != null) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                            file.getName()));
+                    try {
+                        status.setChecksum(feature.compute(local.getInputStream(), status));
+                    }
+                    catch(LocalAccessDeniedException e) {
+                        // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
+                        // Lock for files is obtained only later in Transfer#pre
+                        log.warn(e.getMessage());
                     }
                 }
-                else {
-                    // Calculate checksum while transferring and verify when complete
-                    status.setVerify(true);
-                }
+            }
+            else if(options.checksum && flags.contains(Write.Flags.checksumResponse)) {
+                // Calculate checksum while transferring and verify when complete
+                status.setVerify(true);
             }
         }
         return status;
