@@ -21,7 +21,11 @@ The following additional [mailing lists](http://lists.cyberduck.io/) are hosted:
 
 ## Source
 
-Source code is available licensed under the [GNU General Public License Version 3](https://www.gnu.org/licenses/gpl-3.0.en.html). Pull requests welcome!
+Source code is available licensed under the [GNU General Public License Version 3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+## Contributions
+
+Pull requests welcome! Please read the [contributing guidelines](CONTRIBUTING.md) and sign the Contributor License Agreement first.
 
 ## Localizations
 

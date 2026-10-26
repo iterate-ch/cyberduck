@@ -19,6 +19,12 @@ public final class OcsCapabilities {
     public String webdav;
     public boolean versioning;
     public boolean locking;
+    /**
+     * Storage spaces with project spaces and share jail
+     */
+    public boolean spaces;
+    public boolean projects;
+    public boolean sharejail;
 
     public OcsCapabilities withWebdav(final String webdav) {
         this.webdav = webdav;
@@ -35,13 +41,30 @@ public final class OcsCapabilities {
         return this;
     }
 
+    public OcsCapabilities withSpaces(final boolean spaces) {
+        this.spaces = spaces;
+        return this;
+    }
+
+    public OcsCapabilities withProjects(final boolean projects) {
+        this.projects = projects;
+        return this;
+    }
+
+    public OcsCapabilities withSharejail(final boolean sharejail) {
+        this.sharejail = sharejail;
+        return this;
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("OcsCapabilities{");
-        sb.append("webdav='").append(webdav).append('\'');
-        sb.append(", versioning=").append(versioning);
-        sb.append(", locking=").append(locking);
-        sb.append('}');
-        return sb.toString();
+        final String sb = "OcsCapabilities{" + "webdav='" + webdav + '\'' +
+                ", versioning=" + versioning +
+                ", locking=" + locking +
+                ", spaces=" + spaces +
+                ", projects=" + projects +
+                ", sharejail=" + sharejail +
+                '}';
+        return sb;
     }
 }

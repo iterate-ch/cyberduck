@@ -86,6 +86,11 @@ public class SDSPermissionsFeature implements AclPermission {
         );
     }
 
+    @Override
+    public Acl getDefault(final Path file) {
+        return Acl.EMPTY;
+    }
+
     public boolean containsRole(final Path file, final Acl.Role role) {
         if(Acl.EMPTY == file.attributes().getAcl()) {
             // Missing initialization

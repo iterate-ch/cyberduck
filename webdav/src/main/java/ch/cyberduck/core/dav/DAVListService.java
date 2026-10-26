@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -62,13 +63,15 @@ public class DAVListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             final List<DavResource> resources = this.propfind(directory);
+            // Path of directory on server may differ from path in browser
+            final Path self = new Path(URIEncoder.decode(new DAVPathEncoder(session).encode(directory)), EnumSet.of(Path.Type.directory));
             if(resources.isEmpty()) {
                 listener.chunk(directory, children);
             }
             for(List<DavResource> list : ListUtils.partition(resources,
                     HostPreferencesFactory.get(session.getHost()).getInteger("webdav.listing.chunksize"))) {
                 for(final DavResource resource : list) {
-                    if(new SimplePathPredicate(new Path(resource.getHref().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
+                    if(new SimplePathPredicate(new Path(resource.getHref().getPath(), EnumSet.of(Path.Type.directory))).test(self)) {
                         log.warn("Ignore resource {}", resource);
                         // Do not include self
                         if(resource.isDirectory()) {
@@ -94,7 +97,7 @@ public class DAVListService implements ListService {
     }
 
     protected List<DavResource> propfind(final Path directory) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
+        return session.getClient().list(new DAVPathEncoder(session).encode(directory), 1,
                 Stream.of(
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                                 DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).

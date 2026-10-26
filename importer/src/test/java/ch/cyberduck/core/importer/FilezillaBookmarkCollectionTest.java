@@ -1,8 +1,8 @@
 package ch.cyberduck.core.importer;
 
+import ch.cyberduck.core.DefaultHostPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
@@ -29,7 +29,7 @@ public class FilezillaBookmarkCollectionTest {
     @Test
     public void testParseBase64EncodedPassword() throws Exception {
         final AtomicBoolean saved = new AtomicBoolean();
-        FilezillaBookmarkCollection c = new FilezillaBookmarkCollection(new PasswordStore() {
+        FilezillaBookmarkCollection c = new FilezillaBookmarkCollection(new DefaultHostPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 throw new UnsupportedOperationException();

@@ -48,7 +48,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     public void testReadRange() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -71,7 +71,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     @Test
     public void testReadEmoji() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+        final Path test = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s-\uD83D\uDE80", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).contains(test));
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
@@ -83,7 +83,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     public void testReadRangeUnknownLength() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -190,7 +190,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path f = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path testWithVersionId = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, acl), f, new TransferStatus());
+        final Path testWithVersionId = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl), f, new TransferStatus());
         // Set delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         // Delete marker

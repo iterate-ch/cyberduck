@@ -28,6 +28,7 @@ jobs:
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
           SKIP_SIGN: true
+          JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ runner.temp }}
         run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode --fail-at-end -D"enforcer.skip"
       - name: Publish Test Report
         if: ${{ always() }}

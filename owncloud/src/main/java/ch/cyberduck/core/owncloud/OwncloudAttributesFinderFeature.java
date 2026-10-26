@@ -15,8 +15,11 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.nextcloud.NextcloudAttributesFinderFeature;
@@ -34,24 +37,34 @@ import com.github.sardine.DavResource;
 public class OwncloudAttributesFinderFeature extends NextcloudAttributesFinderFeature {
 
     private final OwncloudSession session;
+    private final OwncloudPathContainerService containerService;
 
     public OwncloudAttributesFinderFeature(OwncloudSession session) {
         super(session);
         this.session = session;
+        this.containerService = new OwncloudPathContainerService(session.ocs);
+    }
+
+    @Override
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(containerService.isVirtual(file)) {
+            return PathAttributes.EMPTY;
+        }
+        return super.find(file, listener);
     }
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException, BackgroundException {
         final String path;
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            path = String.format("%s/%s/v/%s",
+            path = URIEncoder.encode(String.format("%s/%s/v/%s",
                     new OwncloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions).getAbsolute(),
-                    file.attributes().getFileId(), file.attributes().getVersionId());
+                    file.attributes().getFileId(), file.attributes().getVersionId()));
         }
         else {
-            path = file.getAbsolute();
+            path = new DAVPathEncoder(session).encode(file);
         }
-        return session.getClient().list(URIEncoder.encode(path), 0,
+        return session.getClient().list(path, 0,
                 Stream.of(OC_FILEID_CUSTOM_NAMESPACE, OC_CHECKSUMS_CUSTOM_NAMESPACE, OC_SIZE_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));

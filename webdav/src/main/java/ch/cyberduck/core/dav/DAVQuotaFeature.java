@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
@@ -30,22 +31,31 @@ import com.github.sardine.impl.SardineException;
 public class DAVQuotaFeature implements Quota {
 
     private final DAVSession session;
+    private final Home home;
 
     public DAVQuotaFeature(final DAVSession session) {
+        this(session, new DefaultHomeFinderService(session));
+    }
+
+    /**
+     * @param home Folder to query quota for
+     */
+    public DAVQuotaFeature(final DAVSession session, final Home home) {
         this.session = session;
+        this.home = home;
     }
 
     @Override
     public Space get() throws BackgroundException {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = this.home.find();
         try {
-            final DavQuota quota = session.getClient().getQuota(new DAVPathEncoder().encode(home));
+            final DavQuota quota = session.getClient().getQuota(new DAVPathEncoder(session).encode(home));
             if(null == quota) {
                 return Quota.unknown;
             }
             return new Space(
-                quota.getQuotaUsedBytes() > 0 ? quota.getQuotaUsedBytes() : 0,
-                quota.getQuotaAvailableBytes() >= 0 ? quota.getQuotaAvailableBytes() : Long.MAX_VALUE
+                    quota.getQuotaUsedBytes() > 0 ? quota.getQuotaUsedBytes() : 0,
+                    quota.getQuotaAvailableBytes() >= 0 ? quota.getQuotaAvailableBytes() : Long.MAX_VALUE
             );
         }
         catch(SardineException e) {

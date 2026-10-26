@@ -19,9 +19,9 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -43,7 +43,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
         super();
     }
 
-    public FilezillaBookmarkCollection(final PasswordStore keychain) {
+    public FilezillaBookmarkCollection(final HostPasswordStore keychain) {
         super(keychain);
     }
 

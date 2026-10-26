@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
@@ -63,6 +64,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
      */
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
+    private static final String DEFAULT_PROFILE_NAME = "default";
+
     public S3CredentialsConfigurator() {
         this(LocalFactory.get(LocalFactory.get(), ".aws"));
     }
@@ -77,18 +80,25 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         if(credentials.isPasswordAuthentication()) {
             return credentials;
         }
-        final BasicProfile profile = profiles.entrySet().stream().filter(entry -> {
+        final BasicProfile profile;
+        if(StringUtils.isBlank(credentials.getUsername())) {
+            // The default profile holds credentials for AWS. Never apply it to a third party S3 compatible endpoint
+            profile = S3Session.isAwsHostname(StringUtils.defaultString(host.getHostname())) ? profiles.get(DEFAULT_PROFILE_NAME) : null;
+        }
+        else {
             // Matching access key or profile name
-            if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
-                log.debug("Found matching profile {} for profile name {}", credentials.getUsername(), entry.getKey());
-                return true;
-            }
-            else if(StringUtils.equals(entry.getValue().getAwsAccessIdKey(), credentials.getUsername())) {
-                log.debug("Found matching profile {} for access key {}", credentials.getUsername(), entry.getValue().getAwsAccessIdKey());
-                return true;
-            }
-            return false;
-        }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername()) ? profiles.get("default") : null);
+            profile = profiles.entrySet().stream().filter(entry -> {
+                if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
+                    log.debug("Found matching profile {} for profile name {}", credentials.getUsername(), entry.getKey());
+                    return true;
+                }
+                else if(StringUtils.equals(entry.getValue().getAwsAccessIdKey(), credentials.getUsername())) {
+                    log.debug("Found matching profile {} for access key {}", credentials.getUsername(), entry.getValue().getAwsAccessIdKey());
+                    return true;
+                }
+                return false;
+            }).map(Map.Entry::getValue).findFirst().orElse(null);
+        }
         if(null != profile) {
             if(profile.isProcessBasedProfile()) {
                 // Uses external process to retrieve temporary credentials
@@ -177,7 +187,15 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         else {
-            log.warn("No matching configuration for profile {} in {}", profile, profiles);
+            log.warn("No matching configuration for username {} in {}", credentials.getUsername(), profiles.keySet());
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                // Discard values derived from the default profile by a previous configuration, e.g. before
+                // switching to a third party endpoint. Credentials with a user name are never reset.
+                credentials.setTokens(TemporaryAccessTokens.EMPTY);
+                Stream.of(Profile.STS_ROLE_ARN_PROPERTY_KEY, Profile.STS_MFA_ARN_PROPERTY_KEY,
+                                Profile.SSO_START_URL_KEY, Profile.SSO_REGION_KEY, Profile.SSO_ACCOUNT_ID_KEY, Profile.SSO_ROLE_NAME_KEY)
+                        .forEach(key -> credentials.setProperty(key, null));
+            }
         }
         return credentials;
     }

@@ -137,20 +137,36 @@
         <checksum file="${build.deploy}/${bundle.archive.zip}"
                   algorithm="md5" property="archive.md5"/>
         <echo message="Calculating DSA signature..."/>
-        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
+        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" errorproperty="signature.dsa.error"
+              resultproperty="signature.dsa.result" failonerror="false">
             <arg value="-o"/>
             <arg value="pipefail"/>
             <arg value="-c"/>
             <arg value="openssl dgst -sha1 -binary '${build.deploy}/${bundle.archive.zip}' | openssl dgst -sha1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
+        <fail message="Signing failed with exit code ${signature.dsa.result}: ${signature.dsa.error}">
+            <condition>
+                <not>
+                    <equals arg1="${signature.dsa.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
         <echo message="Calculating ed25519 signature..."/>
-        <exec dir="${home}" executable="sh" outputproperty="signature.ed25519" failonerror="true">
+        <exec dir="${home}" executable="sh" outputproperty="signature.ed25519" errorproperty="signature.ed25519.error"
+              resultproperty="signature.ed25519.result" failonerror="false">
             <arg value="-o"/>
             <arg value="pipefail"/>
             <arg value="-c"/>
             <arg value="openssl pkeyutl -sign -inkey ${www.update}/private-ed25519.pem -rawin -in '${build.deploy}/${bundle.archive.zip}' | openssl enc -base64 -A"/>
         </exec>
+        <fail message="Signing failed with exit code ${signature.ed25519.result}: ${signature.ed25519.error}">
+            <condition>
+                <not>
+                    <equals arg1="${signature.ed25519.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
         <echo message="EDSIGNATURE=${signature.ed25519}"/>
         <echo message="MD5SUM=${archive.md5}"/>
         <copy todir="${build.deploy}" overwrite="true">

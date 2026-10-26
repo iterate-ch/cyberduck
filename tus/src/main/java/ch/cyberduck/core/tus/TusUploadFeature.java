@@ -19,13 +19,14 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.concurrency.Interruptibles;
-import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -73,10 +74,10 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final Session<DAVClient> session;
+    private final DAVSession session;
     private final TusCapabilities capabilities;
 
-    public TusUploadFeature(final Session<DAVClient> session, final TusCapabilities capabilities) {
+    public TusUploadFeature(final DAVSession session, final TusCapabilities capabilities) {
         this.session = session;
         this.capabilities = capabilities;
     }
@@ -125,8 +126,8 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             throw new InteroperabilityException(String.format("No support for %s", Extension.creation));
         }
         // Create an Upload URL
-        final HttpPost request = new HttpPost(new DefaultUrlProvider(session.getHost()).toUrl(file.getParent(),
-                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+        final HttpPost request = new HttpPost(String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
+                new DAVPathEncoder(session).encode(file.getParent())));
         request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
         // The Upload-Length header indicates the size of the entire upload in bytes
         request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getParent().getLength()));

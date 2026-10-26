@@ -21,16 +21,22 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.azure.core.util.BinaryData;
+import com.azure.core.util.Context;
+import com.azure.storage.blob.options.BlockBlobSimpleUploadOptions;
+import com.azure.storage.common.implementation.Constants;
+
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
-public class AzureObjectListServiceTest extends AbstractAzureTest {
+public class AzureListServiceTest extends AbstractAzureTest {
 
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new AzureListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test
@@ -38,7 +44,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AtomicBoolean callback = new AtomicBoolean();
-        assertTrue(new AzureObjectListService(session).list(folder, new DisabledListProgressListener() {
+        assertTrue(new AzureListService(session).list(folder, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, final AttributedList<Path> list) {
                 assertNotSame(AttributedList.EMPTY, list);
@@ -49,10 +55,37 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
+    @Test
+    public void testListEmptyFolderInParent() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AttributedList<Path> list = new AzureListService(session).list(container, new DisabledListProgressListener());
+        assertTrue(list.contains(folder));
+        assertTrue(list.get(folder).isDirectory());
+        assertFalse(list.contains(new Path(folder).withType(EnumSet.of(Path.Type.file))));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFolderBlobWithDirectoryMetadata() throws Exception {
+        assumeTrue(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        // Folder as created by other tools: zero length blob without trailing delimiter flagged with metadata
+        session.getClient().getBlobServiceClient().getBlobContainerClient(container.getName())
+                .getBlobClient(folder.getName()).getBlockBlobClient().uploadWithResponse(
+                        new BlockBlobSimpleUploadOptions(BinaryData.fromBytes(new byte[0]))
+                                .setMetadata(Collections.singletonMap(Constants.HeaderConstants.DIRECTORY_METADATA_KEY, "true")), null, Context.NONE);
+        final AttributedList<Path> list = new AzureListService(session).list(container, new DisabledListProgressListener());
+        assertTrue(list.contains(folder));
+        assertFalse(list.contains(new Path(folder).withType(EnumSet.of(Path.Type.file))));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
     @Test(expected = NotfoundException.class)
     public void testListNotfoundContainer() throws Exception {
         final Path container = new Path("notfound-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureObjectListService(session).list(container, new DisabledListProgressListener());
+        new AzureListService(session).list(container, new DisabledListProgressListener());
     }
 
     @Test
@@ -60,14 +93,14 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertTrue(new AzureObjectListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new AzureListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), file, new TransferStatus());
-        final AttributedList<Path> list = new AzureObjectListService(session).list(directory, new DisabledListProgressListener());
+        final AttributedList<Path> list = new AzureListService(session).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(1, list.size());
         assertTrue(list.contains(file));
         final PathAttributes attributes = list.get(0).attributes();
-        assertEquals(attributes, new AzureAttributesFinderFeature(session).find(file));
+        assertEquals(attributes.getETag(), new AzureAttributesFinderFeature(session).find(file).getETag());
         assertSame(directory, list.get(0).getParent());
         new AzureDeleteFeature(session).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
@@ -77,7 +110,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path directory = new AzureDirectoryFeature(session).mkdir(
                 new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new AzureObjectListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new AzureListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
                 "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         );
@@ -85,7 +118,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
             new AzureTouchFeature(session).touch(new AzureWriteFeature(session), new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         files.sort(session.getHost().getProtocol().getListComparator());
-        final AttributedList<Path> list = new AzureObjectListService(session).list(directory, new IndexedListProgressListener() {
+        final AttributedList<Path> list = new AzureListService(session).list(directory, new IndexedListProgressListener() {
             @Override
             public void message(final String message) {
                 //

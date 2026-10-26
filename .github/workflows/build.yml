@@ -54,6 +54,7 @@ jobs:
         run: mvn --no-transfer-progress verify -DskipITs ${{ env.args }} --batch-mode -Drevision=0
         env:
           SKIP_SIGN: true
+          JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ runner.temp }}
       - name: Publish Test Report
         if: github.event.pull_request.head.repo.fork == false
         uses: ScalableCapital/action-surefire-report@v2

@@ -55,6 +55,8 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     private final Versioning versioning =
             preferences.getBoolean("s3.versioning.enable") ? new GoogleStorageVersioningFeature(this) : null;
 
+    private final GoogleStorageAccessControlListFeature acl = new GoogleStorageAccessControlListFeature(this);
+
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -119,7 +121,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
             return (T) new GoogleStorageAttributesFinderFeature(this);
         }
         if(type == AclPermission.class) {
-            return (T) new GoogleStorageAccessControlListFeature(this);
+            return (T) acl;
         }
         if(type == Delete.class) {
             return (T) new GoogleStorageDeleteFeature(this);

@@ -115,7 +115,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         }
         if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
             // Indicate that the client has knowledge of that state token
-            headers.add(new BasicHeader(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId())));
+            headers.add(new BasicHeader(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId())));
         }
         return headers;
     }
@@ -130,7 +130,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
             @Override
             public Void call(final HttpEntity entity) throws BackgroundException {
                 try {
-                    session.getClient().put(new DAVPathEncoder().encode(file), entity,
+                    session.getClient().put(new DAVPathEncoder(session).encode(file), entity,
                             headers, new ETagResponseHandler());
                     return null;
                 }

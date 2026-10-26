@@ -23,7 +23,6 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.models.BlobAnalyticsLogging;
 import com.azure.storage.blob.models.BlobRetentionPolicy;
 import com.azure.storage.blob.models.BlobServiceProperties;
@@ -39,7 +38,7 @@ public class AzureLoggingFeature implements Logging {
     @Override
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
-            final BlobServiceProperties properties = session.getClient().getProperties();
+            final BlobServiceProperties properties = session.getClient().getBlobServiceClient().getProperties();
             final LoggingConfiguration configuration = new LoggingConfiguration(
                     properties.getLogging().isRead() || properties.getLogging().isWrite() || properties.getLogging().isDelete(),
                     "$logs"
@@ -51,7 +50,7 @@ public class AzureLoggingFeature implements Logging {
             );
             return configuration;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
@@ -59,7 +58,7 @@ public class AzureLoggingFeature implements Logging {
     @Override
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         try {
-            final BlobServiceProperties properties = session.getClient().getProperties();
+            final BlobServiceProperties properties = session.getClient().getBlobServiceClient().getProperties();
             properties.setLogging(new BlobAnalyticsLogging()
                     .setVersion("2.0")
                     .setRetentionPolicy(new BlobRetentionPolicy().setEnabled(false))
@@ -67,9 +66,9 @@ public class AzureLoggingFeature implements Logging {
                     .setRead(configuration.isEnabled())
                     .setWrite(configuration.isEnabled())
             );
-            session.getClient().setProperties(properties);
+            session.getClient().getBlobServiceClient().setProperties(properties);
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }

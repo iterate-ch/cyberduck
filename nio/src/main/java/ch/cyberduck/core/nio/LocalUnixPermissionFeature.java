@@ -18,7 +18,7 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -29,11 +29,12 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.attribute.UserPrincipal;
 
-public class LocalUnixPermissionFeature implements UnixPermission {
+public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
 
     private final LocalSession session;
 
     public LocalUnixPermissionFeature(final LocalSession session) {
+        super(session.getHost());
         this.session = session;
     }
 

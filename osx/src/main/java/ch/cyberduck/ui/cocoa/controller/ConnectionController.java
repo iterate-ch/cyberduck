@@ -19,6 +19,8 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSSecureTextField;
+import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 
@@ -32,6 +34,9 @@ public class ConnectionController extends BookmarkContainerController {
 
     @Outlet
     private NSButton keychainCheckbox;
+
+    @Outlet
+    private NSSecureTextField passwordField;
 
     public ConnectionController(final Host bookmark) {
         this(bookmark, new LoginOptions(bookmark.getProtocol()));
@@ -67,5 +72,32 @@ public class ConnectionController extends BookmarkContainerController {
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
+    }
+
+    @Override
+    public void setPasswordField(final NSSecureTextField field) {
+        this.passwordField = field;
+        super.setPasswordField(field);
+    }
+
+    @Override
+    public void passwordFieldTextDidEndEditing(final NSNotification notification) {
+        // Use password for this connection only without saving in keychain
+        bookmark.getCredentials().setPassword(StringUtils.strip(passwordField.stringValue()));
+    }
+
+    @Override
+    protected void setPasswordFromKeychain(final String password) {
+        if(StringUtils.isNotBlank(password)) {
+            super.setPasswordFromKeychain(password);
+            bookmark.getCredentials().setPassword(password);
+        }
+        // Otherwise keep password entered for this connection
+    }
+
+    @Override
+    protected boolean isPasswordEditable() {
+        // Allow to enter password regardless of keychain preference
+        return options.password;
     }
 }

@@ -100,6 +100,14 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
+        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
+        if(containerService.isContainer(file)) {
+            return preference;
+        }
+        if(Acl.EMPTY.equals(preference)) {
+            // Selected "None" in preferences. No need to check if ACLs are disabled for the bucket
+            return Acl.EMPTY;
+        }
         final Path bucket = containerService.getContainer(file);
         if(cache.contains(bucket)) {
             return cache.get(bucket);
@@ -108,7 +116,6 @@ public class S3AccessControlListFeature implements AclPermission {
             cache.put(bucket, Acl.EMPTY);
             return Acl.EMPTY;
         }
-        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
         cache.put(bucket, preference);
         return preference;
     }
@@ -157,14 +164,15 @@ public class S3AccessControlListFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            // Read owner from bucket
-            final AccessControlList list = toAcl(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
+                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        toBucketAccessControlList(status.getAcl()));
             }
             else {
-                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
+                // Read owner from bucket
+                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file),
+                        toObjectAccessControlList(status.getAcl()));
             }
         }
         catch(ServiceException e) {
@@ -179,24 +187,39 @@ public class S3AccessControlListFeature implements AclPermission {
         }
     }
 
+    protected static AccessControlList toBucketAccessControlList(final Acl acl) {
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
+        return toAccessControlList(acl);
+    }
+
+    protected static AccessControlList toObjectAccessControlList(final Acl acl) {
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
+        }
+        return toAccessControlList(acl);
+    }
+
     /**
      * Convert ACL for writing to service.
      *
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected static AccessControlList toAcl(final Acl acl) {
+    protected static AccessControlList toAccessControlList(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
+            // Selected "None" in preferences
             return null;
         }
         if(Acl.CANNED_PRIVATE.equals(acl)) {
             return AccessControlList.REST_CANNED_PRIVATE;
-        }
-        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
-            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
-        }
-        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
-            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
         }
         if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
             return AccessControlList.REST_CANNED_AUTHENTICATED_READ;

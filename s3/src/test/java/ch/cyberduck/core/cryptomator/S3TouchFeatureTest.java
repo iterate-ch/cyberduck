@@ -69,7 +69,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
@@ -90,7 +90,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());

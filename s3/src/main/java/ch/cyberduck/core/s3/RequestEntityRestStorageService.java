@@ -57,6 +57,7 @@ import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RequestEntityRestStorageService extends RestS3Service {
@@ -261,6 +262,25 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 throw new IllegalArgumentException(String.format("Unrecognised HTTP method name %s", method));
         }
         return request;
+    }
+
+    @Override
+    protected void putAclImpl(final String bucketName, final String objectKey, final AccessControlList acl, final String versionId) throws ServiceException {
+        final String canned = acl.getValueForRESTHeaderACL();
+        if(null == canned) {
+            super.putAclImpl(bucketName, objectKey, acl, versionId);
+            return;
+        }
+        // Canned ACL is sent as header with empty body as the XML representation requires an owner
+        final Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put("acl", StringUtils.EMPTY);
+        if(versionId != null) {
+            requestParameters.put("versionId", versionId);
+        }
+        final Map<String, Object> metadata = new HashMap<>();
+        metadata.put(this.getRestHeaderPrefix() + "acl", canned);
+        metadata.put("Content-Length", "0");
+        this.performRestPut(bucketName, objectKey, metadata, requestParameters, null, true);
     }
 
     @Override

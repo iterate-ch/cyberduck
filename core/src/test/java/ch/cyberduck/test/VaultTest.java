@@ -37,6 +37,9 @@ public class VaultTest {
 
     private static final String VAULT_PATH = "kv/test.properties";
     private static final long VAULT_RENEW_THRESHOLD = 2592000; // Renew if TTL is less than 30 days
+    private static final int VAULT_OPEN_TIMEOUT = 5; // Seconds
+    private static final int VAULT_READ_TIMEOUT = 15; // Seconds
+    private static final String[] TRANSIENT_PASSWORD_PREFIXES = {"Cryptomator Passphrase", "Triple-Crypt Encryption Password"};
 
     protected static Vault VAULT;
     protected static Map<String, String> PROPERTIES;
@@ -50,6 +53,8 @@ public class VaultTest {
                     .sslConfig(new SslConfig().verify(false))
                     .address("https://vault.iterate.ch")
                     .token(System.getenv("VAULT_TOKEN"))
+                    .openTimeout(VAULT_OPEN_TIMEOUT)
+                    .readTimeout(VAULT_READ_TIMEOUT)
                     .build();
             VAULT = new Vault(config);
             if(VAULT.auth().lookupSelf().getTTL() < VAULT_RENEW_THRESHOLD) {
@@ -71,11 +76,33 @@ public class VaultTest {
 
         private final HostUrlProvider provider = new HostUrlProvider().withPath(false);
 
+        private static boolean local(final Host bookmark) {
+            return StringUtils.equalsAny(bookmark.getHostname(), "localhost", "127.0.0.1", "::1", "[::1]");
+        }
+
+        /**
+         * @return Properties without entries of embedded servers and encryption passphrases which are only valid for the test run
+         */
+        private static Map<String, Object> persistent() {
+            final Map<String, Object> persistent = new HashMap<>();
+            PROPERTIES.forEach((key, value) -> {
+                if(!StringUtils.containsAny(key, "@localhost:", "@127.0.0.1:")
+                        && !StringUtils.startsWithAny(key, TRANSIENT_PASSWORD_PREFIXES)) {
+                    persistent.put(key, value);
+                }
+            });
+            return persistent;
+        }
+
         @Override
         public void save(final Host bookmark) throws AccessDeniedException {
             super.save(bookmark);
+            if(local(bookmark)) {
+                // Embedded server with throwaway credentials. Nothing to persist remotely.
+                return;
+            }
             try {
-                VAULT.logical().write(VAULT_PATH, new HashMap<>(PROPERTIES));
+                VAULT.logical().write(VAULT_PATH, persistent());
             }
             catch(VaultException e) {
                 throw new AccessDeniedException(e.getMessage(), e);
@@ -85,8 +112,11 @@ public class VaultTest {
         @Override
         public void delete(final Host bookmark) throws AccessDeniedException {
             super.delete(bookmark);
+            if(local(bookmark)) {
+                return;
+            }
             try {
-                VAULT.logical().write(VAULT_PATH, new HashMap<>(PROPERTIES));
+                VAULT.logical().write(VAULT_PATH, persistent());
             }
             catch(VaultException e) {
                 throw new AccessDeniedException(e.getMessage(), e);

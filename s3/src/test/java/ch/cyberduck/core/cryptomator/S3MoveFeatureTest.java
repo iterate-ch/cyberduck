@@ -68,9 +68,9 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), folder, new TransferStatus());
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new S3MoveFeature(session, acl));
