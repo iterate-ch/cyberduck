@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public class SFTPCopyFeatureTest extends AbstractSFTPTest {
 
@@ -42,5 +44,13 @@ public class SFTPCopyFeatureTest extends AbstractSFTPTest {
         assertTrue(new SFTPFindFeature(session).find(copy));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFeatureSelection() {
+        // Resolved through session to cover extension discovery in version packet
+        final Copy feature = session.getFeature(Copy.class);
+        assertNotNull(feature);
+        assertTrue(feature instanceof SFTPCopyFeature);
     }
 }

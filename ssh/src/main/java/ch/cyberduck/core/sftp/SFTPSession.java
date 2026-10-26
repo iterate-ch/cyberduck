@@ -548,10 +548,21 @@ public class SFTPSession extends Session<SSHClient> {
 
         /**
          * @param name Extension name as advertised by the server in the version packet
-         * @return True if the server advertised the given extension
+         * @return True if the server advertised the given extension either as top-level key or by name within the
+         * supported or supported2 extension lists
          */
         public boolean isExtensionSupported(final String name) {
-            return serverExtensions.containsKey(name);
+            if(serverExtensions.containsKey(name)) {
+                return true;
+            }
+            // The extension names are embedded as strings in the binary payload of supported and supported2
+            for(final String list : new String[]{"supported", "supported2"}) {
+                final String data = serverExtensions.get(list);
+                if(null != data && data.contains(name)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
