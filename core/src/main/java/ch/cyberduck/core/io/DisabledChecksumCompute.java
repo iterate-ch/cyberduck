@@ -41,4 +41,9 @@ public class DisabledChecksumCompute implements ChecksumCompute {
     public Checksum compute(final String data) throws BackgroundException {
         return Checksum.NONE;
     }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return Checksum.NONE.algorithm;
+    }
 }

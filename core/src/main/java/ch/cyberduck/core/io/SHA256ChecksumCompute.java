@@ -37,4 +37,9 @@ public class SHA256ChecksumCompute extends AbstractChecksumCompute {
         final byte[] digest = this.digest(this.normalize(in, status), this.digest(), status);
         return new Checksum(HashAlgorithm.sha256, digest);
     }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.sha256;
+    }
 }

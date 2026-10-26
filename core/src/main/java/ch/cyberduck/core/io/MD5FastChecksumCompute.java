@@ -48,6 +48,11 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
                 this.normalize(in, status), status));
     }
 
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.md5;
+    }
+
     protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ConnectionCanceledException {
         final MD5 md = new MD5();
         try {

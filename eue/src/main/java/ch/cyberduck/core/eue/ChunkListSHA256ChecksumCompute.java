@@ -49,6 +49,11 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
         return this.compute(status.getLength(), super.digest("SHA-256", this.normalize(in, status), status));
     }
 
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.sha256;
+    }
+
     /**
      * @param length        File length
      * @param contentDigest SHA-256

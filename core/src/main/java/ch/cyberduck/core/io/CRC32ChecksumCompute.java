@@ -55,6 +55,11 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
         return new Checksum(HashAlgorithm.crc32, String.format("%08x", crc32.getValue()));
     }
 
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.crc32;
+    }
+
     /**
      * Message digest adapter for {@link CRC32} returning the checksum as 4 bytes in big-endian order
      */

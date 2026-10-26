@@ -74,4 +74,8 @@ public interface ChecksumCompute {
             throw new ChecksumException(e);
         }
     }
+
+    HashAlgorithm getAlgorithm();
+
+    ;
 }

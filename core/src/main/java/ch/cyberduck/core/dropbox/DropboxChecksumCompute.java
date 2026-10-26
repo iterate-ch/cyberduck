@@ -35,4 +35,9 @@ public class DropboxChecksumCompute extends AbstractChecksumCompute {
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.dropbox_content_hash, this.digest(this.normalize(in, status), this.digest(), status));
     }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.dropbox_content_hash;
+    }
 }

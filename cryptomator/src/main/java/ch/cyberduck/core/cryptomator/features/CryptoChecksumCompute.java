@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamProgress;
@@ -89,6 +90,11 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
                     new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
         }
         return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
+    }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return delegate.getAlgorithm();
     }
 
     protected Checksum compute(final InputStream in, final StreamCancelation cancel,

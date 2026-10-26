@@ -36,4 +36,9 @@ public class MD5ChecksumCompute extends AbstractChecksumCompute {
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.md5, this.digest(this.normalize(in, status), this.digest(), status));
     }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.md5;
+    }
 }

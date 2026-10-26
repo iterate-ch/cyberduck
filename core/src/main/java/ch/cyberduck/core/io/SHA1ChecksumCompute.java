@@ -36,4 +36,9 @@ public class SHA1ChecksumCompute extends AbstractChecksumCompute {
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.sha1, this.digest(this.normalize(in, status), this.digest(), status));
     }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.sha1;
+    }
 }

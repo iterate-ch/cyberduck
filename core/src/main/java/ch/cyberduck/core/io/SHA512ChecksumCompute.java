@@ -33,4 +33,9 @@ public class SHA512ChecksumCompute extends AbstractChecksumCompute {
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.sha512, this.digest(this.normalize(in, status), this.digest(), status));
     }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.sha512;
+    }
 }
