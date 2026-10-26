@@ -48,10 +48,11 @@ public class SFTPCopyFeature implements Copy {
                     .putString(target.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset())
                     .putBoolean(status.isExists());
             session.sftp().request(request).retrieve().ensureStatusPacketIsOK();
+            listener.sent(status.getLength());
+            return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes()));
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
         }
-        return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes()));
     }
 }
