@@ -94,4 +94,30 @@ public class PathCacheTest {
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
         assertTrue(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
     }
+
+    @Test
+    public void testExpireAfterWrite() throws Exception {
+        final PathCache cache = new PathCache(1, 300L, false);
+        final Path f = new Path("/t", EnumSet.of(Path.Type.directory));
+        cache.put(f, new AttributedList<>());
+        for(int i = 0; i < 5; i++) {
+            Thread.sleep(100L);
+            // Access does not extend lifetime
+            cache.get(f);
+        }
+        assertFalse(cache.isCached(f));
+    }
+
+    @Test
+    public void testExpireAfterAccess() throws Exception {
+        final PathCache cache = new PathCache(1, 300L, true);
+        final Path f = new Path("/t", EnumSet.of(Path.Type.directory));
+        cache.put(f, new AttributedList<>());
+        for(int i = 0; i < 5; i++) {
+            Thread.sleep(100L);
+            // Access extends lifetime
+            cache.get(f);
+        }
+        assertTrue(cache.isCached(f));
+    }
 }
