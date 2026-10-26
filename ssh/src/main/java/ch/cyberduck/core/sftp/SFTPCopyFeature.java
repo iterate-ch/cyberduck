@@ -44,8 +44,8 @@ public class SFTPCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try {
             final Request request = session.sftp().newExtendedRequest(EXTENSION)
-                    .putString(source.getAbsolute())
-                    .putString(target.getAbsolute())
+                    .putString(source.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset())
+                    .putString(target.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset())
                     .putBoolean(status.isExists());
             session.sftp().request(request).retrieve().ensureStatusPacketIsOK();
         }
