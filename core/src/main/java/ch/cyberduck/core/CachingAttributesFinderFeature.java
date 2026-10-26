@@ -82,26 +82,41 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
         }
         final Path directory = file.getParent();
         if(cache.isValid(directory)) {
-            final AttributedList<Path> list = cache.get(directory);
-            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
-            if(null != found) {
-                log.debug("Return cached attributes {} for {}", found.attributes(), file);
-                return found.attributes();
-            }
-            log.debug("Cached directory listing does not contain {}", file);
-            throw new NotfoundException(file.getAbsolute());
+            return this.cached(file, directory);
         }
-        final MemoryListProgressListener memory = new MemoryListProgressListener(listener);
+        // Wait for concurrent lookup of the same directory
+        cache.lock(directory);
         try {
-            final PathAttributes attr = delegate.find(file, memory);
-            // Notify listener with contents
-            memory.cleanup(directory, AttributedList.emptyList(), Optional.empty());
-            return attr;
+            if(cache.isValid(directory)) {
+                return this.cached(file, directory);
+            }
+            final MemoryListProgressListener memory = new MemoryListProgressListener(listener);
+            try {
+                final PathAttributes attr = delegate.find(file, memory);
+                // Default features list the directory but do not signal the end of the listing. Pass the contents
+                // recorded in memory to the listener on cleanup to be cached.
+                memory.cleanup(directory, AttributedList.emptyList(), Optional.empty());
+                return attr;
+            }
+            catch(NotfoundException e) {
+                memory.cleanup(directory, AttributedList.emptyList(), Optional.of(e));
+                throw e;
+            }
         }
-        catch(NotfoundException e) {
-            memory.cleanup(directory, AttributedList.emptyList(), Optional.of(e));
-            throw e;
+        finally {
+            cache.unlock(directory);
         }
+    }
+
+    private PathAttributes cached(final Path file, final Path directory) throws NotfoundException {
+        final AttributedList<Path> list = cache.get(directory);
+        final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
+        if(null != found) {
+            log.debug("Return cached attributes {} for {}", found.attributes(), file);
+            return found.attributes();
+        }
+        log.debug("Cached directory listing does not contain {}", file);
+        throw new NotfoundException(file.getAbsolute());
     }
 
     @Override

@@ -15,10 +15,16 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.CachingFindFeature;
+import ch.cyberduck.core.CachingListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.MemoryListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -63,7 +69,13 @@ public class VaultRegistryFindFeature implements Find {
                         HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file));
                 final Path key = new Path(directory,
                         HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file));
-                final VaultVersion version = provider.find(directory, proxy, listener);
+                // Look up vault markers in a single listing of the directory. The contents are only cleartext when no
+                // vault is found and must not be passed to the listener otherwise.
+                final PathCache detection = new PathCache(1);
+                final MemoryListProgressListener memory = new MemoryListProgressListener();
+                final ListProgressListener capture = new CachingListProgressListener(detection, memory);
+                final Find detect = new CachingFindFeature(session.getCaseSensitivity(), detection, proxy);
+                final VaultVersion version = provider.find(directory, detect, capture);
                 if(version != null) {
                     log.info("Found vault config {} or masterkey {}", vaultConfig, key);
                     try {
@@ -73,6 +85,15 @@ public class VaultRegistryFindFeature implements Find {
                     catch(VaultUnlockCancelException e) {
                         // Continue
                     }
+                }
+                if(memory.getContents() != AttributedList.<Path>emptyList()) {
+                    // No vault found or unlock canceled. Contents of the directory are not encrypted
+                    listener.chunk(directory, memory.getContents());
+                    return detect.find(file, capture);
+                }
+                if(detection.isCached(directory)) {
+                    // Parent directory not found
+                    throw new NotfoundException(directory.getAbsolute());
                 }
             }
         }
