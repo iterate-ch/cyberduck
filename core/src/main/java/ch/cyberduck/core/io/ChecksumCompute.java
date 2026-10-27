@@ -76,6 +76,4 @@ public interface ChecksumCompute {
     }
 
     HashAlgorithm getAlgorithm();
-
-    ;
 }
