@@ -171,22 +171,6 @@ public interface Write<Reply> {
          */
         acl,
         /**
-         * A checksum of the file is required with the upload request, such as the MD5 for uploads to an S3 bucket
-         * with Object Lock. Calculated prior to the transfer regardless of the preference to verify uploads.
-         */
-        checksumRequired,
-        /**
-         * A checksum of the file is accepted with the upload request to allow verification on the server. Calculated
-         * prior to the transfer when verifying uploads.
-         */
-        checksumOptional,
-        /**
-         * The attributes in the response of the server include a checksum of the uploaded file to compare with the
-         * checksum calculated by the client. Calculated while streaming when verifying uploads unless calculated
-         * prior to the transfer.
-         */
-        checksumResponse,
-        /**
          * Set MIME type on upload
          */
         mime

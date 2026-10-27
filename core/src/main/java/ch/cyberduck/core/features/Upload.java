@@ -24,6 +24,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.EnumSet;
+
 @Optional
 public interface Upload<Reply> {
 
@@ -52,5 +54,36 @@ public interface Upload<Reply> {
      */
     default Write.Append append(Path file, TransferStatus status) throws BackgroundException {
         return new Write.Append(false).withStatus(status);
+    }
+
+    /**
+     * @param file   File on server
+     * @param status Transfer status including the size of file to write to differentiate between single and large uploads
+     * @return Supported features
+     */
+    default EnumSet<Flags> features(Path file, TransferStatus status) {
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * A checksum of the file is required with the upload request, such as the MD5 for uploads to an S3 bucket
+         * with Object Lock. Calculated prior to the transfer regardless of the preference to verify uploads.
+         */
+        checksumRequired,
+        /**
+         * A checksum of the file is accepted with the upload request to allow verification on the server. Calculated
+         * prior to the transfer when verifying uploads.
+         */
+        checksumOptional,
+        /**
+         * The attributes in the response of the server include a checksum of the uploaded file to compare with the
+         * checksum calculated by the client. Calculated while streaming when verifying uploads unless calculated
+         * prior to the transfer.
+         */
+        checksumResponse
     }
 }

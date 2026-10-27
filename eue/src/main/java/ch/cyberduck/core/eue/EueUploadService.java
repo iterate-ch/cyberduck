@@ -15,9 +15,18 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.EnumSet;
 
 public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
+    }
 
     public EueUploadService() {
     }

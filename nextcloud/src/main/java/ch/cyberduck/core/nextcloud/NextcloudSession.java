@@ -59,6 +59,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 public class NextcloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(NextcloudSession.class);
@@ -130,7 +131,7 @@ public class NextcloudSession extends DAVSession {
             return (T) new DAVLockFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new HttpUploadFeature<>();
+            return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional));
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);

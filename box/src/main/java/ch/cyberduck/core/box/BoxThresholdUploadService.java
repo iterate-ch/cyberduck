@@ -29,6 +29,9 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
+
+import java.util.EnumSet;
 
 public class BoxThresholdUploadService implements Upload<File> {
 
@@ -52,6 +55,19 @@ public class BoxThresholdUploadService implements Upload<File> {
             // Cannot comply with chunk size requirement from server
         }
         return new BoxSmallUploadService().upload(write, file, local, throttle, progress, listener, status, callback);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        try {
+            if(this.threshold(status.getLength()) && Vault.DISABLED == registry.find(session, file)) {
+                return new BoxLargeUploadService(session, fileid).features(file, status);
+            }
+        }
+        catch(VaultUnlockCancelException e) {
+            // Vault not unlocked. Fallback to features of upload to vault
+        }
+        return new BoxSmallUploadService().features(file, status);
     }
 
     protected boolean threshold(final Long length) {

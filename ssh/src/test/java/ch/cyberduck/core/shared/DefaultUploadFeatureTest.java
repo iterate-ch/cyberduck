@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
@@ -126,19 +127,19 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
     @Test
     public void testDigestWholeFile() throws Exception {
         final byte[] content = content();
-        assertEquals(md5(content, 0, 100), upload(content, new TransferStatus().setVerify(true).setLength(100L)));
+        assertEquals(md5(content, 0, 100), upload(content, new TransferStatus().setVerify(HashAlgorithm.md5).setLength(100L)));
     }
 
     @Test
     public void testDigestResumeIncludesSkippedContent() throws Exception {
         final byte[] content = content();
-        assertEquals(md5(content, 0, 100), upload(content, new TransferStatus().setVerify(true).setOffset(10L).setLength(90L)));
+        assertEquals(md5(content, 0, 100), upload(content, new TransferStatus().setVerify(HashAlgorithm.md5).setOffset(10L).setLength(90L)));
     }
 
     @Test
     public void testDigestSegmentOnlyRange() throws Exception {
         final byte[] content = content();
-        assertEquals(md5(content, 10, 30), upload(content, new TransferStatus().setVerify(true).setSegment(true).setOffset(10L).setLength(20L)));
+        assertEquals(md5(content, 10, 30), upload(content, new TransferStatus().setVerify(HashAlgorithm.md5).setSegment(true).setOffset(10L).setLength(20L)));
     }
 
     @Test

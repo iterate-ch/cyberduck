@@ -145,6 +145,6 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksumOptional, Flags.mime);
+        return EnumSet.of(Flags.mime);
     }
 }

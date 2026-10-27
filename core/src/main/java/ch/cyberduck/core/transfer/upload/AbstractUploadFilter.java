@@ -47,10 +47,12 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -277,10 +279,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(file.isFile()) {
             final Write<?> writer = session.getFeature(Write.class);
-            final EnumSet<Write.Flags> flags = writer.features(file);
+            final EnumSet<Upload.Flags> flags = session.getFeature(Upload.class).features(file, status);
             // Checksum required for the upload is calculated regardless of the preference
-            if(flags.contains(Write.Flags.checksumRequired)
-                    || (options.checksum && flags.contains(Write.Flags.checksumOptional))) {
+            if(flags.contains(Upload.Flags.checksumRequired)
+                    || (options.checksum && flags.contains(Upload.Flags.checksumOptional))) {
                 final ChecksumCompute feature = writer.checksum(file, status);
                 if(feature != null) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
@@ -295,9 +297,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     }
                 }
             }
-            else if(options.checksum && flags.contains(Write.Flags.checksumResponse)) {
+            else if(options.checksum && flags.contains(Upload.Flags.checksumResponse)) {
                 // Calculate checksum while transferring and verify when complete
-                status.setVerify(true);
+                final HashAlgorithm algorithm = writer.checksum(file, status).getAlgorithm();
+                if(algorithm != null) {
+                    status.setVerify(algorithm);
+                }
             }
         }
         return status;

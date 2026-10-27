@@ -31,6 +31,9 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
+
+import java.util.EnumSet;
 
 public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> {
 
@@ -63,5 +66,21 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
         }
         // Write single chunk smaller than threshold
         return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, prompt);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        if(status.getLength() >= threshold) {
+            try {
+                if(Vault.DISABLED == registry.find(session, file)) {
+                    return new EueLargeUploadService(session, fileid).features(file, status);
+                }
+            }
+            catch(VaultUnlockCancelException e) {
+                // Vault not unlocked. Fallback to features of upload to vault
+            }
+            return new EueUploadService().features(file, status);
+        }
+        return new EueSingleUploadService(session, fileid).features(file, status);
     }
 }

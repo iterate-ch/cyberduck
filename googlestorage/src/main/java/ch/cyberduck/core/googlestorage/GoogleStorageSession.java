@@ -28,12 +28,14 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -42,6 +44,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -110,6 +113,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         }
         if(type == Read.class) {
             return (T) new GoogleStorageReadFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new DefaultUploadFeature<>(EnumSet.of(Upload.Flags.checksumResponse));
         }
         if(type == Write.class) {
             return (T) new GoogleStorageWriteFeature(this);

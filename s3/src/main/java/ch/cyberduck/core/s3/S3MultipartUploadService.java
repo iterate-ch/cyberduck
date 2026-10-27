@@ -61,6 +61,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
+
     private static final Logger log = LogManager.getLogger(S3MultipartUploadService.class);
 
     private final S3Session session;
@@ -183,7 +185,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
                 final Checksum expected = this.checksum(completed, checksums);
                 if(!Checksum.NONE.equals(expected)) {
                     // Compared with the checksum returned by the server by the upload filter when the upload is complete
-                    status.setVerify(true).setDigest(expected);
+                    status.setVerify(expected.algorithm).setDigest(expected);
                 }
             }
             // Mark parent status as complete
@@ -280,5 +282,10 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
             log.warn("Ignore failure listing incomplete multipart uploads. {}", e.getMessage());
         }
         return Write.override;
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumResponse);
     }
 }

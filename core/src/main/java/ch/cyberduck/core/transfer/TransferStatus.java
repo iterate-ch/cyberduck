@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.random.NonceGenerator;
@@ -119,8 +120,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * Checksum of the content calculated prior to the transfer to send with the upload request, allowing the server
      * to verify the data received. Checksum#NONE if not calculated.
      *
-     * @see ch.cyberduck.core.features.Write.Flags#checksumRequired
-     * @see ch.cyberduck.core.features.Write.Flags#checksumOptional
+     * @see ch.cyberduck.core.features.Upload.Flags#checksumRequired
+     * @see ch.cyberduck.core.features.Upload.Flags#checksumOptional
      */
     private Checksum checksum = Checksum.NONE;
 
@@ -131,10 +132,10 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private Checksum digest = Checksum.NONE;
 
     /**
-     * Calculate the checksum of the content while transferring to verify with the checksum in the response of the
-     * server when the transfer is complete.
+     * Algorithm to calculate the checksum of the content while transferring to verify with the checksum in the
+     * response of the server when the transfer is complete. Null if not verifying.
      */
-    private boolean verify;
+    private HashAlgorithm verify;
 
     /**
      * MIME type
@@ -485,15 +486,23 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * response of the server when the transfer is complete
      */
     public boolean isVerify() {
+        return verify != null;
+    }
+
+    /**
+     * @return Algorithm of the checksum of the content calculated while transferring to verify with the checksum in
+     * the response of the server when the transfer is complete. Null if not verifying.
+     */
+    public HashAlgorithm getVerify() {
         return verify;
     }
 
     /**
-     * @param verify True to calculate the checksum of the content while transferring and verify with the checksum in
-     *               the response of the server when the transfer is complete
+     * @param verify Algorithm of the checksum of the content to calculate while transferring and verify with the
+     *               checksum in the response of the server when the transfer is complete. Null to disable.
      * @return This status
      */
-    public TransferStatus setVerify(final boolean verify) {
+    public TransferStatus setVerify(final HashAlgorithm verify) {
         this.verify = verify;
         return this;
     }

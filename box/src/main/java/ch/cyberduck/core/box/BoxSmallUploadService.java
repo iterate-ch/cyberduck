@@ -15,8 +15,17 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.EnumSet;
 
 public class BoxSmallUploadService extends HttpUploadFeature<File> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumRequired, Flags.checksumResponse);
+    }
 }

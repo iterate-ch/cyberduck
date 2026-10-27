@@ -195,7 +195,7 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
     @Test
     public void testDigestOfEncryptedContent() throws Exception {
         final byte[] content = RandomUtils.nextBytes(2500);
-        final TransferStatus status = new TransferStatus().setVerify(true).setLength(content.length);
+        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.sha256).setLength(content.length);
         this.write(this.feature(), status, content);
         // Checksum of the content sent to the server and not of the local content
         assertEquals(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(written.get()), new TransferStatus()), status.getDigest());

@@ -17,9 +17,18 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
 
+import java.util.EnumSet;
+
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumRequired, Flags.checksumResponse);
+    }
 }

@@ -26,7 +26,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobType;
 
+import java.util.EnumSet;
+
 public class AzureUploadFeature extends DefaultUploadFeature<BlobItemProperties> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
+    }
 
     private final AzureSession session;
 

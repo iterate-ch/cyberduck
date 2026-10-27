@@ -49,11 +49,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 
 public class IRODSUploadFeature implements Upload<List<String>> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
+    }
 
     private static final Logger log = LogManager.getLogger(IRODSUploadFeature.class);
 

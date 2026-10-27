@@ -19,5 +19,15 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 
+import java.util.EnumSet;
+
 public class HttpUploadFeature<Reply> extends DefaultUploadFeature<Reply> {
+
+    public HttpUploadFeature() {
+        super();
+    }
+
+    public HttpUploadFeature(final EnumSet<Flags> flags) {
+        super(flags);
+    }
 }

@@ -164,7 +164,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksumOptional);
+        return EnumSet.of(Flags.timestamp);
     }
 
     public void cancel(final String uploadUri) throws BackgroundException {

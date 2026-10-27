@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 
 import synapticloop.b2.response.BaseB2Response;
 
+import java.util.EnumSet;
+
 public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2ThresholdUploadService.class);
 
@@ -66,6 +68,14 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
         else {
             return new B2SingleUploadService().upload(write, file, local, throttle, progress, listener, status, callback);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        if(this.threshold(status)) {
+            return new B2LargeUploadService(session, fileid).features(file, status);
+        }
+        return new B2SingleUploadService().features(file, status);
     }
 
     protected boolean threshold(final TransferStatus status) {

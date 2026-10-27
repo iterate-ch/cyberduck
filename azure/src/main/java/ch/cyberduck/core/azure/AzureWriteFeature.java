@@ -43,7 +43,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,11 +76,6 @@ public class AzureWriteFeature implements Write<Void> {
     public AzureWriteFeature(final AzureSession session, final BlobType blobType) {
         this.session = session;
         this.blobType = blobType;
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksumOptional);
     }
 
     @Override

@@ -36,6 +36,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
+import java.util.EnumSet;
+
 public class S3ThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3ThresholdUploadService.class);
 
@@ -82,6 +84,14 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         }
         // Use single upload service
         return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        if(this.threshold(status)) {
+            return new S3MultipartUploadService(session, acl).features(file, status);
+        }
+        return new S3SingleUploadService().features(file, status);
     }
 
     protected boolean threshold(final TransferStatus status) {

@@ -17,9 +17,18 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
+import java.util.EnumSet;
+
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
+    }
 }

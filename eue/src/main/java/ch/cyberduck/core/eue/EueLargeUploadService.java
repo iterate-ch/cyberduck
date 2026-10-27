@@ -50,12 +50,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
+    }
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     private final EueSession session;
@@ -122,7 +128,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                     .getCompletedUploadResponse(uploadUri, size, cdash64);
             // Compared with the checksum calculated by the server by the upload filter when the upload is complete
-            status.setVerify(true).setDigest(new Checksum(HashAlgorithm.cdash64, cdash64));
+            status.setVerify(HashAlgorithm.cdash64).setDigest(new Checksum(HashAlgorithm.cdash64, cdash64));
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size,
                     new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64()));
             // Mark parent status as complete

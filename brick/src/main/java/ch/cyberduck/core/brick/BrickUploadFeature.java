@@ -34,6 +34,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -165,7 +166,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
                         .setLength(length)
                         .setOffset(offset);
                 // Calculate checksum of the part while streaming as it is required only when completing the upload
-                status.setVerify(true);
+                status.setVerify(HashAlgorithm.md5);
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());

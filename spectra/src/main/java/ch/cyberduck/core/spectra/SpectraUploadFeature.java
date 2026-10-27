@@ -31,9 +31,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.jets3t.service.model.StorageObject;
 
 import java.security.MessageDigest;
+import java.util.EnumSet;
 import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
+    }
 
     private final SpectraBulkService bulk;
 

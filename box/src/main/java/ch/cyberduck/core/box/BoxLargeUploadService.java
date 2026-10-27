@@ -44,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,11 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class BoxLargeUploadService extends HttpUploadFeature<File> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumRequired, Flags.checksumResponse);
+    }
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";

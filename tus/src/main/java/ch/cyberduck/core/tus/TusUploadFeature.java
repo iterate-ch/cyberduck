@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -79,6 +80,14 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
     public TusUploadFeature(final DAVSession session, final TusCapabilities capabilities) {
         this.session = session;
         this.capabilities = capabilities;
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        if(capabilities.extensions.contains(Extension.checksum)) {
+            return EnumSet.of(Flags.checksumOptional);
+        }
+        return EnumSet.noneOf(Flags.class);
     }
 
     @Override
@@ -182,7 +191,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
                         .setLength(length);
                 status.setHeader(overall.getHeader());
                 // Optional checksum of the chunk for the server to verify
-                if(write.features(file).contains(Write.Flags.checksumOptional)) {
+                if(TusUploadFeature.this.features(file, overall).contains(Upload.Flags.checksumOptional)) {
                     status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 }
                 final Map<String, String> parameters = new HashMap<>();

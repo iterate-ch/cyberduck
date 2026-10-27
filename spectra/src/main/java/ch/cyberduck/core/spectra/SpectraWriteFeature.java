@@ -63,7 +63,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksumOptional, Flags.mime);
+        return EnumSet.of(Flags.mime);
     }
 
     @Override

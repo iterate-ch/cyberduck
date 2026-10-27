@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -232,4 +233,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         return new Write.Append(true).withStatus(status).withOffset(size);
     }
 
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
+    }
 }

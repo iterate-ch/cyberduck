@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -46,9 +46,25 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
+
+    private final EnumSet<Flags> flags;
+
+    public DefaultUploadFeature() {
+        this(EnumSet.noneOf(Flags.class));
+    }
+
+    public DefaultUploadFeature(final EnumSet<Flags> flags) {
+        this.flags = flags;
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return flags;
+    }
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
@@ -96,12 +112,11 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
      * @see Write#checksum(Path, TransferStatus)
      */
     public MessageDigest digest(final Write<Reply> write, final Path file, final TransferStatus status) throws BackgroundException {
-        final ChecksumCompute compute = write.checksum(file, status);
-        if(compute.isTransformed()) {
+        if(write.checksum(file, status).isTransformed()) {
             // Digest is applied by the write feature to the transformed content
             return null;
         }
-        return compute.digest();
+        return ChecksumComputeFactory.get(status.getVerify()).digest();
     }
 
     /**

@@ -34,7 +34,6 @@ import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.List;
 
 public class IRODSWriteFeature implements Write<List<String>> {
@@ -88,11 +87,6 @@ public class IRODSWriteFeature implements Write<List<String>> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Uploading {0} failed", e, file);
         }
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksumOptional);
     }
 
     /**

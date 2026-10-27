@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -77,8 +78,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                     new CryptoTransferStatus(vault, file, status), callback);
             // The checksum must be calculated for the encrypted content sent to the server and not for the content
             // read from the local file. Therefore the digest is applied here, below encryption.
-            final ChecksumCompute compute = proxy.checksum(file, status);
-            final MessageDigest digest = status.isVerify() ? compute.digest() : null;
+            final MessageDigest digest = status.isVerify() ? ChecksumComputeFactory.get(status.getVerify()).digest() : null;
             final OutputStream ciphertext = null == digest ? stream : new DigestOutputStream(stream, digest);
             if(status.getOffset() == 0L) {
                 ciphertext.write(status.getHeader().array());
@@ -93,7 +93,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 public void close() throws IOException {
                     super.close();
                     if(pending != null) {
-                        status.setDigest(new Checksum(compute.getAlgorithm(), pending.digest()));
+                        status.setDigest(new Checksum(status.getVerify(), pending.digest()));
                         pending = null;
                     }
                 }

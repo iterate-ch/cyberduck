@@ -16,17 +16,25 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
 
 import java.security.MessageDigest;
+import java.util.EnumSet;
 
 import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumResponse);
+    }
 
     final DropboxSession session;
 

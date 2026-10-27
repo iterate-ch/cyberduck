@@ -34,6 +34,8 @@ import org.apache.logging.log4j.Logger;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
+import java.util.EnumSet;
+
 public class SwiftThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = LogManager.getLogger(SwiftThresholdUploadService.class);
 
@@ -72,6 +74,14 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
             feature = new SwiftSmallObjectUploadFeature();
         }
         return feature.upload(write, file, local, throttle, progress, listener, status, callback);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        if(this.threshold(status)) {
+            return new SwiftLargeObjectUploadFeature(session, regionService).features(file, status);
+        }
+        return new SwiftSmallObjectUploadFeature().features(file, status);
     }
 
     protected boolean threshold(final TransferStatus status) {
