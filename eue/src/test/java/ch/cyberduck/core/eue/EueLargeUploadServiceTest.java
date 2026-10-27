@@ -61,6 +61,9 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         this.assertResponseMatchesFinder(fileid, file, status);
+        // Compared with the checksum of the server by the upload filter
+        assertTrue(status.isVerify());
+        assertEquals(status.getResponse().getChecksum(), status.getDigest());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];
