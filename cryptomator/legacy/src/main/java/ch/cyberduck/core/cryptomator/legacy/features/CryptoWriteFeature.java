@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
@@ -78,7 +77,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                     new CryptoTransferStatus(cryptomator, file, status), callback);
             // The checksum must be calculated for the encrypted content sent to the server and not for the content
             // read from the local file. Therefore the digest is applied here, below encryption.
-            final MessageDigest digest = status.isVerify() ? proxy.checksum(file, status).digest() : null;
+            final ChecksumCompute compute = proxy.checksum(file, status);
+            final MessageDigest digest = status.isVerify() ? compute.digest() : null;
             final OutputStream ciphertext = null == digest ? stream : new DigestOutputStream(stream, digest);
             if(status.getOffset() == 0L) {
                 ciphertext.write(status.getHeader().array());
@@ -93,7 +93,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 public void close() throws IOException {
                     super.close();
                     if(pending != null) {
-                        status.setDigest(Checksum.parse(Hex.encodeHexString(pending.digest())));
+                        status.setDigest(new Checksum(compute.getAlgorithm(), pending.digest()));
                         pending = null;
                     }
                 }
