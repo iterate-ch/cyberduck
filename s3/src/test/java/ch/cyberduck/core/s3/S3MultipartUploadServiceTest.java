@@ -19,6 +19,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -63,7 +64,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
-        assertSame(Checksum.NONE, status.getResponse().getChecksum());
+        assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(random.length, status.getResponse().getSize());
@@ -72,10 +73,10 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
-        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertEquals(HashAlgorithm.md5_multipart, attr.getChecksum().algorithm);
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
-        assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
+        assertEquals(HashAlgorithm.md5_multipart, Checksum.parse(attr.getETag()).algorithm);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
@@ -98,7 +99,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         service.upload(new S3WriteFeature(virtualhost, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
-        assertSame(Checksum.NONE, status.getResponse().getChecksum());
+        assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(random.length, status.getResponse().getSize());
@@ -107,10 +108,10 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
-        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertEquals(HashAlgorithm.md5_multipart, attr.getChecksum().algorithm);
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
-        assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
+        assertEquals(HashAlgorithm.md5_multipart, Checksum.parse(attr.getETag()).algorithm);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(virtualhost, acl).getClass(test));
         new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
@@ -177,6 +178,11 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        // ETag calculated from the checksums of the parts returned by the server and compared by the upload filter
+        assertTrue(status.isVerify());
+        assertEquals(HashAlgorithm.md5_multipart, status.getDigest().algorithm);
+        assertEquals(status.getResponse().getChecksum(), status.getDigest());
+        
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
@@ -227,7 +233,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(content.length, status.getResponse().getSize());
-        assertSame(Checksum.NONE, status.getResponse().getChecksum());
+        assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());

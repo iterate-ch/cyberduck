@@ -64,7 +64,9 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
         // not the MD5 of the object data.
         if(null == object.getServerSideEncryptionAlgorithm() || "AES256".equals(object.getServerSideEncryptionAlgorithm())) {
-            attributes.setChecksum(Checksum.parse(object.getETag()));
+            // Objects uploaded in multiple parts have the MD5 of the concatenated MD5 digests of the parts
+            // and not of the whole object as ETag.
+            attributes.setChecksum(Checksum.parse(StringUtils.remove(object.getETag(), '"')));
         }
         if(object instanceof S3Object) {
             if(HostPreferencesFactory.get(host).getBoolean("s3.listing.versioning.enable")) {

@@ -72,6 +72,9 @@ public final class Checksum {
         if(StringUtils.isBlank(hash)) {
             return Checksum.NONE;
         }
+        if(hash.matches("[a-fA-F0-9]{32}-\\d+")) {
+            return new Checksum(HashAlgorithm.md5_multipart, hash);
+        }
         switch(hash.length()) {
             case 8:
                 if(hash.matches("[a-fA-F0-9]{8}")) {

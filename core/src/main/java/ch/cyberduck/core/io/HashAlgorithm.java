@@ -27,6 +27,11 @@ public enum HashAlgorithm {
     sha512,
     crc32,
     cdash64,
+    /**
+     * MD5 of the concatenated MD5 digests of the parts followed by a hyphen and the number of parts as returned as ETag
+     * for objects uploaded in multiple parts to Amazon S3
+     */
+    md5_multipart,
     dropbox_content_hash;
 
     @Override
