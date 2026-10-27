@@ -37,8 +37,6 @@ jobs:
         run: echo "args=-P=no-testcontainers" >> "$GITHUB_ENV"
         shell: bash
         if: runner.os == 'windows' || runner.os == 'macos'
-      - run: msiexec /i setup\wix\Bonjour64.msi /Quiet /Passive /NoRestart
-        if: runner.os == 'windows'
       - uses: microsoft/setup-msbuild@v3
         if: runner.os == 'windows'
         with:
