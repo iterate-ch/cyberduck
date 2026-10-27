@@ -91,6 +91,26 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testMoveCommonPrefixWithoutPlaceholder() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        // No placeholder object, directory only exists as common prefix of the file
+        final Path directory = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl), new Path(directory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final S3MoveFeature feature = new S3MoveFeature(session, acl);
+        final Path moved = feature.move(directory, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertEquals(renamed, moved);
+        // No placeholder object created at target
+        assertFalse(session.getClient().isObjectInBucket(container.getName(), new S3PathContainerService(session.getHost()).getKey(renamed) + "/"));
+        // Directory appears with first descendant moved
+        final Path target = feature.move(test, new Path(renamed, test.getName(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        assertFalse(new S3FindFeature(session, acl).find(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveVersioned() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));

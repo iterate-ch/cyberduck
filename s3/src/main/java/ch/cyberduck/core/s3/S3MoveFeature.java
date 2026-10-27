@@ -25,9 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -89,8 +87,9 @@ public class S3MoveFeature implements Move {
             }
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
-                    // No placeholder object to copy, create a new one at the target
-                    target = session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), renamed, status);
+                    // No placeholder object to copy for common prefix. The directory is implicitly created at the target
+                    // when moving descendants.
+                    target = renamed;
                 }
                 else {
                     throw e;
