@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.legacy.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
@@ -57,7 +57,7 @@ public class CryptoCopyFeature implements Copy {
             status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
             status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                     new RandomNonceGenerator(vault.getNonceSize()) :
-                    new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
+                    new SeededNonceGenerator(vault.getNonceSize()));
         }
         if(vault.contains(source) && vault.contains(copy)) {
             return vault.decrypt(session, proxy.withTarget(target).copy(

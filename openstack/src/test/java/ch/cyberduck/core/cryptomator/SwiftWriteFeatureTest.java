@@ -24,7 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Upload;
@@ -82,7 +82,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final CryptoWriteFeature<StorageObject> writer = new CryptoWriteFeature<StorageObject>(session, new SwiftWriteFeature(session, regionService), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
+        status.setNonces(new SeededNonceGenerator(cryptomator.getNonceSize()));
         status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);

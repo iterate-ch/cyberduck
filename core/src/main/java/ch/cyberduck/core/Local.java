@@ -582,8 +582,13 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
         @Override
         public long skip(final long n) throws IOException {
-            channel.position(channel.position() + n);
-            return channel.position();
+            if(n <= 0L) {
+                return 0L;
+            }
+            final long position = channel.position();
+            // Number of bytes skipped is limited by the end of the file
+            channel.position(Math.min(channel.size(), position + n));
+            return channel.position() - position;
         }
 
         @Override

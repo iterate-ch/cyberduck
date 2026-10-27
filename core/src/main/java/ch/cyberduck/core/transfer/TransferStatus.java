@@ -619,46 +619,6 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
-    /**
-     * Calculate the checksum of the content of this status read from the local file. Applied to the content sent to
-     * the server, which differs from the local content when it is transformed, such as encrypted, in an upload to a
-     * vault, as defined by the overall status.
-     *
-     * @param local     Local file
-     * @param algorithm Algorithm of the checksum
-     * @return Checksum of the content with offset and length of this status
-     * @see #compute(Local, HashAlgorithm, TransferStatus)
-     */
-    public Checksum compute(final Local local, final HashAlgorithm algorithm) throws BackgroundException {
-        return this.compute(local, algorithm, this);
-    }
-
-    /**
-     * @param local     Local file
-     * @param algorithm Algorithm of the checksum
-     * @param segment   Status with offset and length of the content to calculate the checksum for
-     * @return Checksum of the content sent to the server
-     */
-    public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
-        if(null == parent) {
-            return ChecksumComputeFactory.get(algorithm).compute(local.getInputStream(), segment);
-        }
-        return parent.compute(local, algorithm, segment);
-    }
-
-    /**
-     * @param algorithm Algorithm of the checksum
-     * @return Message digest to calculate the checksum of the content while streaming to the server or null if the
-     * digest is applied by the write feature to transformed content, such as encrypted in an upload to a vault, or
-     * not available for the algorithm
-     */
-    public MessageDigest digest(final HashAlgorithm algorithm) throws BackgroundException {
-        if(null == parent) {
-            return ChecksumComputeFactory.get(algorithm).digest();
-        }
-        return parent.digest(algorithm);
-    }
-
     public TransferStatus setParent(TransferStatus parent) {
         this.parent = parent;
         return this;

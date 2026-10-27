@@ -141,7 +141,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
                         .setLength(length);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(status.compute(local, BoxLargeUploadService.this.checksum(file, status).getAlgorithm()));
+                status.setChecksum(BoxLargeUploadService.this.checksum(file, status).compute(local.getInputStream(), status));
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_SESSION_ID, uploadSessionId);
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));

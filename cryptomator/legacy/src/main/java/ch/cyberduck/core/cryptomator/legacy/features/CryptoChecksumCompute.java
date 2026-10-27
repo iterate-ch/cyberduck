@@ -18,7 +18,7 @@ package ch.cyberduck.core.cryptomator.legacy.features;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.legacy.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -87,7 +87,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
         if(null == status.getNonces()) {
             status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                     new RandomNonceGenerator(cryptomator.getNonceSize()) :
-                    new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
+                    new SeededNonceGenerator(cryptomator.getNonceSize()));
         }
         return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
     }

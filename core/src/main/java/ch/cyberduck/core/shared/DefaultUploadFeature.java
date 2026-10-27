@@ -124,13 +124,11 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
 
     /**
      * @return Message digest to calculate the checksum while streaming the content with the algorithm to verify. Null
-     * to disable verification or when the digest is applied by the write feature to transformed content.
+     * to disable verification.
      * @see TransferStatus#getVerify()
-     * @see Flags#transform
-     * @see TransferStatus#digest(HashAlgorithm)
      */
     public MessageDigest digest(final TransferStatus status) throws BackgroundException {
-        return status.digest(status.getVerify());
+        return ChecksumComputeFactory.get(status.getVerify()).digest();
     }
 
     /**

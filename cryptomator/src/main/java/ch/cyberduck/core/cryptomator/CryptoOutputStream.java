@@ -73,9 +73,10 @@ public class CryptoOutputStream extends ProxyOutputStream {
             try {
                 for(int chunkOffset = off; chunkOffset < len; chunkOffset += chunksize) {
                     int chunkLen = Math.min(chunksize, len - chunkOffset);
+                    final long chunkIndex = chunkIndexOffset++;
                     final ByteBuffer encryptedChunk = cryptor.encryptChunk(
                         ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
-                        chunkIndexOffset++, header, nonces.next());
+                        chunkIndex, header, nonces.next(chunkIndex));
                     final byte[] encrypted = new byte[encryptedChunk.remaining()];
                     encryptedChunk.get(encrypted);
                     super.write(encrypted);

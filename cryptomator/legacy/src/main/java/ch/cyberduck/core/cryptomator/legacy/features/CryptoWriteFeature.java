@@ -23,7 +23,7 @@ import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.cryptomator.legacy.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -70,7 +70,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             if(null == status.getNonces()) {
                 final NonceGenerator nonces = status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                         new RandomNonceGenerator(cryptomator.getNonceSize()) :
-                        new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength()));
+                        new SeededNonceGenerator(cryptomator.getNonceSize());
                 log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }

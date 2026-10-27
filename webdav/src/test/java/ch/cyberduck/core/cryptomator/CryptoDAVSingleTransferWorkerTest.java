@@ -29,7 +29,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -156,7 +156,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
         final byte[] content = RandomUtils.nextBytes(62768);
         final TransferStatus status = new TransferStatus();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
+        status.setNonces(new SeededNonceGenerator(cryptomator.getNonceSize()));
         final StatusOutputStream<Void> out = new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator).write(
                 file1, status, ConnectionCallback.noop);
         IOUtils.write(content, out);

@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
@@ -38,11 +40,15 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
+import org.cryptomator.cryptolib.api.FileHeader;
+import org.apache.commons.io.IOUtils;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
@@ -55,9 +61,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
@@ -217,8 +226,6 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
-        // Digest is applied by the write feature to the encrypted content
-        assertTrue(this.upload(session, cryptomator, HashAlgorithm.sha256).features(file, new TransferStatus()).contains(Upload.Flags.transform));
         final ChecksumCompute compute = this.upload(session, cryptomator, HashAlgorithm.sha256).checksum(file, new TransferStatus());
         assertTrue(compute.isTransformed());
         assertEquals("SHA-256", compute.digest().getAlgorithm());
@@ -259,5 +266,85 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         sent.set(null);
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(writer, file, status);
         assertEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()).hex, sent.get().hex);
+    }
+
+    /**
+     * Read in a new thread because a cipher refuses to encrypt with the same key and nonce again directly after it was
+     * used with the same parameters in the same thread
+     */
+    private byte[] read(final AbstractVault cryptomator, final TransferStatus status, final byte[] content, final long offset) throws Exception {
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            return executor.submit(() -> {
+                try(InputStream in = new CiphertextInputStream(new ByteArrayInputStream(content), cryptomator.getFileContentCryptor(), cryptomator.getFileHeaderCryptor().decryptHeader(status.getHeader()), status.getHeader(), status.getNonces())) {
+                    assertEquals(offset, in.skip(offset));
+                    return IOUtils.toByteArray(in);
+                }
+            }).get();
+        }
+        catch(Exception e) {
+            throw new RuntimeException(String.format("Content length %d offset %d", content.length, offset), e);
+        }
+        finally {
+            executor.shutdown();
+        }
+    }
+
+    @Test
+    public void testCiphertextInputStreamMatchesWrittenContent() throws Exception {
+        for(int length : new int[]{0, 1, 100, 32768, 32769, 100000, 5242880 + 1}) {
+            final NullSession session = this.session();
+            final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+            provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+            final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+            final CryptoWriteFeature<Void> feature = new CryptoWriteFeature<>(session, proxy, cryptomator);
+            final byte[] content = RandomUtils.nextBytes(length);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
+            status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create()));
+            status.setNonces(new SeededNonceGenerator(cryptomator.getNonceSize()));
+            // Encrypted before written because a cipher refuses to encrypt with the same key and nonce again
+            final byte[] ciphertext = this.read(cryptomator, status, content, 0L);
+            final int chunk = cryptomator.getFileContentCryptor().ciphertextChunkSize();
+            final int headerSize = cryptomator.getFileHeaderCryptor().headerSize();
+            for(long offset : new long[]{1, headerSize - 1, headerSize, headerSize + 1, headerSize + chunk - 1, headerSize + chunk, headerSize + chunk + 7, ciphertext.length - 1, ciphertext.length}) {
+                if(offset > ciphertext.length) {
+                    continue;
+                }
+                // Skip to an arbitrary offset in the encrypted content
+                assertArrayEquals(String.format("Length %d offset %d", length, offset),
+                        Arrays.copyOfRange(ciphertext, (int) offset, ciphertext.length), this.read(cryptomator, status, content, offset));
+            }
+            // Encrypted content in the same way is identical to the content written
+            this.write(feature, status, content);
+            assertArrayEquals(String.format("Length %d", length), written.get(), ciphertext);
+        }
+    }
+
+    @Test
+    public void testCiphertextLocalCopyRanges() throws Exception {
+        final NullSession session = this.session();
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final byte[] content = RandomUtils.nextBytes(250000);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID().toString());
+        final OutputStream f = local.getOutputStream(false);
+        f.write(content);
+        f.close();
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create()));
+        status.setNonces(new SeededNonceGenerator(cryptomator.getNonceSize()));
+        final Local ciphertext = new CiphertextLocal(local, cryptomator.getFileContentCryptor(), cryptomator.getFileHeaderCryptor(), status.getHeader(), status.getNonces());
+        final byte[] all = IOUtils.toByteArray(ciphertext.getInputStream());
+        final int part = 40000;
+        for(int offset = 0; offset < all.length; offset += part) {
+            final int length = Math.min(part, all.length - offset);
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            final TransferStatus segment = new TransferStatus().setOffset(offset).setLength(length);
+            new StreamCopier(segment, StreamProgress.noop).withOffset(segment.getOffset()).withLimit(segment.getLength())
+                    .transfer(ciphertext.getInputStream(), out);
+            assertArrayEquals(String.format("Offset %d", offset), Arrays.copyOfRange(all, offset, offset + length), out.toByteArray());
+        }
+        local.delete();
     }
 }

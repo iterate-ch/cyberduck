@@ -95,12 +95,6 @@ public interface Upload<Reply> {
          * checksum calculated by the client. Calculated while streaming when verifying uploads unless calculated
          * prior to the transfer.
          */
-        checksumResponse,
-        /**
-         * The content is transformed, such as encrypted, before it is sent to the server. The digest to calculate the
-         * checksum of the content while transferring must then be applied by the write feature to the transformed
-         * content and not to the local content.
-         */
-        transform
+        checksumResponse
     }
 }

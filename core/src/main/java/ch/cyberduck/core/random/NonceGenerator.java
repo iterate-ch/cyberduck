@@ -18,4 +18,13 @@ package ch.cyberduck.core.random;
 public interface NonceGenerator {
 
     byte[] next();
+
+    /**
+     * @param index Index of chunk
+     * @return Nonce for the chunk with the given index. Generators that return a nonce for a chunk regardless of the
+     * order chunks are encrypted override. Otherwise the next nonce.
+     */
+    default byte[] next(final long index) {
+        return this.next();
+    }
 }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.transfer.ProxyTransferStatus;
@@ -32,11 +33,13 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
 
     private final Vault vault;
     private final Path file;
+    private final TransferStatus cleartext;
 
     public CryptoTransferStatus(final Vault vault, final Path file, final TransferStatus proxy) {
         super(proxy);
         this.vault = vault;
         this.file = file;
+        this.cleartext = proxy;
         this.setLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
                 // Assume single chunk upload
                 .setOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
@@ -51,6 +54,13 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
             // Ciphertext status is overall status
             this.setParent(null);
         }
+    }
+
+    @Override
+    public TransferStatus setDigest(final Checksum digest) {
+        // Calculated for the encrypted content sent to the server. Verified with the cleartext status.
+        cleartext.setDigest(digest);
+        return super.setDigest(digest);
     }
 
     @Override

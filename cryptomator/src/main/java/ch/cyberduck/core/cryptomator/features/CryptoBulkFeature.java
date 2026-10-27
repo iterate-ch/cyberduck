@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.SeededNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.transfer.Transfer;
@@ -72,7 +72,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(null == status.getNonces()) {
                     status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                             new RandomNonceGenerator(cryptomator.getNonceSize()) :
-                            new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
+                            new SeededNonceGenerator(cryptomator.getNonceSize()));
                 }
                 encrypted.put(new TransferItem(cryptomator.encrypt(session, file), local), status);
             }

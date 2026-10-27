@@ -204,7 +204,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
                 status.setHeader(overall.getHeader());
                 // Optional checksum of the chunk for the server to verify
                 if(TusUploadFeature.this.features(file, overall).contains(Upload.Flags.checksumOptional)) {
-                    status.setChecksum(status.compute(local, TusUploadFeature.this.checksum(file, status).getAlgorithm()));
+                    status.setChecksum(TusUploadFeature.this.checksum(file, status).compute(local.getInputStream(), status));
                 }
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_URL, uploadUrl);
