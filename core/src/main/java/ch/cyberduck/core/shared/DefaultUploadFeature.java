@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -58,18 +59,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener message, final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
-        final MessageDigest digest;
-        if(status.isVerify()) {
-            if(!write.checksum(file, status).isTransformed()) {
-                digest = this.digest(write, file, status);
-            }
-            else {
-                digest = null;
-            }
-        }
-        else {
-            digest = null;
-        }
+        final MessageDigest digest = status.isVerify() ? this.digest(write, file, status) : null;
         final InputStream in;
         // Wrap with digest stream if available
         if(null == digest) {
@@ -101,11 +91,17 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
 
     /**
      * @return Message digest to calculate the checksum while streaming the content. Defaults to the algorithm of the
-     * checksum of the write feature. Null to disable verification.
+     * checksum of the write feature. Null to disable verification or when the digest is applied by the write feature
+     * to transformed content.
      * @see Write#checksum(Path, TransferStatus)
      */
     public MessageDigest digest(final Write<Reply> write, final Path file, final TransferStatus status) throws BackgroundException {
-        return write.checksum(file, status).digest();
+        final ChecksumCompute compute = write.checksum(file, status);
+        if(compute.isTransformed()) {
+            // Digest is applied by the write feature to the transformed content
+            return null;
+        }
+        return compute.digest();
     }
 
     /**
