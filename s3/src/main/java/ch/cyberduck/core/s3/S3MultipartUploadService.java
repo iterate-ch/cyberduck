@@ -255,7 +255,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
                 status.setHeader(overall.getHeader());
                 final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
                 // Content-MD5 is required for upload to a bucket with Object Lock. The payload is not signed.
-                final Checksum md5 = status.transform(S3MultipartUploadService.this.checksum(file, status)).compute(local.getInputStream(), status);
+                final Checksum md5 = status.compute(local, S3MultipartUploadService.this.checksum(file, status).getAlgorithm());
                 checksums.put(partNumber, md5);
                 metadata.put(HttpHeaders.CONTENT_MD5, md5.base64);
                 status.setMetadata(metadata);

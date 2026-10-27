@@ -29,7 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -619,15 +620,43 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     /**
-     * @param compute Algorithm to calculate the checksum of the content read from the local file
-     * @return Algorithm to calculate the checksum of the content sent to the server. Differs from the passed algorithm
-     * when the content is transformed, such as encrypted, in an upload to a vault, as defined by the overall status.
+     * Calculate the checksum of the content of this status read from the local file. Applied to the content sent to
+     * the server, which differs from the local content when it is transformed, such as encrypted, in an upload to a
+     * vault, as defined by the overall status.
+     *
+     * @param local     Local file
+     * @param algorithm Algorithm of the checksum
+     * @return Checksum of the content with offset and length of this status
+     * @see #compute(Local, HashAlgorithm, TransferStatus)
      */
-    public ChecksumCompute transform(final ChecksumCompute compute) {
+    public Checksum compute(final Local local, final HashAlgorithm algorithm) throws BackgroundException {
+        return this.compute(local, algorithm, this);
+    }
+
+    /**
+     * @param local     Local file
+     * @param algorithm Algorithm of the checksum
+     * @param segment   Status with offset and length of the content to calculate the checksum for
+     * @return Checksum of the content sent to the server
+     */
+    public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
         if(null == parent) {
-            return compute;
+            return ChecksumComputeFactory.get(algorithm).compute(local.getInputStream(), segment);
         }
-        return parent.transform(compute);
+        return parent.compute(local, algorithm, segment);
+    }
+
+    /**
+     * @param algorithm Algorithm of the checksum
+     * @return Message digest to calculate the checksum of the content while streaming to the server or null if the
+     * digest is applied by the write feature to transformed content, such as encrypted in an upload to a vault, or
+     * not available for the algorithm
+     */
+    public MessageDigest digest(final HashAlgorithm algorithm) throws BackgroundException {
+        if(null == parent) {
+            return ChecksumComputeFactory.get(algorithm).digest();
+        }
+        return parent.digest(algorithm);
     }
 
     public TransferStatus setParent(TransferStatus parent) {

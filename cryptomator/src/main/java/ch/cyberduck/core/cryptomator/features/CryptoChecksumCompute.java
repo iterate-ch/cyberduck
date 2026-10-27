@@ -60,8 +60,8 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
     private final AbstractVault cryptomator;
     private final ChecksumCompute delegate;
 
-    public CryptoChecksumCompute(final ChecksumCompute delegate, final AbstractVault CryptoVaultInterface) {
-        this.cryptomator = CryptoVaultInterface;
+    public CryptoChecksumCompute(final ChecksumCompute delegate, final AbstractVault vault) {
+        this.cryptomator = vault;
         this.delegate = delegate;
     }
 

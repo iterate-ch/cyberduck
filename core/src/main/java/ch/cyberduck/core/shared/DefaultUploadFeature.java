@@ -92,7 +92,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener message, final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
-        final MessageDigest digest = status.isVerify() ? this.digest(file, status) : null;
+        final MessageDigest digest = status.isVerify() ? this.digest(status) : null;
         final InputStream in;
         // Wrap with digest stream if available
         if(null == digest) {
@@ -127,14 +127,10 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
      * to disable verification or when the digest is applied by the write feature to transformed content.
      * @see TransferStatus#getVerify()
      * @see Flags#transform
-     * @see TransferStatus#transform(ChecksumCompute)
+     * @see TransferStatus#digest(HashAlgorithm)
      */
-    public MessageDigest digest(final Path file, final TransferStatus status) throws BackgroundException {
-        if(status.transform(this.checksum(file, status)).isTransformed()) {
-            // Digest is applied by the write feature to the transformed content
-            return null;
-        }
-        return ChecksumComputeFactory.get(status.getVerify()).digest();
+    public MessageDigest digest(final TransferStatus status) throws BackgroundException {
+        return status.digest(status.getVerify());
     }
 
     /**

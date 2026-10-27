@@ -172,7 +172,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                         .setParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(status.transform(EueLargeUploadService.this.checksum(file, status)).compute(local.getInputStream(), status));
+                status.setChecksum(status.compute(local, EueLargeUploadService.this.checksum(file, status).getAlgorithm()));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
                         write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);

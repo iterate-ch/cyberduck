@@ -241,7 +241,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                 requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(status.transform(B2LargeUploadService.this.checksum(file, status)).compute(local.getInputStream(), status));
+                status.setChecksum(status.compute(local, B2LargeUploadService.this.checksum(file, status).getAlgorithm()));
                 status.setPart(partNumber);
                 return (B2UploadPartResponse) B2LargeUploadService.this.upload(
                         write, file, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);

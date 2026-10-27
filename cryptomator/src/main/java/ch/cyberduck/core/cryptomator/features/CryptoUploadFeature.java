@@ -26,10 +26,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.security.MessageDigest;
 import java.util.EnumSet;
 
 public class CryptoUploadFeature<Reply> implements Upload<Reply> {
@@ -48,9 +52,15 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, listener, status.setParent(new CryptoTransferStatus(vault, file, status) {
             @Override
-            public ChecksumCompute transform(final ChecksumCompute compute) {
+            public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
                 // Checksum of the content after it is encrypted
-                return new CryptoChecksumCompute(compute, vault);
+                return new CryptoChecksumCompute(ChecksumComputeFactory.get(algorithm), vault).compute(local.getInputStream(), segment);
+            }
+
+            @Override
+            public MessageDigest digest(final HashAlgorithm algorithm) {
+                // Digest is applied by the write feature to the encrypted content
+                return null;
             }
         }), callback);
     }
