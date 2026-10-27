@@ -79,7 +79,7 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         final EnumSet<Flags> flags = EnumSet.copyOf(proxy.features(file, status));
         if(file.isFile()) {
             // Digest is applied by the write feature to the encrypted content

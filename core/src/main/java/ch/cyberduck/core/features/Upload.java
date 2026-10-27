@@ -72,7 +72,7 @@ public interface Upload<Reply> {
      * @param status Transfer status including the size of file to write to differentiate between single and large uploads
      * @return Supported features
      */
-    default EnumSet<Flags> features(Path file, TransferStatus status) {
+    default EnumSet<Flags> features(Path file, TransferStatus status) throws BackgroundException {
         return EnumSet.noneOf(Flags.class);
     }
 

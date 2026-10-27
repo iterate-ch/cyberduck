@@ -79,7 +79,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         return flags;
     }
 

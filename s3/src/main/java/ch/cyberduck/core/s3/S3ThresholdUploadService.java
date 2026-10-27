@@ -45,6 +45,8 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private final S3Session session;
     private final S3AccessControlListFeature acl;
     private final Long threshold;
+    private final S3SingleUploadService single;
+    private final S3MultipartUploadService multipart;
 
     public S3ThresholdUploadService(final S3Session session, final S3AccessControlListFeature acl) {
         this(session, acl, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.threshold"));
@@ -54,6 +56,8 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         this.session = session;
         this.acl = acl;
         this.threshold = threshold;
+        this.single = new S3SingleUploadService(session);
+        this.multipart = new S3MultipartUploadService(session, acl);
     }
 
     @Override
@@ -69,13 +73,13 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(this.threshold(status)) {
             try {
-                return new S3MultipartUploadService(session, acl).upload(write, file, local, throttle, progress, listener, status, prompt);
+                return multipart.upload(write, file, local, throttle, progress, listener, status, prompt);
             }
             catch(NotfoundException | InteroperabilityException e) {
                 log.warn("Failure {} using multipart upload. Fallback to single upload.", e.getMessage());
                 status.setAppend(false);
                 try {
-                    return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
+                    return single.upload(write, file, local, throttle, progress, listener, status, prompt);
                 }
                 catch(BackgroundException f) {
                     log.warn("Failure {} using single upload. Throw original multipart failure {}", e, e);
@@ -84,7 +88,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             }
         }
         // Use single upload service
-        return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
+        return single.upload(write, file, local, throttle, progress, listener, status, prompt);
     }
 
     @Override
@@ -92,15 +96,15 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         if(this.threshold(status)) {
             return new S3MultipartUploadService(session, acl).checksum(file, status);
         }
-        return new S3SingleUploadService().checksum(file, status);
+        return single.checksum(file, status);
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
             return new S3MultipartUploadService(session, acl).features(file, status);
         }
-        return new S3SingleUploadService().features(file, status);
+        return single.features(file, status);
     }
 
     protected boolean threshold(final TransferStatus status) {

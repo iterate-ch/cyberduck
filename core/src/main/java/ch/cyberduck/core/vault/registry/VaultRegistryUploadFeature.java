@@ -58,7 +58,7 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             return registry.find(session, file).getFeature(session, Upload.class, proxy).features(file, status);
         }
