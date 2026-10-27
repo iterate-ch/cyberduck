@@ -28,6 +28,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
@@ -66,7 +67,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(4128);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final Checksum checksum = writer.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = writer.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -115,7 +116,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
             return (T) new GoogleStorageReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature<>(EnumSet.of(Upload.Flags.checksumResponse));
+            return (T) new DefaultUploadFeature<>(EnumSet.of(Upload.Flags.checksumResponse), HashAlgorithm.md5);
         }
         if(type == Write.class) {
             return (T) new GoogleStorageWriteFeature(this);

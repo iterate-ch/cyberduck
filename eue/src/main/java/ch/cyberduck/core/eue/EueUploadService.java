@@ -17,17 +17,25 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
 
 public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
 
+    public EueUploadService() {
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+    }
+
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {
         return EnumSet.of(Flags.checksumOptional);
-    }
-
-    public EueUploadService() {
     }
 }

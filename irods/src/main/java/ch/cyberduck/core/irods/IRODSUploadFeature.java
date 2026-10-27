@@ -27,6 +27,9 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
@@ -56,11 +59,6 @@ import java.util.concurrent.Future;
 
 public class IRODSUploadFeature implements Upload<List<String>> {
 
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
-    }
-
     private static final Logger log = LogManager.getLogger(IRODSUploadFeature.class);
 
     private final IRODSSession session;
@@ -74,6 +72,16 @@ public class IRODSUploadFeature implements Upload<List<String>> {
      * cancelled
      * @see IRODSAttributesFinderFeature#toAttributes(List)
      */
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
+    }
+
     @Override
     public List<String> upload(final Write<List<String>> write, final Path file, final Local local, final BandwidthThrottle throttle,
                                final ProgressListener progress, final StreamListener listener, final TransferStatus status,

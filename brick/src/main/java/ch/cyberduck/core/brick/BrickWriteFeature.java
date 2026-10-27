@@ -143,11 +143,6 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new MD5ChecksumCompute();
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp);
     }

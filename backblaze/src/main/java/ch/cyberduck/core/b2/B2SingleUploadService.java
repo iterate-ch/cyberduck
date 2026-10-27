@@ -17,6 +17,9 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import synapticloop.b2.response.BaseB2Response;
@@ -24,6 +27,11 @@ import synapticloop.b2.response.BaseB2Response;
 import java.util.EnumSet;
 
 public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response> {
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
+    }
 
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {

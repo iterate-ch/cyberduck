@@ -48,6 +48,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -228,7 +229,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
             return (T) new DeepboxTouchFeature(this, fileid);
         }
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional));
+            return (T) new DefaultUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
         if(type == Write.class) {
             return (T) new DeepboxWriteFeature(this, fileid);

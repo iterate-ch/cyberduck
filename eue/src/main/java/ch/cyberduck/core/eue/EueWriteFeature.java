@@ -158,11 +158,6 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new SHA256ChecksumCompute();
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp);
     }

@@ -107,11 +107,6 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new SHA256ChecksumCompute();
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp);
     }
@@ -157,7 +152,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     writer.cancel(uploadUri);
                     final TransferStatus status = new TransferStatus(overall).setLength(content.length);
                     final HttpResponseOutputStream<EueWriteFeature.Chunk> stream = writer.write(file,
-                            status.setChecksum(writer.checksum(file, overall).compute(new ByteArrayInputStream(content), status)), callback);
+                            status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status)), callback);
                     stream.write(content);
                     stream.close();
                     result.set(stream.getStatus());

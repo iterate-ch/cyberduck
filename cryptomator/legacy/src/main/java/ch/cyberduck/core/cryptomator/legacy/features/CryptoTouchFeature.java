@@ -25,9 +25,11 @@ import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.text.MessageFormat;
@@ -51,6 +53,8 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
+        // Checksum of the encrypted empty content including the header generated above
+        status.setChecksum(new CryptoUploadFeature<>(session, session._getFeature(Upload.class), cryptomator).checksum(file, status).compute(new NullInputStream(0L), status));
         final Path target = proxy.touch(writer, cryptomator.encrypt(session, file), new TransferStatus(status) {
             @Override
             public TransferStatus setResponse(final PathAttributes attributes) {

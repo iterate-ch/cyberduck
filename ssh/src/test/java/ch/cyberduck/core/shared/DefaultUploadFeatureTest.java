@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
@@ -90,12 +89,7 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         local.delete();
     }
 
-    private final NullWriteFeature write = new NullWriteFeature() {
-        @Override
-        public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-            return new MD5ChecksumCompute();
-        }
-    };
+    private final NullWriteFeature write = new NullWriteFeature();
 
     private Checksum md5(final byte[] content, final int from, final int to) throws Exception {
         return new MD5ChecksumCompute().compute(new ByteArrayInputStream(Arrays.copyOfRange(content, from, to)), new TransferStatus());

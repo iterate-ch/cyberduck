@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -64,7 +65,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         status.setExists(true);
         status.setRemote(file.attributes());
         status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
-        status.setChecksum(feature.checksum(file, status).compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<File> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

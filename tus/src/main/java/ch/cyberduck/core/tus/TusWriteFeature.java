@@ -135,15 +135,6 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(capabilities.extensions.contains(Extension.checksum)) {
-            return ChecksumComputeFactory.get(capabilities.hashAlgorithm);
-        }
-        log.debug("No checksum support in capabilities {}", capabilities);
-        return new DisabledChecksumCompute();
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.mime);
     }

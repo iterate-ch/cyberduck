@@ -36,6 +36,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -92,6 +94,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         this.segmentService = segmentService;
         this.listService = listService;
         this.concurrency = concurrency;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     @Override
@@ -206,7 +213,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         .setOffset(offset);
                 status.setHeader(overall.getHeader());
                 // Optional checksum of the segment for the server to verify
-                status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
+                status.setChecksum(status.transform(SwiftLargeObjectUploadFeature.this.checksum(segment, status)).compute(local.getInputStream(), status));
                 return SwiftLargeObjectUploadFeature.this.upload(
                         write, segment, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
             }

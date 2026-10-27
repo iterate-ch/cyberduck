@@ -34,6 +34,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -95,6 +97,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
         this.acl = acl;
         this.partsize = Math.max(HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.partsize.minimum"), partsize);
         this.concurrency = concurrency;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     @Override
@@ -248,7 +255,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
                 status.setHeader(overall.getHeader());
                 final HashMap<String, String> metadata = new HashMap<>(status.getMetadata());
                 // Content-MD5 is required for upload to a bucket with Object Lock. The payload is not signed.
-                final Checksum md5 = write.checksum(file, status).compute(local.getInputStream(), status);
+                final Checksum md5 = status.transform(S3MultipartUploadService.this.checksum(file, status)).compute(local.getInputStream(), status);
                 checksums.put(partNumber, md5);
                 metadata.put(HttpHeaders.CONTENT_MD5, md5.base64);
                 status.setMetadata(metadata);

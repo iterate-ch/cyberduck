@@ -185,8 +185,4 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
         return this.write(file, status, command);
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
 }

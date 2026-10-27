@@ -22,6 +22,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseModel;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -102,7 +103,7 @@ public class AbstractEueSessionTest extends VaultTest {
     protected Path createFile(final EueResourceIdProvider fileid, Path file, final byte[] content) throws Exception {
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
-                .setChecksum(feature.checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
+                .setChecksum(session.getFeature(Upload.class).checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
                 .setLength(content.length);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

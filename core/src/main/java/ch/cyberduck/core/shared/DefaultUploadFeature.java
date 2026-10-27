@@ -28,7 +28,10 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -52,13 +55,27 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
 
     private final EnumSet<Flags> flags;
+    private final HashAlgorithm algorithm;
 
     public DefaultUploadFeature() {
-        this(EnumSet.noneOf(Flags.class));
+        this(EnumSet.noneOf(Flags.class), null);
     }
 
-    public DefaultUploadFeature(final EnumSet<Flags> flags) {
+    /**
+     * @param flags     Supported features
+     * @param algorithm Algorithm to calculate the checksum of the file for the upload. Null if not supported.
+     */
+    public DefaultUploadFeature(final EnumSet<Flags> flags, final HashAlgorithm algorithm) {
         this.flags = flags;
+        this.algorithm = algorithm;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(null == algorithm) {
+            return new DisabledChecksumCompute();
+        }
+        return ChecksumComputeFactory.get(algorithm);
     }
 
     @Override
@@ -75,7 +92,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener message, final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
-        final MessageDigest digest = status.isVerify() ? this.digest(write, file, status) : null;
+        final MessageDigest digest = status.isVerify() ? this.digest(file, status) : null;
         final InputStream in;
         // Wrap with digest stream if available
         if(null == digest) {
@@ -106,13 +123,14 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     }
 
     /**
-     * @return Message digest to calculate the checksum while streaming the content. Defaults to the algorithm of the
-     * checksum of the write feature. Null to disable verification or when the digest is applied by the write feature
-     * to transformed content.
-     * @see Write#checksum(Path, TransferStatus)
+     * @return Message digest to calculate the checksum while streaming the content with the algorithm to verify. Null
+     * to disable verification or when the digest is applied by the write feature to transformed content.
+     * @see TransferStatus#getVerify()
+     * @see Flags#transform
+     * @see TransferStatus#transform(ChecksumCompute)
      */
-    public MessageDigest digest(final Write<Reply> write, final Path file, final TransferStatus status) throws BackgroundException {
-        if(write.checksum(file, status).isTransformed()) {
+    public MessageDigest digest(final Path file, final TransferStatus status) throws BackgroundException {
+        if(status.transform(this.checksum(file, status)).isTransformed()) {
             // Digest is applied by the write feature to the transformed content
             return null;
         }

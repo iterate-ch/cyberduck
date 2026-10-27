@@ -19,6 +19,9 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.StorageObject;
@@ -26,6 +29,11 @@ import org.jets3t.service.model.StorageObject;
 import java.util.EnumSet;
 
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
+    }
 
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {

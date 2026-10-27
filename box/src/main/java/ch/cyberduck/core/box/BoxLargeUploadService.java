@@ -31,6 +31,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -53,11 +56,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class BoxLargeUploadService extends HttpUploadFeature<File> {
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumRequired, Flags.checksumResponse);
-    }
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";
@@ -76,6 +74,16 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
         this.session = session;
         this.concurrency = concurrency;
         this.fileid = fileid;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumRequired, Flags.checksumResponse);
     }
 
     @Override
@@ -133,7 +141,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
                         .setLength(length);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(status.transform(BoxLargeUploadService.this.checksum(file, status)).compute(local.getInputStream(), status));
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_SESSION_ID, uploadSessionId);
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));

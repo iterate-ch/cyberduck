@@ -52,12 +52,6 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
         return headers;
     }
 
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new SHA1ChecksumCompute();
-    }
-
     @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp);

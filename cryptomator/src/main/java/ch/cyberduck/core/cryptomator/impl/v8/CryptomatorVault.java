@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -220,7 +221,7 @@ public class CryptomatorVault extends AbstractVault {
             }
             // Checksum of empty content required for upload to a bucket with Object Lock
             final Write writer = session._getFeature(Write.class);
-            status.setChecksum(writer.checksum(home, status).compute(new NullInputStream(0L), status));
+            status.setChecksum(session._getFeature(Upload.class).checksum(home, status).compute(new NullInputStream(0L), status));
             directory.mkdir(writer, home, status);
             new ContentWriter(session).write(masterkeyPath, mkArray.toByteArray());
             // Create vaultconfig.cryptomator

@@ -66,8 +66,4 @@ public class SpectraWriteFeature extends S3WriteFeature {
         return EnumSet.of(Flags.mime);
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
 }

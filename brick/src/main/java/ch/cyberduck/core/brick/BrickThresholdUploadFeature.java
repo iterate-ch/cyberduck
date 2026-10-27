@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,6 +45,11 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
             new BrickTouchFeature(session).touch(write, file, status);
             return null;
         }
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return new BrickUploadFeature(session).checksum(file, status);
     }
 
     @Override

@@ -17,6 +17,7 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 
 import java.util.EnumSet;
@@ -27,7 +28,7 @@ public class HttpUploadFeature<Reply> extends DefaultUploadFeature<Reply> {
         super();
     }
 
-    public HttpUploadFeature(final EnumSet<Flags> flags) {
-        super(flags);
+    public HttpUploadFeature(final EnumSet<Flags> flags, final HashAlgorithm algorithm) {
+        super(flags, algorithm);
     }
 }

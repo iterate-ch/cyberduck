@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -123,7 +124,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             final long modified = System.currentTimeMillis();
             final long created = 1695161463630L;
             final TransferStatus status = new TransferStatus().setLength(content.length).setModified(modified).setCreated(created);
-            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+            final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             status.setChecksum(checksum);
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -155,7 +156,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             final byte[] content = RandomUtils.nextBytes(6231);
             final long ts = System.currentTimeMillis();
             final TransferStatus status = new TransferStatus().setLength(content.length).setModified(ts);
-            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+            final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             status.setChecksum(checksum).setExists(true);
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -191,7 +192,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(0);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -218,7 +219,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(423);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         EueUploadHelper.createResource(session, fileid.getFileId(file.getParent()), file.getName(), status, UploadType.SIMPLE);
-        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

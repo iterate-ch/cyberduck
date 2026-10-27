@@ -115,14 +115,6 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(file.isDirectory()) {
-            return proxy.checksum(file, status);
-        }
-        return new CryptoChecksumCompute(proxy.checksum(file, status), vault);
-    }
-
-    @Override
     public void preflight(final Path file) throws BackgroundException {
         proxy.preflight(vault.encrypt(session, file));
     }

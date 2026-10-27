@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
@@ -134,7 +135,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final S3WriteFeature writer = new S3WriteFeature(session, acl);
         final TransferStatus status = new TransferStatus().setLength(random.length);
         // Content-MD5 is required for upload to a bucket with Object Lock and calculated prior to the transfer
-        status.setChecksum(writer.checksum(test, status).compute(local.getInputStream(), status));
+        status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(local.getInputStream(), status));
         assertEquals(HashAlgorithm.md5, status.getChecksum().algorithm);
         service.upload(writer, test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);

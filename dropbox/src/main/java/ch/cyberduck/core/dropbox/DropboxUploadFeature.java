@@ -19,6 +19,8 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -31,15 +33,20 @@ import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
 
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumResponse);
-    }
-
     final DropboxSession session;
 
     public DropboxUploadFeature(final DropboxSession session) {
         this.session = session;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.dropbox_content_hash);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumResponse);
     }
 
     @Override

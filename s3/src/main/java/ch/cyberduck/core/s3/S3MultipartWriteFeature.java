@@ -88,11 +88,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         };
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
-
     private final class MultipartOutputStream extends OutputStream {
         /**
          * Completed parts
@@ -134,7 +129,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         status.setParent(overall);
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);
-                        part.addMetadata(HttpHeaders.CONTENT_MD5, checksum(file, overall).compute(new ByteArrayInputStream(content, off, len), status).base64);
+                        part.addMetadata(HttpHeaders.CONTENT_MD5, ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(content, off, len), status).base64);
                         try {
                             final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(

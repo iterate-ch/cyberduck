@@ -21,6 +21,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -59,6 +61,15 @@ public interface Upload<Reply> {
     /**
      * @param file   File on server
      * @param status Transfer status including the size of file to write to differentiate between single and large uploads
+     * @return Algorithm to calculate the checksum of the file for the upload. Disabled if not supported.
+     */
+    default ChecksumCompute checksum(Path file, TransferStatus status) {
+        return new DisabledChecksumCompute();
+    }
+
+    /**
+     * @param file   File on server
+     * @param status Transfer status including the size of file to write to differentiate between single and large uploads
      * @return Supported features
      */
     default EnumSet<Flags> features(Path file, TransferStatus status) {
@@ -84,6 +95,12 @@ public interface Upload<Reply> {
          * checksum calculated by the client. Calculated while streaming when verifying uploads unless calculated
          * prior to the transfer.
          */
-        checksumResponse
+        checksumResponse,
+        /**
+         * The content is transformed, such as encrypted, before it is sent to the server. The digest to calculate the
+         * checksum of the content while transferring must then be applied by the write feature to the transformed
+         * content and not to the local content.
+         */
+        transform
     }
 }

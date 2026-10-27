@@ -278,12 +278,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(file.isFile()) {
-            final Write<?> writer = session.getFeature(Write.class);
-            final EnumSet<Upload.Flags> flags = session.getFeature(Upload.class).features(file, status);
+            final Upload<?> upload = session.getFeature(Upload.class);
+            final EnumSet<Upload.Flags> flags = upload.features(file, status);
             // Checksum required for the upload is calculated regardless of the preference
             if(flags.contains(Upload.Flags.checksumRequired)
                     || (options.checksum && flags.contains(Upload.Flags.checksumOptional))) {
-                final ChecksumCompute feature = writer.checksum(file, status);
+                final ChecksumCompute feature = upload.checksum(file, status);
                 if(feature != null) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
                             file.getName()));
@@ -299,7 +299,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             else if(options.checksum && flags.contains(Upload.Flags.checksumResponse)) {
                 // Calculate checksum while transferring and verify when complete
-                final HashAlgorithm algorithm = writer.checksum(file, status).getAlgorithm();
+                final HashAlgorithm algorithm = upload.checksum(file, status).getAlgorithm();
                 if(algorithm != null) {
                     status.setVerify(algorithm);
                 }

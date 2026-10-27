@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -84,6 +85,14 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         }
         // Use single upload service
         return new S3SingleUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(this.threshold(status)) {
+            return new S3MultipartUploadService(session, acl).checksum(file, status);
+        }
+        return new S3SingleUploadService().checksum(file, status);
     }
 
     @Override

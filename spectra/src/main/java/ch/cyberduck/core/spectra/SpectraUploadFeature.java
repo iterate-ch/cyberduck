@@ -24,6 +24,9 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,15 +39,20 @@ import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
 
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
-    }
-
     private final SpectraBulkService bulk;
 
     public SpectraUploadFeature(final SpectraBulkService bulk) {
         this.bulk = bulk;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
     }
 
     @Override
@@ -59,7 +67,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
             // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
             // verifies the CRC when reading from physical data stores so the gateway can identify problems before
             // transmitting data to the client.
-            chunk.setChecksum(write.checksum(file, status).compute(local.getInputStream(), chunk));
+            chunk.setChecksum(status.transform(this.checksum(file, status)).compute(local.getInputStream(), chunk));
             super.upload(write, file, local, throttle, progress, listener, chunk, callback);
         }
         return null;

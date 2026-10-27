@@ -21,6 +21,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -37,6 +39,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
@@ -121,11 +124,6 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
                 }
             };
         }
-
-        @Override
-        public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-            return new SHA256ChecksumCompute();
-        }
     };
 
     private final AtomicReference<Checksum> sent = new AtomicReference<>();
@@ -137,12 +135,11 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
             sent.set(status.getChecksum());
             return proxy.write(file, status, callback);
         }
-
-        @Override
-        public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-            return ChecksumComputeFactory.get(HashAlgorithm.md5);
-        }
     };
+
+    private CryptoUploadFeature<Void> upload(final NullSession session, final AbstractVault cryptomator, final HashAlgorithm algorithm) {
+        return new CryptoUploadFeature<>(session, new DefaultUploadFeature<>(EnumSet.noneOf(Upload.Flags.class), algorithm), cryptomator);
+    }
 
     private NullSession session() {
         return new NullSession(new Host(new TestProtocol())) {
@@ -170,6 +167,9 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
                 }
                 if(type == Write.class) {
                     return (T) proxy;
+                }
+                if(type == Upload.class) {
+                    return (T) new DefaultUploadFeature<>(EnumSet.noneOf(Upload.Flags.class), HashAlgorithm.md5);
                 }
                 return super._getFeature(type);
             }
@@ -212,8 +212,14 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
 
     @Test
     public void testDigestNotAppliedToLocalContent() throws Exception {
-        final ChecksumCompute compute = this.feature().checksum(new Path(vault, "f", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final NullSession session = this.session();
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
         // Digest is applied by the write feature to the encrypted content
+        assertTrue(this.upload(session, cryptomator, HashAlgorithm.sha256).features(file, new TransferStatus()).contains(Upload.Flags.transform));
+        final ChecksumCompute compute = this.upload(session, cryptomator, HashAlgorithm.sha256).checksum(file, new TransferStatus());
         assertTrue(compute.isTransformed());
         assertEquals("SHA-256", compute.digest().getAlgorithm());
     }
@@ -230,7 +236,7 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
             final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
             final TransferStatus status = new TransferStatus().setLength(content.length);
             // Calculated prior to the transfer as in the upload filter
-            status.setChecksum(feature.checksum(file, status).compute(new ByteArrayInputStream(content), status));
+            status.setChecksum(this.upload(session, cryptomator, HashAlgorithm.md5).checksum(file, status).compute(new ByteArrayInputStream(content), status));
             final OutputStream out = feature.write(file, status, ConnectionCallback.noop);
             out.write(content);
             out.close();
@@ -246,16 +252,12 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, md5proxy, cryptomator);
-        // Same as S3TouchFeature
-        final Touch<Void> touch = new Touch<Void>() {
-            @Override
-            public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
-                return new DefaultTouchFeature<Void>(session).touch(writer, file,
-                        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status)));
-            }
-        };
+        final Path file = new Path(vault, "t", EnumSet.of(Path.Type.file));
+        // Checksum set in the status as in the touch worker
+        final TransferStatus status = new TransferStatus();
+        status.setChecksum(this.upload(session, cryptomator, HashAlgorithm.md5).checksum(file, status).compute(new NullInputStream(0L), status));
         sent.set(null);
-        new CryptoTouchFeature<>(session, touch, cryptomator).touch(writer, new Path(vault, "t", EnumSet.of(Path.Type.file)), new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(writer, file, status);
         assertEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()).hex, sent.get().hex);
     }
 }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -66,6 +67,22 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
         }
         // Write single chunk smaller than threshold
         return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, prompt);
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(status.getLength() >= threshold) {
+            try {
+                if(Vault.DISABLED == registry.find(session, file)) {
+                    return new EueLargeUploadService(session, fileid).checksum(file, status);
+                }
+            }
+            catch(VaultUnlockCancelException e) {
+                // Vault not unlocked. Fallback to features of upload to vault
+            }
+            return new EueUploadService().checksum(file, status);
+        }
+        return new EueSingleUploadService(session, fileid).checksum(file, status);
     }
 
     @Override

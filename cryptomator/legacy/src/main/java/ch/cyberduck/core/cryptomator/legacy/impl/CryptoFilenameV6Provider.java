@@ -24,6 +24,7 @@ import ch.cyberduck.core.cryptomator.legacy.CryptoFilename;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -96,13 +97,13 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         final Find find = session._getFeature(Find.class);
         final Write write = session._getFeature(Write.class);
         if(!find.find(metadataRoot)) {
-            mkdir.mkdir(write, metadataRoot, this.status(write, metadataRoot));
+            mkdir.mkdir(write, metadataRoot, this.status(session, metadataRoot));
         }
         if(!find.find(firstLevel)) {
-            mkdir.mkdir(write, firstLevel, this.status(write, firstLevel));
+            mkdir.mkdir(write, firstLevel, this.status(session, firstLevel));
         }
         if(!find.find(secondLevel)) {
-            mkdir.mkdir(write, secondLevel, this.status(write, secondLevel));
+            mkdir.mkdir(write, secondLevel, this.status(session, secondLevel));
         }
         if(!find.find(metadataFile)) {
             new ContentWriter(session).write(metadataFile, longFileNameBytes);
@@ -115,9 +116,9 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
     /**
      * @return Status to create folder with checksum of empty content required for upload to a bucket with Object Lock
      */
-    private TransferStatus status(final Write writer, final Path folder) throws BackgroundException {
+    private TransferStatus status(final Session<?> session, final Path folder) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
-        return status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
+        return status.setChecksum(session._getFeature(Upload.class).checksum(folder, status).compute(new NullInputStream(0L), status));
     }
 
     @Override

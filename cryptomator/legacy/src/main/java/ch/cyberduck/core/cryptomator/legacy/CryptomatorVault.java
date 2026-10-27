@@ -43,6 +43,7 @@ import ch.cyberduck.core.cryptomator.legacy.features.CryptoMoveV7Feature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoMultipartWriteFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.legacy.features.CryptoUploadFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV7Provider;
@@ -52,6 +53,7 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -189,7 +191,7 @@ public class CryptomatorVault implements Vault {
         }
         // Checksum of empty content required for upload to a bucket with Object Lock
         final Write writer = session._getFeature(Write.class);
-        status.setChecksum(writer.checksum(home, status).compute(new NullInputStream(0L), status));
+        status.setChecksum(session._getFeature(Upload.class).checksum(home, status).compute(new NullInputStream(0L), status));
         directory.mkdir(writer, home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
         if(VAULT_VERSION == version) {

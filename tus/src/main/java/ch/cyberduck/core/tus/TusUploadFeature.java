@@ -37,6 +37,9 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -80,6 +83,15 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
     public TusUploadFeature(final DAVSession session, final TusCapabilities capabilities) {
         this.session = session;
         this.capabilities = capabilities;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(capabilities.extensions.contains(Extension.checksum)) {
+            return ChecksumComputeFactory.get(capabilities.hashAlgorithm);
+        }
+        log.debug("No checksum support in capabilities {}", capabilities);
+        return new DisabledChecksumCompute();
     }
 
     @Override
@@ -192,7 +204,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
                 status.setHeader(overall.getHeader());
                 // Optional checksum of the chunk for the server to verify
                 if(TusUploadFeature.this.features(file, overall).contains(Upload.Flags.checksumOptional)) {
-                    status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                    status.setChecksum(status.transform(TusUploadFeature.this.checksum(file, status)).compute(local.getInputStream(), status));
                 }
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_URL, uploadUrl);

@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -91,7 +92,7 @@ public class TouchWorker extends Worker<Path> {
             writer = session.getFeature(Write.class);
         }
         // Checksum of empty content required for upload to a bucket with Object Lock
-        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
+        status.setChecksum(session.getFeature(Upload.class).checksum(file, status).compute(new NullInputStream(0L), status));
         final Path result = feature.touch(writer, file, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
             return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));

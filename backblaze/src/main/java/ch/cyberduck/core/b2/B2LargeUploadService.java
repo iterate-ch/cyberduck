@@ -30,6 +30,9 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -62,11 +65,6 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
-    }
     private static final Logger log = LogManager.getLogger(B2LargeUploadService.class);
 
     /**
@@ -94,6 +92,16 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
         this.fileid = fileid;
         this.partSize = partSize;
         this.concurrency = concurrency;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
     }
 
     @Override
@@ -233,7 +241,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                 requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(status.transform(B2LargeUploadService.this.checksum(file, status)).compute(local.getInputStream(), status));
                 status.setPart(partNumber);
                 return (B2UploadPartResponse) B2LargeUploadService.this.upload(
                         write, file, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);

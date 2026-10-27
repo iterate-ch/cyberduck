@@ -181,8 +181,4 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
         return EnumSet.of(Flags.timestamp, Flags.acl, Flags.mime);
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
 }

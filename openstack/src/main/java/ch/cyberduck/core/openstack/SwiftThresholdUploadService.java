@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -74,6 +75,14 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
             feature = new SwiftSmallObjectUploadFeature();
         }
         return feature.upload(write, file, local, throttle, progress, listener, status, callback);
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(this.threshold(status)) {
+            return new SwiftLargeObjectUploadFeature(session, regionService).checksum(file, status);
+        }
+        return new SwiftSmallObjectUploadFeature().checksum(file, status);
     }
 
     @Override

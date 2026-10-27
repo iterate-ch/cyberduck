@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -615,6 +616,18 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     public TransferStatus setUrl(final String url) {
         this.url = url;
         return this;
+    }
+
+    /**
+     * @param compute Algorithm to calculate the checksum of the content read from the local file
+     * @return Algorithm to calculate the checksum of the content sent to the server. Differs from the passed algorithm
+     * when the content is transformed, such as encrypted, in an upload to a vault, as defined by the overall status.
+     */
+    public ChecksumCompute transform(final ChecksumCompute compute) {
+        if(null == parent) {
+            return compute;
+        }
+        return parent.transform(compute);
     }
 
     public TransferStatus setParent(TransferStatus parent) {

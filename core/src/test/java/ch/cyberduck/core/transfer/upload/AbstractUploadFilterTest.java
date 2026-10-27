@@ -28,9 +28,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
@@ -60,15 +58,10 @@ public class AbstractUploadFilterTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new DefaultUploadFeature<>(flags.length == 0 ? EnumSet.noneOf(Upload.Flags.class) : EnumSet.copyOf(Arrays.asList(flags)));
+                    return (T) new DefaultUploadFeature<>(flags.length == 0 ? EnumSet.noneOf(Upload.Flags.class) : EnumSet.copyOf(Arrays.asList(flags)), HashAlgorithm.md5);
                 }
                 if(type == Write.class) {
-                    return (T) new NullWriteFeature() {
-                        @Override
-                        public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-                            return new MD5ChecksumCompute();
-                        }
-                    };
+                    return (T) new NullWriteFeature();
                 }
                 return super._getFeature(type);
             }

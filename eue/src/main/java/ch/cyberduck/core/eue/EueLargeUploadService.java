@@ -31,6 +31,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -57,11 +59,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
-    }
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     private final EueSession session;
@@ -79,6 +76,16 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
         this.chunksize = chunksize;
         this.concurrency = concurrency;
         this.fileid = fileid;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+        return EnumSet.of(Flags.checksumOptional);
     }
 
     @Override
@@ -165,7 +172,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                         .setParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(status.transform(EueLargeUploadService.this.checksum(file, status)).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
                         write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);

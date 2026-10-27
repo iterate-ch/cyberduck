@@ -93,8 +93,4 @@ public class IRODSWriteFeature implements Write<List<String>> {
      * Compute local checksum with the default hash scheme of iRODS to allow verification against the
      * checksum registered by the server after the upload
      */
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
-    }
 }

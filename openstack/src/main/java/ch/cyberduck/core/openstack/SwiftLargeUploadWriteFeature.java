@@ -88,10 +88,6 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
     /**
      * The MD5 of a segment is sent with the request for the server to verify the segment
      */
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
 
     private final class LargeUploadOutputStream extends OutputStream {
         private final List<StorageObject> completed = new ArrayList<>();
@@ -123,7 +119,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().setLength(len);
                         // Optional checksum of the segment for the server to verify
-                        status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file, status)
+                        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5)
                                 .compute(new ByteArrayInputStream(content, off, len), status));
                         // Segment name with left padded segment number
                         final Path segment = segmentService.getSegment(file, ++segmentNumber);
