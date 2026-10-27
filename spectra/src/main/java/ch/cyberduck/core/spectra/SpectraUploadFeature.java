@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -62,7 +63,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
      * The ETag returned for a chunk is the checksum of the chunk and not of the whole file
      */
     @Override
-    public MessageDigest digest(final Write<StorageObject> write, final Path file, final TransferStatus status) {
-        return null;
+    protected Checksum checksum(final MessageDigest digest) {
+        return Checksum.NONE;
     }
 }
