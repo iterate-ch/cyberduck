@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 
 import java.util.EnumSet;
 
@@ -40,8 +39,7 @@ public class AzureBlobDirectoryFeature implements Directory<Void> {
         try {
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            return new AzureTouchFeature(session).touch(writer, folder.withType(type),
-                    status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
+            return new AzureTouchFeature(session).touch(writer, folder.withType(type), status);
         }
         catch(IllegalArgumentException e) {
             throw new InteroperabilityException();

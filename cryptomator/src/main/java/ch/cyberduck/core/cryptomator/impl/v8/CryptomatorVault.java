@@ -42,6 +42,7 @@ import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultUnlockException;
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -217,7 +218,10 @@ public class CryptomatorVault extends AbstractVault {
             if(encryption != null) {
                 status.setEncryption(encryption.getDefault(home));
             }
-            directory.mkdir(session._getFeature(Write.class), home, status);
+            // Checksum of empty content required for upload to a bucket with Object Lock
+            final Write writer = session._getFeature(Write.class);
+            status.setChecksum(writer.checksum(home, status).compute(new NullInputStream(0L), status));
+            directory.mkdir(writer, home, status);
             new ContentWriter(session).write(masterkeyPath, mkArray.toByteArray());
             // Create vaultconfig.cryptomator
             final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
@@ -234,9 +238,9 @@ public class CryptomatorVault extends AbstractVault {
             final Path firstLevel = secondLevel.getParent();
             final Path dataDir = firstLevel.getParent();
             log.debug("Create vault root directory at {}", secondLevel);
-            directory.mkdir(session._getFeature(Write.class), dataDir, status);
-            directory.mkdir(session._getFeature(Write.class), firstLevel, status);
-            directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+            directory.mkdir(writer, dataDir, status);
+            directory.mkdir(writer, firstLevel, status);
+            directory.mkdir(writer, secondLevel, status);
         }
     }
 
