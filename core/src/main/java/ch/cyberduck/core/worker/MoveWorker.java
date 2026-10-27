@@ -138,8 +138,14 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                             }
                         };
                         final Path moved = feature.move(s, t, status, delete, callback);
+                        // Placeholder may only exist implicitly as common prefix and is not found before descendants are moved
                         if(PathAttributes.EMPTY.equals(moved.attributes())) {
-                            result.put(s, new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
+                            if(!s.isPlaceholder()) {
+                                result.put(s, new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
+                            }
+                            else {
+                                result.put(s, moved);
+                            }
                         }
                         else {
                             result.put(s, moved);
