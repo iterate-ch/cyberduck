@@ -30,6 +30,7 @@ using Ch.Cyberduck.Core.Proxy;
 using java.security;
 using sun.security.mscapi;
 using CoreLocal = ch.cyberduck.core.Local;
+using CoreLocalFactory = ch.cyberduck.core.LocalFactory;
 using JavaSystem = java.lang.System;
 
 namespace Ch.Cyberduck.Cli
@@ -76,7 +77,7 @@ namespace Ch.Cyberduck.Cli
         /// </summary>
         protected override void setDefaults(CoreLocal defaults)
         {
-            base.setDefaults(ch.cyberduck.core.LocalFactory.get(CommonSupportDirectoryFinder.Local, "default.properties"));
+            base.setDefaults(CoreLocalFactory.get(CommonSupportDirectoryFinder.Local, "default.properties"));
             base.setDefaults(defaults);
         }
 

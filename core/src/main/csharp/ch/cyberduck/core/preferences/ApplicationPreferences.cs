@@ -13,7 +13,6 @@
 // GNU General Public License for more details.
 //
 
-using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.serviceloader;
@@ -30,6 +29,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Windows.Storage;
 using CoreLocal = ch.cyberduck.core.Local;
+using CoreLocalFactory = ch.cyberduck.core.LocalFactory;
 using JavaSystem = java.lang.System;
 
 namespace Ch.Cyberduck.Core.Preferences;
@@ -149,7 +149,7 @@ public class ApplicationPreferences<T> : DefaultPreferences
     /// </summary>
     protected override void setDefaults(CoreLocal defaults)
     {
-        base.setDefaults(LocalFactory.get(CommonSupportDirectoryFinder.Local, "default.properties"));
+        base.setDefaults(CoreLocalFactory.get(CommonSupportDirectoryFinder.Local, "default.properties"));
         base.setDefaults(defaults);
     }
 
