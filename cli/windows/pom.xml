@@ -60,6 +60,7 @@
                                             <groupId>ch.cyberduck</groupId>
                                             <artifactId>profiles</artifactId>
                                             <version>${project.version}</version>
+                                            <excludes>Google Drive.cyberduckprofile,Google Cloud Storage.cyberduckprofile</excludes>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}/profiles</outputDirectory>
