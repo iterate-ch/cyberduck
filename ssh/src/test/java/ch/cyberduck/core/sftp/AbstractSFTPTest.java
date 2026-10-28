@@ -33,10 +33,15 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kerby.kerberos.kerb.client.KrbClient;
+import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
+import org.apache.kerby.util.NetworkUtil;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.util.OsUtils;
 import org.apache.sshd.server.SshServer;
+import org.apache.sshd.server.auth.gss.GSSAuthenticator;
 import org.apache.sshd.server.auth.keyboard.DefaultKeyboardInteractiveAuthenticator;
 import org.apache.sshd.server.auth.password.PasswordAuthenticator;
 import org.apache.sshd.server.auth.pubkey.StaticPublickeyAuthenticator;
@@ -46,10 +51,15 @@ import org.apache.sshd.sftp.server.SftpFileSystemAccessor;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
 import org.apache.sshd.sftp.server.SftpSubsystemProxy;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runners.Parameterized;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +75,14 @@ import static org.junit.Assert.fail;
 
 public class AbstractSFTPTest {
 
-    private SshServer sshServer;
+    protected static final String KERBEROS_REALM = "EXAMPLE.COM";
+    protected static final String KERBEROS_PRINCIPAL = String.format("test@%s", KERBEROS_REALM);
+    private static final String KERBEROS_SERVICE_PRINCIPAL = String.format("host/localhost@%s", KERBEROS_REALM);
+
+    private static File kerberos;
+    private static SimpleKdcServer kdc;
+
+    protected SshServer sshServer;
 
     protected SFTPSession session;
 
@@ -76,6 +93,59 @@ public class AbstractSFTPTest {
 
     @Parameterized.Parameter
     public VaultVersion.Type vaultVersion;
+
+    /**
+     * Kerberos KDC issuing a ticket for the test user saved to a credentials cache for GSS-API authentication
+     */
+    @BeforeClass
+    public static void startKdc() throws Exception {
+        kerberos = Files.createTempDirectory("kdc").toFile();
+        final int port = NetworkUtil.getServerPort();
+        kdc = new SimpleKdcServer();
+        kdc.setWorkDir(kerberos);
+        kdc.setKdcHost("localhost");
+        kdc.setKdcRealm(KERBEROS_REALM);
+        kdc.setAllowUdp(false);
+        kdc.setAllowTcp(true);
+        kdc.setKdcTcpPort(port);
+        kdc.init();
+        kdc.start();
+        final String password = UUID.randomUUID().toString();
+        kdc.createPrincipal(KERBEROS_PRINCIPAL, password);
+        kdc.createAndExportPrincipals(new File(kerberos, "sshd.keytab"), KERBEROS_SERVICE_PRINCIPAL);
+        // Configuration shared by the client and the server running in this JVM
+        final File krb5conf = new File(kerberos, "client-krb5.conf");
+        try(PrintWriter w = new PrintWriter(krb5conf)) {
+            w.println("[libdefaults]");
+            w.println("    default_realm = " + KERBEROS_REALM);
+            w.println("    udp_preference_limit = 1");
+            w.println("    dns_lookup_kdc = false");
+            w.println("    dns_lookup_realm = false");
+            // Service ticket must be requested for host/localhost matching the keytab
+            w.println("    dns_canonicalize_hostname = false");
+            w.println("    rdns = false");
+            w.println("[realms]");
+            w.println("    " + KERBEROS_REALM + " = {");
+            w.println("        kdc = localhost:" + port);
+            w.println("    }");
+            w.println("[domain_realm]");
+            w.println("    localhost = " + KERBEROS_REALM);
+        }
+        // Equivalent to kinit
+        final KrbClient client = kdc.getKrbClient();
+        final File ticketCache = new File(kerberos, "krb5cc");
+        client.storeTicket(client.requestTgt(KERBEROS_PRINCIPAL, password), ticketCache);
+    }
+
+    @AfterClass
+    public static void stopKdc() throws Exception {
+        try {
+            kdc.stop();
+        }
+        finally {
+            FileUtils.deleteQuietly(kerberos);
+        }
+    }
 
     @Before
     public void start() throws Exception {
@@ -105,6 +175,16 @@ public class AbstractSFTPTest {
                 super.handleRejection(username, key, session);
             }
         });
+        final GSSAuthenticator gss = new GSSAuthenticator() {
+            @Override
+            public boolean validateIdentity(final ServerSession session, final String identity) {
+                // Username is not yet set on the session while authentication is in progress
+                return KERBEROS_PRINCIPAL.equals(identity);
+            }
+        };
+        gss.setKeytabFile(new File(kerberos, "sshd.keytab").getAbsolutePath());
+        gss.setServicePrincipalName(KERBEROS_SERVICE_PRINCIPAL);
+        sshServer.setGSSAuthenticator(gss);
         sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
         final SftpSubsystemFactory factory = new SftpSubsystemFactory();
         factory.setFileSystemAccessor(new SftpFileSystemAccessor() {
@@ -140,7 +220,23 @@ public class AbstractSFTPTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SFTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
-        final Host host = new Host(profile, "localhost", 2202, new Credentials("test", "test"));
+        final Host host = new Host(profile, "localhost", 2202, new Credentials("test", "test")) {
+            @Override
+            public String getProperty(final String key) {
+                // Allow tests to override with custom property
+                final String value = super.getProperty(key);
+                if(value != null) {
+                    return value;
+                }
+                if("java.security.krb5.conf".equals(key)) {
+                    return new File(kerberos, "client-krb5.conf").getAbsolutePath();
+                }
+                if("ssh.authentication.gssapi.ticketcache".equals(key)) {
+                    return new File(kerberos, "krb5cc").getAbsolutePath();
+                }
+                return super.getProperty(key);
+            }
+        };
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
