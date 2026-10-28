@@ -8,6 +8,12 @@ on:
         description: 'Tag'
         required: true
         type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Tag'
+        required: true
+        type: string
 
 env:
   REGISTRY: ghcr.io
@@ -19,9 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Determine Version from Input
-        if: ${{ github.event.inputs.tag }}
+        if: ${{ inputs.tag }}
         run: |
-          export TAG=${{ github.event.inputs.tag }}
+          export TAG=${{ inputs.tag }}
           echo "TAG=$TAG" >> "$GITHUB_ENV"
           export VERSION=${TAG/release-}
           export VERSION=${VERSION//-/.}

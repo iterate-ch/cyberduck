@@ -5,6 +5,10 @@ on:
     inputs:
       SPARKLE_FEED:
         type: string
+      # Tag or branch to build. Defaults to the ref that triggered the workflow.
+      REF:
+        required: false
+        type: string
       MAVEN_PROFILES:
         required: false
         type: string
@@ -69,6 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.REF }}
           fetch-depth: 0
       - name: Set up JDK
         uses: actions/setup-java@v6

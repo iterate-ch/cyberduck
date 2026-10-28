@@ -1,0 +1,104 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name, e.g. release-9-6-0'
+        required: true
+        type: string
+      releaseVersion:
+        description: 'Release version, e.g. 9.6.0'
+        required: true
+        type: string
+      developmentVersion:
+        description: 'Next development version, e.g. 9.6.1-SNAPSHOT'
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  # Equivalent of the former Jenkins `release:prepare` job. Commits the release
+  # version, tags it and commits the next development version, then pushes. Pushes
+  # made with GITHUB_TOKEN do not trigger tag workflows, so release.yml,
+  # appstore.yml and image.yml are called explicitly below.
+  prepare:
+    permissions:
+      contents: write
+    runs-on: [ linux, x64 ]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: 25
+          cache: maven
+
+      - name: Configure Git
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Prepare Release
+        shell: bash
+        run: >
+          mvn release:prepare
+          -DreleaseVersion="${{ inputs.releaseVersion }}"
+          -DdevelopmentVersion="${{ inputs.developmentVersion }}"
+          -Dtag="${{ inputs.tag }}"
+          -DpushChanges=false
+          --no-transfer-progress --batch-mode --errors -DskipTests
+
+      - name: Push
+        shell: bash
+        run: |
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "refs/tags/${{ inputs.tag }}"
+
+  release:
+    needs: prepare
+    permissions:
+      actions: read
+      checks: write
+      contents: write
+      packages: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ inputs.tag }}
+    secrets: inherit
+
+  appstore:
+    needs: prepare
+    permissions:
+      actions: read
+      checks: write
+      contents: read
+      packages: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    uses: ./.github/workflows/appstore.yml
+    with:
+      tag: ${{ inputs.tag }}
+    secrets: inherit
+
+  image:
+    needs: prepare
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/image.yml
+    with:
+      tag: ${{ inputs.tag }}
+    secrets: inherit
