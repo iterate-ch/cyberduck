@@ -62,12 +62,12 @@ public abstract class Transfer implements Serializable {
     /**
      * The sum of the file length of all files in the <code>queue</code> or null if unknown
      */
-    private AtomicLong size;
+    private volatile AtomicLong size;
 
     /**
      * The number bytes already transferred of the files in the <code>queue</code> or null if unknown
      */
-    private AtomicLong transferred;
+    private volatile AtomicLong transferred;
 
     /**
      * Security scoped bookmarks obtained for file to upload or parent folder for downloads
@@ -429,7 +429,7 @@ public abstract class Transfer implements Serializable {
         return size.get();
     }
 
-    public void addSize(final long bytes) {
+    public synchronized void addSize(final long bytes) {
         if(null == size) {
             // Initialize
             size = new AtomicLong(0L);
@@ -450,7 +450,7 @@ public abstract class Transfer implements Serializable {
         return transferred.get();
     }
 
-    public void addTransferred(final long bytes) {
+    public synchronized void addTransferred(final long bytes) {
         if(null == transferred) {
             // Initialize
             transferred = new AtomicLong(0L);
@@ -472,7 +472,7 @@ public abstract class Transfer implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public void setSize(final Long bytes) {
+    public synchronized void setSize(final Long bytes) {
         if(null == size) {
             // Initialize
             size = new AtomicLong(0L);
@@ -480,7 +480,7 @@ public abstract class Transfer implements Serializable {
         size.set(bytes);
     }
 
-    public void setTransferred(final Long bytes) {
+    public synchronized void setTransferred(final Long bytes) {
         if(null == transferred) {
             // Initialize
             transferred = new AtomicLong(0L);
