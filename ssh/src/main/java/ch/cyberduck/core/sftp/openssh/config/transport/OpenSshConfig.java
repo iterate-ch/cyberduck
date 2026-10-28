@@ -171,9 +171,7 @@ public class OpenSshConfig {
                 }
                 if("Host".equalsIgnoreCase(keyword)) {
                     final List<String> patterns = new ArrayList<>();
-                    for(final String pattern : argValue.split("[ \t]+")) {
-                        patterns.add(dequote(pattern));
-                    }
+                    patterns.addAll(tokenize(argValue));
                     // Host patterns are matched against the host name given, same as Match originalhost
                     block = new Block(enclosing, Collections.emptyList(), patterns, Collections.emptyList());
                     blocks.add(block);
@@ -185,9 +183,9 @@ public class OpenSshConfig {
                     final List<String> userPatterns = new ArrayList<>();
                     boolean all = false;
                     boolean unknown = false;
-                    final String[] tokens = argValue.split("[ \t]+");
-                    for(int i = 0; i < tokens.length && !unknown; i++) {
-                        final String criterion = tokens[i];
+                    final List<String> tokens = tokenize(argValue);
+                    for(int i = 0; i < tokens.size() && !unknown; i++) {
+                        final String criterion = tokens.get(i);
                         if("all".equalsIgnoreCase(criterion)) {
                             all = true;
                             continue;
@@ -197,8 +195,8 @@ public class OpenSshConfig {
                             log.warn("Unknown Match criterion: {}", criterion);
                             unknown = true;
                         }
-                        else if(++i < tokens.length) {
-                            patterns(tokens[i], patterns);
+                        else if(++i < tokens.size()) {
+                            patterns(tokens.get(i), patterns);
                         }
                     }
                     block = new Block(enclosing, hostPatterns, originalHostPatterns, userPatterns);
@@ -210,8 +208,8 @@ public class OpenSshConfig {
                     continue;
                 }
                 if("Include".equalsIgnoreCase(keyword)) {
-                    for(final String pattern : argValue.split("[ \t]+")) {
-                        for(final Local included : resolve(file.getParent(), dequote(pattern))) {
+                    for(final String pattern : tokenize(argValue)) {
+                        for(final Local included : resolve(file.getParent(), pattern)) {
                             if(including.contains(included)) {
                                 log.warn("Skipping recursive include of SSH config {}", included);
                                 continue;
@@ -280,7 +278,7 @@ public class OpenSshConfig {
      */
     private static void patterns(final String value, final List<String> patterns) {
         for(final String p : StringUtils.split(value, ',')) {
-            final String trimmed = dequote(p.trim());
+            final String trimmed = p.trim();
             if(!trimmed.isEmpty()) {
                 patterns.add(trimmed);
             }
@@ -383,11 +381,63 @@ public class OpenSshConfig {
         return fn.isMatch();
     }
 
-    private static String dequote(final String value) {
-        if(value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
-            return value.substring(1, value.length() - 1);
+    /**
+     * Split arguments the way OpenSSH does. Whitespace separates arguments unless escaped with a backslash or enclosed
+     * in single or double quotes. Backslash escapes a space outside of quotes, a quote or another backslash. Any other
+     * backslash is kept as is to preserve Windows paths.
+     */
+    static List<String> tokenize(final String value) {
+        final List<String> tokens = new ArrayList<>();
+        final StringBuilder current = new StringBuilder();
+        boolean started = false;
+        char quote = 0;
+        for(int i = 0; i < value.length(); i++) {
+            final char c = value.charAt(i);
+            if(c == '\\' && i + 1 < value.length()) {
+                final char next = value.charAt(i + 1);
+                if(next == '"' || next == '\'' || next == '\\' || (quote == 0 && next == ' ')) {
+                    current.append(next);
+                    started = true;
+                    i++;
+                    continue;
+                }
+                current.append(c);
+                started = true;
+            }
+            else if(quote == 0 && (c == ' ' || c == '\t')) {
+                if(started) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                    started = false;
+                }
+            }
+            else if(quote == 0 && (c == '"' || c == '\'')) {
+                quote = c;
+                started = true;
+            }
+            else if(quote != 0 && c == quote) {
+                quote = 0;
+            }
+            else {
+                current.append(c);
+                started = true;
+            }
         }
-        return value;
+        if(quote != 0) {
+            // Unterminated quote is invalid in OpenSSH. Use the argument as is.
+            return Collections.singletonList(value);
+        }
+        if(started) {
+            tokens.add(current.toString());
+        }
+        return tokens;
+    }
+
+    /**
+     * Remove quotes and resolve escapes of a single argument
+     */
+    private static String dequote(final String value) {
+        return String.join(" ", tokenize(value));
     }
 
     /**
@@ -397,7 +447,11 @@ public class OpenSshConfig {
         boolean quoted = false;
         for(int i = 0; i < value.length(); i++) {
             final char c = value.charAt(i);
-            if(c == '"') {
+            if(c == '\\') {
+                // Skip escaped character
+                i++;
+            }
+            else if(c == '"') {
                 quoted = !quoted;
             }
             else if(c == '#' && !quoted && (i == 0 || Character.isWhitespace(value.charAt(i - 1)))) {
