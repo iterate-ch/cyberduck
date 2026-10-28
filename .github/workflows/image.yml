@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag'
-        required: true
+        description: 'Tag, defaults to the dispatched ref when it is a tag'
+        required: false
         type: string
 
 env:

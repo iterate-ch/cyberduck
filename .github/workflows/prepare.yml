@@ -80,4 +80,4 @@ jobs:
         run: |
           gh workflow run release.yml --ref "${{ inputs.tag }}"
           gh workflow run appstore.yml --ref "${{ inputs.tag }}"
-          gh workflow run image.yml --ref "${{ inputs.tag }}" -f tag="${{ inputs.tag }}"
+          gh workflow run image.yml --ref "${{ inputs.tag }}"
