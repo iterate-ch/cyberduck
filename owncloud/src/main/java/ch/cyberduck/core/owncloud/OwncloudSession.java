@@ -194,6 +194,9 @@ public class OwncloudSession extends DAVSession {
         if(type == Timestamp.class) {
             return (T) new OwncloudTimestampFeature(this);
         }
+        if(type == Thumbnail.class) {
+            return (T) new OwncloudThumbnailFeature(this);
+        }
         return super._getFeature(type);
     }
 
