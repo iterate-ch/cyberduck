@@ -9,7 +9,19 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 jobs:
+  # Dispatched runs must be on a tag, as the version is derived from the ref name
+  check:
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Require Tag
+        if: ${{ github.ref_type != 'tag' }}
+        shell: bash
+        run: |
+          echo "::error::Dispatch on a release tag, not on ${GITHUB_REF}"
+          exit 1
+
   deploy:
+    needs: check
     strategy:
       fail-fast: false
       matrix:
@@ -46,6 +58,7 @@ jobs:
   # only. Uploaded as a `duck-*` artifact so the `cli`, `sftp` and `release` jobs
   # pick it up.
   source:
+    needs: check
     permissions:
       contents: read
       id-token: write
@@ -80,8 +93,8 @@ jobs:
           archive: false
 
   publish:
-    needs: [ deploy, source ]
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy, source ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     uses: ./.github/workflows/publish.yml
     with:
       SPARKLE_FEED: release
@@ -90,8 +103,8 @@ jobs:
   # Mirror the CLI installers to the dist.duck.sh SFTP host. Release only, so it
   # lives here rather than in the shared publish.yml.
   sftp:
-    needs: [ deploy, source ]
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy, source ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     permissions:
       actions: read
       contents: read
@@ -133,8 +146,8 @@ jobs:
   # attached. Runs independently of `publish` so a delivery-channel failure
   # never blocks the release, and vice versa.
   release:
-    needs: [ deploy, source ]
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy, source ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     permissions:
       contents: write
     runs-on: [ linux, x64 ]
@@ -190,8 +203,8 @@ jobs:
   # Push to the Chocolatey community repository. Release only, so it lives here
   # rather than in the shared publish.yml.
   chocolatey:
-    needs: deploy
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     permissions:
       actions: read
       contents: read
