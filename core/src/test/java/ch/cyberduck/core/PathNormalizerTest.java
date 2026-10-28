@@ -209,4 +209,18 @@ public class PathNormalizerTest {
         assertSame(workdir, PathNormalizer.compose(workdir, ""));
         assertEquals(new Path(workdir, " ", EnumSet.of(Path.Type.directory)), PathNormalizer.compose(workdir, " "));
     }
+
+    @Test
+    public void testComposePreservesVaultHome() {
+        final Path vault = new Path("/Cryptomator/vault", EnumSet.of(Path.Type.directory, Path.Type.vault));
+        final Path absolute = PathNormalizer.compose(vault, "/Cryptomator/vault/sub/folder");
+        assertEquals(new Path("/Cryptomator/vault/sub/folder", EnumSet.of(Path.Type.directory)), absolute);
+        assertSame(vault, absolute.getParent().getParent());
+        assertTrue(absolute.getParent().getParent().getType().contains(Path.Type.vault));
+        final Path relative = PathNormalizer.compose(vault, "sub");
+        assertSame(vault, relative.getParent());
+        assertSame(vault, PathNormalizer.compose(vault, "/Cryptomator/vault"));
+        final Path inside = PathNormalizer.compose(new Path("/Cryptomator/vault/sub", EnumSet.of(Path.Type.directory)), "/Cryptomator/other");
+        assertEquals(new Path("/Cryptomator/other", EnumSet.of(Path.Type.directory)), inside);
+    }
 }

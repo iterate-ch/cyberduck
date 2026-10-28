@@ -204,8 +204,7 @@ public final class PathNormalizer {
             if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
                 return root;
             }
-            return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
-                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+            return attach(root, normalized);
         }
         else {
             final String normalized;
@@ -221,7 +220,32 @@ public final class PathNormalizer {
             if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
                 return root;
             }
-            return new Path(String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
+            return attach(root, String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized));
         }
+    }
+
+    /**
+     * Compose directory from absolute path reusing the closest ancestor of the working directory, so type
+     * and attributes such as the vault home are preserved in the parent hierarchy of the result.
+     *
+     * @param root     Working directory
+     * @param absolute Normalized absolute path
+     * @return Directory with parent hierarchy sharing the ancestors of the working directory
+     */
+    private static Path attach(final Path root, final String absolute) {
+        for(Path ancestor = root; !ancestor.isRoot(); ancestor = ancestor.getParent()) {
+            final String prefix = ancestor.getAbsolute();
+            if(StringUtils.equals(absolute, prefix)) {
+                return ancestor;
+            }
+            if(StringUtils.startsWith(absolute, prefix + Path.DELIMITER)) {
+                Path directory = ancestor;
+                for(String name : StringUtils.split(StringUtils.removeStart(absolute, prefix), Path.DELIMITER)) {
+                    directory = new Path(directory, name, EnumSet.of(Path.Type.directory));
+                }
+                return directory;
+            }
+        }
+        return new Path(absolute, EnumSet.of(Path.Type.directory));
     }
 }
