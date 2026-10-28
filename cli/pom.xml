@@ -19,6 +19,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
+        <relativePath>../pom.xml</relativePath>
         <version>9.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli</artifactId>

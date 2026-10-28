@@ -53,8 +53,25 @@
                                             <version>${project.version}</version>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/profiles
-                                    </outputDirectory>
+                                    <outputDirectory>${project.build.directory}/profiles</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-profiles-cli</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>profiles-cli</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/profiles</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
