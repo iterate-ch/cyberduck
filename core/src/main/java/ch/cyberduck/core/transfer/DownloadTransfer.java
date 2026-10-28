@@ -45,6 +45,7 @@ import ch.cyberduck.core.transfer.download.TrashFilter;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -255,6 +256,23 @@ public class DownloadTransfer extends Transfer {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         try {
             feature.post(Type.download, files, callback);
+            // Writing files to a directory updates its modification date. Reapply after all children are complete, deepest first.
+            files.entrySet().stream()
+                    .filter(entry -> entry.getKey().remote.isDirectory())
+                    .filter(entry -> !entry.getValue().isExists())
+                    .filter(entry -> entry.getValue().getModified() != null)
+                    .sorted(Comparator.comparingInt((Map.Entry<TransferItem, TransferStatus> entry) ->
+                            StringUtils.countMatches(entry.getKey().local.getAbsolute(), entry.getKey().local.getDelimiter())).reversed())
+                    .forEach(entry -> {
+                        final Local local = entry.getValue().getRename().local != null ? entry.getValue().getRename().local : entry.getKey().local;
+                        log.info("Updating timestamp of {} to {}", local, entry.getValue().getModified());
+                        try {
+                            local.attributes().setModificationDate(entry.getValue().getModified());
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn("Failure to update timestamp of {}. {}", local, e.getMessage());
+                        }
+                    });
             super.post(source, destination, files, error, listener, callback);
         }
         catch(BackgroundException e) {

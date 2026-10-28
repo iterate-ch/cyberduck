@@ -318,14 +318,17 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     log.warn(e.getMessage());
                 }
             }
-            if(status.getModified() != null) {
-                log.info("Updating timestamp of {} to {}", local, status.getModified());
-                try {
-                    local.attributes().setModificationDate(status.getModified());
-                }
-                catch(AccessDeniedException e) {
-                    // Ignore
-                    log.warn(e.getMessage());
+            // Directory timestamp is reapplied after transfer completion as adding files modifies the directory
+            if(file.isFile()) {
+                if(status.getModified() != null) {
+                    log.info("Updating timestamp of {} to {}", local, status.getModified());
+                    try {
+                        local.attributes().setModificationDate(status.getModified());
+                    }
+                    catch(AccessDeniedException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
             if(file.isFile()) {
