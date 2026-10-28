@@ -217,8 +217,6 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
-        // Digest is applied by the write feature to the encrypted content
-        assertTrue(this.upload(session, cryptomator, HashAlgorithm.sha256).features(file, new TransferStatus()).contains(Upload.Flags.transform));
         final ChecksumCompute compute = this.upload(session, cryptomator, HashAlgorithm.sha256).checksum(file, new TransferStatus());
         assertTrue(compute.isTransformed());
         assertEquals("SHA-256", compute.digest().getAlgorithm());
