@@ -24,7 +24,7 @@ jobs:
   # Equivalent of the former Jenkins `release:prepare` job. Commits the release
   # version, tags it and commits the next development version, then pushes. Pushes
   # made with GITHUB_TOKEN do not trigger tag workflows, so release.yml,
-  # appstore.yml and image.yml are called explicitly below.
+  # appstore.yml and image.yml are dispatched explicitly below.
   prepare:
     permissions:
       contents: write
@@ -63,42 +63,21 @@ jobs:
           git push origin "HEAD:${GITHUB_REF_NAME}"
           git push origin "refs/tags/${{ inputs.tag }}"
 
-  release:
+  # Dispatch each build as its own run on the tag, as a tag push would. Separate runs
+  # keep their artifacts apart, so the Mac App Store build cannot collide with the
+  # release build.
+  dispatch:
     needs: prepare
     permissions:
-      actions: read
-      checks: write
-      contents: write
-      packages: read
-      id-token: write
-      attestations: write
-      artifact-metadata: write
-    uses: ./.github/workflows/release.yml
-    with:
-      tag: ${{ inputs.tag }}
-    secrets: inherit
-
-  appstore:
-    needs: prepare
-    permissions:
-      actions: read
-      checks: write
-      contents: read
-      packages: read
-      id-token: write
-      attestations: write
-      artifact-metadata: write
-    uses: ./.github/workflows/appstore.yml
-    with:
-      tag: ${{ inputs.tag }}
-    secrets: inherit
-
-  image:
-    needs: prepare
-    permissions:
-      contents: read
-      packages: write
-    uses: ./.github/workflows/image.yml
-    with:
-      tag: ${{ inputs.tag }}
-    secrets: inherit
+      actions: write
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Dispatch Builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          gh workflow run release.yml --ref "${{ inputs.tag }}"
+          gh workflow run appstore.yml --ref "${{ inputs.tag }}"
+          gh workflow run image.yml --ref "${{ inputs.tag }}" -f tag="${{ inputs.tag }}"

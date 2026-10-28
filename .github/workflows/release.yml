@@ -2,20 +2,12 @@ name: Publish Release
 on:
   push:
     tags: [ '*' ]
-  # Called by prepare.yml, whose pushes do not trigger tag workflows
-  workflow_call:
-    inputs:
-      tag:
-        description: 'Release tag, e.g. release-9-6-0'
-        required: true
-        type: string
-# Queue instead of running in parallel. Fixed name because github.workflow is the
-# caller's name when called from prepare.yml, which would collide with its group.
+  # Dispatched by prepare.yml on the release tag, whose push does not trigger this
+  workflow_dispatch:
+# Queue instead of running in parallel
 concurrency:
-  group: release
+  group: ${{ github.workflow }}
   cancel-in-progress: false
-env:
-  TAG: ${{ inputs.tag || github.ref_name }}
 jobs:
   deploy:
     strategy:
@@ -36,7 +28,6 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       SPARKLE_FEED: release
-      REF: ${{ inputs.tag || github.ref_name }}
       RUNNER_OS: ${{ matrix.os }}
       RUNNER_ARCH: ${{ matrix.arch }}
       RUNNER: ${{ matrix.runner }}
@@ -64,14 +55,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ env.TAG }}
           # The revision is the commit count at the tag
           fetch-depth: 0
 
       - name: Archive Source
         shell: bash
         run: |
-          version=${TAG#release-}
+          version=${GITHUB_REF_NAME#release-}
           version=${version//-/.}
           revision=$(git rev-list --count HEAD)
           name="duck-src-${version}.${revision}"
@@ -153,7 +143,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          version=${TAG#release-}
+          version=${GITHUB_REF_NAME#release-}
           echo "version=${version//-/.}" >> "$GITHUB_OUTPUT"
 
       - name: Clean
@@ -179,7 +169,7 @@ jobs:
       - name: Publish Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.TAG }}
+          tag_name: ${{ github.ref_name }}
           name: Cyberduck ${{ steps.version.outputs.version }}
           generate_release_notes: true
           # Attach whatever built; a failed matrix leg must not fail the release.

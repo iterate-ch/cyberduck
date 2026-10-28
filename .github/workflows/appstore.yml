@@ -2,17 +2,11 @@ name: Publish Mac App Store
 on:
   push:
     tags: [ '*' ]
-  # Called by prepare.yml, whose pushes do not trigger tag workflows
-  workflow_call:
-    inputs:
-      tag:
-        description: 'Release tag, e.g. release-9-6-0'
-        required: true
-        type: string
-# Queue instead of running in parallel. Fixed name because github.workflow is the
-# caller's name when called from prepare.yml, which would collide with its group.
+  # Dispatched by prepare.yml on the release tag, whose push does not trigger this
+  workflow_dispatch:
+# Queue instead of running in parallel
 concurrency:
-  group: appstore
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 jobs:
   deploy:
@@ -25,7 +19,6 @@ jobs:
       artifact-metadata: write
     uses: ./.github/workflows/deploy.yml
     with:
-      REF: ${{ inputs.tag || github.ref_name }}
       MAVEN_PROFILES: 'appstore'
       # App Store artifacts are already published by the release/snapshot macOS leg;
       # this run only needs to build the sandboxed .pkg for upload.
