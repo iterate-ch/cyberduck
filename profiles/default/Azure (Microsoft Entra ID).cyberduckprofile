@@ -43,7 +43,7 @@
         <key>OAuth Client Secret</key>
         <string/>
         <key>OAuth Redirect Url</key>
-        <string>${oauth.handler.scheme}://oauth</string>
+        <string>http://localhost/oauth/callback</string>
         <key>Username Configurable</key>
         <false/>
         <key>Password Configurable</key>
