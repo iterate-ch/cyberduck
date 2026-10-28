@@ -403,9 +403,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Matches s3.cn-north-1.amazonaws.com.cn
             // Matches s3.cn-northwest-1.amazonaws.com.cn
             // Matches s3-us-gov-west-1.amazonaws.com
-            return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
+            // Matches s3-fips.dualstack.us-east-1.amazonaws.com
+            // Matches ap-123456789012.s3-accesspoint.us-east-1.amazonaws.com
+            return hostname.matches("(?i)([a-z0-9\\-]+\\.)*s3(-[a-z0-9\\-]+)?(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
         }
-        return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
+        return hostname.matches("(?i)([a-z0-9\\-]+\\.)*s3(-[a-z0-9\\-]+)?(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
     }
 
     @Override
@@ -418,9 +420,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ReadFeature(this);
         }
         if(type == MultipartWrite.class) {
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3MultipartWriteFeature(this, acl);
-            }
             return (T) new S3MultipartWriteFeature(this, acl);
         }
         if(type == Write.class) {
