@@ -71,9 +71,13 @@ public abstract class AbstractFTPTest {
 
     private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("delfer/alpine-ftp-server:latest"))
             .withEnv("USERS", String.format("%s|%s", USER, PASSWORD))
-            .withEnv("ADDRESS", "127.0.0.1")
-            .withEnv("MIN_PORT", String.valueOf(PASV_MIN_PORT))
-            .withEnv("MAX_PORT", String.valueOf(PASV_MAX_PORT))
+            // Run vsftpd in foreground. The default startup script monitors the newest process matching vsftpd which is a
+            // connection handler when a client connects early and stops the container once that connection is closed.
+            // Configuration file must be first as it would otherwise override options on the command line
+            .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
+                    String.format("-opasv_min_port=%d", PASV_MIN_PORT),
+                    String.format("-opasv_max_port=%d", PASV_MAX_PORT),
+                    "-opasv_address=127.0.0.1")
             .withExposedPorts(FTP_PORT)
             .withLogConsumer(f -> System.out.print("FTPD " + f.getUtf8String()))
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
