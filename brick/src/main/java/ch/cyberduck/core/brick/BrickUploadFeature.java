@@ -34,8 +34,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -77,11 +75,6 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
         this.session = session;
         this.partsize = partsize;
         this.concurrency = concurrency;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     @Override
