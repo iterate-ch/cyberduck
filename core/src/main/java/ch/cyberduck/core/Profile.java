@@ -72,6 +72,10 @@ public class Profile implements Protocol {
      * the ARN for an MFA device required during authentication processes involving STS.
      */
     public static final String STS_MFA_ARN_PROPERTY_KEY = "mfa_serial";
+    /**
+     * External ID required by the trust policy of the role to assume
+     */
+    public static final String STS_EXTERNAL_ID_PROPERTY_KEY = "external_id";
 
     /**
      * SSO token provider configuration
