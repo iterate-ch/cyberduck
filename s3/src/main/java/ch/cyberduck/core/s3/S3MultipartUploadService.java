@@ -189,7 +189,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
             object.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
             final PathAttributes attributes = new S3AttributesAdapter(session.getHost()).toAttributes(object);
             if(HashAlgorithm.md5_multipart == attributes.getChecksum().algorithm) {
-                final Checksum expected = this.checksum(completed, checksums);
+                final Checksum expected = composite(completed, checksums);
                 if(!Checksum.NONE.equals(expected)) {
                     // Compared with the checksum returned by the server by the upload filter when the upload is complete
                     status.setVerify(expected.algorithm).setDigest(expected);
@@ -214,7 +214,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
      *                  uploaded in this transfer when resuming
      * @return Checksum calculated like the ETag of an object uploaded in multiple parts
      */
-    private Checksum checksum(final List<MultipartPart> completed, final Map<Integer, Checksum> checksums) {
+    static Checksum composite(final List<MultipartPart> completed, final Map<Integer, Checksum> checksums) {
         try {
             final MessageDigest digest = MessageDigest.getInstance("MD5");
             final List<MultipartPart> sorted = new ArrayList<>(completed);

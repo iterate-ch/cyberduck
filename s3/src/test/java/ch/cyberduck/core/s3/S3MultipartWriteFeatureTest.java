@@ -10,6 +10,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -50,6 +51,9 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         assertNotNull(out.getStatus());
         assertEquals(content.length, status.getResponse().getSize());
         assertEquals(content.length, out.getStatus().getContentLength());
+        assertTrue(status.isVerify());
+        assertEquals(HashAlgorithm.md5_multipart, status.getVerify());
+        assertEquals(status.getResponse().getChecksum(), status.getDigest());
         assertTrue(new S3FindFeature(session, acl).find(file));
         final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());

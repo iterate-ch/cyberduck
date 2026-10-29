@@ -40,7 +40,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.EntityBuilder;
@@ -55,7 +54,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -237,16 +235,8 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
                             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                                     .getCompletedUploadResponse(uploadUri, offset, cdash64);
-                            if(!StringUtils.equals(cdash64, completedUploadResponse.getCdash64())) {
-                                if(file.getType().contains(Path.Type.encrypted)) {
-                                    log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-                                }
-                                else {
-                                    throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                            MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
-                                                    HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
-                                }
-                            }
+                            // Compared with the checksum calculated by the server by the upload filter when the upload is complete
+                            overall.setVerify(HashAlgorithm.cdash64).setDigest(new Checksum(HashAlgorithm.cdash64, cdash64));
                             result.set(new EueWriteFeature.Chunk(resourceId, offset,
                                     new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64())));
                         }
