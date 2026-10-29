@@ -22,25 +22,52 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.time.Duration;
 
 import static org.junit.Assert.fail;
 
-public class AbstractOwncloudTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public abstract class AbstractOwncloudTest {
+
+    private static final String USER = "admin";
+    private static final String PASSWORD = "admin-password";
+    private static final int HTTP_PORT = 8080;
+
+    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("owncloud/server:latest"))
+            .withEnv("OWNCLOUD_ADMIN_USERNAME", USER)
+            .withEnv("OWNCLOUD_ADMIN_PASSWORD", PASSWORD)
+            .withEnv("OWNCLOUD_DOMAIN", "localhost")
+            .withEnv("OWNCLOUD_TRUSTED_DOMAINS", "localhost")
+            .withEnv("OWNCLOUD_REDIS_ENABLED", "false")
+            .withExposedPorts(HTTP_PORT)
+            .waitingFor(Wait.forHttp("/status.php").forResponsePredicate(body -> body.contains("\"installed\":true"))
+                    .withStartupTimeout(Duration.ofMinutes(5)));
+
+    @BeforeClass
+    public static void start() {
+        container.start();
+    }
+
+    @AfterClass
+    public static void stop() {
+        container.stop();
+    }
 
     protected OwncloudSession session;
 
@@ -51,11 +78,12 @@ public class AbstractOwncloudTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OwncloudProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/ownCloud.cyberduckprofile"));
-        final Host host = new Host(profile, PROPERTIES.get("owncloud.hostname"), 443, PROPERTIES.get("owncloud.path"),
-                new Credentials(PROPERTIES.get("owncloud.user"), PROPERTIES.get("owncloud.password")));
+        final Host host = new Host(new OwncloudProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, container.getHost(), container.getMappedPort(HTTP_PORT), new Credentials(USER, PASSWORD));
         session = new OwncloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -68,14 +96,7 @@ public class AbstractOwncloudTest extends VaultTest {
             public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
-        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            return "n";
-        }
     }
 }

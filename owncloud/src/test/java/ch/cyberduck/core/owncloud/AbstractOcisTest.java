@@ -17,30 +17,114 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Base64;
 
 import static org.junit.Assert.fail;
 
-public class AbstractOcisTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public abstract class AbstractOcisTest {
+
+    private static final String USER = "admin";
+    private static final String PASSWORD = "admin-password";
+    private static final int HTTP_PORT = 9200;
+
+    private static GenericContainer<?> container;
+    private static int port;
+
+    @BeforeClass
+    public static void start() throws IOException {
+        // OC_URL must match the external address, so bind to a known host port
+        try(ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+        container = new GenericContainer<>(DockerImageName.parse("opencloudeu/opencloud-rolling:latest"))
+                .withCommand("-c", "opencloud init --insecure yes --admin-password " + PASSWORD + " || true; opencloud server")
+                .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("/bin/sh"))
+                .withEnv("OC_URL", String.format("http://localhost:%d", port))
+                .withEnv("PROXY_TLS", "false")
+                .withEnv("PROXY_ENABLE_BASIC_AUTH", "true")
+                .withEnv("OC_INSECURE", "true")
+                // Built-in IdP requires https issuer. Authenticate with basic auth against the embedded LDAP instead
+                .withEnv("OC_EXCLUDE_RUN_SERVICES", "idp")
+                .withEnv("IDM_ADMIN_PASSWORD", PASSWORD)
+                .withEnv("OC_LOG_LEVEL", "error")
+                .withExposedPorts(HTTP_PORT)
+                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withPortBindings(
+                        new PortBinding(Ports.Binding.bindPort(port), new ExposedPort(HTTP_PORT))))
+                .waitingFor(Wait.forHttp("/graph/v1.0/me").forPort(HTTP_PORT)
+                        .withBasicCredentials(USER, PASSWORD).forStatusCode(200)
+                        .withStartupTimeout(Duration.ofMinutes(5)));
+        container.start();
+        awaitWebDAV();
+    }
+
+    /**
+     * Graph API is available before the WebDAV backend is ready to serve requests
+     */
+    private static void awaitWebDAV() throws IOException {
+        final String authorization = Base64.getEncoder().encodeToString(String.format("%s:%s", USER, PASSWORD).getBytes(StandardCharsets.UTF_8));
+        final long timeout = System.nanoTime() + Duration.ofMinutes(2).toNanos();
+        try {
+            while(!status(authorization).contains(" 207 ")) {
+                if(System.nanoTime() > timeout) {
+                    throw new IOException("Timeout waiting for WebDAV");
+                }
+                Thread.sleep(1000L);
+            }
+        }
+        catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException(e);
+        }
+    }
+
+    private static String status(final String authorization) throws IOException {
+        try(Socket socket = new Socket("localhost", port)) {
+            socket.getOutputStream().write(String.format("PROPFIND /remote.php/webdav/ HTTP/1.1\r\nHost: localhost:%d\r\nAuthorization: Basic %s\r\nDepth: 0\r\nConnection: close\r\n\r\n",
+                    port, authorization).getBytes(StandardCharsets.UTF_8));
+            final String line = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)).readLine();
+            return null == line ? StringUtils.EMPTY : line;
+        }
+    }
+
+    @AfterClass
+    public static void stop() {
+        container.stop();
+    }
 
     protected OwncloudSession session;
 
@@ -59,10 +143,12 @@ public class AbstractOcisTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OwncloudProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/ownCloud oCIS.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("admin"));
+        final Host host = new Host(new OwncloudProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, "localhost", port, "/remote.php/webdav/", new Credentials(USER, PASSWORD));
         session = new OwncloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -75,7 +161,7 @@ public class AbstractOcisTest extends VaultTest {
             public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
-        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
     }
 }
