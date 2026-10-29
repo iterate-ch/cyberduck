@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -71,14 +70,14 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         {
             final byte[] content = RandomUtils.nextBytes(39864);
-            final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+            final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
             final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
-        final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+        final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
         final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);

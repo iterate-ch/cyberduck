@@ -38,7 +38,6 @@ import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -84,7 +83,6 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
-        status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

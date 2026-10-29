@@ -29,7 +29,6 @@ import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPAttributesFinderFeature;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
@@ -82,7 +81,6 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
-        status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);

@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.synchronization.Comparison;
@@ -102,7 +101,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(10);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<StorageObject> out = feature.write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
