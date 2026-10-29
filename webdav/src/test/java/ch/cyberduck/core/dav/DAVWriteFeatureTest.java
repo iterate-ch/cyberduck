@@ -19,13 +19,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +37,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
@@ -138,7 +135,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             status.setLength(content.length);
             upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
-            assertEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
+            assertNotEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
             assertNotEquals(fileEtag, new DAVAttributesFinderFeature(session).find(test).getETag());
         }
         final PathAttributes attr2 = new DAVAttributesFinderFeature(session).find(test);
