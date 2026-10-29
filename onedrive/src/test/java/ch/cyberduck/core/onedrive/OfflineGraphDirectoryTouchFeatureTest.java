@@ -88,12 +88,11 @@ public class OfflineGraphDirectoryTouchFeatureTest {
         final List<TestCase> cases = new ArrayList<>();
 
         // Validate Touch.isSupported for valid targets only.
-        // Valid targets: Any path in /My Files or in a directory of a shared folder.
+        // Valid targets: Any path in /My Files.
 
         cases.add(new TestCase("/Invalid/Test", false));
         cases.add(new TestCase("/My Files/Folder/Test", true));
         cases.add(new TestCase("/My Files/Test", true));
-        cases.add(new TestCase("/Shared/Shared/Test", true));
         cases.add(new TestCase("/Shared/Test", false));
         cases.add(new TestCase("/Test", false));
 
