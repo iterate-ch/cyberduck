@@ -80,12 +80,14 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        // Algorithm of the checksum of the parts. No checksum of the whole file is calculated but verified with the
+        // checksum calculated by the server from the checksums of the parts when completed.
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
+        return EnumSet.of(Flags.checksumResponse);
     }
 
     @Override
@@ -134,8 +136,10 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                     .getCompletedUploadResponse(uploadUri, size, cdash64);
-            // Compared with the checksum calculated by the server by the upload filter when the upload is complete
-            status.setVerify(HashAlgorithm.cdash64).setDigest(new Checksum(HashAlgorithm.cdash64, cdash64));
+            if(status.isVerify()) {
+                // Compared with the checksum calculated by the server by the upload filter when the upload is complete
+                status.setVerify(HashAlgorithm.cdash64).setDigest(new Checksum(HashAlgorithm.cdash64, cdash64));
+            }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size,
                     new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64()));
             // Mark parent status as complete
@@ -172,7 +176,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                         .setParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(status.compute(local, EueLargeUploadService.this.checksum(file, status).getAlgorithm()));
+                status.setChecksum(status.compute(local, HashAlgorithm.sha256));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
                         write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
