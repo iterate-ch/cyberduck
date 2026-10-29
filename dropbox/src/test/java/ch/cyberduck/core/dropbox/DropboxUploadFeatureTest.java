@@ -27,6 +27,10 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamListener;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -35,6 +39,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.io.ByteArrayInputStream;
 
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
@@ -69,6 +74,31 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         assertEquals(1700638960000L, attributes.getModificationDate());
         assertEquals(content.length, attributes.getSize());
         assertEquals(((FileMetadata) metadata).getContentHash(), attributes.getChecksum().hash);
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testUploadVerifyChecksum() throws Exception {
+        final DropboxUploadFeature feature = new DropboxUploadFeature(session);
+        final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = new AlphanumericRandomStringService().random();
+        final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final byte[] content = RandomUtils.nextBytes(1025);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        assertTrue(feature.features(test, status).contains(Upload.Flags.checksumResponse));
+        assertEquals(HashAlgorithm.dropbox_content_hash, feature.checksum(test, status).getAlgorithm());
+        // Calculated while streaming
+        status.setVerify(feature.checksum(test, status).getAlgorithm());
+        feature.upload(new DropboxWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
+        final Checksum expected = feature.checksum(test, status).compute(new ByteArrayInputStream(content), new TransferStatus());
+        assertEquals(expected, status.getDigest());
+        // Checksum returned by the server
+        assertEquals(expected, status.getResponse().getChecksum());
+        assertEquals(expected, new DropboxAttributesFinderFeature(session).find(test).getChecksum());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }

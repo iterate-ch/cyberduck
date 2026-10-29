@@ -30,6 +30,8 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -40,6 +42,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.io.ByteArrayInputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -156,5 +159,35 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status, LoginCallback.noop);
+    }
+
+    @Test
+    public void testUploadVerifyChecksum() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID() + ".txt";
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final byte[] random = RandomUtils.nextBytes(1000);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final TransferStatus status = new TransferStatus().setLength(random.length);
+        // Bucket without Object Lock
+        assertTrue(service.features(test, status).contains(Upload.Flags.checksumOptional));
+        assertTrue(service.features(test, status).contains(Upload.Flags.checksumResponse));
+        assertEquals(HashAlgorithm.md5, service.checksum(test, status).getAlgorithm());
+        // Calculated while streaming
+        status.setVerify(service.checksum(test, status).getAlgorithm());
+        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
+        final Checksum expected = new MD5ChecksumCompute().compute(new ByteArrayInputStream(random), new TransferStatus());
+        assertEquals(expected, status.getDigest());
+        // Checksum returned by the server
+        assertEquals(expected, status.getResponse().getChecksum());
+        assertEquals(expected, new S3AttributesFinderFeature(session, acl).find(test).getChecksum());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
     }
 }

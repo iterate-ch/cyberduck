@@ -29,6 +29,8 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -74,6 +76,34 @@ public class B2SingleUploadServiceTest extends AbstractB2Test {
         in.close();
         buffer.close();
         assertArrayEquals(content, buffer.toByteArray());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testUploadVerifyChecksum() throws Exception {
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final byte[] content = RandomUtils.nextBytes(1025);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final B2SingleUploadService upload = new B2SingleUploadService();
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        assertTrue(upload.features(test, status).contains(Upload.Flags.checksumOptional));
+        assertTrue(upload.features(test, status).contains(Upload.Flags.checksumResponse));
+        assertEquals(HashAlgorithm.sha1, upload.checksum(test, status).getAlgorithm());
+        // Calculated while streaming and not sent with the request
+        status.setVerify(upload.checksum(test, status).getAlgorithm());
+        upload.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                status, ConnectionCallback.noop);
+        final Checksum expected = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
+        assertEquals(expected, status.getDigest());
+        // Checksum returned by the server
+        assertEquals(expected, status.getResponse().getChecksum());
+        assertEquals(expected, new B2AttributesFinderFeature(session, fileid).find(test).getChecksum());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
