@@ -75,6 +75,7 @@ public abstract class AbstractFTPTest {
             .withEnv("MIN_PORT", String.valueOf(PASV_MIN_PORT))
             .withEnv("MAX_PORT", String.valueOf(PASV_MAX_PORT))
             .withExposedPorts(FTP_PORT)
+            .withLogConsumer(f -> System.out.print("FTPD " + f.getUtf8String()))
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
 
     @BeforeClass
