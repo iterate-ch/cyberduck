@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -50,12 +52,16 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -98,6 +104,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        // Algorithm of the checksum of the segments and of the ETag of the manifest calculated from the ETag of the
+        // segments. No checksum of the whole file is calculated.
         return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
@@ -132,6 +140,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         // this is important for building the manifest, and is not a problem in terms of performance
         // because we should only continue when all segments have uploaded successfully
         final List<StorageObject> completed = new ArrayList<>();
+        // MD5 of the segments by name
+        final Map<String, Checksum> checksums = new ConcurrentHashMap<>();
         // Submit file segments for concurrent upload
         final List<Future<StorageObject>> segments = new ArrayList<>();
         long remaining = status.getLength();
@@ -146,6 +156,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 final StorageObject stored = new StorageObject(containerService.getKey(segment));
                 if(HashAlgorithm.md5.equals(existingSegment.attributes().getChecksum().algorithm)) {
                     stored.setMd5sum(existingSegment.attributes().getChecksum().hash);
+                    checksums.put(stored.getName(), existingSegment.attributes().getChecksum());
                 }
                 stored.setSize(existingSegment.attributes().getSize());
                 offset += existingSegment.attributes().getSize();
@@ -153,7 +164,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, write, segment, local, throttle, listener, status, offset, length, callback));
+                segments.add(this.submit(pool, write, segment, local, throttle, listener, status, offset, length, checksums, callback));
                 log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
                 remaining -= length;
                 offset += length;
@@ -176,16 +187,25 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             log.debug("Creating SLO manifest {} for {}", manifest, file);
             final StorageObject stored = new StorageObject(containerService.getKey(file));
             stored.setSize(status.getOffset() + status.getLength());
-            final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
+            session.getClient().createSLOManifestObject(regionService.lookup(
                             containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
                     containerService.getKey(file), manifest, Collections.emptyMap());
-            // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
-            // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
-            stored.setMd5sum(checksum);
+            final PathAttributes attributes;
+            if(status.isVerify()) {
+                // The ETag returned in the response of creating the manifest is not the ETag of the static large object. The
+                // ETag of the manifest in the response for a HEAD is the MD5 of the concatenated ETags of the segments.
+                attributes = new SwiftAttributesFinderFeature(session).find(file);
+                stored.setMd5sum(attributes.getChecksum().hash);
+                // Compared with the checksum returned by the server by the upload filter when the upload is complete
+                status.setDigest(composite(completed, checksums));
+            }
+            else {
+                attributes = new SwiftAttributesFinderFeature(session).toAttributes(stored);
+            }
             // Mark parent status as complete
-            status.setResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored)).setComplete();
+            status.setResponse(attributes).setComplete();
             return stored;
         }
         catch(GenericException e) {
@@ -198,7 +218,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private Future<StorageObject> submit(final ThreadPool pool, final Write<StorageObject> write, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+                                         final TransferStatus overall, final Long offset, final Long length, final Map<String, Checksum> checksums, final ConnectionCallback callback) throws ConnectionCanceledException {
         overall.validate();
         log.info("Submit part {} to queue with offset {} and length {}", segment, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
@@ -213,11 +233,33 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         .setOffset(offset);
                 status.setHeader(overall.getHeader());
                 // Optional checksum of the segment for the server to verify
-                status.setChecksum(status.compute(local, SwiftLargeObjectUploadFeature.this.checksum(segment, status).getAlgorithm()));
+                final Checksum md5 = status.compute(local, HashAlgorithm.md5);
+                status.setChecksum(md5);
+                checksums.put(containerService.getKey(segment), md5);
                 return SwiftLargeObjectUploadFeature.this.upload(
                         write, segment, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
             }
         }, overall, counter));
+    }
+
+    /**
+     * @param completed Segments in the order of the manifest
+     * @param checksums MD5 of the segments calculated prior to the transfer or listed when resuming
+     * @return Checksum calculated like the ETag of a static large object, which is the MD5 of the concatenated ETags
+     * of the segments
+     */
+    private static Checksum composite(final List<StorageObject> completed, final Map<String, Checksum> checksums) throws BackgroundException {
+        final StringBuilder concatenated = new StringBuilder();
+        for(StorageObject segment : completed) {
+            final Checksum md5 = checksums.get(segment.getName());
+            if(null == md5) {
+                log.warn("Missing checksum of segment {}", segment.getName());
+                return Checksum.NONE;
+            }
+            concatenated.append(md5.hash);
+        }
+        return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(
+                new ByteArrayInputStream(concatenated.toString().getBytes(StandardCharsets.UTF_8)), new TransferStatus());
     }
 
     @Override
@@ -242,6 +284,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
+        // The ETag of the manifest is calculated from the ETag of the segments and compared when the upload is complete
+        return EnumSet.of(Flags.checksumResponse);
     }
 }
