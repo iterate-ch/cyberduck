@@ -130,12 +130,10 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
             final List<B2UploadPartResponse> completed = new ArrayList<>();
             final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
             final Checksum checksum = status.getChecksum();
-            if(Checksum.NONE != checksum) {
-                switch(checksum.algorithm) {
-                    case sha1:
-                        fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, status.getChecksum().hash);
-                        break;
-                }
+            switch(checksum.algorithm) {
+                case sha1:
+                    fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, checksum.hash);
+                    break;
             }
             if(null != status.getModified()) {
                 fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getModified()));
