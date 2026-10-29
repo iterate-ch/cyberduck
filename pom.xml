@@ -67,6 +67,7 @@
         <module>osx</module>
         <module>windows</module>
         <module>cli</module>
+        <module>cli/profiles</module>
         <module>cli/dll</module>
         <module>cli/linux</module>
         <module>cli/windows</module>

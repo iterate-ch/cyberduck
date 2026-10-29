@@ -58,7 +58,7 @@ jobs:
           java-version: 25
           cache: maven
       - run: |
-          mvn -B verify --projects cli/linux --also-make -DskipTests
+          mvn -B verify --projects cli/profiles,cli/linux --also-make -DskipTests
           deb=$(ls cli/linux/target/release/duck_*_amd64.deb)
           echo "Extracting $deb"
           dpkg-deb -R "$deb" .
