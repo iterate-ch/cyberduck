@@ -42,10 +42,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -55,7 +53,6 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class FTPListServiceTest extends AbstractFTPTest {
 
@@ -91,7 +88,8 @@ public class FTPListServiceTest extends AbstractFTPTest {
         {
             final Cache<Path> cache = new PathCache(1);
             assertTrue(new CachingFindFeature(session, cache, new CryptoFindFeature(session, new FTPFindFeature(session), cryptomator)).find(test));
-            assertFalse(cache.isCached(vault));
+            // Directory is listed to look up attributes without support for MLST
+            assertEquals(!session.getClient().hasFeature("MLST"), cache.isCached(vault));
         }
         {
             final Cache<Path> cache = new PathCache(1);
