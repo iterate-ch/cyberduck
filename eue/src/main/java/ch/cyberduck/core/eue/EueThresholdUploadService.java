@@ -24,32 +24,27 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultRegistry;
-import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.EnumSet;
 
 public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> {
 
     private final EueSession session;
-    private final VaultRegistry registry;
     private final Long threshold;
     private final EueResourceIdProvider fileid;
 
-    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry) {
-        this(session, fileid, registry, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.threshold"));
+    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid) {
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.threshold"));
     }
 
-    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry, final Long threshold) {
+    public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long threshold) {
         this.session = session;
-        this.registry = registry;
         this.threshold = threshold;
         this.fileid = fileid;
     }
@@ -58,12 +53,8 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
-            if(Vault.DISABLED == registry.find(session, file)) {
-                // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
-                return new EueLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, prompt);
-            }
-            // Write with multipart write feature for known file length sequentially 4MB chunks
-            return new EueUploadService().upload(write, file, local, throttle, progress, listener, status, prompt);
+            // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
+            return new EueLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, prompt);
         }
         // Write single chunk smaller than threshold
         return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, prompt);
@@ -72,15 +63,8 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         if(status.getLength() >= threshold) {
-            try {
-                if(Vault.DISABLED == registry.find(session, file)) {
-                    return new EueLargeUploadService(session, fileid).checksum(file, status);
-                }
-            }
-            catch(VaultUnlockCancelException e) {
-                // Vault not unlocked. Fallback to features of upload to vault
-            }
-            return new EueUploadService().checksum(file, status);
+
+            return new EueLargeUploadService(session, fileid).checksum(file, status);
         }
         return new EueSingleUploadService(session, fileid).checksum(file, status);
     }
@@ -88,15 +72,7 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {
         if(status.getLength() >= threshold) {
-            try {
-                if(Vault.DISABLED == registry.find(session, file)) {
-                    return new EueLargeUploadService(session, fileid).features(file, status);
-                }
-            }
-            catch(VaultUnlockCancelException e) {
-                // Vault not unlocked. Fallback to features of upload to vault
-            }
-            return new EueUploadService().features(file, status);
+            return new EueLargeUploadService(session, fileid).features(file, status);
         }
         return new EueSingleUploadService(session, fileid).features(file, status);
     }
