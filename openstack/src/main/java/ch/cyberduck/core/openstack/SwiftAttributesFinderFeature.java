@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RegExUtils;
@@ -45,6 +46,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
@@ -143,8 +145,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new DefaultPathAttributes();
         if(StringUtils.isNotBlank(object.getMd5sum())) {
-            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-            // the concatenated string of ETags for each of the segments in the manifest.
+            // Not possible to distinguish the ETag of a manifest calculated from the ETag of the segments in a listing
             attributes.setChecksum(Checksum.parse(object.getMd5sum()));
         }
         if(object.getSize() != null) {
@@ -180,11 +181,31 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
             final String etag = RegExUtils.removePattern(metadata.getETag(), "\"");
-            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-            // the concatenated string of ETags for each of the segments in the manifest.
-            attributes.setChecksum(Checksum.parse(etag));
+            final Checksum checksum = Checksum.parse(etag);
+            if(HashAlgorithm.md5 == checksum.algorithm) {
+                if(this.isManifest(metadata)) {
+                    // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+                    // the concatenated string of ETags for each of the segments in the manifest and not of the content.
+                    attributes.setChecksum(new Checksum(HashAlgorithm.md5_segments, checksum.hash));
+                }
+                else {
+                    attributes.setChecksum(checksum);
+                }
+            }
+            else {
+                attributes.setChecksum(checksum);
+            }
         }
         attributes.setMetadata(metadata.getMetaData());
         return attributes;
+    }
+
+    /**
+     * @return True for the manifest of a static or dynamic large object
+     */
+    private boolean isManifest(final ObjectMetadata metadata) {
+        return metadata.getMetaData().keySet().stream().anyMatch(name ->
+                StringUtils.equalsIgnoreCase(name, Constants.X_STATIC_LARGE_OBJECT)
+                        || StringUtils.equalsIgnoreCase(name, Constants.MANIFEST_HEADER));
     }
 }

@@ -351,7 +351,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         for(int offset = 0; offset < content.length; offset += segmentSize) {
             concatenated.append(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content, offset, Math.min(segmentSize, content.length - offset)), new TransferStatus()).hash);
         }
-        final Checksum expected = new MD5ChecksumCompute().compute(new ByteArrayInputStream(concatenated.toString().getBytes(StandardCharsets.UTF_8)), new TransferStatus());
+        final Checksum expected = new Checksum(HashAlgorithm.md5_segments, new MD5ChecksumCompute().compute(new ByteArrayInputStream(concatenated.toString().getBytes(StandardCharsets.UTF_8)), new TransferStatus()).hex);
         assertTrue(status.isVerify());
         assertEquals(expected, status.getDigest());
         // Checksum returned by the server

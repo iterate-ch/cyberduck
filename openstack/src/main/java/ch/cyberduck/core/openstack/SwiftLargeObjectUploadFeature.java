@@ -258,8 +258,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             concatenated.append(md5.hash);
         }
-        return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(
-                new ByteArrayInputStream(concatenated.toString().getBytes(StandardCharsets.UTF_8)), new TransferStatus());
+        return new Checksum(HashAlgorithm.md5_segments, ChecksumComputeFactory.get(HashAlgorithm.md5).compute(
+                new ByteArrayInputStream(concatenated.toString().getBytes(StandardCharsets.UTF_8)), new TransferStatus()).hex);
     }
 
     @Override
