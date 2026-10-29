@@ -154,7 +154,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     return credentials.setTokens(new TemporaryAccessTokens(
                                     sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken()))
                             .setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
-                            .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
+                            .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"))
+                            .setProperty(Profile.STS_EXTERNAL_ID_PROPERTY_KEY, profile.getPropertyValue("external_id"));
                 }
             }
             else {
@@ -183,7 +184,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                                 profile.getAwsSecretAccessKey(),
                                 profile.getAwsSessionToken()))
                         .setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
-                        .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
+                        .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"))
+                        .setProperty(Profile.STS_EXTERNAL_ID_PROPERTY_KEY, profile.getPropertyValue("external_id"));
             }
         }
         else {
@@ -192,7 +194,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 // Discard values derived from the default profile by a previous configuration, e.g. before
                 // switching to a third party endpoint. Credentials with a user name are never reset.
                 credentials.setTokens(TemporaryAccessTokens.EMPTY);
-                Stream.of(Profile.STS_ROLE_ARN_PROPERTY_KEY, Profile.STS_MFA_ARN_PROPERTY_KEY,
+                Stream.of(Profile.STS_ROLE_ARN_PROPERTY_KEY, Profile.STS_MFA_ARN_PROPERTY_KEY, Profile.STS_EXTERNAL_ID_PROPERTY_KEY,
                                 Profile.SSO_START_URL_KEY, Profile.SSO_REGION_KEY, Profile.SSO_ACCOUNT_ID_KEY, Profile.SSO_ROLE_NAME_KEY)
                         .forEach(key -> credentials.setProperty(key, null));
             }
