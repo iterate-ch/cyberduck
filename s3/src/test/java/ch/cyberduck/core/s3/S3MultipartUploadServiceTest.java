@@ -138,6 +138,9 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertEquals(random.length, status.getResponse().getSize());
+        // ETag is not derived from the MD5 of the data
+        assertFalse(status.isVerify());
+        assertEquals(Checksum.NONE, status.getDigest());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new S3FindFeature(session, acl).find(test));
@@ -186,6 +189,28 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testMultiplePartsEncrypted() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomUtils.nextBytes(5242881);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, new BytecountStreamListener(), status, null);
+        assertTrue(status.isComplete());
+        // ETag of an object encrypted with SSE-KMS is not derived from the MD5 of the data and not verified
+        assertSame(Checksum.NONE, status.getResponse().getChecksum());
+        assertFalse(status.isVerify());
+        assertEquals(Checksum.NONE, status.getDigest());
+        assertSame(Checksum.NONE, new S3AttributesFinderFeature(session, acl).find(test).getChecksum());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }

@@ -13,6 +13,8 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.kms.KMSEncryptionFeature;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -63,6 +65,25 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteEncrypted() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final TransferStatus status = new TransferStatus().setLength(-1L);
+        status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
+        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        // ETag of an object encrypted with SSE-KMS is not derived from the MD5 of the data and not verified
+        assertFalse(status.isVerify());
+        assertEquals(Checksum.NONE, status.getDigest());
+        assertEquals(Checksum.NONE, new S3AttributesFinderFeature(session, acl).find(file).getChecksum());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
