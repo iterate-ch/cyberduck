@@ -2,21 +2,13 @@ name: Integration Tests
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 2 * * *'
-
-jobs:
-  build:
-    permissions:
-      checks: write
-      statuses: write
-      contents: read
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ linux-self-hosted ]
-        protocol:
+    inputs:
+      protocol:
+        description: Protocol module to test
+        type: choice
+        default: all
+        options:
+          - all
           - irods
           - spectra
           - s3
@@ -44,6 +36,36 @@ jobs:
           - eue
           - freenet
           - deepbox
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  protocols:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.select.outputs.matrix }}
+    steps:
+      - id: select
+        env:
+          PROTOCOL: ${{ inputs.protocol }}
+        run: |
+          if [ -z "$PROTOCOL" ] || [ "$PROTOCOL" = "all" ]; then
+            echo 'matrix=["irods","spectra","s3","smb","googlestorage","openstack","webdav","azure","ssh","ftp","googledrive","backblaze","dropbox","nio","hubic","onedrive","dracoon","storegate","brick","nextcloud","owncloud","manta","box","ctera","eue","freenet","deepbox"]' >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix=[\"$PROTOCOL\"]" >> "$GITHUB_OUTPUT"
+          fi
+  build:
+    needs: protocols
+    permissions:
+      checks: write
+      statuses: write
+      contents: read
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ linux-self-hosted ]
+        protocol: ${{ fromJSON(needs.protocols.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v7
       - name: Set up JDK 25
