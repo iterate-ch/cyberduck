@@ -56,7 +56,7 @@ import java.util.Base64;
 import static org.junit.Assert.fail;
 
 @Category(TestcontainerTest.class)
-public abstract class AbstractOcisTest {
+public abstract class AbstractOpenCloudTest {
 
     private static final String USER = "admin";
     private static final String PASSWORD = "admin-password";

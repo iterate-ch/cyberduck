@@ -47,7 +47,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class OcisUploadFeatureTest extends AbstractOcisTest {
+public class OcisUploadFeatureTest extends AbstractOpenCloudTest {
 
     @Test
     public void testUploadLargeFileInChunks() throws Exception {

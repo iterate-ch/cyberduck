@@ -38,7 +38,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
-import ch.cyberduck.core.owncloud.AbstractOcisTest;
+import ch.cyberduck.core.owncloud.AbstractOpenCloudTest;
 import ch.cyberduck.core.owncloud.OcisUploadFeature;
 import ch.cyberduck.core.owncloud.OwncloudAttributesFinderFeature;
 import ch.cyberduck.core.owncloud.OwncloudHomeFeature;
@@ -65,7 +65,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @RunWith(value = Parameterized.class)
-public class OcisUploadFeatureTest extends AbstractOcisTest {
+public class OcisUploadFeatureTest extends AbstractOpenCloudTest {
 
     @Test
     public void testUploadVault() throws Exception {
