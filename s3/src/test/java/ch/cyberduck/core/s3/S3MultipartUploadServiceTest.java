@@ -65,6 +65,9 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                 ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
+        // Verification not requested
+        assertFalse(status.isVerify());
+        assertEquals(Checksum.NONE, status.getDigest());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(random.length, status.getResponse().getSize());
@@ -127,7 +130,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] random = RandomUtils.nextBytes(1023);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.md5);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         status.setLength(random.length);
         status.setModified(System.currentTimeMillis());
@@ -138,8 +141,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertEquals(random.length, status.getResponse().getSize());
-        // ETag is not derived from the MD5 of the data
-        assertFalse(status.isVerify());
+        // ETag is not derived from the MD5 of the data and not verified
         assertEquals(Checksum.NONE, status.getDigest());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -175,7 +177,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final int length = 5242881;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.md5);
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, null);
@@ -202,13 +204,12 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(5242881);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().setLength(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length).setVerify(HashAlgorithm.md5);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, new BytecountStreamListener(), status, null);
         assertTrue(status.isComplete());
         // ETag of an object encrypted with SSE-KMS is not derived from the MD5 of the data and not verified
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
-        assertFalse(status.isVerify());
         assertEquals(Checksum.NONE, status.getDigest());
         assertSame(Checksum.NONE, new S3AttributesFinderFeature(session, acl).find(test).getChecksum());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());

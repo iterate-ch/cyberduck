@@ -194,11 +194,13 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                 response.set(complete);
                 // Only objects stored as plaintext or encrypted with SSE-S3 have an ETag derived from the MD5 of the data
                 object.setETag(complete.getEtag());
-                if(HashAlgorithm.md5_multipart == new S3AttributesAdapter(session.getHost()).toAttributes(object).getChecksum().algorithm) {
-                    final Checksum expected = S3MultipartUploadService.composite(completed, checksums);
-                    if(!Checksum.NONE.equals(expected)) {
-                        // Compared with the checksum returned by the server by the upload filter when the upload is complete
-                        overall.setVerify(expected.algorithm).setDigest(expected);
+                if(overall.isVerify()) {
+                    if(HashAlgorithm.md5_multipart == new S3AttributesAdapter(session.getHost()).toAttributes(object).getChecksum().algorithm) {
+                        final Checksum expected = S3MultipartUploadService.composite(completed, checksums);
+                        if(!Checksum.NONE.equals(expected)) {
+                            // Compared with the checksum returned by the server by the upload filter when the upload is complete
+                            overall.setVerify(expected.algorithm).setDigest(expected);
+                        }
                     }
                 }
             }

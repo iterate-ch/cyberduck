@@ -35,7 +35,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -101,8 +101,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        // No checksum of the whole file. Verified with the ETag calculated from the MD5 of the parts when completed.
-        return new DisabledChecksumCompute();
+        // Algorithm of the checksum of the parts. No checksum of the whole file is calculated but verified with the ETag
+        // calculated from the MD5 of the parts when completed.
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     @Override
@@ -189,11 +190,13 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
             // Only objects stored as plaintext or encrypted with SSE-S3 have an ETag derived from the MD5 of the data
             object.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
             final PathAttributes attributes = new S3AttributesAdapter(session.getHost()).toAttributes(object);
-            if(HashAlgorithm.md5_multipart == attributes.getChecksum().algorithm) {
-                final Checksum expected = composite(completed, checksums);
-                if(!Checksum.NONE.equals(expected)) {
-                    // Compared with the checksum returned by the server by the upload filter when the upload is complete
-                    status.setVerify(expected.algorithm).setDigest(expected);
+            if(status.isVerify()) {
+                if(HashAlgorithm.md5_multipart == attributes.getChecksum().algorithm) {
+                    final Checksum expected = composite(completed, checksums);
+                    if(!Checksum.NONE.equals(expected)) {
+                        // Compared with the checksum returned by the server by the upload filter when the upload is complete
+                        status.setVerify(expected.algorithm).setDigest(expected);
+                    }
                 }
             }
             // Mark parent status as complete

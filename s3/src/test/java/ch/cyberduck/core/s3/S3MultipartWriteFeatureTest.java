@@ -38,7 +38,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.md5);
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
@@ -73,7 +73,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final TransferStatus status = new TransferStatus().setLength(-1L);
+        final TransferStatus status = new TransferStatus().setLength(-1L).setVerify(HashAlgorithm.md5);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
@@ -81,7 +81,6 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         // ETag of an object encrypted with SSE-KMS is not derived from the MD5 of the data and not verified
-        assertFalse(status.isVerify());
         assertEquals(Checksum.NONE, status.getDigest());
         assertEquals(Checksum.NONE, new S3AttributesFinderFeature(session, acl).find(file).getChecksum());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
