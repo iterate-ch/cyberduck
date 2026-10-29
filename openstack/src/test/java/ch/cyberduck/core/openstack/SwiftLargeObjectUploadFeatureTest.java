@@ -21,13 +21,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,13 +41,11 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testAppendNoPartCompleted() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String name = new AlphanumericRandomStringService().random();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -107,7 +103,6 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testAppendSecondPart() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String name = new AlphanumericRandomStringService().random();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -170,7 +165,6 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testUploadOverwrite() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
 
@@ -280,7 +274,6 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testAppendNoSegmentFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService)
                 .append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

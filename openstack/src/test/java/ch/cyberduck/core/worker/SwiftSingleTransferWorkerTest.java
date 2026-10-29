@@ -17,8 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.DisabledPasswordStore;import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
@@ -31,7 +30,6 @@ import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.openstack.SwiftAttributesFinderFeature;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
-import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -45,13 +43,11 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.core.openstack.AbstractSwiftTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,14 +56,15 @@ import java.net.SocketTimeoutException;
 import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
-public class SwiftSingleTransferWorkerTest extends VaultTest {
+public class SwiftSingleTransferWorkerTest extends AbstractSwiftTest {
 
     @Test
     public void testUploadTransferWithFailure() throws Exception {
@@ -77,20 +74,10 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                PROPERTIES.get("rackspace.user")
-        )) {
-            @Override
-            public String getProperty(final String key) {
-                if("openstack.upload.largeobject.size".equals(key)) {
-                    return String.valueOf(1048576);
-                }
-                if("openstack.upload.largeobject.concurrency".equals(key)) {
-                    return String.valueOf(5);
-                }
-                return super.getProperty(key);
-            }
-        };
+        final Map<String, String> properties = new HashMap<>();
+        properties.put("openstack.upload.largeobject.size", String.valueOf(1048576));
+        properties.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
+        final Host host = bookmark(properties);
         final AtomicBoolean failed = new AtomicBoolean();
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
@@ -123,10 +110,9 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
         };
         new LoginConnectionService(LoginCallback.noop,
                 HostKeyCallback.noop,
-                new TestPasswordStore(),
+                new DisabledPasswordStore(),
                 ProgressListener.noop).check(session, CancelCallback.noop);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener();

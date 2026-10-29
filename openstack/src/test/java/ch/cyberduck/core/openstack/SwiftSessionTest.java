@@ -25,10 +25,8 @@ import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,7 +34,6 @@ import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftSessionTest extends AbstractSwiftTest {
 
     @Test
@@ -52,10 +49,9 @@ public class SwiftSessionTest extends AbstractSwiftTest {
     }
 
     @Test
-    public void testConnectRackspace() throws Exception {
+    public void testConnect() throws Exception {
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("IAD");
         assertEquals(DescriptiveUrl.EMPTY, session.getFeature(UrlProvider.class).toUrl(new Path(container, "d/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.cdn));
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         assertNotNull(cdn);
@@ -64,27 +60,9 @@ public class SwiftSessionTest extends AbstractSwiftTest {
         assertEquals(Session.State.closed, session.getState());
     }
 
-    @Test
-    public void testConnectRackspaceLon() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Rackspace UK.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
-        ));
-        final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-    }
-
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                "a", "s"
-        ));
+        final Host host = bookmark(new Credentials("a", "s"));
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());

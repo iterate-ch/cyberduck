@@ -10,10 +10,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -21,7 +19,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
 
     @Test
@@ -33,7 +30,6 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
     @Test
     public void testFindNotFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         try {
             f.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)));
@@ -54,7 +50,6 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
     @Test
     public void testFind() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
                 new SwiftWriteFeature(session, new SwiftRegionService(session)), new Path(container, String.format("%s-", name), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -88,17 +83,15 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
     @Test
     public void testFindContainer() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertNotEquals(-1L, attributes.getSize());
-        assertNotNull(attributes.getRegion());
+        assertNull(attributes.getRegion());
     }
 
     @Test
     public void testFindPlaceholder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), file, new TransferStatus());
@@ -118,7 +111,6 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
     @Test
     public void testFindCommonPrefix() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         assertTrue(new SwiftFindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(

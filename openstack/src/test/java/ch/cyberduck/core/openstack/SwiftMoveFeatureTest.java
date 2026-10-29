@@ -27,11 +27,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
@@ -43,19 +41,15 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftMoveFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testMove() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        test.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        target.attributes().setRegion("IAD");
         new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
@@ -65,12 +59,9 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
     @Test
     public void testMoveOverride() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        test.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        target.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), target, new TransferStatus());
         new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SwiftFindFeature(session).find(test));
@@ -81,9 +72,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        test.attributes().setRegion("IAD");
         new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 
@@ -98,7 +87,6 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
     @Test
     public void testMoveLargeObjectToSameBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
@@ -125,8 +113,8 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         assertTrue(sourceSegments.containsAll(targetSegments) && targetSegments.containsAll(sourceSegments));
 
         new SwiftDeleteFeature(session, segmentService, regionService).delete(
-            Collections.singletonMap(targetFile, new TransferStatus()),
-            new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
+                Collections.singletonMap(targetFile, new TransferStatus()),
+                new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
         assertFalse(findFeature.find(movedFile));
 
         assertArrayEquals(new PathAttributes[0], targetSegments.stream().filter(p -> {
@@ -138,30 +126,6 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
                 return false;
             }
         }).toArray());
-    }
-
-    @Test
-    public void testMoveLargeObjectToDifferentBucket() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
-        final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-
-        final SwiftRegionService regionService = new SwiftRegionService(session);
-        final SwiftSegmentService segmentService = new SwiftSegmentService(session, ".segments-test/");
-        prepareFile(sourceFile, regionService, segmentService);
-
-        final SwiftFindFeature findFeature = new SwiftFindFeature(session);
-        assertTrue(findFeature.find(sourceFile));
-
-        final List<Path> sourceSegments = segmentService.list(sourceFile);
-
-        final Path targetBucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        targetBucket.attributes().setRegion("DFW");
-        final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertThrows(BackgroundException.class, () -> new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
-                new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
     }
 
     private void prepareFile(final Path path, final SwiftRegionService regionService, final SwiftSegmentService segmentService) throws BackgroundException {
