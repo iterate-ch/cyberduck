@@ -24,13 +24,11 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
@@ -47,7 +45,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Category(IntegrationTest.class)
 public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest {
 
     @Test(expected = NotfoundException.class)
