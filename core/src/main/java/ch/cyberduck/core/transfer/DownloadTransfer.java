@@ -260,6 +260,7 @@ public class DownloadTransfer extends Transfer {
             files.entrySet().stream()
                     .filter(entry -> entry.getKey().remote.isDirectory())
                     .filter(entry -> !entry.getValue().isExists())
+                    .filter(entry -> entry.getValue().isComplete())
                     .filter(entry -> entry.getValue().getModified() != null)
                     .sorted(Comparator.comparingInt((Map.Entry<TransferItem, TransferStatus> entry) ->
                             StringUtils.countMatches(entry.getKey().local.getAbsolute(), entry.getKey().local.getDelimiter())).reversed())
