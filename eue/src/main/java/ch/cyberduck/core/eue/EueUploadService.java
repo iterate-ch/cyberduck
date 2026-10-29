@@ -26,16 +26,15 @@ import java.util.EnumSet;
 
 public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
 
-    public EueUploadService() {
-    }
-
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        // Algorithm of the checksum of the chunks. No checksum of the whole file is calculated but verified with the
+        // checksum calculated by the server from the checksums of the chunks when completed.
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
+        return EnumSet.of(Flags.checksumResponse);
     }
 }
