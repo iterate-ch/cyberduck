@@ -111,30 +111,24 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             object.setContentType(mime);
         }
         final Checksum checksum = status.getChecksum();
-        if(Checksum.NONE != checksum) {
-            switch(checksum.algorithm) {
-                case sha256:
-                    if(!status.isSegment()) {
-                        // Additional optional checksum verified by the server and stored with the object for integrity
-                        object.addMetadata("x-amz-checksum-sha256", checksum.base64);
-                    }
-                    // Payload hash for the request signature
-                    object.addMetadata("x-amz-content-sha256", checksum.hash);
-                    break;
-                case md5:
-                    // Verified by the server and required for upload to a bucket with Object Lock
-                    object.addMetadata("Content-MD5", checksum.base64);
-                    object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
-                    break;
-                default:
-                    // Set UNSIGNED-PAYLOAD for AWS4 signature calculation when checksum algorithm is not supported
-                    object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
-            }
-        }
-        else {
-            // No checksum calculated prior to the transfer. Exclude payload from the request signature and do not
-            // send an additional checksum for the server to verify.
-            object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
+        switch(checksum.algorithm) {
+            case sha256:
+                if(!status.isSegment()) {
+                    // Additional optional checksum verified by the server and stored with the object for integrity
+                    object.addMetadata("x-amz-checksum-sha256", checksum.base64);
+                }
+                // Payload hash for the request signature
+                object.addMetadata("x-amz-content-sha256", checksum.hash);
+                break;
+            case md5:
+                // Verified by the server and required for upload to a bucket with Object Lock
+                object.addMetadata("Content-MD5", checksum.base64);
+                object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
+                break;
+            default:
+                // No checksum calculated prior to the transfer or algorithm not supported. Exclude payload from the
+                // request signature and do not send an additional checksum for the server to verify.
+                object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
             object.setStorageClass(status.getStorageClass());

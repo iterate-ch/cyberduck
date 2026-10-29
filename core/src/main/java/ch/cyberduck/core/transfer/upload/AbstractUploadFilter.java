@@ -300,7 +300,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             else if(options.checksum && flags.contains(Upload.Flags.checksumResponse)) {
                 // Calculate checksum while transferring and verify when complete
                 final HashAlgorithm algorithm = upload.checksum(file, status).getAlgorithm();
-                if(algorithm != null) {
+                if(HashAlgorithm.none != algorithm) {
                     status.setVerify(algorithm);
                 }
             }

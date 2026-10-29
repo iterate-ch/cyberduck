@@ -93,7 +93,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                         try {
                             final HttpResponse response;
                             final StringBuilder uploadUriWithParameters = new StringBuilder(uploadUri);
-                            if(!Checksum.NONE.equals(status.getChecksum())) {
+                            if(status.getChecksum().algorithm == HashAlgorithm.sha256) {
                                 uploadUriWithParameters.append(String.format("&x_cdash64=%s",
                                         new ChunkListSHA256ChecksumCompute().compute(status.getLength(), Hex.decodeHex(status.getChecksum().hash))));
                             }
@@ -117,8 +117,9 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                             try {
                                 if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                                     if(status.isSegment()) {
-                                        // Checksum of the part is required to complete the chunked upload
-                                        return new Chunk(resourceId, status.getPart(), status.getLength(), status.getChecksum());
+                                        // Only the SHA-256 checksum of the part is supported
+                                        return new Chunk(resourceId, status.getPart(), status.getLength(),
+                                                status.getChecksum().algorithm == HashAlgorithm.sha256 ? status.getChecksum() : Checksum.NONE);
                                     }
                                     if(null == response.getEntity()) {
                                         return new Chunk(resourceId, status.getLength(), Checksum.NONE);

@@ -49,14 +49,12 @@ public class SpectraWriteFeature extends S3WriteFeature {
             object.setContentType(mime);
         }
         final Checksum checksum = status.getChecksum();
-        if(Checksum.NONE != checksum) {
-            switch(checksum.algorithm) {
-                case md5:
-                    // Set checksum on our own to avoid jets3t setting AWS metadata for MD5 as metadata must remain
-                    // constant for all chunks
-                    object.addMetadata("Content-MD5", checksum.base64);
-                    break;
-            }
+        switch(checksum.algorithm) {
+            case md5:
+                // Set checksum on our own to avoid jets3t setting AWS metadata for MD5 as metadata must remain
+                // constant for all chunks
+                object.addMetadata("Content-MD5", checksum.base64);
+                break;
         }
         return object;
     }

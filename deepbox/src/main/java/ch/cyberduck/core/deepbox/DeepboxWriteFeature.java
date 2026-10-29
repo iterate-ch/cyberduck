@@ -85,11 +85,9 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
                         }
                     }
                     final Checksum checksum = status.getChecksum();
-                    if(Checksum.NONE != checksum) {
-                        switch(checksum.algorithm) {
-                            case sha1:
-                                request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
-                        }
+                    switch(checksum.algorithm) {
+                        case sha1:
+                            request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
                     }
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
                     multipart.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);

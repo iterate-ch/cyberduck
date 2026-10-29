@@ -72,8 +72,11 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                 request.setEntity(entity);
                 request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
                 final Checksum checksum = status.getChecksum();
-                if(Checksum.NONE != checksum) {
-                    request.setHeader(TUS_HEADER_UPLOAD_CHECKSUM, String.format("%s %s", checksum.algorithm, checksum.hex));
+                // Only the algorithm of the checksum extension supported by the server
+                if(capabilities.extensions.contains(Extension.checksum)) {
+                    if(checksum.algorithm == capabilities.hashAlgorithm) {
+                        request.setHeader(TUS_HEADER_UPLOAD_CHECKSUM, String.format("%s %s", checksum.algorithm, checksum.hex));
+                    }
                 }
                 request.setHeader(TUS_HEADER_UPLOAD_OFFSET, String.valueOf(status.getOffset()));
                 // All PATCH requests MUST use Content-Type: application/offset+octet-stream
