@@ -20,6 +20,8 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -49,7 +51,12 @@ public class SFTPDirectoryFeature implements Directory<Void> {
             session.sftp().makeDir(folder.getAbsolute(), attrs);
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
+            try {
+                throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
+            }
+            catch(InteroperabilityException m) {
+                throw new ConflictException(m.getDetail(false), m);
+            }
         }
         return folder;
     }
