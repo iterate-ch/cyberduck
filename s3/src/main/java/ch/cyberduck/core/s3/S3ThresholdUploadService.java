@@ -43,7 +43,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3ThresholdUploadService.class);
 
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
     private final Long threshold;
     private final S3SingleUploadService single;
     private final S3MultipartUploadService multipart;
@@ -54,7 +53,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     public S3ThresholdUploadService(final S3Session session, final S3AccessControlListFeature acl, final Long threshold) {
         this.session = session;
-        this.acl = acl;
         this.threshold = threshold;
         this.single = new S3SingleUploadService(session);
         this.multipart = new S3MultipartUploadService(session, acl);
@@ -63,7 +61,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
-            return new S3MultipartUploadService(session, acl).append(file, status);
+            return multipart.append(file, status);
         }
         return new Write.Append(false).withStatus(status);
     }
@@ -94,7 +92,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         if(this.threshold(status)) {
-            return new S3MultipartUploadService(session, acl).checksum(file, status);
+            return multipart.checksum(file, status);
         }
         return single.checksum(file, status);
     }
@@ -102,7 +100,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     @Override
     public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
-            return new S3MultipartUploadService(session, acl).features(file, status);
+            return multipart.features(file, status);
         }
         return single.features(file, status);
     }
