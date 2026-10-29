@@ -52,7 +52,6 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -299,10 +298,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             else if(options.checksum && flags.contains(Upload.Flags.checksumResponse)) {
                 // Calculate checksum while transferring and verify when complete
-                final HashAlgorithm algorithm = upload.checksum(file, status).getAlgorithm();
-                if(HashAlgorithm.none != algorithm) {
-                    status.setVerify(algorithm);
-                }
+                status.setVerify(upload.checksum(file, status).getAlgorithm());
             }
         }
         return status;

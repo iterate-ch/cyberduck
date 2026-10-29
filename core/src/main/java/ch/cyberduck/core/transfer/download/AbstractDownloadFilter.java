@@ -223,6 +223,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         if(options.checksum) {
             status.setChecksum(attributes.getChecksum());
+            status.setVerify(attributes.getChecksum().algorithm);
         }
         return status;
     }
@@ -329,23 +330,21 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
             }
             if(file.isFile()) {
-                if(options.checksum) {
+                if(status.isVerify()) {
                     if(file.getType().contains(Path.Type.decrypted)) {
                         log.warn("Skip checksum verification for {} with client side encryption enabled", file);
                     }
                     else {
                         final Checksum checksum = status.getChecksum();
-                        if(Checksum.NONE != checksum) {
-                            final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
-                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                                    file.getName()));
-                            final Checksum download = compute.compute(local.getInputStream(), new TransferStatus());
-                            if(!checksum.equals(download)) {
-                                throw new ChecksumException(
-                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
-                                                download.algorithm.toString(), download.hash, checksum.hash));
-                            }
+                        final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                                file.getName()));
+                        final Checksum download = compute.compute(local.getInputStream(), new TransferStatus());
+                        if(!checksum.equals(download)) {
+                            throw new ChecksumException(
+                                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
+                                            download.algorithm.toString(), download.hash, checksum.hash));
                         }
                     }
                 }

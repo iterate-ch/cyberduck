@@ -135,9 +135,9 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
 
     /**
      * Algorithm to calculate the checksum of the content while transferring to verify with the checksum in the
-     * response of the server when the transfer is complete. Null if not verifying.
+     * response of the server when the transfer is complete. {@link HashAlgorithm#none} if not verifying.
      */
-    private HashAlgorithm verify;
+    private HashAlgorithm verify = HashAlgorithm.none;
 
     /**
      * MIME type
@@ -488,12 +488,12 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * response of the server when the transfer is complete
      */
     public boolean isVerify() {
-        return verify != null;
+        return HashAlgorithm.none != verify;
     }
 
     /**
      * @return Algorithm of the checksum of the content calculated while transferring to verify with the checksum in
-     * the response of the server when the transfer is complete. Null if not verifying.
+     * the response of the server when the transfer is complete. {@link HashAlgorithm#none} if not verifying.
      */
     public HashAlgorithm getVerify() {
         return verify;
@@ -501,7 +501,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
 
     /**
      * @param verify Algorithm of the checksum of the content to calculate while transferring and verify with the
-     *               checksum in the response of the server when the transfer is complete. Null to disable.
+     *               checksum in the response of the server when the transfer is complete. {@link HashAlgorithm#none} to disable.
      * @return This status
      */
     public TransferStatus setVerify(final HashAlgorithm verify) {
