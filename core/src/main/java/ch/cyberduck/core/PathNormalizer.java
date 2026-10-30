@@ -220,7 +220,7 @@ public final class PathNormalizer {
             if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
                 return root;
             }
-            return attach(root, String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized));
+            return append(root, normalized);
         }
     }
 
@@ -239,13 +239,22 @@ public final class PathNormalizer {
                 return ancestor;
             }
             if(StringUtils.startsWith(absolute, prefix + Path.DELIMITER)) {
-                Path directory = ancestor;
-                for(String name : StringUtils.split(StringUtils.removeStart(absolute, prefix), Path.DELIMITER)) {
-                    directory = new Path(directory, name, EnumSet.of(Path.Type.directory));
-                }
-                return directory;
+                return append(ancestor, StringUtils.removeStart(absolute, prefix));
             }
         }
         return new Path(absolute, EnumSet.of(Path.Type.directory));
+    }
+
+    /**
+     * @param directory Parent directory
+     * @param relative  Normalized path relative to directory
+     * @return Directory with parent hierarchy below the given directory
+     */
+    private static Path append(final Path directory, final String relative) {
+        Path result = directory;
+        for(String name : StringUtils.split(relative, Path.DELIMITER)) {
+            result = new Path(result, name, EnumSet.of(Path.Type.directory));
+        }
+        return result;
     }
 }
