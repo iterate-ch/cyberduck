@@ -477,6 +477,9 @@ public class SFTPSession extends Session<SSHClient> {
             if(null != sftp && sftp.isExtensionSupported(SFTPCopyFeature.EXTENSION)) {
                 return (T) new SFTPCopyFeature(this);
             }
+            if(null != sftp && sftp.isExtensionSupported(SFTPCopyDataFeature.EXTENSION)) {
+                return (T) new SFTPCopyDataFeature(this);
+            }
             // Fallback to download and upload when server does not advertise extension
         }
         if(type == UnixPermission.class) {
