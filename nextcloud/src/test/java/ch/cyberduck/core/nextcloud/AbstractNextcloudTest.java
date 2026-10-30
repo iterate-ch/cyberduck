@@ -29,6 +29,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,7 +40,13 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 
 import static org.junit.Assert.fail;
 
@@ -67,6 +74,35 @@ public abstract class AbstractNextcloudTest {
         if(result.getExitCode() != 0) {
             fail(String.format("Failure installing files_lock: %s", result.getStderr() + result.getStdout()));
         }
+        awaitLockingCapability();
+    }
+
+    /**
+     * Web server workers may still serve capabilities from before the app was installed
+     */
+    private static void awaitLockingCapability() throws Exception {
+        final URL url = new URL(String.format("http://%s:%d/ocs/v1.php/cloud/capabilities?format=json",
+                container.getHost(), container.getMappedPort(HTTP_PORT)));
+        final String authorization = "Basic " + Base64.getEncoder().encodeToString(
+                String.format("%s:%s", USER, PASSWORD).getBytes(StandardCharsets.UTF_8));
+        final long timeout = System.currentTimeMillis() + Duration.ofMinutes(1).toMillis();
+        while(System.currentTimeMillis() < timeout) {
+            try {
+                final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("OCS-APIRequest", "true");
+                connection.setRequestProperty("Authorization", authorization);
+                try (InputStream in = connection.getInputStream()) {
+                    if(IOUtils.toString(in, StandardCharsets.UTF_8).contains("\"locking\"")) {
+                        return;
+                    }
+                }
+            }
+            catch(IOException e) {
+                // Retry
+            }
+            Thread.sleep(1000L);
+        }
+        fail("Timeout waiting for files.locking capability");
     }
 
     @AfterClass
