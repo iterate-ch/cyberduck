@@ -29,11 +29,9 @@ import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.security.PublicKey;
 import java.util.Collections;
@@ -50,7 +48,6 @@ import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test

@@ -21,6 +21,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,7 +52,14 @@ public class SFTPMoveFeature implements Move {
             return new Path(renamed).withAttributes(new DefaultPathAttributes(file.attributes()));
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);
+            final BackgroundException failure = new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);
+            if(failure instanceof InteroperabilityException) {
+                // Generic failure status in SFTP version 3 for existing target
+                final ConflictException conflict = new ConflictException(failure.getDetail(false), failure);
+                conflict.setMessage(failure.getMessage());
+                throw conflict.withFile(file);
+            }
+            throw failure;
         }
     }
 

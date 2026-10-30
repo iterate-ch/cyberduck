@@ -15,57 +15,110 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.local.DefaultTemporaryFileService;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
+import ch.cyberduck.test.TestcontainerTest;
 
-import org.apache.ftpserver.FtpServer;
-import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.ftplet.Authority;
-import org.apache.ftpserver.ftplet.UserManager;
-import org.apache.ftpserver.listener.ListenerFactory;
-import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
-import org.apache.ftpserver.usermanager.impl.BaseUser;
-import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
-public class AbstractFTPTest {
+@Category(TestcontainerTest.class)
+public abstract class AbstractFTPTest {
 
-    private final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+    private static final String USER = "test";
+    private static final String PASSWORD = "test";
+    private static final int FTP_PORT = 21;
+    /**
+     * Home directory of user in container
+     */
+    protected static final String HOME = "/ftp/test";
+    /**
+     * Passive data connections are made to the port announced by the server and must be mapped one to one
+     */
+    private static final int PASV_MIN_PORT = 21000;
+    private static final int PASV_MAX_PORT = 21010;
+
+    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("delfer/alpine-ftp-server:latest"))
+            .withEnv("USERS", String.format("%s|%s", USER, PASSWORD))
+            // Run vsftpd in foreground. The default startup script monitors the newest process matching vsftpd which is a
+            // connection handler when a client connects early and stops the container once that connection is closed.
+            // Configuration file must be first as it would otherwise override options on the command line
+            .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
+                    String.format("-opasv_min_port=%d", PASV_MIN_PORT),
+                    String.format("-opasv_max_port=%d", PASV_MAX_PORT),
+                    "-opasv_address=127.0.0.1")
+            .withExposedPorts(FTP_PORT)
+            .withLogConsumer(f -> System.out.print("FTPD " + f.getUtf8String()))
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
+
+    @BeforeClass
+    public static void start() throws Exception {
+        container.setPortBindings(IntStream.rangeClosed(PASV_MIN_PORT, PASV_MAX_PORT)
+                .mapToObj(port -> String.format("%d:%d", port, port)).collect(Collectors.toList()));
+        container.start();
+        awaitGreeting();
+    }
+
+    /**
+     * Port forwarded to host accepts connections before server is ready to reply
+     */
+    private static void awaitGreeting() throws Exception {
+        final long timeout = System.nanoTime() + Duration.ofSeconds(30).toNanos();
+        while(true) {
+            try(Socket socket = new Socket(container.getHost(), container.getMappedPort(FTP_PORT))) {
+                socket.setSoTimeout(2000);
+                final String greeting = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)).readLine();
+                if(null != greeting && greeting.startsWith("220")) {
+                    return;
+                }
+            }
+            catch(IOException e) {
+                // Retry
+            }
+            if(System.nanoTime() > timeout) {
+                throw new IOException("Timeout waiting for FTP server");
+            }
+            Thread.sleep(500L);
+        }
+    }
+
+    @AfterClass
+    public static void stop() {
+        container.stop();
+    }
 
     protected FTPSession session;
-
-    private FtpServer server;
-    private Local directory;
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
@@ -87,10 +140,7 @@ public class AbstractFTPTest {
 
     @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new FTPProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
-        final Host host = new Host(profile, "localhost", PORT_NUMBER, new Credentials("test", "test")) {
+        final Host host = new Host(new FTPProtocol(), container.getHost(), container.getMappedPort(FTP_PORT), new Credentials(USER, PASSWORD)) {
             @Override
             public String getProperty(final String key) {
                 if(key.equals("ftp.datachannel.epsv")) {
@@ -99,16 +149,7 @@ public class AbstractFTPTest {
                 return super.getProperty(key);
             }
         };
-        session = new FTPSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-            @Override
-            public <T> T _getFeature(final Class<T> type) {
-                final T f = AbstractFTPTest.this.getFeature(type);
-                if(null == f) {
-                    return super._getFeature(type);
-                }
-                return f;
-            }
-        };
+        session = new FTPSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -131,42 +172,10 @@ public class AbstractFTPTest {
         }
     }
 
-    protected <T> T getFeature(final Class<T> type) {
-        return null;
-    }
-
-    @After
-    public void stop() {
-        server.stop();
-        try {
-            directory.delete();
-        }
-        catch(AccessDeniedException | NotfoundException e) {
-            // Ignore
-        }
-    }
-
-    @Before
-    public void start() throws Exception {
-        final FtpServerFactory serverFactory = new FtpServerFactory();
-        final PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
-        final UserManager userManager = userManagerFactory.createUserManager();
-        BaseUser user = new BaseUser();
-        user.setName("test");
-        user.setPassword("test");
-        directory = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
-        directory.mkdir();
-        user.setHomeDirectory(directory.getAbsolute());
-        List<Authority> authorities = new ArrayList<Authority>();
-        authorities.add(new WritePermission());
-        //authorities.add(new ConcurrentLoginPermission(2, Integer.MAX_VALUE));
-        user.setAuthorities(authorities);
-        userManager.save(user);
-        serverFactory.setUserManager(userManager);
-        final ListenerFactory factory = new ListenerFactory();
-        factory.setPort(PORT_NUMBER);
-        serverFactory.addListener("default", factory.createListener());
-        server = serverFactory.createServer();
-        server.start();
+    /**
+     * Skip test if feature is not advertised by server in reply to FEAT
+     */
+    protected void assumeFeature(final String feature) {
+        assumeTrue(String.format("No support for %s", feature), session.getClient().hasFeature(feature));
     }
 }

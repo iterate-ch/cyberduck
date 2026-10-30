@@ -74,5 +74,4 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
-
 }

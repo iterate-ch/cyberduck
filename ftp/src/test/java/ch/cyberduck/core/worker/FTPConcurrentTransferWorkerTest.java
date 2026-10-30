@@ -114,6 +114,8 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                                                 // Buffer size
                                                 assertEquals(HostPreferencesFactory.get(host).getLong("connection.chunksize"), counter.getSent());
                                                 failed.set(true);
+                                                // Release data connection as server may hold lock on file until closed
+                                                IOUtils.closeQuietly(proxy);
                                                 throw new SocketTimeoutException();
                                             }
                                         }
@@ -168,7 +170,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         final List<TransferItem> list = new ArrayList<>();
         final Local file = new Local(File.createTempFile(new AlphanumericRandomStringService().random(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
-            list.add(new TransferItem(new Path(String.format("/t%d", i), EnumSet.of(Path.Type.file)), file));
+            list.add(new TransferItem(new Path(String.format("%s/t%d", HOME, i), EnumSet.of(Path.Type.file)), file));
         }
         final Host host = new Host(session.getHost()) {
             @Override

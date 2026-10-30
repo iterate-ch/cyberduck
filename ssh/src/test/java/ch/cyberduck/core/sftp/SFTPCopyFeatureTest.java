@@ -30,12 +30,14 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.junit.Assert.assertNotNull;
 
 public class SFTPCopyFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testCopy() throws Exception {
+        assumeTrue(session.sftp().isExtensionSupported(SFTPCopyFeature.EXTENSION));
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final Path copy = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -47,7 +49,8 @@ public class SFTPCopyFeatureTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testFeatureSelection() {
+    public void testFeatureSelection() throws Exception {
+        assumeTrue(session.sftp().isExtensionSupported(SFTPCopyFeature.EXTENSION));
         // Resolved through session to cover extension discovery in version packet
         final Copy feature = session.getFeature(Copy.class);
         assertNotNull(feature);

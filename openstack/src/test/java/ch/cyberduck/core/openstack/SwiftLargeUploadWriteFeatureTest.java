@@ -30,12 +30,10 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -47,7 +45,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
 
     @Test
@@ -62,7 +59,6 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
     public void testWriteUploadLargeBuffer() throws Exception {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus();
@@ -135,7 +131,6 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
     public void testTruncate() throws Exception {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
                 new SwiftSegmentService(session, ".segments-test/"));

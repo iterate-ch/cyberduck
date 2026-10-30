@@ -75,9 +75,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-sftp</artifactId>
-            <version>2.20.0</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

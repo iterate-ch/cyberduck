@@ -26,10 +26,8 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,20 +38,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundKey() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
@@ -61,7 +56,6 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
     @Test
     public void testDeleteNoParentPlaceholder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final String name = "placeholder-" + UUID.randomUUID().toString();
         final Path placeholder = new Path(
             new Path(container, "t", EnumSet.of(Path.Type.directory)),
@@ -95,14 +89,13 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("DELETE /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
+                        if(("DELETE /v1/AUTH_test/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
                             delete.set(true);
                         }
                 }
             }
         });
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), placeholder, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);

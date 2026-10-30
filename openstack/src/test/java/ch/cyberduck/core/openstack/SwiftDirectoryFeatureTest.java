@@ -22,13 +22,12 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
 
     @Test
@@ -47,8 +45,8 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path container = feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus().setRegion("ORD"));
         assertTrue(new SwiftFindFeature(session, region).find(container));
-        // Can create again regardless if exists
-        feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
+        // 202 Accepted for existing container is mapped to conflict
+        assertThrows(ConflictException.class, () -> feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus()));
         new SwiftDeleteFeature(session, region).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session, region).find(container));
     }
@@ -63,14 +61,13 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + parentname + "/" + name + " HTTP/1.1").equals(message)) {
+                        if(("PUT /v1/AUTH_test/test.cyberduck.ch/" + parentname + "/" + name + " HTTP/1.1").equals(message)) {
                             put.set(true);
                         }
                 }
             }
         });
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("IAD");
         final SwiftRegionService region = new SwiftRegionService(session);
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region);
         final Path parent = feature.mkdir(new SwiftWriteFeature(session, region), new Path(container, parentname, EnumSet.of(Path.Type.directory)), new TransferStatus());

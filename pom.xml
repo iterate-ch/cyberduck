@@ -99,6 +99,7 @@
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
         <jansi.version>2.4.2</jansi.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
         <surefire.exclude>ch.cyberduck.core.cryptomator.SFTPCryptomatorInteroperabilityTest</surefire.exclude>
     </properties>
@@ -431,6 +432,12 @@
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>2.3.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

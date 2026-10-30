@@ -33,7 +33,6 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
-import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
@@ -46,7 +45,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusCapabilitiesRequest;
 import ch.cyberduck.core.tus.TusCapabilitiesResponseHandler;
-import ch.cyberduck.core.tus.TusWriteFeature;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -173,7 +171,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
         if(type == Write.class) {
-            return (T) new OwncloudWriteFeature<>(this, this.write());
+            return (T) new OwncloudWriteFeature<>(this);
         }
         if(type == UrlProvider.class) {
             return (T) new NextcloudUrlProvider(this);
@@ -197,12 +195,5 @@ public class OwncloudSession extends DAVSession {
             return (T) new OwncloudTimestampFeature(this);
         }
         return super._getFeature(type);
-    }
-
-    private Write<Void> write() {
-        if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-            return new TusWriteFeature(this, tus);
-        }
-        return new NextcloudWriteFeature(this);
     }
 }

@@ -21,21 +21,19 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertThrows;
 
-@Category(IntegrationTest.class)
 public class DAVListServiceTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
@@ -48,7 +46,8 @@ public class DAVListServiceTest extends AbstractDAVTest {
     public void testListFileException() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertThrows(NotfoundException.class, () -> new DAVListService(session).list(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        // Server may respond with different error when listing a file
+        assertThrows(BackgroundException.class, () -> new DAVListService(session).list(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }

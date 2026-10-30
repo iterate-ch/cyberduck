@@ -40,12 +40,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -60,7 +58,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class SwiftWriteFeatureTest extends AbstractSwiftTest {
 
@@ -71,7 +68,6 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        home.attributes().setRegion("IAD");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);

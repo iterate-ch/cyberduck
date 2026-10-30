@@ -20,52 +20,58 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
+import ch.cyberduck.test.TestcontainerTest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
-import org.apache.sshd.common.util.OsUtils;
-import org.apache.sshd.server.SshServer;
-import org.apache.sshd.server.auth.keyboard.DefaultKeyboardInteractiveAuthenticator;
-import org.apache.sshd.server.auth.password.PasswordAuthenticator;
-import org.apache.sshd.server.auth.pubkey.StaticPublickeyAuthenticator;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.sftp.server.SftpFileSystemAccessor;
-import org.apache.sshd.sftp.server.SftpSubsystemFactory;
-import org.apache.sshd.sftp.server.SftpSubsystemProxy;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
-import java.io.IOException;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.security.PublicKey;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.NavigableMap;
-import java.util.UUID;
+import java.time.Duration;
 
 import static org.junit.Assert.fail;
 
-public class AbstractSFTPTest {
+@Category(TestcontainerTest.class)
+public abstract class AbstractSFTPTest {
 
-    private SshServer sshServer;
+    private static final String USER = "test";
+    private static final String PASSWORD = "test";
+    private static final int SSH_PORT = 2222;
+    /**
+     * Home directory of user in container
+     */
+    protected static final String HOME = "/config";
+
+    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
+            .withEnv("PUID", "1000")
+            .withEnv("PGID", "1000")
+            .withEnv("PASSWORD_ACCESS", "true")
+            .withEnv("USER_NAME", USER)
+            .withEnv("USER_PASSWORD", PASSWORD)
+            .withExposedPorts(SSH_PORT)
+            .waitingFor(Wait.forLogMessage(".*\\[ls\\.io-init\\] done.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
+
+    @BeforeClass
+    public static void start() {
+        container.start();
+    }
+
+    @AfterClass
+    public static void stop() {
+        container.stop();
+    }
 
     protected SFTPSession session;
 
@@ -78,69 +84,8 @@ public class AbstractSFTPTest {
     public VaultVersion.Type vaultVersion;
 
     @Before
-    public void start() throws Exception {
-        sshServer = SshServer.setUpDefaultServer();
-        sshServer.setPort(2202);
-        sshServer.setPasswordAuthenticator(new PasswordAuthenticator() {
-            @Override
-            public boolean authenticate(String username, String password, ServerSession session) {
-                if(!StringUtils.equals("test", username)) {
-                    return false;
-                }
-                if(!StringUtils.equals("test", password)) {
-                    return false;
-                }
-                return true;
-            }
-        });
-        sshServer.setKeyboardInteractiveAuthenticator(new DefaultKeyboardInteractiveAuthenticator());
-        sshServer.setPublickeyAuthenticator(new StaticPublickeyAuthenticator(true) {
-            @Override
-            protected void handleAcceptance(final String username, final PublicKey key, final ServerSession session) {
-                super.handleAcceptance(username, key, session);
-            }
-
-            @Override
-            protected void handleRejection(final String username, final PublicKey key, final ServerSession session) {
-                super.handleRejection(username, key, session);
-            }
-        });
-        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
-        final SftpSubsystemFactory factory = new SftpSubsystemFactory();
-        factory.setFileSystemAccessor(new SftpFileSystemAccessor() {
-            @Override
-            public NavigableMap<String, Object> resolveReportedFileAttributes(final SftpSubsystemProxy subsystem, final Path file, final int flags, final NavigableMap<String, Object> attrs, final LinkOption... options) throws IOException {
-                final NavigableMap<String, Object> reported = SftpFileSystemAccessor.super.resolveReportedFileAttributes(subsystem, file, flags, attrs, options);
-                if(OsUtils.isWin32() && file.toFile().isDirectory()) {
-                    reported.put("Permissions", EnumSet.allOf(PosixFilePermission.class));
-                }
-                return reported;
-            }
-        });
-        sshServer.setSubsystemFactories(Collections.singletonList(factory));
-        final Local directory = LocalFactory.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        directory.mkdir();
-        sshServer.setFileSystemFactory(new VirtualFileSystemFactory(Paths.get(directory.getAbsolute())));
-        sshServer.start();
-    }
-
-
-    @After
-    public void stop() throws Exception {
-        try {
-            session.close();
-        }
-        finally {
-            sshServer.stop();
-        }
-    }
-
-    @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SFTPProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
-        final Host host = new Host(profile, "localhost", 2202, new Credentials("test", "test"));
+        final Host host = new Host(new SFTPProtocol(), container.getHost(), container.getMappedPort(SSH_PORT), new Credentials(USER, PASSWORD));
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -152,5 +97,10 @@ public class AbstractSFTPTest {
                 HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
+    }
+
+    @After
+    public void disconnect() throws Exception {
+        session.close();
     }
 }

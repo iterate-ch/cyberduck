@@ -61,6 +61,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>

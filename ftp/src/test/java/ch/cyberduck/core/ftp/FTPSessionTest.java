@@ -33,12 +33,10 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -53,7 +51,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPSessionTest extends AbstractFTPTest {
 
     @BeforeClass

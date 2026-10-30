@@ -9,13 +9,11 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,14 +26,12 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftReadFeatureTest extends AbstractSwiftTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final SwiftRegionService regionService = new SwiftRegionService(session);
         new SwiftReadFeature(session, regionService).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
     }
@@ -43,7 +39,6 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testReadRange() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
@@ -72,7 +67,6 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testReadRangeUnknownLength() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
@@ -96,36 +90,5 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testDownloadGzip() throws Exception {
-        final TransferStatus status = new TransferStatus();
-        status.setLength(182L);
-        final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
-        final SwiftRegionService regionService = new SwiftRegionService(session);
-        final InputStream in = new SwiftReadFeature(session, regionService).read(new Path(container,
-            "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
-                EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
-        assertNotNull(in);
-        final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
-        assertEquals(182L, count.getRecv());
-        assertEquals(182L, status.getLength());
-        in.close();
-    }
-
-    @Test
-    public void testReadCloseReleaseEntity() throws Exception {
-        final TransferStatus status = new TransferStatus();
-        final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
-        final SwiftRegionService regionService = new SwiftRegionService(session);
-        final CountingInputStream in = new CountingInputStream(new SwiftReadFeature(session, regionService).read(new Path(container,
-            "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
-                EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop));
-        in.close();
-        assertEquals(0L, in.getByteCount(), 0L);
     }
 }

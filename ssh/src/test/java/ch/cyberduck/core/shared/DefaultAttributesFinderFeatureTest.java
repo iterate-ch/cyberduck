@@ -15,10 +15,8 @@ import ch.cyberduck.core.sftp.SFTPTouchFeature;
 import ch.cyberduck.core.sftp.SFTPUnixPermissionFeature;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -26,7 +24,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
 
     @Test(expected = NotfoundException.class)
