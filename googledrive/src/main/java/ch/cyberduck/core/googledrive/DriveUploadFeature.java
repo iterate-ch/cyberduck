@@ -15,12 +15,8 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.google.api.services.drive.model.File;
 
@@ -28,13 +24,7 @@ import java.util.EnumSet;
 
 public class DriveUploadFeature extends HttpUploadFeature<File> {
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumResponse);
+    public DriveUploadFeature() {
+        super(EnumSet.of(Flags.checksumResponse), HashAlgorithm.md5);
     }
 }

@@ -25,8 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,18 +40,9 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
     private final EueResourceIdProvider fileid;
 
     public EueSingleUploadService(final EueSession session, final EueResourceIdProvider fileid) {
+        super(EnumSet.of(Flags.checksumOptional), HashAlgorithm.sha256);
         this.session = session;
         this.fileid = fileid;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
     }
 
     @Override

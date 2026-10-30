@@ -30,8 +30,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -88,20 +86,11 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
     }
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
+        super(EnumSet.of(Flags.checksumOptional, Flags.checksumResponse), HashAlgorithm.sha1);
         this.session = session;
         this.fileid = fileid;
         this.partSize = partSize;
         this.concurrency = concurrency;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
     }
 
     @Override

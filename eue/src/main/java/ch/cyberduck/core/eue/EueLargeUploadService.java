@@ -31,8 +31,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -72,22 +70,13 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long chunksize, final Integer concurrency) {
+        // Checksum of the parts. No checksum of the whole file is calculated but verified with the checksum calculated
+        // by the server from the checksums of the parts when completed.
+        super(EnumSet.of(Flags.checksumResponse), HashAlgorithm.sha256);
         this.session = session;
         this.chunksize = chunksize;
         this.concurrency = concurrency;
         this.fileid = fileid;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        // Algorithm of the checksum of the parts. No checksum of the whole file is calculated but verified with the
-        // checksum calculated by the server from the checksums of the parts when completed.
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumResponse);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         if(status.getLength() >= threshold) {
             return new EueLargeUploadService(session, fileid).features(file, status);
         }

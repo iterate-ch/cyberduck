@@ -24,8 +24,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
@@ -42,17 +40,8 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
     private final SpectraBulkService bulk;
 
     public SpectraUploadFeature(final SpectraBulkService bulk) {
+        super(EnumSet.of(Flags.checksumOptional), HashAlgorithm.md5);
         this.bulk = bulk;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional);
     }
 
     @Override

@@ -72,7 +72,7 @@ public class BoxThresholdUploadService implements Upload<File> {
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(this.threshold(status.getLength()) && Vault.DISABLED == registry.find(session, file)) {
                 return new BoxLargeUploadService(session, fileid).features(file, status);

@@ -17,26 +17,16 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import ch.iterate.openstack.swift.model.StorageObject;
 
 import java.util.EnumSet;
 
+import ch.iterate.openstack.swift.model.StorageObject;
+
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject> {
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumOptional, Flags.checksumResponse);
+    public SwiftSmallObjectUploadFeature() {
+        super(EnumSet.of(Flags.checksumOptional, Flags.checksumResponse), HashAlgorithm.md5);
     }
 }

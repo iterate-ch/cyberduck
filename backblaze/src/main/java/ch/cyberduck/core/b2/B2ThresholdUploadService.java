@@ -80,7 +80,7 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
             return new B2LargeUploadService(session, fileid).features(file, status);
         }

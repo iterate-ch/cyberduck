@@ -31,8 +31,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -71,19 +69,10 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
     }
 
     public BoxLargeUploadService(final BoxSession session, final BoxFileidProvider fileid, final Integer concurrency) {
+        super(EnumSet.of(Flags.checksumRequired, Flags.checksumResponse), HashAlgorithm.sha1);
         this.session = session;
         this.concurrency = concurrency;
         this.fileid = fileid;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
-        return EnumSet.of(Flags.checksumRequired, Flags.checksumResponse);
     }
 
     @Override
