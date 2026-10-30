@@ -202,7 +202,7 @@ public class S3UrlProvider implements UrlProvider {
             return session.getHost().getHostname();
         }
         // Not applicable to AWS China partition
-        if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+        if(S3Session.isAwsStandardHostname(session.getHost().getHostname())) {
             final String region = this.getRegionForBucket(bucket);
             if(StringUtils.isNotBlank(region)) {
                 return String.format("%s.%s", bucket.getName(), RequestEntityRestStorageService.createRegionSpecificEndpoint(session.getHost(), region));
