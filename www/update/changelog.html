@@ -109,8 +109,9 @@
     <li><span class="label label-success">Feature</span> Support copy with SSH File Transfer Protocol extension (SFTP) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/14377">#14377</a>)
     </li>
-    <li><span class="label label-success">Feature</span> Client-side checksum verification of uploads (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/17352">#17352</a>)
+    <li><span class="label label-success">Feature</span> Client-side checksum verification of uploads (S3, Backblaze B2,
+        Dropbox, Google Drive, Google Storage, Box, OpenStack Swift) (<a target="_blank"
+                                                                         href="https://trac.cyberduck.io/ticket/17352">#17352</a>)
     </li>
     <li><span class="label label-success">Feature</span> Retry with exponential backoff when the server rejects the
         connection (FTP, WebDAV)
@@ -136,11 +137,8 @@
     <li><span class="label label-warning">Bugfix</span> Read timeout deleting many files with bulk delete (OpenStack
         Swift) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18439">#18439</a>)
     </li>
-    <li><span class="label label-warning">Bugfix</span> OAuth login fails with loopback redirect URI without port
-        (ownCloud) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18447">#18447</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> OAuth workflow never finishes with custom redirect URI (CLI) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/13587">#13587</a>)
+    <li><span class="label label-warning">Bugfix</span> OAuth workflow never finishes with custom redirect URI (CLI;
+        Dropbox, OneDrive, SharePoint) (<a target="_blank" href="https://trac.cyberduck.io/ticket/13587">#13587</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Handle timeout during resumable file upload finalization
         (ownCloud)
@@ -171,9 +169,6 @@
     </li>
     <li><span class="label label-warning">Bugfix</span> Presigned URL signature excludes context path (S3) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/18494">#18494</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Login fails on custom endpoint with default profile in
-        ~/.aws/credentials (S3) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18495">#18495</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Skip reading ACLs of objects in buckets with object ownership
         enforced (S3) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18526">#18526</a>)
