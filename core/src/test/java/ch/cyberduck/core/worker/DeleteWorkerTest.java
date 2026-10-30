@@ -12,6 +12,8 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -237,5 +239,54 @@ public class DeleteWorkerTest {
         assertFalse(cache.isCached(folder));
         assertFalse(cache.isCached(subfolder));
         assertTrue(cache.isCached(other));
+    }
+
+    @Test
+    public void testEvictCachedListingOfDeletedFoldersOnFailure() throws Exception {
+        final Path root = new Path("/", EnumSet.of(Path.Type.directory));
+        final Path folder = new Path("/t", EnumSet.of(Path.Type.directory));
+        final Path subfolder = new Path("/t/d", EnumSet.of(Path.Type.directory));
+        final Path other = new Path("/o", EnumSet.of(Path.Type.directory));
+        final PathCache cache = new PathCache(10);
+        cache.put(root, new AttributedList<>(Arrays.asList(folder, other)));
+        cache.put(folder, new AttributedList<>(Collections.singletonList(subfolder)));
+        cache.put(subfolder, new AttributedList<>(Collections.singletonList(new Path("/t/d/b", EnumSet.of(Path.Type.file)))));
+        cache.put(other, new AttributedList<>(Collections.singletonList(new Path("/o/c", EnumSet.of(Path.Type.file)))));
+        final Session session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                            for(Path file : files.keySet()) {
+                                if(file.equals(other)) {
+                                    // Fail after first folder has already been deleted
+                                    throw new AccessDeniedException(file.getAbsolute());
+                                }
+                                callback.delete(file);
+                            }
+                        }
+
+                        @Override
+                        public EnumSet<Flags> features(final Path file) {
+                            return EnumSet.of(Flags.recursive);
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        try {
+            new DeleteWorker(LoginCallback.noop, Arrays.asList(folder, other), ProgressListener.noop, cache, false).run(session);
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            // Expected
+        }
+        assertFalse(cache.isCached(folder));
+        assertFalse(cache.isCached(subfolder));
+        assertTrue(cache.isCached(root));
     }
 }

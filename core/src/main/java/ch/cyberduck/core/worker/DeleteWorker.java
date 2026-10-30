@@ -168,21 +168,26 @@ public class DeleteWorker extends Worker<List<Path>> {
             }
         }
         if(!recursive.isEmpty()) {
-            delete.delete(recursive, prompt, new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
-                    callback.delete(file);
-                    if(file.isDirectory()) {
-                        if(delete.features(file).contains(Delete.Flags.recursive)) {
-                            files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+            try {
+                delete.delete(recursive, prompt, new Delete.Callback() {
+                    @Override
+                    public void delete(final Path file) {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
+                        callback.delete(file);
+                        if(file.isDirectory()) {
+                            if(delete.features(file).contains(Delete.Flags.recursive)) {
+                                files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+            finally {
+                // Drop cached listings of deleted folders to not list previous contents when recreated with the same name.
+                // Evict regardless of failure as some folders may already have been deleted before the error
+                recursive.keySet().forEach(this::evict);
+            }
         }
-        // Drop cached listings of deleted folders to not list previous contents when recreated with the same name
-        recursive.keySet().forEach(this::evict);
         return new ArrayList<>(recursive.keySet());
     }
 
