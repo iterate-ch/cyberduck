@@ -394,7 +394,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
     }
 
-    public SFTPEngine sftp() throws LoginCanceledException {
+    public LoggingSFTPEngine sftp() throws LoginCanceledException {
         if(null == sftp) {
             throw new LoginCanceledException();
         }
@@ -526,7 +526,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
     }
 
-    private static final class LoggingSFTPEngine extends SFTPEngine {
+    public static final class LoggingSFTPEngine extends SFTPEngine {
         private final TranscriptListener transcript;
 
         public LoggingSFTPEngine(final SSHClient client, final TranscriptListener transcript) throws SSHException {
