@@ -102,7 +102,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path moved = feature.move(directory, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(renamed, moved);
         // No placeholder object created at target
-        assertFalse(session.getClient().isObjectInBucket(container.getName(), new S3PathContainerService(session.getHost()).getKey(renamed) + "/"));
+        assertFalse(session.getClient().isObjectInBucket(container.getName(), new S3PathContainerService(session.getHost()).getKey(renamed)));
         // Directory appears with first descendant moved
         final Path target = feature.move(test, new Path(renamed, test.getName(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertTrue(new S3FindFeature(session, acl).find(renamed));
