@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,6 +65,10 @@ public class DeleteWorker extends Worker<List<Path>> {
      */
     private final boolean trash;
     private final Delete.Callback callback;
+    /**
+     * Cached listings to evict for deleted folders
+     */
+    private final Cache<Path> cache;
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
         this(prompt, files, listener, new NullFilter<>());
@@ -84,7 +90,23 @@ public class DeleteWorker extends Worker<List<Path>> {
     }
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final Cache<Path> cache) {
+        this(prompt, files, listener, cache, PreferencesFactory.get().getBoolean("browser.delete.trash"));
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final Cache<Path> cache, final boolean trash) {
+        this(prompt, files, listener, new NullFilter<>(), trash, new Delete.DisabledCallback(), cache);
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
                         final Filter<Path> filter, final boolean trash, final Delete.Callback callback) {
+        this(prompt, files, listener, filter, trash, callback, PathCache.empty());
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final Filter<Path> filter, final boolean trash, final Delete.Callback callback, final Cache<Path> cache) {
+        this.cache = cache;
         this.files = files;
         this.prompt = prompt;
         this.listener = listener;
@@ -127,6 +149,8 @@ public class DeleteWorker extends Worker<List<Path>> {
                 }
             }
         }
+        // Folders to evict from cache. Includes folders moved to version directory instead of deleted
+        final List<Path> folders = new ArrayList<>(recursive.keySet());
         final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.delete.enable")) {
             switch(session.getHost().getProtocol().getVersioningMode()) {
@@ -145,21 +169,36 @@ public class DeleteWorker extends Worker<List<Path>> {
                     }
             }
         }
-        if(!recursive.isEmpty()) {
-            delete.delete(recursive, prompt, new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
-                    callback.delete(file);
-                    if(file.isDirectory()) {
-                        if(delete.features(file).contains(Delete.Flags.recursive)) {
-                            files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+        try {
+            if(!recursive.isEmpty()) {
+                delete.delete(recursive, prompt, new Delete.Callback() {
+                    @Override
+                    public void delete(final Path file) {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
+                        callback.delete(file);
+                        if(file.isDirectory()) {
+                            if(delete.features(file).contains(Delete.Flags.recursive)) {
+                                files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+        }
+        finally {
+            // Drop cached listings of deleted folders to not list previous contents when recreated with the same name.
+            // Evict regardless of failure as some folders may already have been deleted before the error
+            folders.forEach(this::evict);
         }
         return new ArrayList<>(recursive.keySet());
+    }
+
+    private void evict(final Path file) {
+        if(file.isDirectory() && cache.isCached(file)) {
+            for(Path child : cache.remove(file)) {
+                this.evict(child);
+            }
+        }
     }
 
     protected Map<Path, TransferStatus> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
