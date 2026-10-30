@@ -10,7 +10,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.core.io.Checksum;
@@ -38,7 +37,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.md5);
+        final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
@@ -53,9 +52,6 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         assertNotNull(out.getStatus());
         assertEquals(content.length, status.getResponse().getSize());
         assertEquals(content.length, out.getStatus().getContentLength());
-        assertTrue(status.isVerify());
-        assertEquals(HashAlgorithm.md5_multipart, status.getVerify());
-        assertEquals(status.getResponse().getChecksum(), status.getDigest());
         assertTrue(new S3FindFeature(session, acl).find(file));
         final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
@@ -73,7 +69,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final TransferStatus status = new TransferStatus().setLength(-1L).setVerify(HashAlgorithm.md5);
+        final TransferStatus status = new TransferStatus().setLength(-1L);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);

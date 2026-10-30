@@ -28,16 +28,6 @@ public enum HashAlgorithm {
     sha512,
     crc32,
     cdash64,
-    /**
-     * MD5 of the concatenated MD5 digests of the parts followed by a hyphen and the number of parts as returned as ETag
-     * for objects uploaded in multiple parts to Amazon S3
-     */
-    md5_multipart,
-    /**
-     * MD5 of the concatenated hexadecimal MD5 checksums of the segments as returned as ETag of the manifest of a large
-     * object in OpenStack Swift
-     */
-    md5_segments,
     dropbox_content_hash;
 
     @Override

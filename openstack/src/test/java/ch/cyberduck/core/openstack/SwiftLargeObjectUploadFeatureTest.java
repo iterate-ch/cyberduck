@@ -24,7 +24,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
@@ -42,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -314,45 +312,6 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
         final Checksum expected = upload.checksum(test, status).compute(new ByteArrayInputStream(content), new TransferStatus());
-        assertEquals(expected, status.getDigest());
-        // Checksum returned by the server
-        assertEquals(expected, status.getResponse().getChecksum());
-        assertEquals(expected, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-        local.delete();
-    }
-
-    @Test
-    public void testChecksumOfManifest() {
-        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session));
-        final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)), "f", EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().setLength(10L * 1024 * 1024 * 1024);
-        // The ETag of the manifest is not the MD5 of the content and calculated from the segments
-        assertEquals(EnumSet.of(Upload.Flags.checksumResponse), upload.features(test, status));
-        assertEquals(HashAlgorithm.md5, upload.checksum(test, status).getAlgorithm());
-    }
-
-    @Test
-    public void testUploadVerifyChecksumOfManifest() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
-        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final int segmentSize = 1024 * 1024;
-        final byte[] content = RandomUtils.nextBytes(3 * segmentSize + 1025);
-        IOUtils.write(content, local.getOutputStream(false));
-        // Calculated while uploading the segments and compared with the ETag of the manifest
-        final TransferStatus status = new TransferStatus().setLength(content.length).setVerify(HashAlgorithm.md5);
-        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), (long) segmentSize, 2).upload(
-                new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
-        // MD5 of the concatenated MD5 of the segments
-        final StringBuilder concatenated = new StringBuilder();
-        for(int offset = 0; offset < content.length; offset += segmentSize) {
-            concatenated.append(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content, offset, Math.min(segmentSize, content.length - offset)), new TransferStatus()).hash);
-        }
-        final Checksum expected = new Checksum(HashAlgorithm.md5_segments, new MD5ChecksumCompute().compute(new ByteArrayInputStream(concatenated.toString().getBytes(StandardCharsets.UTF_8)), new TransferStatus()).hex);
-        assertTrue(status.isVerify());
         assertEquals(expected, status.getDigest());
         // Checksum returned by the server
         assertEquals(expected, status.getResponse().getChecksum());

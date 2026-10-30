@@ -19,7 +19,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -64,7 +63,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
-        assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
+        // ETag of an object uploaded in multiple parts is not the MD5 of the content
+        assertEquals(Checksum.NONE, status.getResponse().getChecksum());
         // Verification not requested
         assertFalse(status.isVerify());
         assertEquals(Checksum.NONE, status.getDigest());
@@ -76,10 +76,10 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
-        assertEquals(HashAlgorithm.md5_multipart, attr.getChecksum().algorithm);
+        assertEquals(Checksum.NONE, attr.getChecksum());
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
-        assertEquals(HashAlgorithm.md5_multipart, Checksum.parse(attr.getETag()).algorithm);
+        assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
@@ -102,7 +102,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         service.upload(new S3WriteFeature(virtualhost, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
-        assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
+        // ETag of an object uploaded in multiple parts is not the MD5 of the content
+        assertEquals(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(random.length, status.getResponse().getSize());
@@ -111,10 +112,10 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
-        assertEquals(HashAlgorithm.md5_multipart, attr.getChecksum().algorithm);
+        assertEquals(Checksum.NONE, attr.getChecksum());
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
-        assertEquals(HashAlgorithm.md5_multipart, Checksum.parse(attr.getETag()).algorithm);
+        assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(virtualhost, acl).getClass(test));
         new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
@@ -130,7 +131,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] random = RandomUtils.nextBytes(1023);
         IOUtils.write(random, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.md5);
+        final TransferStatus status = new TransferStatus();
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         status.setLength(random.length);
         status.setModified(System.currentTimeMillis());
@@ -177,17 +178,12 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final int length = 5242881;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().setVerify(HashAlgorithm.md5);
+        final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
-        // ETag calculated from the checksums of the parts returned by the server and compared by the upload filter
-        assertTrue(status.isVerify());
-        assertEquals(HashAlgorithm.md5_multipart, status.getDigest().algorithm);
-        assertEquals(status.getResponse().getChecksum(), status.getDigest());
-        
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
@@ -204,7 +200,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(5242881);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus().setLength(content.length).setVerify(HashAlgorithm.md5);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, new BytecountStreamListener(), status, null);
         assertTrue(status.isComplete());
@@ -259,7 +255,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(content.length, status.getResponse().getSize());
-        assertEquals(HashAlgorithm.md5_multipart, status.getResponse().getChecksum().algorithm);
+        // ETag of an object uploaded in multiple parts is not the MD5 of the content
+        assertEquals(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());

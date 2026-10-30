@@ -86,7 +86,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public EnumSet<Flags> features(final Path file, final TransferStatus status) {
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
             return new SwiftLargeObjectUploadFeature(session, regionService).features(file, status);
         }
