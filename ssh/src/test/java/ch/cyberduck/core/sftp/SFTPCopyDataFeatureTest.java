@@ -20,19 +20,21 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+
 
 public class SFTPCopyDataFeatureTest extends AbstractSFTPTest {
 
@@ -54,9 +56,27 @@ public class SFTPCopyDataFeatureTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testFeatureSelection() {
-        final Copy feature = session.getFeature(Copy.class);
-        assertNotNull(feature);
-        assertTrue(feature instanceof SFTPCopyDataFeature);
+    public void testCopyAttributesFromStatus() throws Exception {
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
+        final Permission permission = new StaticPermission("750");
+        final long modified = 1_700_000_000_000L;
+        final Path copy = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path result = new SFTPCopyDataFeature(session).copy(test, copy, new TransferStatus().setPermission(permission).setModified(modified), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertEquals(permission, result.attributes().getPermission());
+        assertEquals(modified, result.attributes().getModificationDate());
+        assertEquals(permission, new SFTPAttributesFinderFeature(session).find(copy).getPermission());
+        new SFTPDeleteFeature(session).delete(java.util.Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyTargetExistsStatusNotSet() throws Exception {
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
+        final Path copy = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), copy, new TransferStatus());
+        // Target exists but exists flag is not set
+        assertThrows(ConflictException.class, () -> new SFTPCopyDataFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        new SFTPDeleteFeature(session).delete(java.util.Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

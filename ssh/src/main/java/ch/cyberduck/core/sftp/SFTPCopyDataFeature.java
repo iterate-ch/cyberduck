@@ -17,7 +17,10 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,7 +53,14 @@ public class SFTPCopyDataFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try {
-            try (final HandleFile read = this.open(source, EnumSet.of(OpenMode.READ))) {
+            try (final HandleFile read = this.open(source, EnumSet.of(OpenMode.READ), FileAttributes.EMPTY)) {
+                final FileAttributes attributes;
+                if(Permission.EMPTY != status.getPermission()) {
+                    attributes = new FileAttributes.Builder().withPermissions(Integer.parseInt(status.getPermission().getMode(), 8)).build();
+                }
+                else {
+                    attributes = FileAttributes.EMPTY;
+                }
                 final Set<OpenMode> modes = EnumSet.of(OpenMode.WRITE, OpenMode.CREAT);
                 if(status.isExists()) {
                     modes.add(OpenMode.TRUNC);
@@ -58,7 +68,7 @@ public class SFTPCopyDataFeature implements Copy {
                 else {
                     modes.add(OpenMode.EXCL);
                 }
-                try (final HandleFile write = this.open(target, modes)) {
+                try (final HandleFile write = this.open(target, modes, attributes)) {
                     final Request request = session.sftp().newExtendedRequest(EXTENSION)
                             .putString(read.handle())
                             .putUInt64(0L)
@@ -69,19 +79,29 @@ public class SFTPCopyDataFeature implements Copy {
                     session.sftp().request(request).retrieve().ensureStatusPacketIsOK();
                 }
             }
+            if(null != status.getModified()) {
+                new SFTPTimestampFeature(session).setTimestamp(target, status);
+            }
             listener.sent(status.getLength());
             return new Path(target).withAttributes(new SFTPAttributesFinderFeature(session).find(target));
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
+            final BackgroundException failure = new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
+            if(failure instanceof InteroperabilityException) {
+                // Generic failure status in SFTP version 3 for existing target
+                final ConflictException conflict = new ConflictException(failure.getDetail(false), failure);
+                conflict.setMessage(failure.getMessage());
+                throw conflict.withFile(source);
+            }
+            throw failure;
         }
     }
 
-    private HandleFile open(final Path file, final Set<OpenMode> modes) throws IOException, BackgroundException {
+    private HandleFile open(final Path file, final Set<OpenMode> modes, final FileAttributes attributes) throws IOException, BackgroundException {
         final byte[] handle = session.sftp().request(session.sftp().newRequest(PacketType.OPEN)
                         .putString(file.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset())
                         .putUInt32(OpenMode.toMask(modes))
-                        .putFileAttributes(FileAttributes.EMPTY))
+                        .putFileAttributes(attributes))
                 .retrieve().ensurePacketTypeIs(PacketType.HANDLE).readBytes();
         return new HandleFile(session.sftp(), file.getAbsolute(), handle);
     }
