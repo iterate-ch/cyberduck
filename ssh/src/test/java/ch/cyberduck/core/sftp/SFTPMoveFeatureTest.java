@@ -20,7 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,8 +55,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), target, new TransferStatus());
-        // OpenSSH replies with generic failure status in SFTP version 3 for existing target
-        assertThrows(InteroperabilityException.class, () -> new SFTPMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop));
+        assertThrows(ConflictException.class, () -> new SFTPMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop));
         new SFTPMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
