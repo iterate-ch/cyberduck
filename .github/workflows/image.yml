@@ -40,6 +40,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ env.TAG }}
           fetch-depth: 0
       - name: Set up JDK 25
