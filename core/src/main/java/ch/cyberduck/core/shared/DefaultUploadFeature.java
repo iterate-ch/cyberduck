@@ -30,7 +30,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SkippingDigestInputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -58,12 +57,12 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private final HashAlgorithm algorithm;
 
     public DefaultUploadFeature() {
-        this(EnumSet.noneOf(Flags.class), null);
+        this(EnumSet.noneOf(Flags.class), HashAlgorithm.none);
     }
 
     /**
      * @param flags     Supported features
-     * @param algorithm Algorithm to calculate the checksum of the file for the upload. Null if not supported.
+     * @param algorithm Algorithm to calculate the checksum of the file for the upload. None if not supported.
      */
     public DefaultUploadFeature(final EnumSet<Flags> flags, final HashAlgorithm algorithm) {
         this.flags = flags;
@@ -72,9 +71,6 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(null == algorithm) {
-            return new DisabledChecksumCompute();
-        }
         return ChecksumComputeFactory.get(algorithm);
     }
 
