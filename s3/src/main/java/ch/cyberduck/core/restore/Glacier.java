@@ -111,7 +111,7 @@ public class Glacier implements Restore {
                 .withPathStyleAccessEnabled(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.bucket.virtualhost.disable"))
                 .withCredentials(S3CredentialsStrategy.toCredentialsProvider(session.getAuthentication().get()));
         final Location.Name region = this.getRegion(container);
-        if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
+        if(S3Session.isAwsStandardHostname(session.getHost().getHostname())) {
             if(Location.unknown.equals(region)) {
                 builder.withRegion(Regions.DEFAULT_REGION);
             }
