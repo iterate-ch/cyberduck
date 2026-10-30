@@ -22,7 +22,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -49,7 +48,6 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final OutputStream out = new S3WriteFeature(session, acl).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
@@ -75,7 +73,6 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final OutputStream out = new S3WriteFeature(virtualhost, acl).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
@@ -99,7 +96,6 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final OutputStream out = new S3WriteFeature(session, acl).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);

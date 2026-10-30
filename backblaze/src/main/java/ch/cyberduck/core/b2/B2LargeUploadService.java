@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,10 +44,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ import synapticloop.b2.response.BaseB2Response;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
+public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2LargeUploadService.class);
 
     /**
@@ -85,6 +86,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     }
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
+        super(EnumSet.of(Flags.checksumOptional, Flags.checksumResponse), HashAlgorithm.sha1);
         this.session = session;
         this.fileid = fileid;
         this.partSize = partSize;
@@ -93,7 +95,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
 
     @Override
     public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                 final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final long partSize;
         if(file.getType().contains(Path.Type.encrypted)) {
             // For uploads to vault part size must be a multiple of 32 * 1024. Recommended partsize from B2 API may not meet that requirement.
@@ -102,7 +104,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         else {
             partSize = this.partSize;
         }
-        return this.upload(write, file, local, throttle, progress, streamListener, status, callback,
+        return this.upload(write, file, local, throttle, progress, listener, status, callback,
                 partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
     }
 
@@ -117,12 +119,10 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             final List<B2UploadPartResponse> completed = new ArrayList<>();
             final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
             final Checksum checksum = status.getChecksum();
-            if(Checksum.NONE != checksum) {
-                switch(checksum.algorithm) {
-                    case sha1:
-                        fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, status.getChecksum().hash);
-                        break;
-                }
+            switch(checksum.algorithm) {
+                case sha1:
+                    fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, checksum.hash);
+                    break;
             }
             if(null != status.getModified()) {
                 fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getModified()));
@@ -228,9 +228,10 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(status.compute(local, B2LargeUploadService.this.checksum(file, status).getAlgorithm()));
                 status.setPart(partNumber);
-                return (B2UploadPartResponse) B2LargeUploadService.this.upload(write, file, local, throttle, counter, status, overall, status, callback);
+                return (B2UploadPartResponse) B2LargeUploadService.this.upload(
+                        write, file, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

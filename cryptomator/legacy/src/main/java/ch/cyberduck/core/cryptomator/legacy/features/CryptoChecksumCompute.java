@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamProgress;
@@ -45,6 +46,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -63,6 +65,15 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
         this.delegate = delegate;
     }
 
+    public MessageDigest digest() throws ChecksumException {
+        return delegate.digest();
+    }
+
+    @Override
+    public boolean isTransformed() {
+        return true;
+    }
+
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), new TransferStatus())) {
@@ -79,6 +90,11 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
                     new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
         }
         return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
+    }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return delegate.getAlgorithm();
     }
 
     protected Checksum compute(final InputStream in, final StreamCancelation cancel,

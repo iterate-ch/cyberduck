@@ -26,10 +26,16 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ClosedChannelException;
+import java.security.MessageDigest;
 
 import com.twmacinta.util.MD5;
 
 public class MD5FastChecksumCompute extends AbstractChecksumCompute {
+
+    @Override
+    public MessageDigest digest() throws ChecksumException {
+        return instance("MD5");
+    }
 
     static {
         // Indicate that the native library should not be loaded
@@ -40,6 +46,11 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.md5, this.digest("MD5",
                 this.normalize(in, status), status));
+    }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.md5;
     }
 
     protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ConnectionCanceledException {

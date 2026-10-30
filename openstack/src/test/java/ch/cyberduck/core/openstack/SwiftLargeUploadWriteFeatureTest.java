@@ -17,12 +17,18 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -31,6 +37,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -39,6 +46,14 @@ import ch.iterate.openstack.swift.model.StorageObject;
 import static org.junit.Assert.*;
 
 public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
+
+    @Test
+    public void testChecksumMD5() throws Exception {
+        final Checksum checksum = session.getFeature(Upload.class).checksum(new Path("/f", EnumSet.of(Path.Type.file)), new TransferStatus())
+                .compute(new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8)), new TransferStatus());
+        assertEquals(HashAlgorithm.md5, checksum.algorithm);
+        assertEquals("098f6bcd4621d373cade4e832627b4f6", checksum.hash);
+    }
 
     @Test
     public void testWriteUploadLargeBuffer() throws Exception {

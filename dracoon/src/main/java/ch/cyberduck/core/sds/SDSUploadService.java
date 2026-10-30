@@ -16,15 +16,12 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.TransferCanceledException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -43,14 +40,12 @@ import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -147,21 +142,6 @@ public class SDSUploadService {
             }
             log.debug("Complete file upload for {} with token {}", file, uploadToken);
             final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, body, null);
-            if(!upload.isIsEncrypted()) {
-                final Checksum checksum = status.getChecksum();
-                if(Checksum.NONE != checksum) {
-                    final Checksum server = Checksum.parse(upload.getHash());
-                    if(Checksum.NONE != server) {
-                        if(checksum.algorithm.equals(server.algorithm)) {
-                            if(!server.equals(checksum)) {
-                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                                checksum.hash, server.hash));
-                            }
-                        }
-                    }
-                }
-            }
             nodeid.cache(file, String.valueOf(upload.getId()));
             return upload;
         }

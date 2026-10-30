@@ -15,34 +15,13 @@ package ch.cyberduck.core.spectra;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3PathContainerService;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
-import org.jets3t.service.model.StorageObject;
 
 public class SpectraDirectoryFeature extends S3DirectoryFeature {
 
-    private final PathContainerService containerService;
-
     public SpectraDirectoryFeature(final SpectraSession session) {
         super(session);
-        this.containerService = new S3PathContainerService(session.getHost());
     }
 
-    @Override
-    public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        if(containerService.isContainer(folder)) {
-            return super.mkdir(writer, folder, status);
-        }
-        else {
-            status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
-            return super.mkdir(writer, folder, status);
-        }
-    }
 }

@@ -26,7 +26,9 @@ import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,6 +38,9 @@ import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
 import java.util.EnumSet;
 
 public class CryptoWriteFeature<Reply> implements Write<Reply> {
@@ -73,12 +78,28 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             final Path target = status.isSegment() ? file : vault.encrypt(session, file);
             final StatusOutputStream<Reply> stream = proxy.write(target,
                     new CryptoTransferStatus(vault, file, status), callback);
+            // The checksum must be calculated for the encrypted content sent to the server and not for the content
+            // read from the local file. Therefore the digest is applied here, below encryption.
+            final MessageDigest digest = status.isVerify() ? ChecksumComputeFactory.get(status.getVerify()).digest() : null;
+            final OutputStream ciphertext = null == digest ? stream : new DigestOutputStream(stream, digest);
             if(status.getOffset() == 0L) {
-                stream.write(status.getHeader().array());
+                ciphertext.write(status.getHeader().array());
             }
-            return new StatusOutputStream<Reply>(new CryptoOutputStream(stream,
+            return new StatusOutputStream<Reply>(new CryptoOutputStream(ciphertext,
                     vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
                     status.getNonces(), vault.numberOfChunks(status.getOffset()))) {
+                // Digest can only be completed once. Cleared when the stream is closed.
+                private MessageDigest pending = digest;
+
+                @Override
+                public void close() throws IOException {
+                    super.close();
+                    if(pending != null) {
+                        status.setDigest(new Checksum(status.getVerify(), pending.digest()));
+                        pending = null;
+                    }
+                }
+
                 @Override
                 public Reply getStatus() throws BackgroundException {
                     return stream.getStatus();
@@ -93,14 +114,6 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     @Override
     public EnumSet<Flags> features(final Path file) {
         return proxy.features(file);
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(file.isDirectory()) {
-            return proxy.checksum(file, status);
-        }
-        return new CryptoChecksumCompute(proxy.checksum(file, status), vault);
     }
 
     @Override

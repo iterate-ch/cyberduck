@@ -39,13 +39,17 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -198,9 +202,19 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 }
             }
         }
-        if(options.checksum) {
-            // Save checksum and pass to transfer status when copying from file
-            status.setChecksum(file.attributes().getChecksum());
+        final Upload<?> upload = destination.getFeature(Upload.class);
+        final Path target = files.get(file);
+        final ChecksumCompute compute = upload.checksum(target, status);
+        if(file.isDirectory()) {
+            // Checksum of empty content required for placeholder upload to a bucket with Object Lock
+            status.setChecksum(compute.compute(new NullInputStream(0L), status));
+        }
+        else if(options.checksum) {
+            // Pass checksum of source only when the algorithm is supported by the destination
+            final Checksum checksum = file.attributes().getChecksum();
+            if(checksum.algorithm == compute.getAlgorithm()) {
+                status.setChecksum(checksum);
+            }
         }
         return status;
     }

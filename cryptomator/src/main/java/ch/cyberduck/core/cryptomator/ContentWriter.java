@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -47,7 +48,7 @@ public class ContentWriter {
     public PathAttributes write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
         final Write<?> write = session._getFeature(Write.class);
         status.setLength(content.length);
-        status.setChecksum(write.checksum(file, status).compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(session._getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), status));
         final Encryption encryption = session._getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));

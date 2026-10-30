@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -76,7 +75,6 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         // Overwrite with new version
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(12);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
         IOUtils.copy(new ByteArrayInputStream(content), out);

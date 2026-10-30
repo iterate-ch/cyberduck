@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -124,7 +125,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                         }
                         for(FileUploadPartEntity uploadPartEntity : uploadPartEntities) {
                             final TransferStatus status = new TransferStatus().setLength(len);
-                            status.setChecksum(writer.checksum(file, status).compute(new ByteArrayInputStream(b, off, len), status));
+                            status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(b, off, len), status));
                             status.setUrl(uploadPartEntity.getUploadUri());
                             status.setParent(overall);
                             status.setSegment(true);
@@ -213,6 +214,6 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum);
+        return EnumSet.of(Flags.timestamp);
     }
 }

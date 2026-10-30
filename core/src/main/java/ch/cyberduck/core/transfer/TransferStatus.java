@@ -29,6 +29,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.random.NonceGenerator;
@@ -37,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +118,26 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private final CountDownLatch done
             = new CountDownLatch(1);
 
+    /**
+     * Checksum of the content calculated prior to the transfer to send with the upload request, allowing the server
+     * to verify the data received. Checksum#NONE if not calculated.
+     *
+     * @see ch.cyberduck.core.features.Upload.Flags#checksumRequired
+     * @see ch.cyberduck.core.features.Upload.Flags#checksumOptional
+     */
     private Checksum checksum = Checksum.NONE;
+
+    /**
+     * Checksum of the content calculated while transferring. Compared with the checksum in the response of the
+     * server when the transfer is complete. Checksum#NONE if not calculated.
+     */
+    private Checksum digest = Checksum.NONE;
+
+    /**
+     * Algorithm to calculate the checksum of the content while transferring to verify with the checksum in the
+     * response of the server when the transfer is complete. {@link HashAlgorithm#none} if not verifying.
+     */
+    private HashAlgorithm verify = HashAlgorithm.none;
 
     /**
      * MIME type
@@ -222,6 +244,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.canceled.set(copy.canceled.get());
         this.complete.set(copy.complete.get());
         this.checksum = copy.checksum;
+        this.digest = copy.digest;
+        this.verify = copy.verify;
         this.mime = copy.mime;
         this.remote = copy.remote;
         this.response = copy.response;
@@ -426,12 +450,62 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
+    /**
+     * @return Checksum of the content calculated prior to the transfer to send with the upload request or
+     * Checksum#NONE if not calculated
+     */
     public Checksum getChecksum() {
         return checksum;
     }
 
+    /**
+     * @param checksum Checksum of the content calculated prior to the transfer to send with the upload request
+     * @return This status
+     */
     public TransferStatus setChecksum(final Checksum checksum) {
         this.checksum = checksum;
+        return this;
+    }
+
+    /**
+     * @return Checksum of the content calculated while transferring or Checksum#NONE if not calculated
+     */
+    public Checksum getDigest() {
+        return digest;
+    }
+
+    /**
+     * @param digest Checksum of the content calculated while transferring
+     * @return This status
+     */
+    public TransferStatus setDigest(final Checksum digest) {
+        this.digest = digest;
+        return this;
+    }
+
+    /**
+     * @return True to calculate the checksum of the content while transferring and verify with the checksum in the
+     * response of the server when the transfer is complete
+     */
+    public boolean isVerify() {
+        return HashAlgorithm.none != verify;
+    }
+
+    /**
+     * @return Algorithm of the checksum of the content calculated while transferring to verify with the checksum in
+     * the response of the server when the transfer is complete. {@link HashAlgorithm#none} if not verifying.
+     */
+    public HashAlgorithm getVerify() {
+        return verify;
+    }
+
+    /**
+     * @param verify Algorithm of the checksum of the content to calculate while transferring and verify with the
+     *               checksum in the response of the server when the transfer is complete. {@link HashAlgorithm#none} to disable.
+     * @return This status
+     */
+    public TransferStatus setVerify(final HashAlgorithm verify) {
+        this.verify = verify;
         return this;
     }
 
@@ -543,6 +617,46 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     public TransferStatus setUrl(final String url) {
         this.url = url;
         return this;
+    }
+
+    /**
+     * Calculate the checksum of the content of this status read from the local file. Applied to the content sent to
+     * the server, which differs from the local content when it is transformed, such as encrypted, in an upload to a
+     * vault, as defined by the overall status.
+     *
+     * @param local     Local file
+     * @param algorithm Algorithm of the checksum
+     * @return Checksum of the content with offset and length of this status
+     * @see #compute(Local, HashAlgorithm, TransferStatus)
+     */
+    public Checksum compute(final Local local, final HashAlgorithm algorithm) throws BackgroundException {
+        return this.compute(local, algorithm, this);
+    }
+
+    /**
+     * @param local     Local file
+     * @param algorithm Algorithm of the checksum
+     * @param segment   Status with offset and length of the content to calculate the checksum for
+     * @return Checksum of the content sent to the server
+     */
+    public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
+        if(null == parent) {
+            return ChecksumComputeFactory.get(algorithm).compute(local.getInputStream(), segment);
+        }
+        return parent.compute(local, algorithm, segment);
+    }
+
+    /**
+     * @param algorithm Algorithm of the checksum
+     * @return Message digest to calculate the checksum of the content while streaming to the server or null if the
+     * digest is applied by the write feature to transformed content, such as encrypted in an upload to a vault, or
+     * not available for the algorithm
+     */
+    public MessageDigest digest(final HashAlgorithm algorithm) throws BackgroundException {
+        if(null == parent) {
+            return ChecksumComputeFactory.get(algorithm).digest();
+        }
+        return parent.digest(algorithm);
     }
 
     public TransferStatus setParent(TransferStatus parent) {

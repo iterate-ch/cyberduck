@@ -19,15 +19,27 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
 
 public class SHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
+    public MessageDigest digest() throws ChecksumException {
+        return instance("SHA-256");
+    }
+
+    @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        final byte[] digest = this.digest("SHA-256", this.normalize(in, status), status);
+        final byte[] digest = this.digest(this.normalize(in, status), this.digest(), status);
         return new Checksum(HashAlgorithm.sha256, digest);
+    }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.sha256;
     }
 }

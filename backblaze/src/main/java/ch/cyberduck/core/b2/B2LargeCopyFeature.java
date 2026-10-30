@@ -89,12 +89,10 @@ public class B2LargeCopyFeature implements Copy {
                 fileinfo.put(X_BZ_INFO_SRC_CREATION_DATE_MILLIS, String.valueOf(status.getCreated()));
             }
             final Checksum checksum = status.getChecksum();
-            if(Checksum.NONE != checksum) {
-                switch(checksum.algorithm) {
-                    case sha1:
-                        fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, status.getChecksum().hash);
-                        break;
-                }
+            switch(checksum.algorithm) {
+                case sha1:
+                    fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, checksum.hash);
+                    break;
             }
             final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(target)),
                     containerService.getKey(target), status.getMime(), fileinfo);

@@ -38,7 +38,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
@@ -223,6 +222,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         if(options.checksum) {
             status.setChecksum(attributes.getChecksum());
+            if(file.getType().contains(Path.Type.decrypted)) {
+                log.warn("Skip checksum verification for {} with client side encryption enabled", file);
+            }
+            else {
+                // Calculate checksum while transferring when supported. Algorithm none otherwise.
+                status.setVerify(ChecksumComputeFactory.get(attributes.getChecksum().algorithm).getAlgorithm());
+            }
         }
         return status;
     }
@@ -318,35 +324,44 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     log.warn(e.getMessage());
                 }
             }
-            if(status.getModified() != null) {
-                log.info("Updating timestamp of {} to {}", local, status.getModified());
-                try {
-                    local.attributes().setModificationDate(status.getModified());
-                }
-                catch(AccessDeniedException e) {
-                    // Ignore
-                    log.warn(e.getMessage());
+            // Directory timestamp is reapplied after transfer completion as adding files modifies the directory
+            if(file.isFile()) {
+                if(status.getModified() != null) {
+                    log.info("Updating timestamp of {} to {}", local, status.getModified());
+                    try {
+                        local.attributes().setModificationDate(status.getModified());
+                    }
+                    catch(AccessDeniedException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
             if(file.isFile()) {
-                if(options.checksum) {
-                    if(file.getType().contains(Path.Type.decrypted)) {
-                        log.warn("Skip checksum verification for {} with client side encryption enabled", file);
+                if(status.isVerify()) {
+                    final Checksum download;
+                    if(status.isSegmented()) {
+                        // Segments are downloaded concurrently. Calculate checksum of the file reassembled from the segments.
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                                file.getName()));
+                        download = ChecksumComputeFactory.get(status.getVerify()).compute(local.getInputStream(), new TransferStatus());
                     }
                     else {
-                        final Checksum checksum = status.getChecksum();
-                        if(Checksum.NONE != checksum) {
-                            final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
-                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                                    file.getName()));
-                            final Checksum download = compute.compute(local.getInputStream(), new TransferStatus());
-                            if(!checksum.equals(download)) {
-                                throw new ChecksumException(
-                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
-                                                download.algorithm.toString(), download.hash, checksum.hash));
-                            }
-                        }
+                        // Calculated while transferring
+                        download = status.getDigest();
+                    }
+                    final Checksum checksum = status.getChecksum();
+                    if(Checksum.NONE.equals(download)) {
+                        log.warn("Checksum not calculated for {}", file);
+                    }
+                    else if(!checksum.equals(download)) {
+                        throw new ChecksumException(
+                                MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of transferred data and checksum {2} returned by the server", "Error"),
+                                        download.algorithm.toString(), download.hash, checksum.hash));
+                    }
+                    else {
+                        log.debug("Verified checksum {} for {}", download, file);
                     }
                 }
             }

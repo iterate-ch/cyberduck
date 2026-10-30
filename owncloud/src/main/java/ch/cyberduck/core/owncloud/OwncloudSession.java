@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
@@ -52,6 +53,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 
@@ -166,7 +168,7 @@ public class OwncloudSession extends DAVSession {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
                 return (T) new OcisUploadFeature(this, tus);
             }
-            return (T) new HttpUploadFeature<>();
+            return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
         if(type == Write.class) {
             return (T) new OwncloudWriteFeature<>(this);

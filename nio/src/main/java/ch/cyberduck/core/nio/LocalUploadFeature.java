@@ -25,7 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class LocalUploadFeature extends DefaultUploadFeature<Void> {
 
     public LocalUploadFeature(final Session<?> session) {
-        super(session);
     }
 
     @Override

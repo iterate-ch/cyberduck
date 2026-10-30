@@ -92,11 +92,6 @@ public class OwncloudWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return this.delegate(status).checksum(file, status);
-    }
-
-    @Override
     public void preflight(final Path file) throws BackgroundException {
         if(containerService.isVirtual(file.getParent())) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
