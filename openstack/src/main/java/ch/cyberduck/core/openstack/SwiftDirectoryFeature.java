@@ -24,8 +24,6 @@ import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
@@ -70,12 +68,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
             }
         }
         catch(GenericException e) {
-            try {
-                throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, folder);
-            }
-            catch(InteroperabilityException m) {
-                throw new ConflictException(m.getDetail(false), m);
-            }
+            throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);

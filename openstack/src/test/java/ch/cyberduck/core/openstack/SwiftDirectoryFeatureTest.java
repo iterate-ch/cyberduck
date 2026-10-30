@@ -45,7 +45,7 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path container = feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus().setRegion("ORD"));
         assertTrue(new SwiftFindFeature(session, region).find(container));
-        // Can create again regardless if exists
+        // 202 Accepted for existing container is mapped to conflict
         assertThrows(ConflictException.class, () -> feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus()));
         new SwiftDeleteFeature(session, region).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session, region).find(container));

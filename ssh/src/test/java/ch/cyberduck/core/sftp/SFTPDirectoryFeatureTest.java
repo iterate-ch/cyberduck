@@ -19,7 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -39,7 +39,8 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(test));
-        assertThrows(ConflictException.class, () -> new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus()));
+        // OpenSSH replies with generic failure status in SFTP version 3 for existing directory
+        assertThrows(InteroperabilityException.class, () -> new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus()));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
