@@ -12,9 +12,12 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -284,6 +288,97 @@ public class DeleteWorkerTest {
         }
         catch(AccessDeniedException e) {
             // Expected
+        }
+        assertFalse(cache.isCached(folder));
+        assertFalse(cache.isCached(subfolder));
+        assertTrue(cache.isCached(root));
+    }
+
+    @Test
+    public void testEvictCachedListingOfFoldersSavedByVersioning() throws Exception {
+        final Path root = new Path("/", EnumSet.of(Path.Type.directory));
+        final Path folder = new Path("/t", EnumSet.of(Path.Type.directory));
+        final Path subfolder = new Path("/t/d", EnumSet.of(Path.Type.directory));
+        final PathCache cache = new PathCache(10);
+        cache.put(root, new AttributedList<>(Collections.singletonList(folder)));
+        cache.put(folder, new AttributedList<>(Collections.singletonList(subfolder)));
+        cache.put(subfolder, new AttributedList<>(Collections.singletonList(new Path("/t/d/b", EnumSet.of(Path.Type.file)))));
+        final ArrayList<Path> saved = new ArrayList<>();
+        final ArrayList<Path> deleted = new ArrayList<>();
+        final Session session = new NullSession(new Host(new TestProtocol() {
+            @Override
+            public VersioningMode getVersioningMode() {
+                return VersioningMode.custom;
+            }
+        })) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
+                            deleted.addAll(files.keySet());
+                        }
+
+                        @Override
+                        public EnumSet<Flags> features(final Path file) {
+                            return EnumSet.of(Flags.recursive);
+                        }
+                    };
+                }
+                if(type == Versioning.class) {
+                    return (T) new Versioning() {
+                        @Override
+                        public VersioningConfiguration getConfiguration(final Path container) {
+                            return new VersioningConfiguration(true);
+                        }
+
+                        @Override
+                        public void setConfiguration(final Path container, final PasswordCallback prompt, final VersioningConfiguration configuration) {
+                            //
+                        }
+
+                        @Override
+                        public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                            return AttributedList.emptyList();
+                        }
+
+                        @Override
+                        public boolean save(final Path file) {
+                            // Moved to version directory
+                            saved.add(file);
+                            return true;
+                        }
+
+                        @Override
+                        public void revert(final Path file) {
+                            //
+                        }
+
+                        @Override
+                        public boolean isRevertable(final Path file) {
+                            return false;
+                        }
+
+                        @Override
+                        public EnumSet<Flags> features(final Path file) {
+                            return EnumSet.noneOf(Flags.class);
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        PreferencesFactory.get().setProperty("versioning.enable", true);
+        try {
+            final List<Path> result = new DeleteWorker(LoginCallback.noop, Collections.singletonList(folder), ProgressListener.noop, cache, false).run(session);
+            assertTrue(result.isEmpty());
+            assertEquals(Collections.singletonList(folder), saved);
+            assertTrue(deleted.isEmpty());
+        }
+        finally {
+            PreferencesFactory.get().setProperty("versioning.enable", false);
         }
         assertFalse(cache.isCached(folder));
         assertFalse(cache.isCached(subfolder));

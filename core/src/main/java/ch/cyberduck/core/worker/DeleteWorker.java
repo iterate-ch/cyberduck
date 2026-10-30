@@ -149,6 +149,8 @@ public class DeleteWorker extends Worker<List<Path>> {
                 }
             }
         }
+        // Folders to evict from cache. Includes folders moved to version directory instead of deleted
+        final List<Path> folders = new ArrayList<>(recursive.keySet());
         final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.delete.enable")) {
             switch(session.getHost().getProtocol().getVersioningMode()) {
@@ -167,8 +169,8 @@ public class DeleteWorker extends Worker<List<Path>> {
                     }
             }
         }
-        if(!recursive.isEmpty()) {
-            try {
+        try {
+            if(!recursive.isEmpty()) {
                 delete.delete(recursive, prompt, new Delete.Callback() {
                     @Override
                     public void delete(final Path file) {
@@ -182,11 +184,11 @@ public class DeleteWorker extends Worker<List<Path>> {
                     }
                 });
             }
-            finally {
-                // Drop cached listings of deleted folders to not list previous contents when recreated with the same name.
-                // Evict regardless of failure as some folders may already have been deleted before the error
-                recursive.keySet().forEach(this::evict);
-            }
+        }
+        finally {
+            // Drop cached listings of deleted folders to not list previous contents when recreated with the same name.
+            // Evict regardless of failure as some folders may already have been deleted before the error
+            folders.forEach(this::evict);
         }
         return new ArrayList<>(recursive.keySet());
     }
