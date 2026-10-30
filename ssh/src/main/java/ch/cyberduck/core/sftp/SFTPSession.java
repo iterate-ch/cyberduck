@@ -555,10 +555,13 @@ public class SFTPSession extends Session<SSHClient> {
             if(serverExtensions.containsKey(name)) {
                 return true;
             }
-            // The extension names are embedded as strings in the binary payload of supported and supported2
+            // The extension names are embedded as length-prefixed strings in the binary payload of supported and
+            // supported2 (draft-ietf-secsh-filexfer-13 §5.4). Names are ASCII and survive the UTF-8 decoding in sshj
+            // unchanged, so match the uint32 length prefix along with the name to avoid partial matches
+            final String encoded = "\0\0\0" + (char) name.length() + name;
             for(final String list : new String[]{"supported", "supported2"}) {
                 final String data = serverExtensions.get(list);
-                if(null != data && data.contains(name)) {
+                if(null != data && data.contains(encoded)) {
                     return true;
                 }
             }
