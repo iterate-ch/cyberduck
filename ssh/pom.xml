@@ -23,7 +23,7 @@
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <jsch-agentproxy-version>0.0.11</jsch-agentproxy-version>
+        <jsch-agentproxy-version>0.0.12</jsch-agentproxy-version>
     </properties>
     <dependencies>
         <dependency>
