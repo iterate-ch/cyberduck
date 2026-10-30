@@ -25,7 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.EnumSet;
 import java.util.Optional;
 
 import static ch.cyberduck.core.features.Copy.validate;
@@ -56,10 +55,5 @@ public class LocalCopyFeature implements Copy {
         if(target.isPresent()) {
             validate(session.getCaseSensitivity(), source, target.get());
         }
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path source, final Path target) {
-        return EnumSet.of(Flags.recursive);
     }
 }
