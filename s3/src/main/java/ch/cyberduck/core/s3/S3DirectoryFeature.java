@@ -30,7 +30,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,8 +95,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             return new S3TouchFeature(session).touch(writer, folder
                     .withType(type), status
                     // Add placeholder object
-                    .setMime(MIMETYPE)
-                    .setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
+                    .setMime(MIMETYPE));
         }
     }
 

@@ -35,7 +35,6 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -149,7 +148,6 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             final byte[] content = RandomUtils.nextBytes(1024);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             file.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
@@ -165,7 +163,6 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             final byte[] content = RandomUtils.nextBytes(256);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             file.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));

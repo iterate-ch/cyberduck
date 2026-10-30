@@ -61,7 +61,6 @@ import ch.cyberduck.test.VaultTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.jets3t.service.model.StorageObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -79,7 +78,6 @@ import static org.junit.Assert.assertTrue;
 @Category(IntegrationTest.class)
 public class SpectraSingleTransferWorkerTest extends VaultTest {
 
-    @Ignore
     @Test(expected = ConflictException.class)
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());

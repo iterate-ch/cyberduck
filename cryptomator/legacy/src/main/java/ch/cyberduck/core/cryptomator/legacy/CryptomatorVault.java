@@ -43,6 +43,7 @@ import ch.cyberduck.core.cryptomator.legacy.features.CryptoMoveV7Feature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoMultipartWriteFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.legacy.features.CryptoUploadFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV7Provider;
@@ -52,6 +53,7 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,6 +63,7 @@ import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
@@ -186,7 +189,10 @@ public class CryptomatorVault implements Vault {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        directory.mkdir(session._getFeature(Write.class), home, status);
+        // Checksum of empty content required for upload to a bucket with Object Lock
+        final Write writer = session._getFeature(Write.class);
+        status.setChecksum(session._getFeature(Upload.class).checksum(home, status).compute(new NullInputStream(0L), status));
+        directory.mkdir(writer, home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
         if(VAULT_VERSION == version) {
             // Create vaultconfig.cryptomator
@@ -209,9 +215,9 @@ public class CryptomatorVault implements Vault {
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         log.debug("Create vault root directory at {}", secondLevel);
-        directory.mkdir(session._getFeature(Write.class), dataDir, status);
-        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
-        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+        directory.mkdir(writer, dataDir, status);
+        directory.mkdir(writer, firstLevel, status);
+        directory.mkdir(writer, secondLevel, status);
     }
 
     @Override

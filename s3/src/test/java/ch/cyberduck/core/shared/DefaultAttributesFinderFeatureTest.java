@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesAdapter;
@@ -80,7 +79,6 @@ public class DefaultAttributesFinderFeatureTest extends AbstractS3Test {
         // Overwrite with new version
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(12);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(file, status, ConnectionCallback.noop);
         IOUtils.copy(new ByteArrayInputStream(content), out);

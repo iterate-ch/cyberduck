@@ -16,6 +16,8 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
@@ -37,5 +39,32 @@ public class S3AttributesAdapterTest {
         final StorageObject object = new StorageObject();
         object.addMetadata("Mtime", "Invalid");
         assertEquals(-1, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
+    }
+
+    @Test
+    public void testChecksumPlaintext() {
+        final StorageObject object = new StorageObject();
+        object.setETag("\"a43c1b0aa53a0c908810c06ab1ff3967\"");
+        assertEquals(new Checksum(HashAlgorithm.md5, "a43c1b0aa53a0c908810c06ab1ff3967"),
+                new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getChecksum());
+    }
+
+    @Test
+    public void testChecksumSSES3() {
+        // ETag is the MD5 of the object data with SSE-S3
+        final StorageObject object = new StorageObject();
+        object.setETag("\"a43c1b0aa53a0c908810c06ab1ff3967\"");
+        object.setServerSideEncryptionAlgorithm("AES256");
+        assertEquals(new Checksum(HashAlgorithm.md5, "a43c1b0aa53a0c908810c06ab1ff3967"),
+                new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getChecksum());
+    }
+
+    @Test
+    public void testChecksumSSEKMS() {
+        // ETag is not the MD5 of the object data with SSE-KMS
+        final StorageObject object = new StorageObject();
+        object.setETag("\"a43c1b0aa53a0c908810c06ab1ff3967\"");
+        object.setServerSideEncryptionAlgorithm("aws:kms");
+        assertEquals(Checksum.NONE, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getChecksum());
     }
 }

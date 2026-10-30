@@ -26,6 +26,8 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
@@ -83,11 +85,9 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
                         }
                     }
                     final Checksum checksum = status.getChecksum();
-                    if(Checksum.NONE != checksum) {
-                        switch(checksum.algorithm) {
-                            case sha1:
-                                request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
-                        }
+                    switch(checksum.algorithm) {
+                        case sha1:
+                            request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
                     }
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
                     multipart.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -138,6 +138,6 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum, Flags.mime);
+        return EnumSet.of(Flags.mime);
     }
 }

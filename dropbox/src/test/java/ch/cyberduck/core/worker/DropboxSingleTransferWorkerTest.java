@@ -31,7 +31,6 @@ import ch.cyberduck.core.dropbox.DropboxWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -69,7 +68,7 @@ public class DropboxSingleTransferWorkerTest extends AbstractDropboxTest {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(3986);
         final Checksum checksum = new DropboxChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
-        final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+        final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
         final HttpResponseOutputStream<Metadata> out = new DropboxWriteFeature(session).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);

@@ -23,9 +23,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.DirectoryMetadata;
@@ -46,6 +48,14 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         this.vault = vault;
     }
 
+    /**
+     * @return Status to create folder with checksum of empty content required for upload to a bucket with Object Lock
+     */
+    private TransferStatus status(final Path folder, final String region) throws BackgroundException {
+        final TransferStatus status = new TransferStatus().setRegion(region);
+        return status.setChecksum(session._getFeature(Upload.class).checksum(folder, status).compute(new NullInputStream(0L), status));
+    }
+
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         DirectoryMetadata dirMetadata;
@@ -57,9 +67,10 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             dirMetadata = vault.getDirectoryProvider().createDirectoryId(folder);
         }
         // Create metadata file for directory
+        final Write write = session._getFeature(Write.class);
+        final Path metadataFolder = vault.encrypt(session, folder, true);
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
-                session._getFeature(Write.class), vault.encrypt(session, folder, true),
-                new TransferStatus().setRegion(status.getRegion()));
+                write, metadataFolder, this.status(metadataFolder, status.getRegion()));
         final Path directoryMetadataFile = new Path(directoryMetadataFolder,
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
@@ -69,7 +80,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
+            session._getFeature(Directory.class).mkdir(write, intermediate, this.status(intermediate, status.getRegion()));
         }
         final Path target = delegate.mkdir(writer, encrypt, status);
         final Path recoveryDirectoryMetadataFile = new Path(target,

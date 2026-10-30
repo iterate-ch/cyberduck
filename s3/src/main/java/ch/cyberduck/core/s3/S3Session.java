@@ -99,6 +99,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
+    private final S3ThresholdUploadService upload = new S3ThresholdUploadService(this, acl);
 
     private final Versioning versioning = preferences.getBoolean("s3.versioning.enable")
             ? new S3VersioningFeature(this, acl) : null;
@@ -427,7 +428,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3WriteFeature(this, acl);
         }
         if(type == Upload.class) {
-            return (T) new S3ThresholdUploadService(this, acl);
+            return (T) upload;
         }
         if(type == Directory.class) {
             return (T) new S3DirectoryFeature(this);

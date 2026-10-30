@@ -136,7 +136,7 @@ public class IRODSReadFeatureTest extends IRODSDockerComposeManager {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<List<String>>(session).upload(
+        new DefaultUploadFeature<List<String>>().upload(
                 new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);

@@ -15,6 +15,7 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesAdapter;
 
@@ -22,6 +23,10 @@ public class EueAttributesAdapter implements AttributesAdapter<EueWriteFeature.C
 
     @Override
     public PathAttributes toAttributes(final EueWriteFeature.Chunk model) {
-        return PathAttributes.EMPTY;
+        final PathAttributes attr = new DefaultPathAttributes();
+        attr.setSize(model.getLength());
+        attr.setFileId(model.getResourceId());
+        attr.setChecksum(model.getChecksum());
+        return attr;
     }
 }

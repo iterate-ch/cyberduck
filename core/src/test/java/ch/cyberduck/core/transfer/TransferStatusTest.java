@@ -18,7 +18,18 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
+
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import static org.junit.Assert.*;
 
@@ -50,5 +61,46 @@ public class TransferStatusTest {
     public void testEquals() {
         assertEquals(new TransferStatus(), new TransferStatus());
         assertEquals(new TransferStatus().hashCode(), new TransferStatus().hashCode());
+    }
+
+    private static Local local(final String content) {
+        return new Local("/f") {
+            @Override
+            public InputStream getInputStream() {
+                return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+            }
+        };
+    }
+
+    @Test
+    public void testCompute() throws Exception {
+        final Local local = local("0123456789");
+        final Checksum expected = new MD5ChecksumCompute().compute(new ByteArrayInputStream("2345".getBytes(StandardCharsets.UTF_8)), new TransferStatus());
+        final TransferStatus segment = new TransferStatus().setOffset(2L).setLength(4L).setParent(new TransferStatus());
+        // Content with offset and length of the segment
+        assertEquals(expected, segment.compute(local, HashAlgorithm.md5));
+        assertNotNull(segment.digest(HashAlgorithm.md5));
+    }
+
+    @Test
+    public void testComputeTransformedByOverallStatus() throws Exception {
+        final Local local = local("0123456789");
+        final Checksum transformed = new Checksum(HashAlgorithm.md5, "00");
+        final TransferStatus overall = new TransferStatus() {
+            @Override
+            public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) {
+                return transformed;
+            }
+
+            @Override
+            public MessageDigest digest(final HashAlgorithm algorithm) {
+                return null;
+            }
+        };
+        final TransferStatus segment = new TransferStatus().setParent(overall);
+        assertSame(transformed, segment.compute(local, HashAlgorithm.md5));
+        assertNull(segment.digest(HashAlgorithm.md5));
+        // Parent of overall status
+        assertSame(transformed, new TransferStatus().setParent(new TransferStatus().setParent(overall)).compute(local, HashAlgorithm.md5));
     }
 }

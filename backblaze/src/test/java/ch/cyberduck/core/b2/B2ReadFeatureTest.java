@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -130,7 +129,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final BaseB2Response reply = new B2SingleUploadService(session).upload(
+        final BaseB2Response reply = new B2SingleUploadService().upload(
                 new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
@@ -162,7 +161,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session).upload(
+        new B2SingleUploadService().upload(
                 new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 ConnectionCallback.noop);
@@ -189,7 +188,6 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final int length = 2048;
         final byte[] content = RandomUtils.nextBytes(length);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new B2WriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new B2ReadFeature(session, fileid).read(file, status, ConnectionCallback.noop));

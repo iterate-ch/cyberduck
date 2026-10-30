@@ -28,13 +28,24 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Set;
+import java.security.MessageDigest;
 
 public interface ChecksumCompute {
 
-    default Set<Checksum> computeAll(InputStream in, TransferStatus status) throws BackgroundException {
-        return Collections.singleton(this.compute(in, status));
+    /**
+     * @return Message digest for the algorithm to calculate the checksum while streaming the content or null if not
+     * available
+     * @throws ChecksumException Algorithm not available
+     */
+    MessageDigest digest() throws ChecksumException;
+
+    /**
+     * @return True if the content is transformed, such as encrypted, by the write feature before it is sent to the
+     * server. The digest must then not be applied to the local content but to the content sent to the server by the
+     * write feature.
+     */
+    default boolean isTransformed() {
+        return false;
     }
 
     /**
@@ -63,4 +74,6 @@ public interface ChecksumCompute {
             throw new ChecksumException(e);
         }
     }
+
+    HashAlgorithm getAlgorithm();
 }

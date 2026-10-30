@@ -81,7 +81,6 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
-        status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);

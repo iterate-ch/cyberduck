@@ -29,10 +29,12 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,6 +76,8 @@ public class CreateDirectoryWorker extends Worker<Path> {
             }
         }
         status.setRegion(region);
+        // Checksum of empty content required for placeholder upload to a bucket with Object Lock
+        status.setChecksum(session.getFeature(Upload.class).checksum(folder, status).compute(new NullInputStream(0L), status));
         final Path result = feature.mkdir(session.getFeature(Write.class), folder, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
             return new Path(folder).withAttributes(session.getFeature(AttributesFinder.class).find(result));

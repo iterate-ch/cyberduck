@@ -79,11 +79,6 @@ public class AzureWriteFeature implements Write<Void> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
-
-    @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
@@ -106,17 +101,15 @@ public class AzureWriteFeature implements Write<Void> {
             metadata.remove(HttpHeaders.CACHE_CONTROL);
             metadata.remove(HttpHeaders.CONTENT_TYPE);
             final Checksum checksum = status.getChecksum();
-            if(Checksum.NONE != checksum) {
-                switch(checksum.algorithm) {
-                    case md5:
-                        try {
-                            headers.setContentMd5(Hex.decodeHex(status.getChecksum().hash.toCharArray()));
-                        }
-                        catch(DecoderException e) {
-                            // Ignore
-                        }
-                        break;
-                }
+            switch(checksum.algorithm) {
+                case md5:
+                    try {
+                        headers.setContentMd5(Hex.decodeHex(checksum.hash.toCharArray()));
+                    }
+                    catch(DecoderException e) {
+                        // Ignore
+                    }
+                    break;
             }
             final OutputStream out;
             if(status.isExists()) {

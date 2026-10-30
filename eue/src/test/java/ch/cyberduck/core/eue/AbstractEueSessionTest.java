@@ -22,7 +22,10 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseModel;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -41,6 +44,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 public class AbstractEueSessionTest extends VaultTest {
@@ -99,7 +103,7 @@ public class AbstractEueSessionTest extends VaultTest {
     protected Path createFile(final EueResourceIdProvider fileid, Path file, final byte[] content) throws Exception {
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
-                .setChecksum(feature.checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
+                .setChecksum(session.getFeature(Upload.class).checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
                 .setLength(content.length);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
@@ -110,6 +114,20 @@ public class AbstractEueSessionTest extends VaultTest {
         in.close();
         out.close();
         return file;
+    }
+
+    /**
+     * Attributes returned with the upload response match the attributes found for the uploaded file
+     */
+    protected void assertResponseMatchesFinder(final EueResourceIdProvider fileid, final Path file, final TransferStatus status) throws BackgroundException {
+        final PathAttributes found = new EueAttributesFinderFeature(session, fileid).find(file);
+        final PathAttributes response = status.getResponse();
+        assertNotEquals(PathAttributes.EMPTY, response);
+        assertNotEquals(Checksum.NONE, found.getChecksum());
+        assertEquals(HashAlgorithm.cdash64, found.getChecksum().algorithm);
+        assertEquals(found.getChecksum(), response.getChecksum());
+        assertEquals(found.getSize(), response.getSize());
+        assertEquals(found.getFileId(), response.getFileId());
     }
 
     protected ShareCreationResponseEntry createShare(final EueResourceIdProvider fileid, final Path file) throws BackgroundException, ApiException {
