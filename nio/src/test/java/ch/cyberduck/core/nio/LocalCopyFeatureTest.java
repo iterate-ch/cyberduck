@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
@@ -42,6 +43,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 public class LocalCopyFeatureTest {
 
@@ -82,6 +84,31 @@ public class LocalCopyFeatureTest {
         assertTrue(new LocalFindFeature(session).find(copy));
         assertTrue(new LocalFindFeature(session).find(directory));
         assertTrue(new LocalFindFeature(session).find(file));
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, copy, directory, target), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyDirectoryPermission() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
+        assumeTrue(session.isPosixFilesystem());
+        final Path workdir = new LocalHomeFinderFeature().find();
+        final Path directory = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), directory, new TransferStatus());
+        new LocalUnixPermissionFeature(session).setUnixPermission(directory, new StaticPermission(700));
+        final Path file = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
+        final Path source = directory.withAttributes(new LocalAttributesFinderFeature(session).find(directory));
+        assertEquals("700", source.attributes().getPermission().getMode());
+        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target),
+                new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, ConnectionCallback.noop);
+        worker.run(session);
+        // Permissions of source directory must be retained when copied by worker
+        assertEquals("700", new LocalAttributesFinderFeature(session).find(target).getPermission().getMode());
+        final Path copy = new Path(target, file.getName(), EnumSet.of(Path.Type.file));
+        assertTrue(new LocalFindFeature(session).find(copy));
         new LocalDeleteFeature(session).delete(Arrays.asList(file, copy, directory, target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
