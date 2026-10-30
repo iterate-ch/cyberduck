@@ -97,7 +97,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file))));
         assertTrue(new S3FindFeature(session, acl).find(targetDirectory));
         // No placeholder object created at target
-        assertFalse(session.getClient().isObjectInBucket(home.getName(), new S3PathContainerService(session.getHost()).getKey(targetDirectory) + "/"));
+        assertFalse(session.getClient().isObjectInBucket(home.getName(), new S3PathContainerService(session.getHost()).getKey(targetDirectory)));
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(targetDirectory), ProgressListener.noop).run(session);
     }
 
