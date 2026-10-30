@@ -1,0 +1,8 @@
+Host variable.example.com
+	SecurityKeyProvider $SSH_SK_PROVIDER_TEST
+
+Host missing.example.com
+	SecurityKeyProvider $SSH_SK_PROVIDER_NOT_SET_12345
+
+Host path.example.com
+	SecurityKeyProvider /opt/homebrew/lib/libsk-libfido2.dylib
