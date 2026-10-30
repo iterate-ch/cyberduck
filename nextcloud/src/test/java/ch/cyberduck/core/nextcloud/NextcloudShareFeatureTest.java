@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -106,7 +107,8 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             fail();
         }
         catch(InteroperabilityException e) {
-            assertEquals("Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
+            // Other policies may report violations in addition such as common or compromised password
+            assertTrue(e.getDetail(), StringUtils.contains(e.getDetail(), "Password needs to be at least 10 characters long."));
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
@@ -177,7 +179,8 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             fail();
         }
         catch(InteroperabilityException e) {
-            assertEquals("Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
+            // Other policies may report violations in addition such as common or compromised password
+            assertTrue(e.getDetail(), StringUtils.contains(e.getDetail(), "Password needs to be at least 10 characters long."));
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
