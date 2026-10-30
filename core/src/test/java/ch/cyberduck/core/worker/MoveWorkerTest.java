@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -154,5 +155,90 @@ public class MoveWorkerTest {
         assertTrue(targets.contains(new Path("/t2/a", EnumSet.of(Path.Type.file))));
         assertTrue(targets.contains(new Path("/t2/d", EnumSet.of(Path.Type.directory))));
         assertTrue(targets.contains(new Path("/t2/d/b", EnumSet.of(Path.Type.file))));
+    }
+
+    @Test
+    public void testMoveDirectoryPlaceholderWithoutObject() throws Exception {
+        final Path source = new Path("/t", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path target = new Path("/t2", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final AtomicInteger mkdir = new AtomicInteger();
+        final Session session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
+                            // Source directories deleted after moving descendants
+                        }
+                    };
+                }
+                if(type == Directory.class) {
+                    return (T) new Directory<Void>() {
+                        @Override
+                        public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) {
+                            // Only expected for directory with placeholder object
+                            assertEquals(new Path("/t2/d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), folder);
+                            mkdir.incrementAndGet();
+                            return folder;
+                        }
+                    };
+                }
+                if(type == AttributesFinder.class) {
+                    return (T) new AttributesFinder() {
+                        @Override
+                        public PathAttributes find(final Path file, final ListProgressListener listener) {
+                            if(file.equals(source)) {
+                                // Directory exists only as common prefix
+                                return PathAttributes.EMPTY;
+                            }
+                            return new DefaultPathAttributes().setSize(0L);
+                        }
+                    };
+                }
+                if(type == Move.class) {
+                    return (T) new Move() {
+                        @Override
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
+                            assertTrue(file.isFile());
+                            return renamed.withAttributes(new DefaultPathAttributes().setSize(1L));
+                        }
+
+                        @Override
+                        public boolean isRecursive(final Path source, final Path target) {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(source)) {
+                    return new AttributedList<>(Arrays.asList(
+                            new Path("/t/a", EnumSet.of(Path.Type.file)),
+                            new Path("/t/d", EnumSet.of(Path.Type.directory, Path.Type.placeholder))
+                    ));
+                }
+                if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)))) {
+                    return new AttributedList<>(Collections.singletonList(
+                            new Path("/t/d/b", EnumSet.of(Path.Type.file))
+                    ));
+                }
+                return AttributedList.emptyList();
+            }
+        };
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target),
+                new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
+        final Map<Path, Path> result = worker.run(session);
+        assertEquals(4, result.size());
+        // No directory created for placeholder existing only implicitly as common prefix
+        assertEquals(1, mkdir.get());
+        assertEquals(target, result.get(source));
+        assertTrue(result.containsValue(new Path("/t2/a", EnumSet.of(Path.Type.file))));
+        assertTrue(result.containsValue(new Path("/t2/d", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        assertTrue(result.containsValue(new Path("/t2/d/b", EnumSet.of(Path.Type.file))));
     }
 }
