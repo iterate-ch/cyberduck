@@ -15,18 +15,15 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
 public class FTPWorkdirServiceTest extends AbstractFTPTest {
 
     @Test
     public void testDefaultPath() throws Exception {
-        assertEquals("/", new FTPWorkdirService(session).find().getAbsolute());
+        assertEquals(HOME, new FTPWorkdirService(session).find().getAbsolute());
     }
 }

@@ -41,6 +41,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.ocs.OcsCapabilitiesRequest;
 import ch.cyberduck.core.ocs.OcsCapabilitiesResponseHandler;
@@ -59,6 +60,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 public class NextcloudSession extends DAVSession {
     private static final Logger log = LogManager.getLogger(NextcloudSession.class);
@@ -130,7 +132,7 @@ public class NextcloudSession extends DAVSession {
             return (T) new DAVLockFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new HttpUploadFeature<>();
+            return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);

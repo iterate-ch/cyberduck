@@ -28,6 +28,8 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Windows.Storage;
+using CoreLocal = ch.cyberduck.core.Local;
+using CoreLocalFactory = ch.cyberduck.core.LocalFactory;
 using JavaSystem = java.lang.System;
 
 namespace Ch.Cyberduck.Core.Preferences;
@@ -139,6 +141,16 @@ public class ApplicationPreferences<T> : DefaultPreferences
         {
             Configurator.setRootLevel(Level.DEBUG);
         }
+    }
+
+    /// <summary>
+    /// Invoked with the defaults of the user after all other defaults. Apply machine-wide defaults first
+    /// to allow overrides by the user.
+    /// </summary>
+    protected override void setDefaults(CoreLocal defaults)
+    {
+        base.setDefaults(CoreLocalFactory.get(CommonSupportDirectoryFinder.Local, "default.properties"));
+        base.setDefaults(defaults);
     }
 
     protected override void setDefaults()

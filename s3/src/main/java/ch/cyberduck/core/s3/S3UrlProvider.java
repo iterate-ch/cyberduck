@@ -144,7 +144,7 @@ public class S3UrlProvider implements UrlProvider {
             }
         }
         else {
-            final String hostname = this.getHostnameForContainer(containerService.getContainer(file));
+            final String hostname = this.getHostnameForBucket(containerService.getContainer(file));
             if(hostname.startsWith(containerService.getContainer(file).getName())) {
                 url.append(hostname);
                 if(port != scheme.getPort()) {
@@ -181,9 +181,32 @@ public class S3UrlProvider implements UrlProvider {
         return new PresignedUrl(file, expiry);
     }
 
-    private String getHostnameForContainer(final Path bucket) {
-        if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
+    /**
+     * Lookup region from cache only to avoid blocking requests when building URLs
+     *
+     * @return Null when unknown
+     */
+    private String getRegionForBucket(final Path bucket) {
+        if(session.isConnected()) {
+            final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
+            final String region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketname);
+            if(StringUtils.isNotBlank(region)) {
+                return region;
+            }
+        }
+        return session.getHost().getRegion();
+    }
+
+    private String getHostnameForBucket(final Path bucket) {
+        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
             return session.getHost().getHostname();
+        }
+        // Not applicable to AWS China partition
+        if(S3Session.isAwsStandardHostname(session.getHost().getHostname())) {
+            final String region = this.getRegionForBucket(bucket);
+            if(StringUtils.isNotBlank(region)) {
+                return String.format("%s.%s", bucket.getName(), RequestEntityRestStorageService.createRegionSpecificEndpoint(session.getHost(), region));
+            }
         }
         if(StringUtils.equals(session.getHost().getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
             return String.format("%s.%s", bucket.getName(), session.getHost().getHostname());
@@ -211,14 +234,9 @@ public class S3UrlProvider implements UrlProvider {
                 log.error("Failure retrieving secret required to sign temporary URL", e);
                 return DescriptiveUrl.EMPTY.getUrl();
             }
-            String region = session.getHost().getRegion();
             final Path bucket = containerService.getContainer(file);
             final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
-            if(session.isConnected()) {
-                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucketname)) {
-                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketname);
-                }
-            }
+            String region = getRegionForBucket(bucket);
             if(StringUtils.isBlank(region)) {
                 // Only for AWS
                 switch(session.getSignatureVersion()) {

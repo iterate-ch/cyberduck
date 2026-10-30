@@ -1,28 +1,16 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
 
     @Test
@@ -38,32 +26,5 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));
-    }
-
-    @Test
-    public void testWriteDownloadConfigurationRackspace() throws Exception {
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), container, new TransferStatus().setRegion("ORD"));
-        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), LoginCallback.noop);
-        assertTrue(configuration.read(container, Distribution.DOWNLOAD, LoginCallback.noop).isEnabled());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testWriteWebsiteConfigurationRackspace() throws Exception {
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), container, new TransferStatus().setRegion("ORD"));
-        final Distribution config = new Distribution(Distribution.WEBSITE, true);
-        config.setIndexDocument("index.html");
-        configuration.write(container, config, LoginCallback.noop);
-        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, LoginCallback.noop);
-        assertTrue(distribution.isEnabled());
-        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
-        assertFalse(metadata.isEmpty());
-        assertTrue(metadata.containsKey("X-Container-Meta-Web-Index"));
-        assertEquals("index.html", metadata.get("X-Container-Meta-Web-Index"));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

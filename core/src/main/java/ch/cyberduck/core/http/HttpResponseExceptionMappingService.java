@@ -32,10 +32,21 @@ import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.time.Clock;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public abstract class HttpResponseExceptionMappingService<E extends HttpResponseException> extends AbstractExceptionMappingService<E> {
     private static final Logger log = LogManager.getLogger(HttpResponseExceptionMappingService.class);
@@ -50,6 +61,43 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
     }
 
     public BackgroundException map(final Throwable failure, final StringBuilder buffer, final int statusCode) {
+        return this.map(failure, buffer, statusCode, Collections.emptyMap());
+    }
+
+    /**
+     * @param headers Response headers
+     * @return Delay requested with Retry-After header either in seconds or as HTTP-date
+     */
+    public static Optional<Duration> retryAfter(final Map<String, List<String>> headers) {
+        return retryAfter(headers, Clock.systemUTC());
+    }
+
+    public static Optional<Duration> retryAfter(final Map<String, List<String>> headers, final Clock clock) {
+        if(null == headers) {
+            return Optional.empty();
+        }
+        return headers.entrySet().stream()
+                .filter(e -> HttpHeaders.RETRY_AFTER.equalsIgnoreCase(e.getKey()))
+                .flatMap(e -> e.getValue().stream())
+                .map(String::trim)
+                .map(v -> {
+                    if(v.matches("\\d{1,9}")) {
+                        return Optional.of(Duration.ofSeconds(Long.parseLong(v)));
+                    }
+                    try {
+                        final Duration delay = Duration.between(clock.instant(), ZonedDateTime.parse(v, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant());
+                        return Optional.of(delay.isNegative() ? Duration.ZERO : delay);
+                    }
+                    catch(DateTimeParseException e) {
+                        return Optional.<Duration>empty();
+                    }
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+    }
+
+    public BackgroundException map(final Throwable failure, final StringBuilder buffer, final int statusCode, final Map<String, List<String>> headers) {
         switch(statusCode) {
             case HttpStatus.SC_UNAUTHORIZED:
                 return new LoginFailureException(buffer.toString(), failure);
@@ -76,14 +124,15 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_LOCKED:
                 return new LockedException(buffer.toString(), failure);
             case HttpStatus.SC_BAD_GATEWAY:
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
                 return new ConnectionRefusedException(buffer.toString(), failure);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case HttpStatus.SC_TOO_MANY_REQUESTS:
                 // Too Many Requests. Rate limiting
             case 509:
                 // Bandwidth Limit Exceeded
-                return new RetriableAccessDeniedException(buffer.toString(), failure);
+                return retryAfter(headers).map(delay -> new RetriableAccessDeniedException(buffer.toString(), delay, failure))
+                        .orElseGet(() -> new RetriableAccessDeniedException(buffer.toString(), failure));
             default:
                 return new InteroperabilityException(buffer.toString(), failure);
         }

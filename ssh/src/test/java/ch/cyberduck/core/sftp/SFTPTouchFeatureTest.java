@@ -25,10 +25,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,7 +34,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class SFTPTouchFeatureTest extends AbstractSFTPTest {
 
     @Test
@@ -46,7 +43,7 @@ public class SFTPTouchFeatureTest extends AbstractSFTPTest {
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new StaticPermission("664"));
         // Test override
-        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus().setExists(true));
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test));
         assertEquals("664", list.get(test).attributes().getPermission().getMode());

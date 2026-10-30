@@ -35,6 +35,15 @@ import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractChecksumCompute implements ChecksumCompute {
 
+    protected static MessageDigest instance(final String algorithm) throws ChecksumException {
+        try {
+            return MessageDigest.getInstance(algorithm);
+        }
+        catch(NoSuchAlgorithmException e) {
+            throw new ChecksumException(e);
+        }
+    }
+
     protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation)
             throws ConnectionCanceledException, ChecksumException {
         final MessageDigest md;

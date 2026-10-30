@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -71,7 +72,6 @@ public class SMBWriteFeatureTest extends AbstractSMBTest {
             final byte[] content = RandomUtils.nextBytes(length);
             status.setLength(content.length);
             final Write writer = new SMBWriteFeature(session);
-            status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
             final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -88,7 +88,7 @@ public class SMBWriteFeatureTest extends AbstractSMBTest {
             final byte[] content = RandomUtils.nextBytes(length);
             status.setLength(content.length);
             final Write writer = new SMBWriteFeature(session);
-            status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
+            status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
             final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

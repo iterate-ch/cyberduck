@@ -1,0 +1,72 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name, e.g. release-9-6-0'
+        required: true
+        type: string
+      releaseVersion:
+        description: 'Release version, e.g. 9.6.0'
+        required: true
+        type: string
+      developmentVersion:
+        description: 'Next development version, e.g. 9.6.1-SNAPSHOT'
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  # Equivalent of the former Jenkins `release:prepare` job. Commits the release
+  # version, tags it and commits the next development version, then pushes. The push
+  # uses a GitHub App token, which is a bypass actor of the master ruleset and, unlike
+  # GITHUB_TOKEN, triggers the tag workflows (release.yml, appstore.yml, image.yml).
+  prepare:
+    permissions:
+      contents: read
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Create App Token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: 25
+          cache: maven
+
+      - name: Configure Git
+        shell: bash
+        run: |
+          git config user.name "${{ steps.app-token.outputs.app-slug }}[bot]"
+          git config user.email "${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
+
+      - name: Prepare Release
+        shell: bash
+        run: >
+          mvn release:prepare
+          -DreleaseVersion="${{ inputs.releaseVersion }}"
+          -DdevelopmentVersion="${{ inputs.developmentVersion }}"
+          -Dtag="${{ inputs.tag }}"
+          -DpushChanges=false
+          --no-transfer-progress --batch-mode --errors -DskipTests
+
+      - name: Push
+        shell: bash
+        run: |
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "refs/tags/${{ inputs.tag }}"

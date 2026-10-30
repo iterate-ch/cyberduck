@@ -1,7 +1,7 @@
-package ch.cyberduck.core.eue;
+package ch.cyberduck.core.dav;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,17 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.Path;
 
-import java.security.MessageDigest;
+/**
+ * Map path in browser to path of resource on server
+ */
+public interface DAVPathMapper {
+    DAVPathMapper noop = file -> file;
 
-public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
-
-    public EueUploadService(final EueSession session) {
-
-    }
+    /**
+     * @param file Path in browser
+     * @return Path on server
+     */
+    Path map(Path file);
 }

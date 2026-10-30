@@ -65,7 +65,10 @@ public class S3AccessControlListFeature implements AclPermission {
     private final S3Session session;
     private final PathContainerService containerService;
 
-    private final LRUCache<Path, Acl> cache
+    /**
+     * Cache for buckets with object ownership enforced
+     */
+    private final LRUCache<Path, Boolean> cache
             = LRUCache.build(10);
 
     public S3AccessControlListFeature(final S3Session session) {
@@ -74,15 +77,22 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     private boolean isBucketOwnerEnforced(final Path bucket) throws BackgroundException {
-        final OwnershipControlsConfig controls;
+        if(!cache.contains(bucket)) {
+            cache.put(bucket, this.readBucketOwnerEnforced(bucket));
+        }
+        return cache.get(bucket);
+    }
+
+    private boolean readBucketOwnerEnforced(final Path bucket) throws BackgroundException {
         try {
-            controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            final OwnershipControlsConfig controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             for(OwnershipControlsConfig.Rule rule : controls.getRules()) {
                 if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
                     log.debug("Bucket owner enforced policy set with disabled ACLs for bucket {}", bucket);
                     return true;
                 }
             }
+            return false;
         }
         catch(ServiceException e) {
             try {
@@ -90,12 +100,13 @@ public class S3AccessControlListFeature implements AclPermission {
             }
             catch(NotfoundException n) {
                 // Ignore or buckets with no x-amz-object-ownership set
+                return false;
             }
             catch(AccessDeniedException | InteroperabilityException l) {
                 log.warn("Missing permission to read bucket ownership configuration for {} {}", bucket.getName(), e.getMessage());
+                return false;
             }
         }
-        return false;
     }
 
     @Override
@@ -109,14 +120,9 @@ public class S3AccessControlListFeature implements AclPermission {
             return Acl.EMPTY;
         }
         final Path bucket = containerService.getContainer(file);
-        if(cache.contains(bucket)) {
-            return cache.get(bucket);
-        }
         if(this.isBucketOwnerEnforced(bucket)) {
-            cache.put(bucket, Acl.EMPTY);
             return Acl.EMPTY;
         }
-        cache.put(bucket, preference);
         return preference;
     }
 
@@ -135,13 +141,17 @@ public class S3AccessControlListFeature implements AclPermission {
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
                 acl = S3AccessControlListFeature.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
+                if(this.isBucketOwnerEnforced(bucket)) {
+                    acl.setEditable(false);
+                }
             }
             else {
+                if(this.isBucketOwnerEnforced(bucket)) {
+                    // ACLs are disabled and cannot be set on objects
+                    return Acl.EMPTY;
+                }
                 acl = S3AccessControlListFeature.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
-            }
-            if(this.isBucketOwnerEnforced(bucket)) {
-                acl.setEditable(false);
             }
             return acl;
         }

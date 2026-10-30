@@ -2,11 +2,60 @@ name: Integration Tests
 
 on:
   workflow_dispatch:
+    inputs:
+      protocol:
+        description: Protocol module to test
+        type: choice
+        default: all
+        options:
+          - all
+          - irods
+          - spectra
+          - s3
+          - smb
+          - googlestorage
+          - openstack
+          - webdav
+          - azure
+          - ssh
+          - ftp
+          - googledrive
+          - backblaze
+          - dropbox
+          - nio
+          - hubic
+          - onedrive
+          - dracoon
+          - storegate
+          - brick
+          - nextcloud
+          - owncloud
+          - manta
+          - box
+          - ctera
+          - eue
+          - freenet
+          - deepbox
   schedule:
     - cron: '0 2 * * *'
 
 jobs:
+  protocols:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.select.outputs.matrix }}
+    steps:
+      - id: select
+        env:
+          PROTOCOL: ${{ inputs.protocol }}
+        run: |
+          if [ -z "$PROTOCOL" ] || [ "$PROTOCOL" = "all" ]; then
+            echo 'matrix=["irods","spectra","s3","smb","googlestorage","openstack","webdav","azure","ssh","ftp","googledrive","backblaze","dropbox","nio","hubic","onedrive","dracoon","storegate","brick","nextcloud","owncloud","manta","box","ctera","eue","freenet","deepbox"]' >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix=[\"$PROTOCOL\"]" >> "$GITHUB_OUTPUT"
+          fi
   build:
+    needs: protocols
     permissions:
       checks: write
       statuses: write
@@ -15,7 +64,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-self-hosted ]
+        os: [ linux-self-hosted ]
+        protocol: ${{ fromJSON(needs.protocols.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v7
       - name: Set up JDK 25
@@ -24,14 +74,19 @@ jobs:
           distribution: 'temurin'
           java-version: 25
           cache: maven
-      - name: Build with Maven
+      - name: Build dependencies
+        env:
+          JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ runner.temp }}
+        run: mvn install -pl ${{ matrix.protocol }} -am -DskipTests --no-transfer-progress --batch-mode -D"enforcer.skip"
+      - name: Test ${{ matrix.protocol }}
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
           SKIP_SIGN: true
-        run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode --fail-at-end -D"enforcer.skip"
+          JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ runner.temp }}
+        run: mvn verify -pl ${{ matrix.protocol }} --no-transfer-progress --batch-mode --fail-at-end -D"enforcer.skip"
       - name: Publish Test Report
         if: ${{ always() }}
         uses: ScalableCapital/action-surefire-report@v2
         with:
           report_mode: check-run
-          check_name: Test Report (${{ matrix.os }})
+          check_name: Test Report (${{ matrix.protocol }})

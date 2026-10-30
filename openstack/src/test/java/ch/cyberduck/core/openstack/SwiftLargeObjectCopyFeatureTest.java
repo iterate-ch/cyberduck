@@ -23,11 +23,9 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
@@ -39,13 +37,11 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testCopyManifestSameBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
@@ -93,7 +89,6 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCopyLargeObjectSameBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
@@ -138,7 +133,6 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCopyManifestDifferentBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
@@ -152,7 +146,6 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         final List<Path> sourceSegments = segmentService.list(sourceFile);
 
         final Path targetBucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        targetBucket.attributes().setRegion("IAD");
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path copiedFile = new SwiftDefaultCopyFeature(session, regionService)
@@ -188,7 +181,6 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCopyLargeObjectDifferentBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
@@ -200,7 +192,6 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         assertTrue(findFeature.find(sourceFile));
 
         final Path targetBucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        targetBucket.attributes().setRegion("IAD");
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);

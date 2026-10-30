@@ -21,6 +21,7 @@ package ch.cyberduck.core.io;
 import org.apache.commons.lang3.StringUtils;
 
 public enum HashAlgorithm {
+    none,
     md5,
     sha1,
     sha256,

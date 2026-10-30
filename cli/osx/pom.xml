@@ -117,7 +117,7 @@
                                             <groupId>net.temurin</groupId>
                                             <artifactId>jdk</artifactId>
                                             <type>zip</type>
-                                            <version>25.0.4.1</version>
+                                            <version>25.0.5</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -135,6 +135,25 @@
                                             <groupId>ch.cyberduck</groupId>
                                             <artifactId>profiles</artifactId>
                                             <version>${project.version}</version>
+                                            <excludes>Google Drive.cyberduckprofile,Google Cloud Storage.cyberduckprofile</excludes>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources/Profiles</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-profiles-cli</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>profiles-cli</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources/Profiles</outputDirectory>

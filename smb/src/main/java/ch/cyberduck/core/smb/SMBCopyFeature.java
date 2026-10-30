@@ -68,6 +68,7 @@ public class SMBCopyFeature implements Copy {
                 sourceFile.remoteCopyTo(targetFile);
             }
             listener.sent(status.getLength());
+            return new Path(target).withAttributes(new SMBAttributesFinderFeature(session).find(target));
         }
         catch(IOException e) {
             throw new SMBTransportExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -81,7 +82,6 @@ public class SMBCopyFeature implements Copy {
         finally {
             session.releaseShare(share);
         }
-        return target;
     }
 
     @Override

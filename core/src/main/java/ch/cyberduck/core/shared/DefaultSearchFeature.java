@@ -26,8 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
-import java.util.Optional;
-
 public class DefaultSearchFeature implements Search {
 
     private final Session<?> session;
@@ -55,7 +53,7 @@ public class DefaultSearchFeature implements Search {
         }
 
         @Override
-        public ListProgressListener reset() throws ConnectionCanceledException {
+        public ListProgressListener reset() throws BackgroundException {
             super.reset();
             return this;
         }

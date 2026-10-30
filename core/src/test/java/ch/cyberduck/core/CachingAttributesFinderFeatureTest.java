@@ -24,8 +24,15 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -165,5 +172,47 @@ public class CachingAttributesFinderFeatureTest {
             //
         }
         assertFalse(cache.isCached(directory));
+    }
+
+    @Test
+    public void testConcurrentLookupListsDirectoryOnce() throws Exception {
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/d", EnumSet.of(Path.Type.directory));
+        final List<Path> files = new ArrayList<>();
+        for(int i = 0; i < 4; i++) {
+            files.add(new Path(directory, "f" + i, EnumSet.of(Path.Type.file)));
+        }
+        final AtomicInteger lists = new AtomicInteger();
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
+                lists.incrementAndGet();
+                try {
+                    Thread.sleep(200L);
+                }
+                catch(InterruptedException e) {
+                    throw new ConnectionCanceledException(e);
+                }
+                final AttributedList<Path> list = new AttributedList<>(files);
+                listener.chunk(folder, list);
+                return list;
+            }
+        };
+        final CachingAttributesFinderFeature feature = new CachingAttributesFinderFeature(Protocol.Case.sensitive, cache, new DefaultAttributesFinderFeature(session));
+        final ExecutorService executor = Executors.newFixedThreadPool(files.size());
+        final CountDownLatch start = new CountDownLatch(1);
+        final List<Future<?>> futures = new ArrayList<>();
+        for(Path file : files) {
+            futures.add(executor.submit(() -> {
+                start.await();
+                return feature.find(file);
+            }));
+        }
+        start.countDown();
+        for(Future<?> future : futures) {
+            future.get();
+        }
+        executor.shutdown();
+        assertEquals(1, lists.get());
     }
 }

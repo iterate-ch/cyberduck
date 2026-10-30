@@ -27,7 +27,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSessionIdCommitBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -109,11 +108,13 @@ public class BoxUploadHelper {
                                      final TransferStatus overall, final List<UploadPart> uploadParts) throws BackgroundException {
         try {
             final HttpPost request = new HttpPost(String.format("%s/files/upload_sessions/%s/commit", client.getBasePath(), uploadSessionId));
-            if(!Checksum.NONE.equals(overall.getChecksum())) {
-                request.addHeader(new BasicHeader("Digest", String.format("sha=%s", overall.getChecksum().base64)));
-            }
-            else {
-                log.warn("Missing checksum to add SHA1 digest header");
+            switch(overall.getChecksum().algorithm) {
+                case sha1:
+                    request.addHeader(new BasicHeader("Digest", String.format("sha=%s", overall.getChecksum().base64)));
+                    break;
+                default:
+                    log.warn("Missing checksum to add SHA1 digest header");
+                    break;
             }
             final ByteArrayOutputStream content = new ByteArrayOutputStream();
             final UploadSessionIdCommitBody body = new UploadSessionIdCommitBody().parts(uploadParts);

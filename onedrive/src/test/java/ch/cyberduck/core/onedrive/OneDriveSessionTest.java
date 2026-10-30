@@ -57,8 +57,6 @@ public class OneDriveSessionTest {
         test.add(new TestCase("/My Files", false, true));
         test.add(new TestCase("/My Files/Test", true, true));
         test.add(new TestCase("/Shared", false, false));
-        test.add(new TestCase("/Shared/Folder", false, true));
-        test.add(new TestCase("/Shared/Folder/Test", true, true));
 
         for(TestCase testCase : test) {
             final Path path = new Path(testCase.target, EnumSet.of(Path.Type.directory));

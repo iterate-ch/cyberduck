@@ -15,6 +15,7 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -134,7 +135,8 @@ public class UserDefaultsPreferencesTest {
         UserDefaultsPreferences p = new UserDefaultsPreferences();
         p.load();
         p.setDefaults();
-        assertTrue(StringUtils.startsWith(p.getProperty("tmp.dir"), System.getProperty("java.io.tmpdir")));
-        assertNotEquals(System.getProperty("java.io.tmpdir"), p.getProperty("tmp.dir"));
+        final String tmpdir = FoundationKitFunctions.library.NSTemporaryDirectory();
+        assertTrue(StringUtils.startsWith(p.getProperty("tmp.dir"), tmpdir));
+        assertNotEquals(tmpdir, p.getProperty("tmp.dir"));
     }
 }

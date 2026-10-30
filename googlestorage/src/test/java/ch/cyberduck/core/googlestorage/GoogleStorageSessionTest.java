@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.DisabledCancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
-        }, null);
+        }, new DisabledCancelCallback());
     }
 
     @Test

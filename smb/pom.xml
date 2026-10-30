@@ -24,7 +24,6 @@
     <packaging>jar</packaging>
     <properties>
         <smbj.version>0.15.0</smbj.version>
-        <testcontainers.version>2.0.5</testcontainers.version>
     </properties>
     <dependencies>
         <dependency>
@@ -64,7 +63,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

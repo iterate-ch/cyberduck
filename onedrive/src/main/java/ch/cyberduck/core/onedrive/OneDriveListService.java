@@ -19,13 +19,10 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
-import ch.cyberduck.core.onedrive.features.onedrive.SharedWithMeListService;
 
 import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.MYFILES_NAME;
-import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.SHARED_NAME;
 
 public class OneDriveListService implements ListService {
 
@@ -42,12 +39,8 @@ public class OneDriveListService implements ListService {
         if(directory.isRoot()) {
             final AttributedList<Path> list = new AttributedList<>();
             list.add(MYFILES_NAME);
-            list.add(SHARED_NAME);
             listener.chunk(directory, list);
             return list;
-        }
-        else if(new SimplePathPredicate(SHARED_NAME).test(directory)) {
-            return new SharedWithMeListService(session, fileid).list(directory, listener);
         }
         else {
             return new GraphItemListService(session, fileid).list(directory, listener);

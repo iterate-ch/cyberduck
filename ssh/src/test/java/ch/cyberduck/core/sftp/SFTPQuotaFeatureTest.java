@@ -16,14 +16,11 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SFTPQuotaFeatureTest extends AbstractSFTPTest {
 
     @Test
@@ -32,6 +29,6 @@ public class SFTPQuotaFeatureTest extends AbstractSFTPTest {
         assertNotNull(quota.available);
         assertNotNull(quota.used);
         assertNotEquals(0L, quota.available, 0L);
-        assertEquals(0L, quota.used, 0L);
+        assertNotEquals(0L, quota.used, 0L);
     }
 }

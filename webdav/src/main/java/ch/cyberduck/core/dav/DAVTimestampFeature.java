@@ -77,7 +77,7 @@ public class DAVTimestampFeature implements Timestamp {
             if(null != status.getModified()) {
                 // Obtain latest properties from server to save server modification date in custom property
                 final DavResource resource = this.getResource(file);
-                session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getModified()), Collections.emptyList(),
+                session.getClient().patch(new DAVPathEncoder(session).encode(file), this.getCustomProperties(resource, status.getModified()), Collections.emptyList(),
                         this.getCustomHeaders(file, status));
                 status.setResponse(attributes.toAttributes(resource).setModificationDate(
                         Timestamp.toSeconds(status.getModified())));
@@ -126,7 +126,7 @@ public class DAVTimestampFeature implements Timestamp {
     protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
         final Map<String, String> headers = new HashMap<>();
         if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-            headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(file), status.getLockId()));
+            headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId()));
         }
         return headers;
     }

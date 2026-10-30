@@ -67,6 +67,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hierynomus.sshj.key.KeyAlgorithm;
+import com.hierynomus.sshj.key.KeyAlgorithms;
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
 import net.schmizz.keepalive.KeepAliveProvider;
@@ -75,12 +77,15 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.Factory.Named;
+import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.connection.channel.direct.DirectConnection;
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
 import net.schmizz.sshj.sftp.SFTPException;
+import net.schmizz.sshj.signature.Signature;
+import net.schmizz.sshj.signature.SignatureRSA;
 import net.schmizz.sshj.transport.DisconnectListener;
 import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import net.schmizz.sshj.transport.Transport;
@@ -92,7 +97,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = LogManager.getLogger(SFTPSession.class);
 
-    private SFTPEngine sftp;
+    private LoggingSFTPEngine sftp;
     private StateDisconnectListener disconnectListener;
     private NegotiatedAlgorithms algorithms;
     private OpenSSHProxyCommandConnector proxycommand;
@@ -136,6 +141,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         configuration.setKeepAliveProvider(heartbeat);
         configuration.setCipherFactories(this.lowestPriorityForCBC(configuration.getCipherFactories()));
+        configuration.setKeyAlgorithms(withRsaSha2Certificates(configuration.getKeyAlgorithms()));
         return this.connect(key, prompt, configuration);
     }
 
@@ -394,7 +400,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
     }
 
-    public SFTPEngine sftp() throws LoginCanceledException {
+    public LoggingSFTPEngine sftp() throws LoginCanceledException {
         if(null == sftp) {
             throw new LoginCanceledException();
         }
@@ -428,6 +434,60 @@ public class SFTPSession extends Session<SSHClient> {
             proxycommand.close();
         }
         super.disconnect();
+    }
+
+    /**
+     * Offer RSA certificates with a SHA-2 signature which are not part of the default configuration. Required for
+     * servers refusing the SHA-1 signature of ssh-rsa-cert-v01@openssh.com such as Azure Blob Storage.
+     *
+     * @see <a href="https://github.com/hierynomus/sshj/issues/1069">sshj#1069</a>
+     */
+    static List<Named<KeyAlgorithm>> withRsaSha2Certificates(final List<Named<KeyAlgorithm>> factories) {
+        final List<String> names = factories.stream().map(Named::getName).collect(Collectors.toList());
+        final List<Named<KeyAlgorithm>> missing = new ArrayList<>();
+        if(!names.contains("rsa-sha2-512-cert-v01@openssh.com")) {
+            missing.add(new KeyAlgorithms.Factory("rsa-sha2-512-cert-v01@openssh.com",
+                    new RsaCertificateSignatureFactory("rsa-sha2-512-cert-v01@openssh.com", "SHA512withRSA", "rsa-sha2-512"),
+                    KeyType.RSA_CERT));
+        }
+        if(!names.contains("rsa-sha2-256-cert-v01@openssh.com")) {
+            missing.add(new KeyAlgorithms.Factory("rsa-sha2-256-cert-v01@openssh.com",
+                    new RsaCertificateSignatureFactory("rsa-sha2-256-cert-v01@openssh.com", "SHA256withRSA", "rsa-sha2-256"),
+                    KeyType.RSA_CERT));
+        }
+        if(missing.isEmpty()) {
+            return factories;
+        }
+        // Ahead of legacy SHA-1 certificate
+        int index = names.indexOf(KeyType.RSA_CERT.toString());
+        if(index < 0) {
+            index = factories.size();
+        }
+        final List<Named<KeyAlgorithm>> result = new ArrayList<>(factories);
+        result.addAll(index, missing);
+        return result;
+    }
+
+    private static final class RsaCertificateSignatureFactory implements Named<Signature> {
+        private final String name;
+        private final String algorithm;
+        private final String signature;
+
+        private RsaCertificateSignatureFactory(final String name, final String algorithm, final String signature) {
+            this.name = name;
+            this.algorithm = algorithm;
+            this.signature = signature;
+        }
+
+        @Override
+        public Signature create() {
+            return new SignatureRSA(algorithm, KeyType.RSA_CERT, signature);
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 
     private List<Named<Cipher>> lowestPriorityForCBC(final List<Named<Cipher>> factories) {
@@ -472,6 +532,12 @@ public class SFTPSession extends Session<SSHClient> {
         }
         if(type == Move.class) {
             return (T) new SFTPMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            if(null != sftp && sftp.isExtensionSupported(SFTPCopyFeature.EXTENSION)) {
+                return (T) new SFTPCopyFeature(this);
+            }
+            // Fallback to download and upload when server does not advertise extension
         }
         if(type == UnixPermission.class) {
             return (T) new SFTPUnixPermissionFeature(this);
@@ -520,12 +586,46 @@ public class SFTPSession extends Session<SSHClient> {
         }
     }
 
-    private static final class LoggingSFTPEngine extends SFTPEngine {
+    public static final class LoggingSFTPEngine extends SFTPEngine {
         private final TranscriptListener transcript;
 
         public LoggingSFTPEngine(final SSHClient client, final TranscriptListener transcript) throws SSHException {
             super(client, String.valueOf(Path.DELIMITER));
             this.transcript = transcript;
+        }
+
+        @Override
+        public LoggingSFTPEngine init() throws IOException {
+            super.init();
+            return this;
+        }
+
+        @Override
+        protected LoggingSFTPEngine init(final int requestedVersion) throws IOException {
+            super.init(requestedVersion);
+            return this;
+        }
+
+        /**
+         * @param name Extension name as advertised by the server in the version packet
+         * @return True if the server advertised the given extension either as top-level key or by name within the
+         * supported or supported2 extension lists
+         */
+        public boolean isExtensionSupported(final String name) {
+            if(serverExtensions.containsKey(name)) {
+                return true;
+            }
+            // The extension names are embedded as length-prefixed strings in the binary payload of supported and
+            // supported2 (draft-ietf-secsh-filexfer-13 §5.4). Names are ASCII and survive the UTF-8 decoding in sshj
+            // unchanged, so match the uint32 length prefix along with the name to avoid partial matches
+            final String encoded = "\0\0\0" + (char) name.length() + name;
+            for(final String list : new String[]{"supported", "supported2"}) {
+                final String data = serverExtensions.get(list);
+                if(null != data && data.contains(encoded)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override

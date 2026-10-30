@@ -50,7 +50,7 @@ jobs:
         run: >-
           mvn --settings .github/maven-settings.xml --batch-mode --no-transfer-progress
           deploy -DskipTests -DskipITs -P"!local,!installer"
-          --also-make --projects ${{ fromJSON('{"Linux":"i18n,profiles,cli/linux","Windows":"i18n,profiles,windows,cli/windows","macOS":"i18n,profiles,osx,cli/osx"}')[runner.os] }}
+          --also-make --projects ${{ fromJSON('{"Linux":"i18n,profiles,cli/profiles,cli/linux","Windows":"i18n,profiles,windows,cli/profiles,cli/windows","macOS":"i18n,profiles,osx,cli/profiles,cli/osx"}')[runner.os] }}
         env:
           MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
           MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}

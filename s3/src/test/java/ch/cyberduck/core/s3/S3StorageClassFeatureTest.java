@@ -63,7 +63,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
     public void testSetClassFile() throws Exception {
         final S3StorageClassFeature feature = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        assertNull(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(container));
+        assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(container));
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);

@@ -67,6 +67,7 @@ public final class Capabilities {
     public static final class capabilities {
         public core core;
         public files files;
+        public spaces spaces;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -79,5 +80,13 @@ public final class Capabilities {
     public static final class files {
         public String locking;
         public String versioning;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static final class spaces {
+        public String enabled;
+        public String projects;
+        @JsonProperty("share_jail")
+        public String sharejail;
     }
 }

@@ -33,13 +33,15 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -49,7 +51,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPSessionTest extends AbstractFTPTest {
 
     @BeforeClass
@@ -166,5 +167,33 @@ public class FTPSessionTest extends AbstractFTPTest {
                 ProgressListener.noop);
         c.connect(session, CancelCallback.noop);
         assertTrue(callback.get());
+    }
+
+    @Test
+    public void testConnectRejectedWithServiceNotAvailable() throws Exception {
+        try(final ServerSocket server = new ServerSocket(0)) {
+            final Thread t = new Thread(() -> {
+                try(final Socket socket = server.accept()) {
+                    final OutputStream out = socket.getOutputStream();
+                    out.write("421 Too many connections (25) from this IP\r\n".getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                }
+                catch(Exception e) {
+                    // Ignore
+                }
+            });
+            t.start();
+            final Host host = new Host(new FTPProtocol(), "localhost", server.getLocalPort(), new Credentials("u", "p"));
+            final FTPSession session = new FTPSession(host);
+            try {
+                session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+                fail();
+            }
+            catch(ConnectionRefusedException e) {
+                assertTrue(e.getDetail(), e.getDetail().contains("Too many connections (25) from this IP"));
+            }
+            t.join(10000L);
+            assertEquals(Thread.State.TERMINATED, t.getState());
+        }
     }
 }

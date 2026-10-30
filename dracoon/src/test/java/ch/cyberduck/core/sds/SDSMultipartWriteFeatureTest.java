@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -91,7 +90,6 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setMime("text/plain");
             status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);

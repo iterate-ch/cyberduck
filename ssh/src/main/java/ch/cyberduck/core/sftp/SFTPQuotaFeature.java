@@ -73,7 +73,8 @@ public class SFTPQuotaFeature implements Quota {
 
     private Space getSpaceAvailable(SFTPEngine sftp, final Path directory) throws BackgroundException {
         try {
-            final Request request = sftp.newExtendedRequest("space-available").putString(directory.getAbsolute());
+            final Request request = sftp.newExtendedRequest("space-available").putString(
+                    directory.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset());
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
@@ -121,7 +122,8 @@ public class SFTPQuotaFeature implements Quota {
 
     private Space getSpaceStatVFSOpenSSH(SFTPEngine sftp, final Path directory) throws BackgroundException {
         try {
-            final Request request = sftp.newExtendedRequest("statvfs@openssh.com").putString(directory.getAbsolute());
+            final Request request = sftp.newExtendedRequest("statvfs@openssh.com").putString(
+                    directory.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset());
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:

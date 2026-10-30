@@ -46,7 +46,7 @@ public class OwncloudVersioningFeature extends NextcloudVersioningFeature {
     public void revert(final Path file) throws BackgroundException {
         try {
             session.getClient().copy(URIEncoder.encode(file.getAbsolute()),
-                    new DAVPathEncoder().encode(file));
+                    new DAVPathEncoder(session).encode(file));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot revert file", e, file);
