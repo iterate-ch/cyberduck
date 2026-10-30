@@ -111,4 +111,26 @@ public class LocalCopyFeatureTest {
         assertTrue(new LocalFindFeature(session).find(copy));
         new LocalDeleteFeature(session).delete(Arrays.asList(file, copy, directory, target), LoginCallback.noop, new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testCopyDirectoryToExistingDirectory() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
+        final Path workdir = new LocalHomeFinderFeature().find();
+        final Path directory = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), directory, new TransferStatus());
+        final Path file = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
+        // Target directory already exists
+        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), target, new TransferStatus());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(directory, target),
+                new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, ConnectionCallback.noop);
+        final Map<Path, Path> result = worker.run(session);
+        assertEquals(2, result.size());
+        final Path copy = new Path(target, file.getName(), EnumSet.of(Path.Type.file));
+        assertTrue(new LocalFindFeature(session).find(copy));
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, copy, directory, target), LoginCallback.noop, new Delete.DisabledCallback());
+    }
 }

@@ -88,11 +88,17 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                     final Path s = r.getKey();
                     final Path t = r.getValue();
                     if(s.isDirectory() && !copy.isRecursive(s, t)) {
-                        // Create directory unless copy implementation is recursive
-                        final Directory directory = session.getFeature(Directory.class);
-                        result.put(s, directory.mkdir(session.getFeature(Write.class), t,
-                                new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())
-                                        .setPermission(s.attributes().getPermission())));
+                        if(new CachingFindFeature(session, cache).find(t)) {
+                            // Copy children into existing directory
+                            result.put(s, t);
+                        }
+                        else {
+                            // Create directory unless copy implementation is recursive
+                            final Directory directory = session.getFeature(Directory.class);
+                            result.put(s, directory.mkdir(session.getFeature(Write.class), t,
+                                    new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())
+                                            .setPermission(s.attributes().getPermission())));
+                        }
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
