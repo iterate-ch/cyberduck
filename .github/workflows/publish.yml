@@ -127,6 +127,11 @@ jobs:
           path: update/changelog-Windows/changelog.*
           args: '--existing overwrite --verbose'
 
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem
+
   deb:
     needs: cli
     permissions:
@@ -182,6 +187,13 @@ jobs:
             --sign 3FEFBE72 \
             --gpg-options="--no-tty" \
             "${packages[@]}"
+
+      - name: Remove GPG Signing Key
+        if: always()
+        shell: bash
+        run: |
+          gpgconf --homedir "$GNUPGHOME" --kill all || true
+          rm -rf "$GNUPGHOME"
 
   rpm:
     needs: cli
@@ -250,3 +262,8 @@ jobs:
               -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
               "$host" "/usr/bin/createrepo --update '$remote'"
           done
+
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem

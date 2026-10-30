@@ -87,6 +87,11 @@ jobs:
           path: release/Cyberduck-*
           args: '--existing overwrite --verbose'
 
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem
+
   publish:
     needs: [ deploy, sftp ]
     if: ${{ !cancelled() }}
