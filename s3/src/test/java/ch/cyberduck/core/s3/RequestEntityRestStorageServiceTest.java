@@ -44,6 +44,12 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     public void testGetBucket() {
         assertEquals("bucketname", RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "bucketname.s3.amazonaws.com")));
         assertNull(RequestEntityRestStorageService.findBucketInHostname(new Host(new TestProtocol(), "bucketname.s3.amazonaws.com")));
+        assertEquals("bucketname", RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "BucketName.S3.amazonaws.com")));
+        assertNull(RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "S3.amazonaws.com")));
+        assertEquals("bucketname", RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "bucketname.s3-us-west-2.amazonaws.com")));
+        assertEquals("bucketname", RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "bucketname.s3.us-east-1.amazonaws.com")));
+        assertNull(RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "s3.us-east-1.amazonaws.com")));
+        assertNull(RequestEntityRestStorageService.findBucketInHostname(new Host(new S3Protocol(), "s3-fips.us-east-1.amazonaws.com")));
     }
 
     @Test

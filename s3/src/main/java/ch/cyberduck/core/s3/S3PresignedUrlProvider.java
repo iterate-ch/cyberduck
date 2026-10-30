@@ -70,7 +70,9 @@ public class S3PresignedUrlProvider {
         else {
             context = StringUtils.EMPTY;
         }
-        final String endpoint = S3Session.isAwsHostname(host.getHostname()) ?
+        // Keep FIPS and access point endpoints
+        final boolean regional = S3Session.isAwsStandardHostname(host.getHostname()) || S3Session.isAwsChinaHostname(host.getHostname());
+        final String endpoint = regional ?
                 RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region) : host.getHostname();
         final String serviceEndpoint;
         final String signingKey;
@@ -95,7 +97,7 @@ public class S3PresignedUrlProvider {
         final AmazonS3 client = AmazonS3ClientBuilder.standard()
                 // Dualstack resolution replaces the configured endpoint and would drop a context path.
                 .withDualstackEnabled(StringUtils.isEmpty(context)
-                        && S3Session.isAwsHostname(host.getHostname())
+                        && regional
                         && preferences.getBoolean("s3.endpoint.dualstack.enable"))
                 .withPathStyleAccessEnabled(preferences.getBoolean("s3.bucket.virtualhost.disable"))
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(serviceEndpoint, region))

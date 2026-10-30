@@ -60,14 +60,19 @@ public abstract class Transfer implements Serializable {
     protected final List<TransferItem> roots = new ArrayList<>();
 
     /**
-     * The sum of the file length of all files in the <code>queue</code> or null if unknown
+     * The sum of the file length of all files in the <code>queue</code>
      */
-    private AtomicLong size;
+    private final AtomicLong size = new AtomicLong(0L);
 
     /**
-     * The number bytes already transferred of the files in the <code>queue</code> or null if unknown
+     * The number bytes already transferred of the files in the <code>queue</code>
      */
-    private AtomicLong transferred;
+    private final AtomicLong transferred = new AtomicLong(0L);
+
+    /**
+     * True if the size of the <code>queue</code> has been determined
+     */
+    private volatile boolean sized;
 
     /**
      * Security scoped bookmarks obtained for file to upload or parent folder for downloads
@@ -180,10 +185,8 @@ public abstract class Transfer implements Serializable {
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
         dict.setStringForKey(uuid, "UUID");
-        if(size != null) {
+        if(sized) {
             dict.setStringForKey(String.valueOf(size), "Size");
-        }
-        if(transferred != null) {
             dict.setStringForKey(String.valueOf(transferred), "Current");
         }
         if(timestamp != null) {
@@ -395,10 +398,11 @@ public abstract class Transfer implements Serializable {
     /**
      * Recalculate the size of the <code>queue</code>
      */
-    public synchronized void reset() {
+    public void reset() {
         log.debug("Reset status for {}", this);
-        transferred = null;
-        size = null;
+        sized = false;
+        transferred.set(0L);
+        size.set(0L);
         reset = true;
     }
 
@@ -412,8 +416,8 @@ public abstract class Transfer implements Serializable {
     /**
      * @return True if the bytes transferred equal the size of the queue
      */
-    public synchronized boolean isComplete() {
-        if(null == size || null == transferred) {
+    public boolean isComplete() {
+        if(!sized) {
             return false;
         }
         return Objects.equals(this.getSize(), this.getTransferred());
@@ -423,20 +427,14 @@ public abstract class Transfer implements Serializable {
      * @return The sum of all file lengths in this transfer.
      */
     public Long getSize() {
-        if(null == size) {
-            return 0L;
-        }
         return size.get();
     }
 
     public void addSize(final long bytes) {
-        if(null == size) {
-            // Initialize
-            size = new AtomicLong(0L);
-        }
         if(bytes > 0) {
             size.addAndGet(bytes);
         }
+        sized = true;
         log.debug("Size set to {} bytes", size.get());
     }
 
@@ -444,17 +442,10 @@ public abstract class Transfer implements Serializable {
      * @return The number of bytes transferred of all files.
      */
     public Long getTransferred() {
-        if(null == transferred) {
-            return 0L;
-        }
         return transferred.get();
     }
 
     public void addTransferred(final long bytes) {
-        if(null == transferred) {
-            // Initialize
-            transferred = new AtomicLong(0L);
-        }
         // Allow decrement for failed segments
         transferred.addAndGet(bytes);
         log.trace("Transferred set to {} bytes", transferred.get());
@@ -473,18 +464,11 @@ public abstract class Transfer implements Serializable {
     }
 
     public void setSize(final Long bytes) {
-        if(null == size) {
-            // Initialize
-            size = new AtomicLong(0L);
-        }
         size.set(bytes);
+        sized = true;
     }
 
     public void setTransferred(final Long bytes) {
-        if(null == transferred) {
-            // Initialize
-            transferred = new AtomicLong(0L);
-        }
         transferred.set(bytes);
     }
 
