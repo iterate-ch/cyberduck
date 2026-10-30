@@ -2,12 +2,26 @@ name: Publish Mac App Store
 on:
   push:
     tags: [ '*' ]
+  # Dispatched by prepare.yml on the release tag, whose push does not trigger this
+  workflow_dispatch:
 # Queue instead of running in parallel
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 jobs:
+  # Dispatched runs must be on a tag, as the version is derived from the ref name
+  check:
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Require Tag
+        if: ${{ github.ref_type != 'tag' }}
+        shell: bash
+        run: |
+          echo "::error::Dispatch on a release tag, not on ${GITHUB_REF}"
+          exit 1
+
   deploy:
+    needs: check
     permissions:
       checks: write
       contents: read
