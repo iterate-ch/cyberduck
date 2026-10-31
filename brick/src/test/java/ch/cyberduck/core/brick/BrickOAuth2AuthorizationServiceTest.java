@@ -17,10 +17,14 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
@@ -92,6 +96,35 @@ public class BrickOAuth2AuthorizationServiceTest {
     }
 
     @Test
+    public void testInitialAuthorizationAdoptsCanonicalHostname() throws Exception {
+        final Host host = new Host(new BrickProtocol(), "custom.example.com");
+        this.exchange(host, this.key());
+        assertEquals("customer.files.com", host.getHostname());
+        assertEquals("jane", host.getCredentials().getUsername());
+    }
+
+    @Test
+    public void testParsedConnectionDoesNotRequireDefaultUsername() throws Exception {
+        final String previous = PreferencesFactory.get().getProperty("connection.login.name");
+        PreferencesFactory.get().setProperty("connection.login.name", "os-user");
+        try {
+            final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new BrickProtocol()));
+            final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Files.com.cyberduckprofile"));
+            factory.register(profile);
+            final HostParser parser = new HostParser(factory, profile);
+            final Host host = parser.get("brick://customer.files.com");
+            this.exchange(host, this.key());
+            assertEquals("jane", host.getCredentials().getUsername());
+            final Host explicit = parser.get("brick://other-user@customer.files.com");
+            assertThrows(LoginFailureException.class, () -> this.exchange(explicit, this.key()));
+            assertEquals("other-user", explicit.getCredentials().getUsername());
+        }
+        finally {
+            PreferencesFactory.get().setProperty("connection.login.name", previous);
+        }
+    }
+
+    @Test
     public void testReauthorizationPreservesAccount() throws Exception {
         final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane", "old-api-key"));
         final Map<String, Object> key = this.key();
@@ -103,6 +136,47 @@ public class BrickOAuth2AuthorizationServiceTest {
     }
 
     @Test
+    public void testApiKeyReauthorizationWithoutUsernamePreservesOrigin() throws Exception {
+        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", "old-api-key"));
+        this.exchange(host, this.key());
+        assertEquals("customer.files.com", host.getHostname());
+        assertEquals("jane", host.getCredentials().getUsername());
+        assertEquals("api-key", host.getCredentials().getPassword());
+    }
+
+    @Test
+    public void testApiKeyReauthorizationWithoutUsernameRejectsDifferentOrigin() throws Exception {
+        for(String server : new String[]{"https://other-site.files.com", "https://customer.files.com:444"}) {
+            final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", "old-api-key"));
+            host.setNickname("Saved account");
+            host.getCredentials().setSaved(false);
+            final Map<String, Object> key = this.key();
+            key.put("server", server);
+            final MockHttpTransport tokenTransport = this.transport(key);
+            final MockLowLevelHttpRequest deletion = new MockLowLevelHttpRequest().setResponse(new MockLowLevelHttpResponse().setStatusCode(204));
+            final MockHttpTransport transport = new MockHttpTransport() {
+                @Override
+                public LowLevelHttpRequest buildRequest(final String method, final String url) throws IOException {
+                    if("DELETE".equals(method)) {
+                        assertEquals("https://app.files.com/api/rest/v1/api_key", url);
+                        return deletion;
+                    }
+                    return tokenTransport.buildRequest(method, url);
+                }
+            };
+            final LoginFailureException failure = assertThrows(LoginFailureException.class, () -> this.exchangeWithTransport(host, transport));
+            assertTrue(failure.getDetail().contains("customer.files.com"));
+            assertEquals("customer.files.com", host.getHostname());
+            assertEquals(443, host.getPort());
+            assertEquals("", host.getCredentials().getUsername());
+            assertEquals("old-api-key", host.getCredentials().getPassword());
+            assertEquals("Saved account", host.getNickname());
+            assertFalse(host.getCredentials().isSaved());
+            assertEquals("api-key", deletion.getFirstHeaderValue("X-FilesAPI-Key"));
+        }
+    }
+
+    @Test
     public void testLegacyDefaultHostnameAdoptsAuthorizedSiteForSameUser() throws Exception {
         final Host host = new Host(new BrickProtocol(), "APP.files.com", new Credentials("jane", "old-api-key"));
         this.exchange(host, this.key());
@@ -110,6 +184,19 @@ public class BrickOAuth2AuthorizationServiceTest {
         assertEquals(443, host.getPort());
         assertEquals("jane", host.getCredentials().getUsername());
         assertEquals("api-key", host.getCredentials().getPassword());
+    }
+
+    @Test
+    public void testLegacyDefaultHostnameAdoptsAuthorizedSiteWithoutUsername() throws Exception {
+        final Host host = new Host(new BrickProtocol(), "app.files.com", new Credentials("", "old-api-key"));
+        this.exchange(host, this.key());
+        assertEquals("customer.files.com", host.getHostname());
+        assertEquals("api-key", host.getCredentials().getPassword());
+        final Host nonstandardPort = new Host(new BrickProtocol(), "app.files.com", 444, new Credentials("", "old-api-key"));
+        assertThrows(LoginFailureException.class, () -> this.exchange(nonstandardPort, this.key()));
+        assertEquals("app.files.com", nonstandardPort.getHostname());
+        assertEquals(444, nonstandardPort.getPort());
+        assertEquals("old-api-key", nonstandardPort.getCredentials().getPassword());
     }
 
     @Test

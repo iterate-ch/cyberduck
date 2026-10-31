@@ -19,11 +19,9 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,7 +48,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -64,15 +61,9 @@ public class BrickSession extends HttpSession<BrickApiClient> {
 
     private BrickUnauthorizedRetryStrategy retryHandler;
     private ProxyFinder proxy = ProxyFactory.get();
-    private final HostPasswordStore store;
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        this(host, trust, key, PasswordStoreFactory.get());
-    }
-
-    BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final HostPasswordStore store) {
         super(host, trust, key);
-        this.store = store;
     }
 
     @Override
@@ -88,12 +79,6 @@ public class BrickSession extends HttpSession<BrickApiClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        if(StringUtils.isBlank(credentials.getPassword())) {
-            final String apiKey = store.findLoginPassword(host);
-            if(StringUtils.isNotBlank(apiKey)) {
-                credentials.setPassword(apiKey).setSaved(false);
-            }
-        }
         if(credentials.isPasswordAuthentication()) {
             retryHandler.setApiKey(credentials.getPassword());
             // Test credentials

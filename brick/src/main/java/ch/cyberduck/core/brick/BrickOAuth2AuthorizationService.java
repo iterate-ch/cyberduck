@@ -113,11 +113,14 @@ public class BrickOAuth2AuthorizationService extends OAuth2AuthorizationService 
         final int port = uri.getPort() == -1 ? Scheme.https.getPort() : uri.getPort();
         final boolean defaultOrigin = StringUtils.equalsIgnoreCase(host.getHostname(), "app.files.com") && host.getPort() == Scheme.https.getPort();
         final boolean sameOrigin = StringUtils.equalsIgnoreCase(host.getHostname(), uri.getHost()) && host.getPort() == port;
-        if(StringUtils.isNotBlank(host.getCredentials().getUsername())
-                && (!StringUtils.equals(host.getCredentials().getUsername(), username)
-                || (!defaultOrigin && !sameOrigin))) {
+        final boolean hasUsername = StringUtils.isNotBlank(host.getCredentials().getUsername());
+        if(hasUsername && !StringUtils.equals(host.getCredentials().getUsername(), username)) {
             throw new LoginFailureException(String.format("Sign out of Files.com in your browser, then sign in as %s on %s to reconnect this bookmark.",
                     host.getCredentials().getUsername(), host.getHostname()));
+        }
+        if((hasUsername || host.getCredentials().isPasswordAuthentication()) && !defaultOrigin && !sameOrigin) {
+            throw new LoginFailureException(String.format("Sign out of Files.com in your browser, then sign in on %s to reconnect this bookmark.",
+                    host.getHostname()));
         }
         final String nickname = HostPreferencesFactory.get(host).getBoolean("brick.pairing.nickname.configure") ?
                 this.required(key, "nickname") : null;

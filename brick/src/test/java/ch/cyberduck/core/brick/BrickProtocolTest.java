@@ -15,12 +15,16 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.UnsecureHostPasswordStore;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
@@ -31,6 +35,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.ServiceLoader;
 
 import static org.junit.Assert.*;
@@ -97,7 +102,38 @@ public class BrickProtocolTest {
         assertTrue(protocol.isOAuthPKCE());
         assertFalse(protocol.isUsernameConfigurable());
         assertTrue(protocol.isPasswordConfigurable());
-        assertEquals("API Key", protocol.getPasswordPlaceholder());
+        assertEquals(LocaleFactory.localizedString("Password", "Credentials"), protocol.getPasswordPlaceholder());
+    }
+
+    @Test
+    public void testLegacySavedApiKeysRemainAccessible() throws Exception {
+        final UnsecureHostPasswordStore store = new UnsecureHostPasswordStore(null) {
+            private final Properties properties = new Properties();
+
+            @Override
+            protected Properties load() {
+                return properties;
+            }
+
+            @Override
+            protected void save(final Properties properties) {
+                // Keep credentials in memory for this test.
+            }
+        };
+        for(String username : new String[]{"", "jane"}) {
+            final Host legacy = new Host(new TestProtocol(Scheme.https), "app.files.com", new Credentials(username, "old-api-key"));
+            final Host current = new Host(new BrickProtocol(), "app.files.com", new Credentials(username));
+            store.save(legacy);
+            assertEquals("old-api-key", store.findLoginPassword(current));
+            store.deleteLoginPassword(current);
+            assertNull(store.findLoginPassword(legacy));
+            store.save(legacy);
+            store.delete(current);
+            assertNull(store.findLoginPassword(legacy));
+            store.addLoginPassword(current, "new-api-key");
+            assertEquals("new-api-key", store.findLoginPassword(legacy));
+            store.delete(current);
+        }
     }
 
     @Test
@@ -116,7 +152,7 @@ public class BrickProtocolTest {
         assertFalse(options.user);
         assertTrue(options.password);
         assertTrue(host.getCredentials().validate(profile, options));
-        assertEquals("API Key", options.getPasswordPlaceholder());
+        assertEquals(LocaleFactory.localizedString("Password", "Credentials"), options.getPasswordPlaceholder());
         assertTrue(HostPreferencesFactory.get(host).getBoolean("bookmark.weburl.configurable"));
         assertEquals("API Key (optional)", HostPreferencesFactory.get(host).getProperty("bookmark.password.label"));
         assertEquals("Leave blank to sign in using your browser", HostPreferencesFactory.get(host).getProperty("bookmark.password.placeholder"));

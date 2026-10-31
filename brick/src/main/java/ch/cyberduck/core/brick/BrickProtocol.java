@@ -93,11 +93,6 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getPasswordPlaceholder() {
-        return LocaleFactory.localizedString("API Key", "Credentials");
-    }
-
-    @Override
     public boolean isUsernameConfigurable() {
         return false;
     }

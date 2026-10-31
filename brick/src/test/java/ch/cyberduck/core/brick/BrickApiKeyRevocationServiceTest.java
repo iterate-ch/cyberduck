@@ -16,16 +16,61 @@ package ch.cyberduck.core.brick;
  */
 
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.ServerBootstrap;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 
+import java.net.InetAddress;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.testing.http.MockHttpTransport;
 import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 
 import static org.junit.Assert.*;
 
 public class BrickApiKeyRevocationServiceTest {
+    @Test(timeout = 10000)
+    public void testApacheTransportDoesNotFollowRedirects() throws Exception {
+        final AtomicInteger redirectedRequests = new AtomicInteger();
+        final AtomicInteger revocations = new AtomicInteger();
+        final HttpServer destination = ServerBootstrap.bootstrap().setLocalAddress(InetAddress.getByName("127.0.0.1"))
+                .registerHandler("*", (request, response, context) -> {
+                    redirectedRequests.incrementAndGet();
+                    response.setStatusCode(204);
+                }).create();
+        final HttpServer origin = ServerBootstrap.bootstrap().setLocalAddress(InetAddress.getByName("127.0.0.1"))
+                .registerHandler("*", (request, response, context) -> {
+                    revocations.incrementAndGet();
+                    assertEquals("DELETE", request.getRequestLine().getMethod());
+                    assertEquals("api-key", request.getFirstHeader("X-FilesAPI-Key").getValue());
+                    response.setStatusCode(303);
+                    response.setHeader("Location", String.format("http://127.0.0.1:%d/api_key", destination.getLocalPort()));
+                }).create();
+        try {
+            destination.start();
+            origin.start();
+            try(CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+                    .setRedirectsEnabled(true).setConnectTimeout(3000).setSocketTimeout(3000).build()).build()) {
+                final HttpResponseException failure = assertThrows(HttpResponseException.class, () ->
+                        new BrickApiKeyRevocationService(new ApacheHttpTransport(client)).revoke(
+                                URI.create(String.format("http://127.0.0.1:%d", origin.getLocalPort())), "api-key"));
+                assertEquals(303, failure.getStatusCode());
+                assertEquals(1, revocations.get());
+                assertEquals(0, redirectedRequests.get());
+            }
+        }
+        finally {
+            origin.shutdown(0, TimeUnit.MILLISECONDS);
+            destination.shutdown(0, TimeUnit.MILLISECONDS);
+        }
+    }
+
     @Test
     public void testDeletedAndAlreadyInvalidKeysSucceed() throws Exception {
         for(final int status : new int[]{200, 204, 401, 404}) {
