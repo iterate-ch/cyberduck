@@ -17,11 +17,16 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Pairing;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.auto.service.AutoService;
 
@@ -44,6 +49,65 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getOAuthClientId() {
+        return "cyberduck";
+    }
+
+    @Override
+    public String getOAuthClientSecret() {
+        return "";
+    }
+
+    @Override
+    public String getOAuthAuthorizationUrl() {
+        return "/auth/oauth/authorize";
+    }
+
+    @Override
+    public String getOAuthTokenUrl() {
+        return "/auth/oauth/token";
+    }
+
+    @Override
+    public String getOAuthRedirectUrl() {
+        return "http://127.0.0.1/oauth/callback";
+    }
+
+    @Override
+    public List<String> getOAuthScopes() {
+        return Collections.singletonList("desktop");
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        final Map<String, String> properties = new HashMap<>();
+        properties.put("oauth.browser.success.url", "/desktopSetup?client_id=cyberduck");
+        properties.put("bookmark.password.label", LocaleFactory.localizedString("API Key (optional)", "Credentials"));
+        properties.put("bookmark.password.placeholder", LocaleFactory.localizedString("Leave blank to sign in using your browser", "Brick"));
+        return properties;
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        return true;
+    }
+
+    @Override
+    public String getPasswordPlaceholder() {
+        return LocaleFactory.localizedString("API Key", "Credentials");
+    }
+
+    @Override
+    public boolean isUsernameConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isOAuthConfigurable() {
+        return false;
+    }
+
+    @Override
     public Scheme getScheme() {
         return Scheme.https;
     }
@@ -60,7 +124,7 @@ public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
-        // Will get new pairing key if missing credentials
+        // Authorize in the browser if no API key is saved.
         return true;
     }
 
@@ -73,10 +137,7 @@ public class BrickProtocol extends AbstractProtocol {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Pairing.class) {
-            return (T) new BrickPairingFeature();
-        }
-        if(type == CredentialsConfigurator.class) {
-            return (T) new BrickCredentialsConfigurator();
+            return (T) new BrickCredentialsDeleteFeature();
         }
         return super.getFeature(type);
     }

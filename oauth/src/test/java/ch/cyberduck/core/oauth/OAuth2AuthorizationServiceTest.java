@@ -45,6 +45,19 @@ import static org.junit.Assert.*;
 public class OAuth2AuthorizationServiceTest {
 
     @Test
+    public void testTokenResponseExtensions() {
+        final OAuth2AuthorizationService.PermissiveTokenResponse response = new OAuth2AuthorizationService.PermissiveTokenResponse();
+        response.set("access_token", "access");
+        response.set("token_type", "Bearer");
+        response.set("expires_in", "300");
+        response.set("files_api_key", Collections.singletonMap("password", "api-key"));
+        final IdTokenResponse token = response.toTokenResponse();
+        assertEquals("access", token.getAccessToken());
+        assertEquals(Long.valueOf(300), token.getExpiresInSeconds());
+        assertEquals(Collections.singletonMap("password", "api-key"), token.get("files_api_key"));
+    }
+
+    @Test
     public void testToRedirectUriLoopbackWithoutPort() throws Exception {
         final URI uri = URI.create(OAuth2AuthorizationService.toRedirectUri("http://localhost/"));
         assertEquals("http", uri.getScheme());

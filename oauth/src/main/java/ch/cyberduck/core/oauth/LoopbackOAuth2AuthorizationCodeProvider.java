@@ -23,9 +23,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -76,25 +76,31 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                 public void handle(final HttpExchange exchange) throws IOException {
                     log.debug("Received callback with query {}", exchange.getRequestURI().getQuery());
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(exchange.getRequestURI(), Charset.defaultCharset());
-                    String state = StringUtils.EMPTY;
+                    String callbackState = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
                         if(StringUtils.equals(pair.getName(), "state")) {
-                            state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                            callbackState = pair.getValue();
                         }
                         if(StringUtils.equals(pair.getName(), "code")) {
                             code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
                         }
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                    if(oauth.notify(state, code)) {
-                        exchange.getResponseHeaders().add(HttpHeaders.LOCATION, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
-                        exchange.sendResponseHeaders(302, 0L);
+                    final boolean recognized = StringUtils.equals(state, callbackState) && oauth.notify(callbackState, code);
+                    final String successUrl = HostPreferencesFactory.get(bookmark).getProperty("oauth.browser.success.url");
+                    exchange.getResponseHeaders().set(HttpHeaders.CACHE_CONTROL, "no-store");
+                    exchange.getResponseHeaders().set("Referrer-Policy", "no-referrer");
+                    if(recognized) {
+                        // Keep the authorization code and state on the loopback callback.
+                        exchange.getResponseHeaders().set(HttpHeaders.LOCATION, StringUtils.isNotBlank(code) && StringUtils.isNotBlank(successUrl) ?
+                                URI.create(authorizationCodeUrl).resolve(successUrl).toString() : OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                        exchange.sendResponseHeaders(302, -1);
                     }
                     else {
-                        exchange.sendResponseHeaders(400, 0);
+                        exchange.sendResponseHeaders(400, -1);
                     }
-                    IOUtils.close(exchange.getResponseBody());
+                    exchange.close();
                 }
             });
             server.setExecutor(executor);
@@ -111,7 +117,8 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                 return authenticationCode.get();
             }
             finally {
-                server.stop(0);
+                // Finish serving the callback page before closing the loopback listener.
+                server.stop(1);
                 executor.shutdown();
             }
         }

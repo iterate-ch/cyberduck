@@ -531,13 +531,14 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 NSControl.NSControlTextDidEndEditingNotification,
                 field.id());
         this.addObserver(bookmark -> {
-            passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
+            passwordField.cell().setPlaceholderString(StringUtils.defaultIfBlank(
+                    HostPreferencesFactory.get(bookmark).getProperty("bookmark.password.placeholder"), options.getPasswordPlaceholder()));
             passwordField.setEnabled(this.isPasswordEditable() && !bookmark.getCredentials().isAnonymousLogin());
             if(options.password && options.keychain) {
                 if(StringUtils.isBlank(bookmark.getHostname())) {
                     return;
                 }
-                if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                if(options.user && StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
                     return;
                 }
                 // Password is read from keychain and never kept in the model; empty if none saved
@@ -566,7 +567,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
             if(StringUtils.isBlank(bookmark.getHostname())) {
                 return;
             }
-            if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+            if(options.user && StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
                 return;
             }
             if(StringUtils.isBlank(passwordField.stringValue())) {
@@ -583,7 +584,8 @@ public abstract class BookmarkController extends SheetController implements NSTa
     public void setPasswordLabel(final NSTextField passwordLabel) {
         this.passwordLabel = passwordLabel;
         this.addObserver(bookmark -> passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                String.format("%s:", options.getPasswordPlaceholder()), TRUNCATE_TAIL_ATTRIBUTES
+                String.format("%s:", StringUtils.defaultIfBlank(
+                        HostPreferencesFactory.get(bookmark).getProperty("bookmark.password.label"), options.getPasswordPlaceholder())), TRUNCATE_TAIL_ATTRIBUTES
         )));
     }
 

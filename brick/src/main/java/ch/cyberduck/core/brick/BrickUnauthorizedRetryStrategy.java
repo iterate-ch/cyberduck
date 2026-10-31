@@ -17,12 +17,11 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
@@ -30,18 +29,19 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
+public class BrickUnauthorizedRetryStrategy implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(BrickUnauthorizedRetryStrategy.class);
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -50,7 +50,7 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
     private final LoginCallback prompt;
     private final CancelCallback cancel;
 
-    private String apiKey = StringUtils.EMPTY;
+    private volatile String apiKey = StringUtils.EMPTY;
 
     public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt, final CancelCallback cancel) {
         this.session = session;
@@ -58,31 +58,27 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
         this.cancel = cancel;
     }
 
-    @Override
-    public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
+    public boolean retryRequest(final ApiException failure, final int executionCount) throws BackgroundException {
+        if(executionCount > 1) {
+            return false;
+        }
+        switch(failure.getCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
                 log.debug("Try to acquire semaphore for {}", session);
-                // Pairing token no longer valid
+                // API key no longer valid
                 if(!lock.tryLock()) {
-                    log.warn("Skip pairing because semaphore cannot be aquired for {}", session);
+                    log.warn("Skip authorization because semaphore cannot be acquired for {}", session);
                     return false;
                 }
                 try {
-                    log.warn("Run pairing flow for {}", session);
-                    // Blocks until pairing is complete or canceled
-                    final Credentials credentials = session.pair(session.getHost(), prompt, prompt, new BackgroundActionRegistryCancelCallback(cancel),
-                            LocaleFactory.localizedString("You've been logged out", "Brick"),
-                            LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick")
-                    );
+                    log.warn("Run OAuth flow for {}", session);
+                    // Blocks until authorization is complete or canceled
+                    final Credentials credentials = session.authorize(prompt, new BackgroundActionRegistryCancelCallback(cancel));
                     if(credentials.isSaved()) {
                         store.save(session.getHost());
                     }
                     apiKey = credentials.getPassword();
                     return true;
-                }
-                catch(BackgroundException e) {
-                    log.warn("Failure {} trying to refresh pairing after error response {}", e, response);
                 }
                 finally {
                     log.debug("Release semaphore for {}", session);
@@ -98,10 +94,20 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+        request.removeHeaders("X-FilesAPI-Key");
+        if(!this.isApiRequest(context)) {
+            return;
+        }
         if(StringUtils.isNotBlank(apiKey)) {
-            request.removeHeaders("X-FilesAPI-Key");
             request.addHeader("X-FilesAPI-Key", apiKey);
         }
+    }
+
+    private boolean isApiRequest(final HttpContext context) {
+        final HttpHost target = HttpCoreContext.adapt(context).getTargetHost();
+        return target == null || (StringUtils.equalsIgnoreCase(target.getHostName(), session.getHost().getHostname())
+                && StringUtils.equalsIgnoreCase(target.getSchemeName(), session.getHost().getProtocol().getScheme().name())
+                && (target.getPort() == -1 ? 443 : target.getPort()) == session.getHost().getPort());
     }
 
     private static final class BackgroundActionRegistryCancelCallback implements CancelCallback {
