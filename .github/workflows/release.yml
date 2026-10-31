@@ -235,3 +235,42 @@ jobs:
           Get-ChildItem "release\duck.*.nupkg" | ForEach-Object {
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
+
+  # Submit the APPX to the Microsoft Store. Release only. Creates a new submission
+  # from the built package and commits it for certification.
+  store:
+    needs: [ check, deploy ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ self-hosted, windows, x64 ]
+    steps:
+      - name: Clean
+        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
+
+      - name: Download APPX
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck-*.appx
+          path: release
+          merge-multiple: true
+
+      - name: Setup Microsoft Store Developer CLI
+        uses: microsoft/microsoft-store-apppublisher@v1.4
+
+      - name: Configure Microsoft Store credentials
+        env:
+          MSSTORE_SELLER_ID: ${{ secrets.MSSTORE_SELLER_ID }}
+          MSSTORE_TENANT_ID: ${{ secrets.MSSTORE_TENANT_ID }}
+          MSSTORE_CLIENT_ID: ${{ secrets.MSSTORE_CLIENT_ID }}
+          MSSTORE_CLIENT_SECRET: ${{ secrets.MSSTORE_CLIENT_SECRET }}
+        run: msstore reconfigure --tenantId $env:MSSTORE_TENANT_ID --sellerId $env:MSSTORE_SELLER_ID --clientId $env:MSSTORE_CLIENT_ID --clientSecret $env:MSSTORE_CLIENT_SECRET
+
+      - name: Publish to Microsoft Store
+        env:
+          MSSTORE_PRODUCT_ID: ${{ secrets.MSSTORE_PRODUCT_ID }}
+        run: |
+          Get-ChildItem "release\Cyberduck-*.appx" | ForEach-Object {
+            msstore publish $_.FullName -id $env:MSSTORE_PRODUCT_ID
+          }
