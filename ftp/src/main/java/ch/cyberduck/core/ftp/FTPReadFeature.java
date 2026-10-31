@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPReply;
@@ -104,9 +105,9 @@ public class FTPReadFeature implements Read {
                 super.close();
                 if(session.isConnected()) {
                     // Read 226 status after closing stream
-                    int reply = session.getClient().getReply();
+                    final int reply = session.getClient().getTransferReply();
                     if(!FTPReply.isPositiveCompletion(reply)) {
-                        final String text = session.getClient().getReplyString();
+                        final String text = session.getClient().getTransferReplyString();
                         if(status.isSegment()) {
                             // Ignore 451 and 426 response because stream was prematurely closed
                             log.warn("Ignore unexpected reply {} when completing file segment {}", text, status);
@@ -116,7 +117,7 @@ public class FTPReadFeature implements Read {
                         }
                         else {
                             log.warn("Unexpected reply {} when completing file download with status {}", text, status);
-                            throw new FTPException(session.getClient().getReplyCode(), text);
+                            throw new FTPException(reply, text);
                         }
                     }
                 }
@@ -124,6 +125,14 @@ public class FTPReadFeature implements Read {
             finally {
                 close.set(true);
             }
+        }
+
+        @Override
+        protected void afterRead(final int n) throws IOException {
+            if(IOUtils.EOF != n) {
+                session.getClient().keepAlive();
+            }
+            super.afterRead(n);
         }
     }
 }
