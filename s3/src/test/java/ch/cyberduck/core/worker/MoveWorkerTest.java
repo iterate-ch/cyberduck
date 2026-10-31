@@ -33,6 +33,7 @@ import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3VersionedObjectListService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -79,6 +80,25 @@ public class MoveWorkerTest extends AbstractS3Test {
                 new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(target), ProgressListener.noop).run(session);
+    }
+
+    @Test
+    public void testMoveCommonPrefixWithoutPlaceholder() throws Exception {
+        final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        // No placeholder object, directory only exists as common prefix of the file
+        final Path sourceDirectory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path targetDirectory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path sourceFile = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl),
+                new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Map<Path, Path> result = new MoveWorker(Collections.singletonMap(sourceDirectory, targetDirectory), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop).run(session);
+        assertEquals(2, result.size());
+        assertFalse(new S3FindFeature(session, acl).find(sourceFile));
+        assertTrue(new S3FindFeature(session, acl).find(new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file))));
+        assertTrue(new S3FindFeature(session, acl).find(targetDirectory));
+        // No placeholder object created at target
+        assertFalse(session.getClient().isObjectInBucket(home.getName(), new S3PathContainerService(session.getHost()).getKey(targetDirectory)));
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(targetDirectory), ProgressListener.noop).run(session);
     }
 
     @Test
