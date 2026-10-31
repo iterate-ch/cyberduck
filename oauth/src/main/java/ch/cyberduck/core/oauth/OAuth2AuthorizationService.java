@@ -540,6 +540,7 @@ public class OAuth2AuthorizationService {
                     .setExpiresInSeconds(expiresInSeconds)
                     .setAccessToken(accessToken)
                     .setRefreshToken(refreshToken);
+            response.putAll(this.getUnknownKeys());
             if(null == idToken) {
                 return response;
             }

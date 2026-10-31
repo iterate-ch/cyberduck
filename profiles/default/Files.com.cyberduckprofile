@@ -28,17 +28,19 @@
         <key>Default Hostname</key>
         <string>app.files.com</string>
         <key>Hostname Configurable</key>
-        <false/>
+        <true/>
         <key>Default Nickname</key>
         <string>Files.com</string>
         <key>Port Configurable</key>
         <false/>
         <key>Username Configurable</key>
-        <true/>
+        <false/>
         <key>Password Configurable</key>
         <true/>
         <key>Token Configurable</key>
-        <true/>
+        <false/>
+        <key>OAuth Configurable</key>
+        <false/>
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>

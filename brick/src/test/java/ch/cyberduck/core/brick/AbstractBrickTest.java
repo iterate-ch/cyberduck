@@ -65,7 +65,7 @@ public class AbstractBrickTest extends VaultTest {
         final Host host = new Host(profile, "mountainduck.files.com", new Credentials(
                 PROPERTIES.get("brick.user")
         ));
-        session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

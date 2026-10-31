@@ -52,6 +52,11 @@ public class BrickExceptionMappingService extends AbstractExceptionMappingServic
     public BackgroundException map(final ApiException failure) {
         log.warn("Map failure {}", failure.toString());
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof BackgroundException) {
+                return (BackgroundException) cause;
+            }
+        }
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SocketException) {
                 // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
