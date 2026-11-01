@@ -192,6 +192,7 @@ jobs:
         if: always()
         shell: bash
         run: |
+          GNUPGHOME="${{ runner.temp }}/gnupg"
           gpgconf --homedir "$GNUPGHOME" --kill all || true
           rm -rf "$GNUPGHOME"
 
