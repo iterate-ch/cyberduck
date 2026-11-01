@@ -92,7 +92,7 @@ public class TransferStatusTest {
         };
         final TransferStatus segment = new TransferStatus().setParent(overall);
         assertSame(transformed, segment.compute(local, HashAlgorithm.md5));
-        assertNull(segment.digest(HashAlgorithm.md5));
+        assertNotNull(segment.digest(HashAlgorithm.md5));
         // Parent of overall status
         assertSame(transformed, new TransferStatus().setParent(new TransferStatus().setParent(overall)).compute(local, HashAlgorithm.md5));
     }

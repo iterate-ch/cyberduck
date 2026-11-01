@@ -24,12 +24,10 @@ import ch.cyberduck.core.cryptomator.legacy.CryptoFilename;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
@@ -97,13 +95,13 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         final Find find = session._getFeature(Find.class);
         final Write write = session._getFeature(Write.class);
         if(!find.find(metadataRoot)) {
-            mkdir.mkdir(write, metadataRoot, this.status(session, metadataRoot));
+            mkdir.mkdir(write, metadataRoot, new TransferStatus());
         }
         if(!find.find(firstLevel)) {
-            mkdir.mkdir(write, firstLevel, this.status(session, firstLevel));
+            mkdir.mkdir(write, firstLevel, new TransferStatus());
         }
         if(!find.find(secondLevel)) {
-            mkdir.mkdir(write, secondLevel, this.status(session, secondLevel));
+            mkdir.mkdir(write, secondLevel, new TransferStatus());
         }
         if(!find.find(metadataFile)) {
             new ContentWriter(session).write(metadataFile, longFileNameBytes);
@@ -111,14 +109,6 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         log.info("Deflated {} to {}", filename, shortName);
         cache.put(filename, shortName);
         return shortName;
-    }
-
-    /**
-     * @return Status to create folder with checksum of empty content required for upload to a bucket with Object Lock
-     */
-    private TransferStatus status(final Session<?> session, final Path folder) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
-        return status.setChecksum(session._getFeature(Upload.class).checksum(folder, status).compute(new NullInputStream(0L), status));
     }
 
     @Override

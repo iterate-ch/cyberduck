@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,7 +42,6 @@ import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultUnlockException;
 import ch.cyberduck.core.vault.VaultVersion;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -219,9 +217,7 @@ public class CryptomatorVault extends AbstractVault {
             if(encryption != null) {
                 status.setEncryption(encryption.getDefault(home));
             }
-            // Checksum of empty content required for upload to a bucket with Object Lock
             final Write writer = session._getFeature(Write.class);
-            status.setChecksum(session._getFeature(Upload.class).checksum(home, status).compute(new NullInputStream(0L), status));
             directory.mkdir(writer, home, status);
             new ContentWriter(session).write(masterkeyPath, mkArray.toByteArray());
             // Create vaultconfig.cryptomator

@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -44,7 +43,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -252,8 +250,7 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, md5proxy, cryptomator);
         final Path file = new Path(vault, "t", EnumSet.of(Path.Type.file));
         // Checksum set in the status as in the touch worker
-        final TransferStatus status = new TransferStatus();
-        status.setChecksum(this.upload(session, cryptomator, HashAlgorithm.md5).checksum(file, status).compute(new NullInputStream(0L), status));
+        final TransferStatus status = new TransferStatus().setLength(0L);
         sent.set(null);
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(writer, file, status);
         assertEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()).hex, sent.get().hex);
