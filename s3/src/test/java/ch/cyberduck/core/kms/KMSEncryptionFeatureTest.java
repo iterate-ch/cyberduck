@@ -58,11 +58,11 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         assertEquals("aws:kms", value.algorithm);
         assertNotNull(value.key);
         final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(test);
-        assertNotEquals(Checksum.NONE, attr.getChecksum());
-        assertNotNull(attr.getETag());
-        assertNotEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted using SSE-S3.
         // If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is not the MD5 of the object data.
+        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertNotNull(attr.getETag());
+        assertNotEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertNotEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(attr.getETag()).hash);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
