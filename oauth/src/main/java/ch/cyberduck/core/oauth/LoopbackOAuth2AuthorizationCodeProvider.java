@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -75,15 +75,15 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                 @Override
                 public void handle(final HttpExchange exchange) throws IOException {
                     log.debug("Received callback with query {}", exchange.getRequestURI().getQuery());
-                    final List<NameValuePair> pairs = URLEncodedUtils.parse(exchange.getRequestURI(), Charset.defaultCharset());
+                    final List<NameValuePair> pairs = URLEncodedUtils.parse(exchange.getRequestURI(), StandardCharsets.UTF_8);
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
                         if(StringUtils.equals(pair.getName(), "state")) {
-                            state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                            state = pair.getValue();
                         }
                         if(StringUtils.equals(pair.getName(), "code")) {
-                            code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
+                            code = pair.getValue();
                         }
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
