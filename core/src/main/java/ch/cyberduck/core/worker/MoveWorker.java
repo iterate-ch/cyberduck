@@ -109,17 +109,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     final Path s = r.getKey();
                     final Path t = r.getValue();
                     if(s.isDirectory() && !feature.isRecursive(s, t)) {
-                        if(s.isPlaceholder() && PathAttributes.EMPTY.equals(session.getFeature(AttributesFinder.class).find(s))) {
-                            // Directory exists only implicitly as common prefix of its descendants. Do not create placeholder at target
-                            log.debug("Skip creating directory {} for implicit directory {}", t, s);
-                            result.put(s, t);
-                        }
-                        else {
-                            log.warn("Move operation is not recursive. Create directory {}", t);
-                            // Create directory unless copy implementation is recursive
-                            result.put(s, session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), t,
-                                    new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())));
-                        }
+                        log.warn("Move operation is not recursive. Create directory {}", t);
+                        // Create directory unless copy implementation is recursive
+                        result.put(s, session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), t,
+                                new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
@@ -145,14 +138,8 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                             }
                         };
                         final Path moved = feature.move(s, t, status, delete, callback);
-                        // Placeholder may only exist implicitly as common prefix and is not found before descendants are moved
                         if(PathAttributes.EMPTY.equals(moved.attributes())) {
-                            if(!s.isPlaceholder()) {
-                                result.put(s, new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
-                            }
-                            else {
-                                result.put(s, moved);
-                            }
+                            result.put(s, new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
                         }
                         else {
                             result.put(s, moved);
