@@ -1,0 +1,7 @@
+self-hosted-runner:
+  # Custom labels of self-hosted runners not known to actionlint
+  labels:
+    - linux-self-hosted
+    - macos-self-hosted
+    - windows-self-hosted
+    - ubuntu-26.04-arm
