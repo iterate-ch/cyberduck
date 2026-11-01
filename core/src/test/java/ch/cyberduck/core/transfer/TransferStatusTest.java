@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -29,7 +28,6 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 
 import static org.junit.Assert.*;
 
@@ -88,13 +86,8 @@ public class TransferStatusTest {
         final Checksum transformed = new Checksum(HashAlgorithm.md5, "00");
         final TransferStatus overall = new TransferStatus() {
             @Override
-            public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) {
+            public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) {
                 return transformed;
-            }
-
-            @Override
-            public MessageDigest digest(final HashAlgorithm algorithm) {
-                return null;
             }
         };
         final TransferStatus segment = new TransferStatus().setParent(overall);

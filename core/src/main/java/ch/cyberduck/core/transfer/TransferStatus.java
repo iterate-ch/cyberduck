@@ -38,6 +38,7 @@ import ch.cyberduck.core.random.NonceGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.Collections;
@@ -627,9 +628,13 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * @param local     Local file
      * @param algorithm Algorithm of the checksum
      * @return Checksum of the content with offset and length of this status
-     * @see #compute(Local, HashAlgorithm, TransferStatus)
+     * @see #compute(InputStream, HashAlgorithm, TransferStatus)
      */
     public Checksum compute(final Local local, final HashAlgorithm algorithm) throws BackgroundException {
+        return this.compute(local.getInputStream(), algorithm, this);
+    }
+
+    public Checksum compute(final InputStream local, final HashAlgorithm algorithm) throws BackgroundException {
         return this.compute(local, algorithm, this);
     }
 
@@ -639,9 +644,9 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      * @param segment   Status with offset and length of the content to calculate the checksum for
      * @return Checksum of the content sent to the server
      */
-    public Checksum compute(final Local local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
+    public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
         if(null == parent) {
-            return ChecksumComputeFactory.get(algorithm).compute(local.getInputStream(), segment);
+            return ChecksumComputeFactory.get(algorithm).compute(local, segment);
         }
         return parent.compute(local, algorithm, segment);
     }
