@@ -34,6 +34,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.EnumSet;
 
 public class CryptoUploadFeature<Reply> implements Upload<Reply> {
@@ -55,6 +56,12 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
             public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
                 // Checksum of the content after it is encrypted
                 return new CryptoChecksumCompute(ChecksumComputeFactory.get(algorithm), vault).compute(local, segment);
+            }
+
+            @Override
+            public MessageDigest digest(final HashAlgorithm algorithm) {
+                // Digest is applied by the write feature to the encrypted content
+                return null;
             }
         }), callback);
     }
