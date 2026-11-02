@@ -53,14 +53,7 @@ public class SFTPCopyDataFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback prompt, final StreamListener listener) throws BackgroundException {
         try {
-            try (final HandleFile read = this.open(source, EnumSet.of(OpenMode.READ), FileAttributes.EMPTY)) {
-                final FileAttributes attributes;
-                if(Permission.EMPTY != status.getPermission()) {
-                    attributes = new FileAttributes.Builder().withPermissions(Integer.parseInt(status.getPermission().getMode(), 8)).build();
-                }
-                else {
-                    attributes = FileAttributes.EMPTY;
-                }
+            try (final HandleFile read = this.open(source, EnumSet.of(OpenMode.READ))) {
                 final Set<OpenMode> modes = EnumSet.of(OpenMode.WRITE, OpenMode.CREAT);
                 if(status.isExists()) {
                     modes.add(OpenMode.TRUNC);
@@ -68,7 +61,7 @@ public class SFTPCopyDataFeature implements Copy {
                 else {
                     modes.add(OpenMode.EXCL);
                 }
-                try (final HandleFile write = this.open(target, modes, attributes)) {
+                try (final HandleFile write = this.open(target, modes)) {
                     final Request request = session.sftp().newExtendedRequest(EXTENSION)
                             .putString(read.handle())
                             .putUInt64(0L)
@@ -78,6 +71,10 @@ public class SFTPCopyDataFeature implements Copy {
                             .putUInt64(0L);
                     session.sftp().request(request).retrieve().ensureStatusPacketIsOK();
                 }
+            }
+            // Mode given when opening is not applied to an existing target and is masked by umask of server when creating
+            if(Permission.EMPTY != status.getPermission()) {
+                new SFTPUnixPermissionFeature(session).setUnixPermission(target, status);
             }
             if(null != status.getModified()) {
                 new SFTPTimestampFeature(session).setTimestamp(target, status);
@@ -97,11 +94,11 @@ public class SFTPCopyDataFeature implements Copy {
         }
     }
 
-    private HandleFile open(final Path file, final Set<OpenMode> modes, final FileAttributes attributes) throws IOException, BackgroundException {
+    private HandleFile open(final Path file, final Set<OpenMode> modes) throws IOException, BackgroundException {
         final byte[] handle = session.sftp().request(session.sftp().newRequest(PacketType.OPEN)
                         .putString(file.getAbsolute(), session.sftp().getSubsystem().getRemoteCharset())
                         .putUInt32(OpenMode.toMask(modes))
-                        .putFileAttributes(attributes))
+                        .putFileAttributes(FileAttributes.EMPTY))
                 .retrieve().ensurePacketTypeIs(PacketType.HANDLE).readBytes();
         return new HandleFile(session.sftp(), file.getAbsolute(), handle);
     }

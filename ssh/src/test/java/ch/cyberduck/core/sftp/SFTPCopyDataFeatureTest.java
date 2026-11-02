@@ -79,4 +79,16 @@ public class SFTPCopyDataFeatureTest extends AbstractSFTPTest {
         assertThrows(ConflictException.class, () -> new SFTPCopyDataFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
         new SFTPDeleteFeature(session).delete(java.util.Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testCopyOverwritePermissionFromStatus() throws Exception {
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
+        final Path copy = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), copy, new TransferStatus().setPermission(new StaticPermission("644")));
+        final Permission permission = new StaticPermission("600");
+        new SFTPCopyDataFeature(session).copy(test, copy, new TransferStatus().setExists(true).setPermission(permission), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertEquals(permission, new SFTPAttributesFinderFeature(session).find(copy).getPermission());
+        new SFTPDeleteFeature(session).delete(java.util.Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
