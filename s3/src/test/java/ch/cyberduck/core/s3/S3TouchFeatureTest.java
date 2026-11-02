@@ -53,6 +53,25 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testTouchObjectLockBucket() throws Exception {
+        final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3TouchFeature feature = new S3TouchFeature(session);
+        final String filename = new AsciiRandomStringService().random();
+        assertFalse(feature.isSupported(Home.root(), Optional.of(filename)));
+        assertTrue(feature.isSupported(container, Optional.of(filename)));
+        final TransferStatus status = new TransferStatus();
+        final Path test = feature.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, filename, EnumSet.of(Path.Type.file)), status);
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", status.getChecksum().hash);
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", test.attributes().getChecksum().hash);
+        assertNotNull(test.attributes().getVersionId());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", new S3AttributesFinderFeature(session, acl).find(test).getChecksum().hash);
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
+        assertThrows(AccessDeniedException.class, () -> new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback()));
+    }
+
+    @Test
     public void testTouchVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final S3TouchFeature feature = new S3TouchFeature(virtualhost);

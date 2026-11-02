@@ -25,13 +25,15 @@ import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.FileHeader;
 
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Optional;
 
@@ -53,10 +55,13 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
-        // Checksum of the encrypted empty content including the header generated above
-        status.setChecksum(new CryptoUploadFeature<>(session, session._getFeature(Upload.class), vault).checksum(file, status).compute(new NullInputStream(0L), status));
         final Path target = proxy.touch(writer, vault.encrypt(session, file), new TransferStatus(status) {
             @Override
+            public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
+                // Checksum of the content after it is encrypted
+                return new CryptoChecksumCompute(ChecksumComputeFactory.get(algorithm), vault).compute(local, segment);
+            }
+
             public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);
                 // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.

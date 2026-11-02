@@ -23,11 +23,9 @@ import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,14 +45,6 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         this.cryptomator = cryptomator;
     }
 
-    /**
-     * @return Status to create folder with checksum of empty content required for upload to a bucket with Object Lock
-     */
-    private TransferStatus status(final Path folder, final String region) throws BackgroundException {
-        final TransferStatus status = new TransferStatus().setRegion(region);
-        return status.setChecksum(session._getFeature(Upload.class).checksum(folder, status).compute(new NullInputStream(0L), status));
-    }
-
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         final byte[] directoryId = cryptomator.getDirectoryProvider().createDirectoryId(folder);
@@ -62,8 +52,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         // Create metadata file for directory
         final Write write = session._getFeature(Write.class);
         final Path metadataFolder = cryptomator.encrypt(session, folder, true);
-        final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
-                write, metadataFolder, this.status(metadataFolder, status.getRegion()));
+        final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(write, metadataFolder, new TransferStatus().setRegion(status.getRegion()));
         final Path directoryMetadataFile = new Path(directoryMetadataFolder,
                 CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE,
                 EnumSet.of(Path.Type.file));
@@ -71,7 +60,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         directoryMetadataFile.setAttributes(new ContentWriter(session).write(directoryMetadataFile, directoryId, new TransferStatus()));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(write, intermediate, this.status(intermediate, status.getRegion()));
+            session._getFeature(Directory.class).mkdir(write, intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
         final Path target = delegate.mkdir(writer, encrypt, status);
         // Implementation may return new copy of attributes without encryption attributes
