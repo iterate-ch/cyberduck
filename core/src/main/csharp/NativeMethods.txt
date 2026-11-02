@@ -11,7 +11,7 @@ CredFree
 CredRead
 CredWrite
 DefWindowProc
-E_NOTFOUND
+ERROR_NOT_FOUND
 ExtractIconEx
 FILE_ID_INFO
 FOLDERID_Downloads
