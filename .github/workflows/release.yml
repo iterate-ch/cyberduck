@@ -68,6 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          persist-credentials: false
           # The revision is the commit count at the tag
           fetch-depth: 0
 
@@ -141,6 +142,11 @@ jobs:
           url: sftp://dist.duck.sh/var/data/dist.duck.sh/
           path: release/duck-*
           args: '--existing overwrite --verbose'
+
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem
 
   # Publish a GitHub Release for the pushed tag with the installer artifacts
   # attached. Runs independently of `publish` so a delivery-channel failure

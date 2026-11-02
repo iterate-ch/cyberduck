@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -97,7 +98,7 @@ public class BoxAttributesFinderFeatureTest extends AbstractBoxTest {
         final PathAttributes attributes = f.find(test);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
+        assertEquals(Checksum.NONE, attributes.getChecksum());
         assertNull(attributes.getETag());
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
