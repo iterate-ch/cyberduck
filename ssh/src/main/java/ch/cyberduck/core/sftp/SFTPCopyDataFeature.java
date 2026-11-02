@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,7 +33,9 @@ import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.PacketType;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.Request;
+import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
+import net.schmizz.sshj.sftp.SFTPException;
 
 /**
  * Server side copy using the <code>copy-data</code> extension as implemented by OpenSSH sftp-server
@@ -61,7 +62,7 @@ public class SFTPCopyDataFeature implements Copy {
                 else {
                     modes.add(OpenMode.EXCL);
                 }
-                try (final HandleFile write = this.open(target, modes)) {
+                try (final HandleFile write = this.create(target, modes)) {
                     final Request request = session.sftp().newExtendedRequest(EXTENSION)
                             .putString(read.handle())
                             .putUInt64(0L)
@@ -83,14 +84,29 @@ public class SFTPCopyDataFeature implements Copy {
             return new Path(target).withAttributes(new SFTPAttributesFinderFeature(session).find(target));
         }
         catch(IOException e) {
-            final BackgroundException failure = new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
-            if(failure instanceof InteroperabilityException) {
+            throw new SFTPExceptionMappingService().map("Cannot copy {0}", e, source);
+        }
+    }
+
+    /**
+     * Open target for writing. A generic failure to exclusively create the target is reported as conflict.
+     */
+    private HandleFile create(final Path target, final Set<OpenMode> modes) throws BackgroundException {
+        try {
+            return this.open(target, modes);
+        }
+        catch(SFTPException e) {
+            final BackgroundException failure = new SFTPExceptionMappingService().map("Cannot copy {0}", e, target);
+            if(modes.contains(OpenMode.EXCL) && Response.StatusCode.FAILURE == e.getStatusCode()) {
                 // Generic failure status in SFTP version 3 for existing target
                 final ConflictException conflict = new ConflictException(failure.getDetail(false), failure);
                 conflict.setMessage(failure.getMessage());
-                throw conflict.withFile(source);
+                throw conflict.withFile(target);
             }
             throw failure;
+        }
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map("Cannot copy {0}", e, target);
         }
     }
 
