@@ -108,7 +108,7 @@ jobs:
       - name: Upload Feed (macOS)
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -119,7 +119,7 @@ jobs:
       - name: Upload Feed (Windows)
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -230,7 +230,7 @@ jobs:
       - name: SFTP Upload (aarch64)
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -241,7 +241,7 @@ jobs:
       - name: SFTP Upload (x86_64)
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -251,7 +251,7 @@ jobs:
 
       - name: Rebuild Repository Metadata
         env:
-          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_USER: ${{ vars.SFTP_USER }}
           KEYFILE: ${{ steps.identity.outputs.KEYFILE }}
         shell: bash
         run: |

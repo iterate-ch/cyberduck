@@ -135,7 +135,7 @@ jobs:
       - name: SFTP Upload
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
