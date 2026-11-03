@@ -280,3 +280,16 @@ jobs:
             Move-Item $upload $msixupload -Force
             msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID
           }
+
+      # The self-hosted runner account persists the CLI configuration and token cache
+      # beyond the job. Remove them unconditionally, including on failure.
+      - name: Remove Microsoft Store credentials
+        if: ${{ always() }}
+        run: |
+          msstore reconfigure --reset 2>$null
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Microsoft\msstore" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\.IdentityService" -ErrorAction SilentlyContinue
+          cmdkey /list | Select-String -Pattern 'msstore' | ForEach-Object {
+            if ($_ -match 'Target:\s*(\S+)') { cmdkey /delete:$Matches[1] }
+          }
+          exit 0
