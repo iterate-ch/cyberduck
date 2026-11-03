@@ -149,6 +149,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "No CloudFront");
         this.assumeNot(S3TestServer.MINIO, "No CloudFront");
         this.assumeNot(S3TestServer.CEPH, "No CloudFront");
+        this.assumeNot(S3TestServer.RUSTFS, "No CloudFront");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -170,6 +171,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
+        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(name, EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2018);

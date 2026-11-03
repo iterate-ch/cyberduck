@@ -111,6 +111,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
+        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);

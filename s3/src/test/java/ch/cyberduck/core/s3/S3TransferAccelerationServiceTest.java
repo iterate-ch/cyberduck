@@ -53,6 +53,7 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "No transfer acceleration");
         this.assumeNot(S3TestServer.MINIO, "No transfer acceleration");
         this.assumeNot(S3TestServer.CEPH, "No transfer acceleration");
+        this.assumeNot(S3TestServer.RUSTFS, "No transfer acceleration");
         final AtomicBoolean b = new AtomicBoolean();
         session.withListener(new TranscriptListener() {
             @Override

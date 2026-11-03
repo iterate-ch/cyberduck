@@ -65,6 +65,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -101,6 +102,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -137,6 +139,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
+        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(new S3DirectoryFeature(session).isSupported(test.getParent(), Optional.of(test.getName())));
@@ -153,6 +156,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "No notification of request");
         this.assumeNot(S3TestServer.MINIO, "No notification of request");
         this.assumeNot(S3TestServer.CEPH, "No notification of request");
+        this.assumeNot(S3TestServer.RUSTFS, "No notification of request");
         final AtomicBoolean b = new AtomicBoolean();
         final String name = new AlphanumericRandomStringService().random();
         session.withListener(new TranscriptListener() {
@@ -216,6 +220,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreatePlaceholderVersioningDeleteWithMarker() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -235,6 +240,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testDirectoryDeleteWithVersioning() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path parent = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
@@ -274,6 +280,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
+        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3DirectoryFeature(virtualhost).mkdir(
                 new S3WriteFeature(virtualhost, acl), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

@@ -51,13 +51,18 @@ public enum S3TestServer {
     /**
      * Ceph RADOS Gateway. Container image can be overridden with environment <code>CEPH_IMAGE</code>.
      */
-    CEPH;
+    CEPH,
+    /**
+     * RustFS. Container image can be overridden with environment <code>RUSTFS_IMAGE</code>.
+     */
+    RUSTFS;
 
     public static final String ACCESS_KEY = "test";
     public static final String SECRET_KEY = "testtest";
     private static final int LOCALSTACK_PORT = 4566;
     private static final int MINIO_PORT = 9000;
     private static final int CEPH_PORT = 8080;
+    private static final int RUSTFS_PORT = 9000;
 
     private GenericContainer<?> container;
 
@@ -72,6 +77,7 @@ public enum S3TestServer {
             case MINIO:
                 return StringUtils.isNotBlank(System.getenv("MINIO_LICENSE"));
             case CEPH:
+            case RUSTFS:
                 return true;
             default:
                 return StringUtils.isNotBlank(System.getenv("VAULT_TOKEN"));
@@ -90,6 +96,9 @@ public enum S3TestServer {
                     break;
                 case CEPH:
                     created = ceph();
+                    break;
+                case RUSTFS:
+                    created = rustfs();
                     break;
                 default:
                     throw new IllegalStateException(String.format("No container for %s", this));
@@ -135,6 +144,20 @@ public enum S3TestServer {
                 .waitingFor(Wait.forHttp("/minio/health/ready").forPort(MINIO_PORT).withStartupTimeout(Duration.ofMinutes(5)));
         created.start();
         createBuckets(network, null, "http://minio:9000", null);
+        return created;
+    }
+
+    private static GenericContainer<?> rustfs() {
+        final Network network = Network.newNetwork();
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("RUSTFS_IMAGE"), "rustfs/rustfs:latest")))
+                .withNetwork(network)
+                .withNetworkAliases("rustfs")
+                .withEnv("RUSTFS_ACCESS_KEY", ACCESS_KEY)
+                .withEnv("RUSTFS_SECRET_KEY", SECRET_KEY)
+                .withExposedPorts(RUSTFS_PORT)
+                .waitingFor(Wait.forHttp("/health").forPort(RUSTFS_PORT).withStartupTimeout(Duration.ofMinutes(5)));
+        created.start();
+        createBuckets(network, null, "http://rustfs:9000", null);
         return created;
     }
 
@@ -191,6 +214,8 @@ public enum S3TestServer {
                 return this.container().getMappedPort(MINIO_PORT);
             case CEPH:
                 return this.container().getMappedPort(CEPH_PORT);
+            case RUSTFS:
+                return this.container().getMappedPort(RUSTFS_PORT);
             default:
                 return this.container().getMappedPort(LOCALSTACK_PORT);
         }

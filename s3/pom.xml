@@ -104,6 +104,7 @@
                         <LOCALSTACK/>
                         <MINIO/>
                         <CEPH/>
+                        <RUSTFS/>
                     </environmentVariables>
                 </configuration>
             </plugin>

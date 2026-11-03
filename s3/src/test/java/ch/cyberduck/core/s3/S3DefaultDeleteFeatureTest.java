@@ -66,6 +66,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
+        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, acl), test, new TransferStatus());
@@ -116,6 +117,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     public void testDeleteNotFoundBucket() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
         this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
+        this.assumeNot(S3TestServer.RUSTFS, "Reply for missing bucket differs");
         final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }

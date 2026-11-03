@@ -56,6 +56,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTP).cyberduckprofile"));
@@ -101,6 +102,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -120,6 +122,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS STS");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS STS");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS STS");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS STS");
         final S3Protocol protocol = new S3Protocol();
         final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials()
                 .setTokens(new TemporaryAccessTokens(
@@ -145,6 +148,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
@@ -163,6 +167,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
@@ -220,6 +225,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -234,6 +240,7 @@ public class S3SessionTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
