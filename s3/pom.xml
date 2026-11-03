@@ -115,6 +115,8 @@
                     <groups>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest</groups>
                     <environmentVariables>
                         <AWS/>
+                        <AWS_VIRTUALHOST/>
+                        <AWS_CLOUDFRONT/>
                     </environmentVariables>
                 </configuration>
             </plugin>

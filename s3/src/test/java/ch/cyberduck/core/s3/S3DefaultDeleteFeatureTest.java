@@ -62,17 +62,14 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testDeleteFileVirtualHost() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, acl), test, new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Arrays.asList(test, test), LoginCallback.noop, new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, acl), test, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(test, test), LoginCallback.noop, new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
     @Test

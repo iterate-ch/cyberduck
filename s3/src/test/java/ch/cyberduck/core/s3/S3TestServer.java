@@ -39,6 +39,15 @@ public enum S3TestServer {
      */
     AWS,
     /**
+     * Hosted Amazon S3 with bucket name in the hostname. Only run tests annotated with {@link RunOn}.
+     */
+    AWS_VIRTUALHOST,
+    /**
+     * Hosted Amazon S3 with CloudFront distribution using a bucket as origin. Only run tests annotated with
+     * {@link RunOn}.
+     */
+    AWS_CLOUDFRONT,
+    /**
      * LocalStack requires an auth token in environment <code>LOCALSTACK_AUTH_TOKEN</code>. Container image can be
      * overridden with environment <code>LOCALSTACK_IMAGE</code>.
      */
@@ -65,6 +74,20 @@ public enum S3TestServer {
     private static final int RUSTFS_PORT = 9000;
 
     private GenericContainer<?> container;
+
+    /**
+     * @return True for configurations of a server that only run tests annotated with {@link RunOn}
+     */
+    public boolean isVariant() {
+        return this == AWS_VIRTUALHOST || this == AWS_CLOUDFRONT;
+    }
+
+    /**
+     * @return True for hosted Amazon S3
+     */
+    public boolean isHosted() {
+        return this == AWS || this.isVariant();
+    }
 
     /**
      * @return False if prerequisites to run server are not met

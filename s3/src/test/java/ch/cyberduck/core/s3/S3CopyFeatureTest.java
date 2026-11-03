@@ -107,21 +107,18 @@ public class S3CopyFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testCopyFileVirtualHostBucket() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
-        final Path copy = new S3CopyFeature(virtualhost, acl).copy(test,
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path copy = new S3CopyFeature(session, acl).copy(test,
                 new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        assertEquals("m", new S3MetadataFeature(virtualhost, acl).getMetadata(copy).get("cyberduck"));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(copy));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertEquals("m", new S3MetadataFeature(session, acl).getMetadata(copy).get("cyberduck"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session, acl).find(copy));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

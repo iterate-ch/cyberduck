@@ -16,12 +16,15 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
@@ -49,23 +52,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractS3Test extends VaultTest {
 
+    /**
+     * Connection to the server selected
+     */
     protected S3Session session;
 
     /**
-     * Connection with virtual host domain name
+     * Connection to hosted Amazon S3 with default endpoint. Available for all configurations of Amazon S3 and the same
+     * as {@link #session} for {@link S3TestServer#AWS}
      */
-    protected S3Session virtualhost;
-
-    /**
-     * Cloudfront distribution with S3 bucket origin
-     */
-    protected S3Session cloudfront;
+    protected S3Session aws;
 
     /**
      * @return Server implementations to run against. Select with environment variables named after the server
@@ -105,6 +109,19 @@ public abstract class AbstractS3Test extends VaultTest {
     public VaultVersion.Type vaultVersion;
 
     /**
+     * Compare attributes. The modification date of servers other than hosted Amazon S3 may differ by a second between
+     * the response when creating an object and the later lookup.
+     */
+    protected void assertAttributesEquals(final PathAttributes expected, final PathAttributes actual) {
+        if(!server.isHosted() && Math.abs(expected.getModificationDate() - actual.getModificationDate()) <= 1000L) {
+            assertEquals(new DefaultPathAttributes(expected).setModificationDate(actual.getModificationDate()), actual);
+        }
+        else {
+            assertEquals(expected, actual);
+        }
+    }
+
+    /**
      * Skip test if server implementation is not expected to pass
      */
     protected void assumeNot(final S3TestServer excluded, final String reason) {
@@ -116,11 +133,8 @@ public abstract class AbstractS3Test extends VaultTest {
         if(session != null) {
             session.close();
         }
-        if(virtualhost != null) {
-            virtualhost.close();
-        }
-        if(cloudfront != null) {
-            cloudfront.close();
+        if(aws != null && aws != session) {
+            aws.close();
         }
     }
 
@@ -131,87 +145,76 @@ public abstract class AbstractS3Test extends VaultTest {
     public final TestRule availability = (base, description) -> new Statement() {
         @Override
         public void evaluate() throws Throwable {
+            final RunOn only = description.getAnnotation(RunOn.class);
+            if(null == only) {
+                assumeFalse(String.format("Only runs with annotation for %s", server), server.isVariant());
+            }
+            else {
+                assumeTrue(String.format("Only runs with %s", Arrays.toString(only.value())), Arrays.asList(only.value()).contains(server));
+            }
             assumeTrue(String.format("Server %s not available", server), server.isAvailable());
             base.evaluate();
         }
     };
 
     @Before
-    public void setupDefault() throws Exception {
-        if(server != S3TestServer.AWS) {
-            session = this.connect();
-            return;
+    public void setup() throws Exception {
+        switch(server) {
+            case AWS:
+                aws = session = this.hosted("/Amazon S3.cyberduckprofile", null, new TestPasswordStore());
+                break;
+            case AWS_VIRTUALHOST:
+                aws = this.hosted("/Amazon S3.cyberduckprofile", null, new TestPasswordStore());
+                session = this.hosted("/Amazon S3.cyberduckprofile", "test-eu-central-1-cyberduck.s3.amazonaws.com", new TestPasswordStore());
+                break;
+            case AWS_CLOUDFRONT:
+                aws = this.hosted("/Amazon S3.cyberduckprofile", null, new TestPasswordStore());
+                session = this.cloudfront();
+                break;
+            default:
+                session = this.connect();
         }
+    }
+
+    private S3Session hosted(final String resource, final String hostname, final HostPasswordStore keychain) throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream(resource));
+        final Host host = new Host(profile, null == hostname ? profile.getDefaultHostname() : hostname, new Credentials(
                 PROPERTIES.get("s3.key")
         )) {
             @Override
             public String getProperty(final String key) {
-                if("s3.listing.versioning.enable".equals(key)) {
+                if(null == hostname && "s3.listing.versioning.enable".equals(key)) {
                     return String.valueOf(true);
                 }
                 return super.getProperty(key);
             }
         };
-        session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+        final S3Session connection = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }
-        }, HostKeyCallback.noop,
-                new TestPasswordStore(), ProgressListener.noop);
-        login.check(session, CancelCallback.noop);
+        }, HostKeyCallback.noop, keychain, ProgressListener.noop).check(connection, CancelCallback.noop);
+        return connection;
     }
 
-    @Before
-    public void setupVirtualHost() throws Exception {
-        if(server != S3TestServer.AWS) {
-            virtualhost = this.connect();
-            return;
-        }
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
-        final Host host = new Host(profile, "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
-                PROPERTIES.get("s3.key")
-        ));
-        virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
-            }
-        }, HostKeyCallback.noop,
-                new TestPasswordStore(), ProgressListener.noop);
-        login.check(virtualhost, CancelCallback.noop);
-    }
-
-    @Before
-    public void setupCloudFront() throws Exception {
-        if(server != S3TestServer.AWS) {
-            // Not available
-            return;
-        }
+    private S3Session cloudfront() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).setRegion("eu-central-1");
-        cloudfront = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+        final S3Session connection = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }
-        }, HostKeyCallback.noop,
-                new DisabledPasswordStore(), ProgressListener.noop);
-        login.check(cloudfront, CancelCallback.noop);
+        }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop).check(connection, CancelCallback.noop);
+        return connection;
     }
 
     private S3Session connect() throws Exception {

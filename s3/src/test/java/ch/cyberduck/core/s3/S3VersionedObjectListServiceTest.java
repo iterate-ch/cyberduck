@@ -73,9 +73,10 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testListVirtualHostStyle() throws Exception {
         final Path bucket = Home.root();
-        assertNotSame(AttributedList.EMPTY, new S3VersionedObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
+        assertNotSame(AttributedList.EMPTY, new S3VersionedObjectListService(session, new S3AccessControlListFeature(session)).list(
                 bucket, new DisabledListProgressListener()));
     }
 

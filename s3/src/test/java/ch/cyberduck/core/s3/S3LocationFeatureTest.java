@@ -158,13 +158,10 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testAccessBucketNameInHostname() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final RegionEndpointCache cache = virtualhost.getClient().getRegionEndpointCache();
-        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(Home.root()));
+        final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(Home.root()));
         assertEquals("eu-central-1", cache.getRegionForBucketName(""));
     }
 
@@ -192,7 +189,8 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testVirtualhost() {
-        assertTrue(new S3LocationFeature(virtualhost, virtualhost.getClient().getRegionEndpointCache()).getLocations(Home.root()).isEmpty());
+        assertTrue(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocations(Home.root()).isEmpty());
     }
 }

@@ -86,13 +86,10 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testWriteVirtualHost() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(virtualhost, acl);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -108,16 +105,16 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         assertNotNull(out.getStatus());
         assertEquals(content.length, status.getResponse().getSize());
         assertEquals(content.length, out.getStatus().getContentLength());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(file));
-        final PathAttributes attr = new S3AttributesFinderFeature(virtualhost, acl).find(file);
+        assertTrue(new S3FindFeature(session, acl).find(file));
+        final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(content.length, attr.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new S3ReadFeature(virtualhost).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
+        final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

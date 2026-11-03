@@ -37,8 +37,9 @@ import static org.junit.Assert.assertNotNull;
 public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testListBucketNameInHostname() throws Exception {
-        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(Home.root(), new DisabledListProgressListener());
+        new S3ListService(session, new S3AccessControlListFeature(session)).list(Home.root(), new DisabledListProgressListener());
     }
 
     @Test

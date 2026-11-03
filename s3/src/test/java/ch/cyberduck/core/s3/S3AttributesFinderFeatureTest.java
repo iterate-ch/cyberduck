@@ -217,7 +217,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        this.assertAttributesEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
         // Add delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertNotNull(test.attributes().getVersionId());
@@ -234,20 +234,34 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_CLOUDFRONT)
     public void testCloudFront() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "No CloudFront");
-        this.assumeNot(S3TestServer.MINIO, "No CloudFront");
-        this.assumeNot(S3TestServer.CEPH, "No CloudFront");
-        this.assumeNot(S3TestServer.RUSTFS, "No CloudFront");
-        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(cloudfront, new S3AccessControlListFeature(cloudfront));
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         final String name = new AlphanumericRandomStringService().random();
         final TransferStatus status = new TransferStatus();
         status.setAcl(Acl.CANNED_PUBLIC_READ);
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path file = new S3TouchFeature(session).touch(
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(aws);
+        final Path file = new S3TouchFeature(aws).touch(
+                new S3WriteFeature(aws, new S3AccessControlListFeature(aws)), new Path(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                         name, EnumSet.of(Path.Type.file)), status);
+        final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
+        assertEquals(0L, attributes.getSize());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
+        assertNotEquals(-1L, attributes.getModificationDate());
+        new S3DefaultDeleteFeature(aws, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
+    public void testVirtualHostStyle() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, acl);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+        final String name = new AlphanumericRandomStringService().random();
+        final TransferStatus status = new TransferStatus();
+        final Path file = new S3TouchFeature(session).touch(
+                new S3WriteFeature(session, acl), new Path(name, EnumSet.of(Path.Type.file)), status);
         final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
@@ -255,35 +269,12 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
-    @Test
-    public void testVirtualHostStyle() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost, acl);
-        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
-        final String name = new AlphanumericRandomStringService().random();
-        final TransferStatus status = new TransferStatus();
-        final Path file = new S3TouchFeature(virtualhost).touch(
-                new S3WriteFeature(virtualhost, acl), new Path(name, EnumSet.of(Path.Type.file)), status);
-        final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
-        assertEquals(0L, attributes.getSize());
-        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
-        assertNotEquals(-1L, attributes.getModificationDate());
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
-    }
-
     @Test(expected = NotfoundException.class)
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testDetermineRegionVirtualHostStyle() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        assertEquals("eu-central-1", virtualhost.getClient().getRegionEndpointCache().getRegionForBucketName(""));
-        assertEquals("eu-central-1", virtualhost.getClient().getRegionEndpointCache().getRegionForBucketName("test-eu-central-1-cyberduck"));
-        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
+        assertEquals("eu-central-1", session.getClient().getRegionEndpointCache().getRegionForBucketName(""));
+        assertEquals("eu-central-1", session.getClient().getRegionEndpointCache().getRegionForBucketName("test-eu-central-1-cyberduck"));
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // No region is cached and must be determined although HEAD request will not allow S3 to return correct region to use in AWS4 signature
         f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));

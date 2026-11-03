@@ -59,13 +59,10 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testListVirtualHostStyle() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
         final Path bucket = Home.root();
-        assertNotSame(AttributedList.EMPTY, new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
+        assertNotSame(AttributedList.EMPTY, new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(
                 bucket, new DisabledListProgressListener()));
     }
 

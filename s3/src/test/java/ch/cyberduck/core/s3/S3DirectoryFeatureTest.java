@@ -135,20 +135,17 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     }
 
     @Test(expected = InteroperabilityException.class)
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testCreateBucketInvalidName() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3DirectoryFeature(session).isSupported(test.getParent(), Optional.of(test.getName())));
-        assertTrue(new S3DirectoryFeature(virtualhost).isSupported(test.getParent(), Optional.of(test.getName())));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(aws);
+        final Path test = new Path(new DefaultHomeFinderService(aws).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertFalse(new S3DirectoryFeature(aws).isSupported(test.getParent(), Optional.of(test.getName())));
+        assertTrue(new S3DirectoryFeature(session).isSupported(test.getParent(), Optional.of(test.getName())));
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
-        new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
-        assertTrue(new S3FindFeature(session, acl).find(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3DirectoryFeature(aws).mkdir(new S3WriteFeature(aws, new S3AccessControlListFeature(aws)), test, new TransferStatus().setRegion(region.getIdentifier()));
+        assertTrue(new S3FindFeature(aws, acl).find(test));
+        new S3DefaultDeleteFeature(aws, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -276,18 +273,15 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testCreatePlaceholderVirtualHost() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3DirectoryFeature(virtualhost).mkdir(
-                new S3WriteFeature(virtualhost, acl), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        assertTrue(new DefaultFindFeature(virtualhost).find(test));
-        assertTrue(new S3ObjectListService(virtualhost, acl).list(test, new DisabledListProgressListener()).isEmpty());
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3DirectoryFeature(session).mkdir(
+                new S3WriteFeature(session, acl), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new S3ObjectListService(session, acl).list(test, new DisabledListProgressListener()).isEmpty());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -309,7 +303,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(directory.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(directory));
-        assertEquals(directory.attributes(), new S3AttributesFinderFeature(session, acl).find(directory));
+        this.assertAttributesEquals(directory.attributes(), new S3AttributesFinderFeature(session, acl).find(directory));
         final Path test = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));

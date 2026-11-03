@@ -28,15 +28,15 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFile() {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertFalse(new S3TouchFeature(session).isSupported(Home.root(), Optional.empty()));
         assertTrue(new S3TouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
-        assertTrue(new S3TouchFeature(virtualhost).isSupported(Home.root(), Optional.empty()));
-        assertTrue(new S3TouchFeature(virtualhost).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
+    }
+
+    @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
+    public void testFileVirtualHost() {
+        assertTrue(new S3TouchFeature(session).isSupported(Home.root(), Optional.empty()));
+        assertTrue(new S3TouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
     }
 
     @Test
@@ -53,8 +53,8 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final Path test = feature.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
+        this.assertAttributesEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        this.assertAttributesEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
@@ -83,22 +83,19 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testTouchVirtualHost() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final S3TouchFeature feature = new S3TouchFeature(virtualhost);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3TouchFeature feature = new S3TouchFeature(session);
         final String filename = new AsciiRandomStringService().random();
         assertTrue(feature.isSupported(Home.root(), Optional.of(filename)));
-        final Path test = feature.touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = feature.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(virtualhost, acl).find(test));
-        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(virtualhost).find(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        this.assertAttributesEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        this.assertAttributesEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
     @Test
@@ -112,8 +109,8 @@ public class S3TouchFeatureTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        this.assertAttributesEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
+        this.assertAttributesEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
@@ -126,7 +123,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        this.assertAttributesEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }

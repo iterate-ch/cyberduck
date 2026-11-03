@@ -77,7 +77,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
+        this.assertAttributesEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
         session.getRegistry().clear();
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
@@ -103,7 +103,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
+        this.assertAttributesEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
         session.getRegistry().clear();
         assertThrows(InteroperabilityException.class, () -> new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session));
     }

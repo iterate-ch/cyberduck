@@ -66,35 +66,29 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testMoveVirtualHost() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
-        assertTrue(new S3FindFeature(virtualhost, acl).find(renamed));
-        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertFalse(new S3FindFeature(session, acl).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testMovePlaceholderVirtualHost() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
-        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
-        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
-        this.assumeNot(S3TestServer.RUSTFS, "Virtual host style requests");
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3DirectoryFeature(virtualhost).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        assertFalse(new DefaultFindFeature(virtualhost).find(test));
-        assertTrue(new S3FindFeature(virtualhost, acl).find(renamed));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
