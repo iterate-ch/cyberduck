@@ -35,8 +35,11 @@ import ch.cyberduck.test.VaultTest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.model.Statement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,10 +124,17 @@ public abstract class AbstractS3Test extends VaultTest {
         }
     }
 
-    @Before
-    public void setupServer() throws Exception {
-        assumeTrue(String.format("Server %s not available", server), server.isAvailable());
-    }
+    /**
+     * Skip before any {@link Before} method connects to the server
+     */
+    @Rule
+    public final TestRule availability = (base, description) -> new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+            assumeTrue(String.format("Server %s not available", server), server.isAvailable());
+            base.evaluate();
+        }
+    };
 
     @Before
     public void setupDefault() throws Exception {

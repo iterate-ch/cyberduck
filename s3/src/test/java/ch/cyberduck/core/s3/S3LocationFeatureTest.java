@@ -88,6 +88,8 @@ public class S3LocationFeatureTest extends AbstractS3Test {
 
     @Test
     public void testForbidden() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "AWS endpoint");
+        this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
