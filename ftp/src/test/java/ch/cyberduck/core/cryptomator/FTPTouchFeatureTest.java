@@ -52,8 +52,8 @@ import static org.junit.Assert.assertTrue;
 public class FTPTouchFeatureTest extends AbstractFTPTest {
 
     @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
-    public static Object[][] data() {
-        return serversAndVaultVersions();
+    public static Object[][] configurations() {
+        return parameterMatrix();
     }
 
     @Test

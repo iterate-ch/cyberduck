@@ -61,7 +61,7 @@ public abstract class AbstractFTPTest {
      * Run against every server implementation
      */
     @Parameterized.Parameters(name = "server = {0}")
-    public static Object[][] data() {
+    public static Object[][] configurations() {
         final Object[][] data = new Object[FTPTestServer.values().length][];
         for(int i = 0; i < data.length; i++) {
             data[i] = new Object[]{FTPTestServer.values()[i], null};
@@ -72,7 +72,7 @@ public abstract class AbstractFTPTest {
     /**
      * Run against every server implementation with all vault versions
      */
-    protected static Object[][] serversAndVaultVersions() {
+    protected static Object[][] parameterMatrix() {
         final Object[][] data = new Object[FTPTestServer.values().length * 2][];
         int i = 0;
         for(FTPTestServer server : FTPTestServer.values()) {
