@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -34,9 +35,16 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 
 public class SFTPCopyDataFeatureTest extends AbstractSFTPTest {
+
+    @Before
+    public void requireCopyData() {
+        // copy-data extension is specific to OpenSSH sftp-server
+        assumeTrue(server == SFTPTestServer.OPENSSH);
+    }
 
     @Test
     public void testCopy() throws Exception {

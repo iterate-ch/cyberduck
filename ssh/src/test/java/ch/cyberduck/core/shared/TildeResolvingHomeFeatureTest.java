@@ -30,7 +30,7 @@ public class TildeResolvingHomeFeatureTest extends AbstractSFTPTest {
         final TildeResolvingHomeFeature feature = new TildeResolvingHomeFeature(session.getHost(), new SFTPHomeDirectoryService(session));
         assertNotNull(feature.find());
         session.getHost().setDefaultPath("~/d");
-        assertEquals(String.format("%s/d", HOME), feature.find().getAbsolute());
+        assertEquals(String.format("%s/d", server.home()), feature.find().getAbsolute());
         session.getHost().setDefaultPath("~d");
         assertEquals("/~d", feature.find().getAbsolute());
         session.getHost().setDefaultPath("/~d");

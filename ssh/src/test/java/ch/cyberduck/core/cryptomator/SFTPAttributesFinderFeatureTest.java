@@ -55,6 +55,11 @@ import static org.junit.Assert.*;
 @RunWith(value = Parameterized.class)
 public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] data() {
+        return serversAndVaultVersions();
+    }
+
     @Test
     public void testFindCryptomator() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();

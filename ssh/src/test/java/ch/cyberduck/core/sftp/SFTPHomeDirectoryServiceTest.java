@@ -27,6 +27,6 @@ public class SFTPHomeDirectoryServiceTest extends AbstractSFTPTest {
 
     @Test
     public void testFind() throws Exception {
-        assertEquals(new Path(HOME, EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
+        assertEquals(new Path(server.home(), EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
     }
 }
