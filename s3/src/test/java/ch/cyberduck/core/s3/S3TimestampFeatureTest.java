@@ -41,6 +41,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindTimestamp() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

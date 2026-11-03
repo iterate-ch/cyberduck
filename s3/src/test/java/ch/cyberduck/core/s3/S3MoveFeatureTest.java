@@ -69,6 +69,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     public void testMoveVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
+        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
@@ -83,6 +84,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     public void testMovePlaceholderVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
+        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3DirectoryFeature(virtualhost).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
@@ -115,6 +117,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMoveVersioned() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -167,6 +170,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testMoveWithServerSideEncryptionBucketPolicy() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Bucket policy not enforced");
+        this.assumeNot(S3TestServer.CEPH, "Bucket policy not enforced");
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

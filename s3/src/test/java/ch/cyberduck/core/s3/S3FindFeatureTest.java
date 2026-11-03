@@ -36,6 +36,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
     @Test
     public void testFindNotFoundVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
+        this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
         final Path container = Home.root();
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertFalse(new S3FindFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(test));
@@ -88,6 +89,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
     public void testFindCommonPrefixWithVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
+        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
         final Path container = Home.root();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         assertTrue(new S3FindFeature(virtualhost, acl).find(container));

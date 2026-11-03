@@ -79,6 +79,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSSE() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
+        this.assumeNot(S3TestServer.CEPH, "Server side encryption requires TLS");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3SingleUploadService service = new S3SingleUploadService(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -153,6 +154,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
+        this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

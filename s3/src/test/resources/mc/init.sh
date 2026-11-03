@@ -1,9 +1,10 @@
 #!/bin/sh
-# Create buckets expected by tests. Executed in the mc container once MinIO is ready.
+# Create buckets expected by tests. Executed in the mc container once the server is ready.
+# Set BUCKET_REGION to create all buckets in a single region.
 set -e
-mc alias set local "$MINIO_ENDPOINT" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+mc alias set local "$S3_ENDPOINT" "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
 create() {
-    mc mb --ignore-existing --region "$2" $3 "local/$1"
+    mc mb --ignore-existing --region "${BUCKET_REGION:-$2}" $3 "local/$1"
 }
 create test-eu-central-1-cyberduck eu-central-1
 create versioning-test-eu-central-1-cyberduck eu-central-1 --with-versioning
@@ -17,4 +18,4 @@ create test-lifecycle-us-east-1-cyberduck us-east-1
 create test-eu-central-1-cyberduck-unsupportedprefix eu-central-1
 create test-eu-central-1-cyberduck-ownerenforced eu-central-1
 create test-eu-central-1-acl-disabled eu-central-1
-echo "minio init done"
+echo "buckets init done"

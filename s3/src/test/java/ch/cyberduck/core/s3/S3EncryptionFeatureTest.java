@@ -46,6 +46,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testSetEncryptionAES256() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
+        this.assumeNot(S3TestServer.CEPH, "Server side encryption requires TLS");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -61,6 +62,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testSetEncryptionAES256Placeholder() throws Exception {
         this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
+        this.assumeNot(S3TestServer.CEPH, "Server side encryption requires TLS");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3DirectoryFeature(session).mkdir(

@@ -103,6 +103,7 @@
                     <environmentVariables>
                         <LOCALSTACK/>
                         <MINIO/>
+                        <CEPH/>
                     </environmentVariables>
                 </configuration>
             </plugin>

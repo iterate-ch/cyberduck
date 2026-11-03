@@ -45,14 +45,19 @@ public enum S3TestServer {
     LOCALSTACK,
     /**
      * MinIO AIStor requires a license in environment <code>MINIO_LICENSE</code>. Container images can be overridden
-     * with environment <code>MINIO_IMAGE</code> and <code>MINIO_MC_IMAGE</code>.
+     * with environment <code>MINIO_IMAGE</code> and <code>MC_IMAGE</code>.
      */
-    MINIO;
+    MINIO,
+    /**
+     * Ceph RADOS Gateway. Container image can be overridden with environment <code>CEPH_IMAGE</code>.
+     */
+    CEPH;
 
     public static final String ACCESS_KEY = "test";
     public static final String SECRET_KEY = "testtest";
     private static final int LOCALSTACK_PORT = 4566;
     private static final int MINIO_PORT = 9000;
+    private static final int CEPH_PORT = 8080;
 
     private GenericContainer<?> container;
 
@@ -66,6 +71,8 @@ public enum S3TestServer {
                         || StringUtils.isNotBlank(System.getenv("LOCALSTACK_IMAGE"));
             case MINIO:
                 return StringUtils.isNotBlank(System.getenv("MINIO_LICENSE"));
+            case CEPH:
+                return true;
             default:
                 return StringUtils.isNotBlank(System.getenv("VAULT_TOKEN"));
         }
@@ -80,6 +87,9 @@ public enum S3TestServer {
                     break;
                 case MINIO:
                     created = minio();
+                    break;
+                case CEPH:
+                    created = ceph();
                     break;
                 default:
                     throw new IllegalStateException(String.format("No container for %s", this));
@@ -124,18 +134,51 @@ public enum S3TestServer {
                 .withExposedPorts(MINIO_PORT)
                 .waitingFor(Wait.forHttp("/minio/health/ready").forPort(MINIO_PORT).withStartupTimeout(Duration.ofMinutes(5)));
         created.start();
-        // Create buckets expected by tests
-        try(GenericContainer<?> mc = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("MINIO_MC_IMAGE"), "quay.io/minio/aistor/mc:latest")))
-                .withNetwork(network)
-                .withCopyToContainer(MountableFile.forClasspathResource("minio/init.sh", 0755), "/init.sh")
+        createBuckets(network, null, "http://minio:9000", null);
+        return created;
+    }
+
+    private static GenericContainer<?> ceph() {
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/demo:latest")))
+                .withEnv("MON_IP", "127.0.0.1")
+                .withEnv("RGW_NAME", "localhost")
+                .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
+                .withEnv("DEMO_DAEMONS", "osd,rgw")
+                .withEnv("CEPH_DEMO_UID", ACCESS_KEY)
+                .withEnv("CEPH_DEMO_ACCESS_KEY", ACCESS_KEY)
+                .withEnv("CEPH_DEMO_SECRET_KEY", SECRET_KEY)
+                .withExposedPorts(CEPH_PORT)
+                .waitingFor(Wait.forHttp("/").forPort(CEPH_PORT).withStartupTimeout(Duration.ofMinutes(10)));
+        created.start();
+        // Location constraint must match the zonegroup. Requests are only accepted with the host name of the gateway
+        createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8080", "us-east-1");
+        return created;
+    }
+
+    /**
+     * Create buckets expected by tests
+     *
+     * @param network     Network of the server or null
+     * @param networkMode Network mode of the server container when sharing its network stack or null
+     * @param region      Create all buckets in this region or null to use the region in the bucket name
+     */
+    private static void createBuckets(final Network network, final String networkMode, final String endpoint, final String region) {
+        try(GenericContainer<?> mc = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("MC_IMAGE"), "quay.io/minio/aistor/mc:latest")))
+                .withCopyToContainer(MountableFile.forClasspathResource("mc/init.sh", 0755), "/init.sh")
                 .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("sh", "-c", "sh /init.sh && sleep 3600"))
-                .withEnv("MINIO_ENDPOINT", "http://minio:9000")
-                .withEnv("MINIO_ROOT_USER", ACCESS_KEY)
-                .withEnv("MINIO_ROOT_PASSWORD", SECRET_KEY)
-                .waitingFor(Wait.forLogMessage(".*minio init done.*", 1).withStartupTimeout(Duration.ofMinutes(2)))) {
+                .withEnv("S3_ENDPOINT", endpoint)
+                .withEnv("S3_ACCESS_KEY", ACCESS_KEY)
+                .withEnv("S3_SECRET_KEY", SECRET_KEY)
+                .withEnv("BUCKET_REGION", StringUtils.defaultString(region))
+                .waitingFor(Wait.forLogMessage(".*buckets init done.*", 1).withStartupTimeout(Duration.ofMinutes(2)))) {
+            if(null != network) {
+                mc.withNetwork(network);
+            }
+            if(null != networkMode) {
+                mc.withNetworkMode(networkMode);
+            }
             mc.start();
         }
-        return created;
     }
 
     public String host() {
@@ -146,6 +189,8 @@ public enum S3TestServer {
         switch(this) {
             case MINIO:
                 return this.container().getMappedPort(MINIO_PORT);
+            case CEPH:
+                return this.container().getMappedPort(CEPH_PORT);
             default:
                 return this.container().getMappedPort(LOCALSTACK_PORT);
         }

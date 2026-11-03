@@ -36,6 +36,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindFileUsEast() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Attributes differ");
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -188,6 +189,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testRedirectWithNoLocationHeader() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS endpoint");
         this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
+        this.assumeNot(S3TestServer.CEPH, "AWS endpoint");
         final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));
@@ -209,6 +211,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeletedWithMarker() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -233,6 +236,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testCloudFront() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "No CloudFront");
         this.assumeNot(S3TestServer.MINIO, "No CloudFront");
+        this.assumeNot(S3TestServer.CEPH, "No CloudFront");
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(cloudfront, new S3AccessControlListFeature(cloudfront));
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         final String name = new AlphanumericRandomStringService().random();
@@ -253,6 +257,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testVirtualHostStyle() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
+        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost, acl);
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
@@ -271,6 +276,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testDetermineRegionVirtualHostStyle() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
+        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
         assertEquals("eu-central-1", virtualhost.getClient().getRegionEndpointCache().getRegionForBucketName(""));
         assertEquals("eu-central-1", virtualhost.getClient().getRegionEndpointCache().getRegionForBucketName("test-eu-central-1-cyberduck"));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost));

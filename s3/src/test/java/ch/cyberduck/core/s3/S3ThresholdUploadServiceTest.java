@@ -59,6 +59,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePartEuCentral() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Upload checksum not supported");
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session, new S3AccessControlListFeature(session), 5 * 1024L);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
@@ -84,6 +85,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePartUsEast() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Upload checksum not supported");
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session, new S3AccessControlListFeature(session), 5 * 1024L);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();

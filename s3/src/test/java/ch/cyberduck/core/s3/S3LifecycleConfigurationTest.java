@@ -35,6 +35,7 @@ public class S3LifecycleConfigurationTest extends AbstractS3Test {
     public void testGetConfiguration() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Lifecycle rules differ");
         this.assumeNot(S3TestServer.MINIO, "Lifecycle rules differ");
+        this.assumeNot(S3TestServer.CEPH, "Lifecycle rules differ");
         final LifecycleConfiguration configuration = new S3LifecycleConfiguration(session).getConfiguration(
             new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         );

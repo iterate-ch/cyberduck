@@ -46,6 +46,7 @@ public class S3SearchFeatureTest extends AbstractS3Test {
     public void testSearchInBucket() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Bucket permissions not enforced");
         this.assumeNot(S3TestServer.MINIO, "Bucket permissions not enforced");
+        this.assumeNot(S3TestServer.CEPH, "Bucket permissions not enforced");
         final String name = new AlphanumericRandomStringService().random();
         final Path root = Home.root();
         final Path bucket = new Path(root, "test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

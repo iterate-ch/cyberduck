@@ -52,6 +52,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testWebURL() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         // Region is read from cache only
         new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation("test-eu-west-1-cyberduck");
         {
@@ -78,6 +79,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testProviderUriWithKey() {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.provider)).iterator();
         assertEquals("s3://test-eu-west-1-cyberduck/key", provider.next().getUrl());
@@ -87,6 +89,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testProviderUriRoot() {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck",
                 EnumSet.of(Path.Type.directory)), EnumSet.of(DescriptiveUrl.Type.provider)).iterator();
         assertEquals("s3://test-eu-west-1-cyberduck/", provider.next().getUrl());
@@ -96,6 +99,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testHttpURL() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         // Region is read from cache only
         new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation("test-eu-west-1-cyberduck");
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
@@ -127,6 +131,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testHttpUriCustomPort() {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         session.getHost().setPort(8443);
         // Bucket location lookup is not possible with custom port
         session.getHost().setRegion("eu-west-1");
@@ -181,6 +186,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testToSignedUrl() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         final S3UrlProvider provider = new S3UrlProvider(session, Collections.emptyMap());
         final Path bucket = new Path("/test-eu-west-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(bucket);
@@ -192,6 +198,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testToSignedUrlVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS URLs");
         this.assumeNot(S3TestServer.MINIO, "AWS URLs");
+        this.assumeNot(S3TestServer.CEPH, "AWS URLs");
         final S3UrlProvider provider = new S3UrlProvider(virtualhost, Collections.emptyMap());
         final Path bucket = Home.root();
         new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(bucket);

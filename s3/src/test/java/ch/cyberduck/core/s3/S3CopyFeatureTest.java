@@ -87,6 +87,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCopyFileVersionedBucket() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
@@ -109,6 +110,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
     public void testCopyFileVirtualHostBucket() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
+        this.assumeNot(S3TestServer.CEPH, "Virtual host style requests");
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
