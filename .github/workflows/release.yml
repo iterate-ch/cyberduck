@@ -267,10 +267,16 @@ jobs:
           MSSTORE_CLIENT_SECRET: ${{ secrets.MSSTORE_CLIENT_SECRET }}
         run: msstore reconfigure --tenantId $env:MSSTORE_TENANT_ID --sellerId $env:MSSTORE_SELLER_ID --clientId $env:MSSTORE_CLIENT_ID --clientSecret $env:MSSTORE_CLIENT_SECRET
 
+      # msstore publish only recognizes .msix, .msixbundle and .msixupload. An
+      # .msixupload is a zip containing the package, which the Store accepts for APPX.
       - name: Publish to Microsoft Store
         env:
           MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
         run: |
           Get-ChildItem "release\Cyberduck-*.appx" | ForEach-Object {
-            msstore publish $_.FullName -id $env:MSSTORE_PRODUCT_ID
+            $upload = Join-Path $_.DirectoryName ($_.BaseName + ".zip")
+            Compress-Archive -Path $_.FullName -DestinationPath $upload -Force
+            $msixupload = [System.IO.Path]::ChangeExtension($upload, ".msixupload")
+            Move-Item $upload $msixupload -Force
+            msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID
           }
