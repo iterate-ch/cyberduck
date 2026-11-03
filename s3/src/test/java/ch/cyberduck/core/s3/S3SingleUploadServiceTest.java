@@ -29,7 +29,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 
@@ -47,7 +47,7 @@ import java.io.ByteArrayInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test

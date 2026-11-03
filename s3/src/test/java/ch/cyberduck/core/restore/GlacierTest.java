@@ -32,7 +32,7 @@ import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
@@ -45,7 +45,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class GlacierTest extends AbstractS3Test {
 
     @Test

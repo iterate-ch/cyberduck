@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
@@ -39,11 +39,12 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetClasses() {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Storage classes differ");
         assertArrayEquals(Collections.singletonList(S3Object.STORAGE_CLASS_STANDARD).toArray(),
                 new S3StorageClassFeature(new S3Session(new Host(new S3Protocol())), new S3AccessControlListFeature(session)).getClasses(Home.root()).toArray());
         assertArrayEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "INTELLIGENT_TIERING",

@@ -10,14 +10,16 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -34,8 +36,14 @@ import com.amazonaws.services.cloudfront.model.UpdateStreamingDistributionResult
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
+
+    @Before
+    public void requireAWS() {
+        // AWS CloudFront
+        this.assumeNot(S3TestServer.LOCALSTACK, "Not available");
+    }
 
     @Test
     public void testGetMethods() {

@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3MultipartCopyFeatureTest extends AbstractS3Test {
 
     @Test
@@ -70,6 +70,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCopyBucketNameInHostname() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);

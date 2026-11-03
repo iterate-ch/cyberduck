@@ -30,7 +30,7 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
@@ -59,6 +59,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListVirtualHostStyle() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final Path bucket = Home.root();
         assertNotSame(AttributedList.EMPTY, new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
                 bucket, new DisabledListProgressListener()));
@@ -109,6 +110,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolderMinio() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Requires Minio");
         final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         )) {
@@ -210,6 +212,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test(expected = BackgroundException.class)
     public void testAccessPathStyleBucketEuCentral() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -223,6 +226,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testLaxHostnameVerification() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -292,6 +296,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testDetermineCorrectRegionFrom400Reply() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "AWS regions");
         final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);

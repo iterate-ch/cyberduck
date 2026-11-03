@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
 
     @Test
@@ -63,6 +63,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteFileVirtualHost() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, acl), test, new TransferStatus());

@@ -12,7 +12,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -23,7 +23,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
@@ -85,6 +85,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindCommonPrefixWithVirtualHost() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final Path container = Home.root();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         assertTrue(new S3FindFeature(virtualhost, acl).find(container));

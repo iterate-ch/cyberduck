@@ -24,7 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -34,7 +34,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3CopyFeatureTest extends AbstractS3Test {
 
     @Test
@@ -107,6 +107,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCopyFileVirtualHostBucket() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);

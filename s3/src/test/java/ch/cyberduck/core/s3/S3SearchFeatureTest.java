@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,11 +39,12 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3SearchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSearchInBucket() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Bucket permissions not enforced");
         final String name = new AlphanumericRandomStringService().random();
         final Path root = Home.root();
         final Path bucket = new Path(root, "test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

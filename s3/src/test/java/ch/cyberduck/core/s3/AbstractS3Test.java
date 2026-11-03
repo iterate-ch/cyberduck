@@ -32,15 +32,24 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.VaultTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
+@RunWith(Parameterized.class)
 public abstract class AbstractS3Test extends VaultTest {
 
     protected S3Session session;
@@ -55,23 +64,74 @@ public abstract class AbstractS3Test extends VaultTest {
      */
     protected S3Session cloudfront;
 
-    @Parameterized.Parameters(name = "vaultVersion = {0}")
-    public static Object[] data() {
-        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
+    /**
+     * @return Server implementations to run against. Select with environment variables named after the server
+     * with any value, including empty. All servers when none is set.
+     */
+    private static List<S3TestServer> servers() {
+        final List<S3TestServer> selected = Arrays.stream(S3TestServer.values())
+                .filter(server -> null != System.getenv(server.name())).collect(Collectors.toList());
+        return selected.isEmpty() ? Arrays.asList(S3TestServer.values()) : selected;
     }
 
-    @Parameterized.Parameter
+    /**
+     * Run against every server implementation
+     */
+    @Parameterized.Parameters(name = "server = {0}")
+    public static Object[][] configurations() {
+        return servers().stream().map(server -> new Object[]{server, null}).toArray(Object[][]::new);
+    }
+
+    /**
+     * Run against every server implementation with all vault versions
+     */
+    protected static Object[][] parameterMatrix() {
+        final List<Object[]> data = new ArrayList<>();
+        for(S3TestServer server : servers()) {
+            for(VaultVersion.Type type : new VaultVersion.Type[]{VaultVersion.Type.V8, VaultVersion.Type.UVF}) {
+                data.add(new Object[]{server, type});
+            }
+        }
+        return data.toArray(new Object[0][]);
+    }
+
+    @Parameterized.Parameter(0)
+    public S3TestServer server;
+
+    @Parameterized.Parameter(1)
     public VaultVersion.Type vaultVersion;
+
+    /**
+     * Skip test if server implementation is not expected to pass
+     */
+    protected void assumeNot(final S3TestServer excluded, final String reason) {
+        assumeTrue(reason, server != excluded);
+    }
 
     @After
     public void disconnect() throws Exception {
-        session.close();
-        virtualhost.close();
-        cloudfront.close();
+        if(session != null) {
+            session.close();
+        }
+        if(virtualhost != null) {
+            virtualhost.close();
+        }
+        if(cloudfront != null) {
+            cloudfront.close();
+        }
+    }
+
+    @Before
+    public void setupServer() throws Exception {
+        assumeTrue(String.format("Server %s not available", server), server.isAvailable());
     }
 
     @Before
     public void setupDefault() throws Exception {
+        if(server == S3TestServer.LOCALSTACK) {
+            session = this.connect();
+            return;
+        }
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
@@ -100,6 +160,10 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Before
     public void setupVirtualHost() throws Exception {
+        if(server == S3TestServer.LOCALSTACK) {
+            virtualhost = this.connect();
+            return;
+        }
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
@@ -120,6 +184,10 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Before
     public void setupCloudFront() throws Exception {
+        if(server == S3TestServer.LOCALSTACK) {
+            // Not available
+            return;
+        }
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
@@ -134,5 +202,32 @@ public abstract class AbstractS3Test extends VaultTest {
         }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(cloudfront, CancelCallback.noop);
+    }
+
+    private S3Session connect() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 (HTTP).cyberduckprofile"));
+        final Host host = new Host(profile, server.host(), server.port(), new Credentials(S3TestServer.ACCESS_KEY, S3TestServer.SECRET_KEY)) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.listing.versioning.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final S3Session connection = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                fail(reason);
+                return null;
+            }
+        }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop).check(connection, CancelCallback.noop);
+        return connection;
     }
 }

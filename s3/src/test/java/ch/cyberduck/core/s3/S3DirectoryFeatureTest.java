@@ -29,7 +29,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
@@ -60,6 +60,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreateBucketAWS2SignaturePathStyle() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -93,6 +94,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreateBucketAWS2Signature() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -126,6 +128,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test(expected = InteroperabilityException.class)
     public void testCreateBucketInvalidName() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(new S3DirectoryFeature(session).isSupported(test.getParent(), Optional.of(test.getName())));
@@ -139,6 +142,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "No notification of request");
         final AtomicBoolean b = new AtomicBoolean();
         final String name = new AlphanumericRandomStringService().random();
         session.withListener(new TranscriptListener() {
@@ -168,6 +172,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreatePlaceholderMinio() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Requires Minio");
         final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         )) {
@@ -267,6 +272,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreatePlaceholderVirtualHost() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3DirectoryFeature(virtualhost).mkdir(
                 new S3WriteFeature(virtualhost, acl), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

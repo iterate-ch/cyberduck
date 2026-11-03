@@ -38,7 +38,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test

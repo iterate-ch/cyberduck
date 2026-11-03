@@ -11,7 +11,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 
@@ -29,7 +29,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
@@ -84,6 +84,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteVirtualHost() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(virtualhost, acl);
         final TransferStatus status = new TransferStatus();

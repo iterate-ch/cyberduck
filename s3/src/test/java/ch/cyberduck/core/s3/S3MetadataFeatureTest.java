@@ -23,7 +23,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Object;
@@ -37,7 +37,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
@@ -103,6 +103,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acls = new S3AccessControlListFeature(session);

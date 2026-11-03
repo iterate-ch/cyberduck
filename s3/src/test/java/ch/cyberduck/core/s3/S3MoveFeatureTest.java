@@ -29,7 +29,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
@@ -43,7 +43,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
@@ -67,6 +67,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMoveVirtualHost() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
@@ -79,6 +80,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMovePlaceholderVirtualHost() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3DirectoryFeature(virtualhost).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));

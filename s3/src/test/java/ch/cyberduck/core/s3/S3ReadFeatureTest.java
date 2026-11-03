@@ -13,7 +13,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
@@ -33,7 +33,7 @@ import java.util.zip.GZIPOutputStream;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3ReadFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
@@ -146,6 +146,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCloudFront() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "No CloudFront");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -164,6 +165,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
 
     @Test
     public void testVirtualHostStyle() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(name, EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2018);

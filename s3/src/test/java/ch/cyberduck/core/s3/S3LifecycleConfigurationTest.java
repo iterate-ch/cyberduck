@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -28,11 +28,12 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3LifecycleConfigurationTest extends AbstractS3Test {
 
     @Test
     public void testGetConfiguration() throws Exception {
+        this.assumeNot(S3TestServer.LOCALSTACK, "Lifecycle rules differ");
         final LifecycleConfiguration configuration = new S3LifecycleConfiguration(session).getConfiguration(
             new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         );

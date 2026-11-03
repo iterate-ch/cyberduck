@@ -46,6 +46,11 @@ public class VaultTest {
 
     @BeforeClass
     public static void vault() {
+        if(StringUtils.isBlank(System.getenv("VAULT_TOKEN"))) {
+            // No access to shared test credentials. Only tests against embedded servers can run.
+            PROPERTIES = new HashMap<>();
+            return;
+        }
         final VaultConfig config;
         try {
             config = new VaultConfig()
