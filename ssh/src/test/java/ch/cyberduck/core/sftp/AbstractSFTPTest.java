@@ -47,7 +47,7 @@ public abstract class AbstractSFTPTest {
      * Run against every server implementation
      */
     @Parameterized.Parameters(name = "server = {0}")
-    public static Object[][] data() {
+    public static Object[][] configurations() {
         final Object[][] data = new Object[SFTPTestServer.values().length][];
         for(int i = 0; i < data.length; i++) {
             data[i] = new Object[]{SFTPTestServer.values()[i], null};
@@ -58,7 +58,7 @@ public abstract class AbstractSFTPTest {
     /**
      * Run against every server implementation with all vault versions
      */
-    protected static Object[][] serversAndVaultVersions() {
+    protected static Object[][] parameterMatrix() {
         final Object[][] data = new Object[SFTPTestServer.values().length * 2][];
         int i = 0;
         for(SFTPTestServer server : SFTPTestServer.values()) {
