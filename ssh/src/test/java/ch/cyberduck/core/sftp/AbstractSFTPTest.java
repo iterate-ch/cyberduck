@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
 @RunWith(Parameterized.class)
@@ -94,5 +95,12 @@ public abstract class AbstractSFTPTest {
     @After
     public void disconnect() throws Exception {
         session.close();
+    }
+
+    /**
+     * Skip test if server does not support creating symbolic links
+     */
+    protected void assumeSymlink() {
+        assumeTrue("No support for symbolic links", server != SFTPTestServer.SFTPGO);
     }
 }

@@ -19,6 +19,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -29,30 +30,37 @@ import java.util.function.Supplier;
  * on first use and shared for the lifetime of the JVM.
  */
 public enum SFTPTestServer {
-    OPENSSH("/config", () -> new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
+    OPENSSH("/config", 2222, () -> new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
             .withEnv("PUID", "1000")
             .withEnv("PGID", "1000")
             .withEnv("PASSWORD_ACCESS", "true")
             .withEnv("USER_NAME", SFTPTestServer.USER)
             .withEnv("USER_PASSWORD", SFTPTestServer.PASSWORD)
-            .withExposedPorts(SFTPTestServer.PORT)
+            .withExposedPorts(2222)
             .waitingFor(Wait.forLogMessage(".*\\[ls\\.io-init\\] done.*", 1).withStartupTimeout(Duration.ofMinutes(2)))),
-    PROFTPD("/home/test", () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-proftpd-sftp", false)
+    PROFTPD("/home/test", 2222, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-proftpd-sftp", false)
             .withFileFromPath("Dockerfile", Paths.get("src/test/resources/proftpd/Dockerfile"))
             .withFileFromPath("proftpd.conf", Paths.get("src/test/resources/proftpd/proftpd.conf")))
-            .withExposedPorts(SFTPTestServer.PORT)
-            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5))));
+            .withExposedPorts(2222)
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)))),
+    SFTPGO("/", 2022, () -> new GenericContainer<>(DockerImageName.parse("drakkan/sftpgo:latest"))
+            .withCopyToContainer(MountableFile.forClasspathResource("sftpgo/data.json", 0644), "/etc/sftpgo/data.json")
+            .withEnv("SFTPGO_LOADDATA_FROM", "/etc/sftpgo/data.json")
+            .withEnv("SFTPGO_LOADDATA_MODE", "1")
+            .withExposedPorts(2022)
+            .waitingFor(Wait.forLogMessage(".*server listener registered, address: \\[::\\]:2022.*", 1).withStartupTimeout(Duration.ofMinutes(2))));
 
     public static final String USER = "test";
     public static final String PASSWORD = "test";
-    public static final int PORT = 2222;
 
     private final String home;
+    private final int port;
     private final Supplier<GenericContainer<?>> factory;
     private GenericContainer<?> container;
 
-    SFTPTestServer(final String home, final Supplier<GenericContainer<?>> factory) {
+    SFTPTestServer(final String home, final int port, final Supplier<GenericContainer<?>> factory) {
         this.home = home;
+        this.port = port;
         this.factory = factory;
     }
 
@@ -78,6 +86,6 @@ public enum SFTPTestServer {
     }
 
     public int port() {
-        return this.container().getMappedPort(PORT);
+        return this.container().getMappedPort(port);
     }
 }
