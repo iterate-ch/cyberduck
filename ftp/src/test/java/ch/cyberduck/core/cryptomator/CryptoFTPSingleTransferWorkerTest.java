@@ -71,6 +71,11 @@ import static org.junit.Assert.*;
 @RunWith(value = Parameterized.class)
 public class CryptoFTPSingleTransferWorkerTest extends AbstractFTPTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] data() {
+        return serversAndVaultVersions();
+    }
+
     @Test
     public void testUpload() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();

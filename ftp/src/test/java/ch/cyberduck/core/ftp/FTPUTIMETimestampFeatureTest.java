@@ -19,7 +19,8 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -27,17 +28,27 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.TimeZone;
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
 
 public class FTPUTIMETimestampFeatureTest extends AbstractFTPTest {
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testSetTimestamp() throws Exception {
         final FTPWorkdirService workdir = new FTPWorkdirService(session);
         final long modified = System.currentTimeMillis();
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
-        new FTPUTIMETimestampFeature(session).setTimestamp(test, modified);
+        try {
+            new FTPUTIMETimestampFeature(session).setTimestamp(test, modified);
+            assertEquals(new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")),
+                    session.getClient().getModificationTime(test.getAbsolute()));
+        }
+        catch(InteroperabilityException e) {
+            // SITE UTIME not implemented
+        }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

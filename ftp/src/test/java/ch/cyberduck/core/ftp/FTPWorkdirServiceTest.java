@@ -24,6 +24,6 @@ public class FTPWorkdirServiceTest extends AbstractFTPTest {
 
     @Test
     public void testDefaultPath() throws Exception {
-        assertEquals(HOME, new FTPWorkdirService(session).find().getAbsolute());
+        assertEquals(server.home(), new FTPWorkdirService(session).find().getAbsolute());
     }
 }

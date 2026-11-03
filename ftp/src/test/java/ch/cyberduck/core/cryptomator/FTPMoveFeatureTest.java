@@ -52,6 +52,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(value = Parameterized.class)
 public class FTPMoveFeatureTest extends AbstractFTPTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] data() {
+        return serversAndVaultVersions();
+    }
+
     @Test
     public void testMove() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
