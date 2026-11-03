@@ -44,6 +44,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test
     public void testWritePublicReadCannedAcl() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Canned ACL not reported");
+        this.assumeNot(S3TestServer.MINIO, "Canned ACL not reported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
@@ -92,6 +93,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test(expected = InteroperabilityException.class)
     public void testWriteChunkedTransferAWS4Signature() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Chunked transfer with AWS4 signature not rejected");
+        this.assumeNot(S3TestServer.MINIO, "Chunked transfer with AWS4 signature not rejected");
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
@@ -110,6 +112,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test
     public void testWriteAWS2Signature() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -139,6 +142,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test
     public void testWriteAWS2SignaturePathStyle() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -195,6 +199,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     @Test
     public void testWriteVirtualHostBucket() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final S3WriteFeature feature = new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);

@@ -51,6 +51,7 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
     @Test
     public void testWrite() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "No transfer acceleration");
+        this.assumeNot(S3TestServer.MINIO, "No transfer acceleration");
         final AtomicBoolean b = new AtomicBoolean();
         session.withListener(new TranscriptListener() {
             @Override

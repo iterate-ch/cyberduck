@@ -66,6 +66,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteEncrypted() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -85,6 +86,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
     @Test
     public void testWriteVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(virtualhost, acl);
         final TransferStatus status = new TransferStatus();

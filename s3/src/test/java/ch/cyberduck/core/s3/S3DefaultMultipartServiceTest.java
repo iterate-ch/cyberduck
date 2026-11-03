@@ -62,6 +62,7 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testFind() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Multipart upload listing differs");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(

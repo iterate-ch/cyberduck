@@ -46,6 +46,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
 public class S3ObjectListServiceTest extends AbstractS3Test {
@@ -60,6 +61,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testListVirtualHostStyle() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final Path bucket = Home.root();
         assertNotSame(AttributedList.EMPTY, new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
                 bucket, new DisabledListProgressListener()));
@@ -110,22 +112,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolderMinio() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Requires Minio");
-        final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
-                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
-        )) {
-            @Override
-            public String getProperty(final String key) {
-                if("s3.bucket.virtualhost.disable".equals(key)) {
-                    return String.valueOf(true);
-                }
-                return super.getProperty(key);
-            }
-        };
-        final S3Session session = new S3Session(host);
-        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
-                new DisabledPasswordStore(), ProgressListener.noop);
-        login.check(session, CancelCallback.noop);
+        assumeTrue(server == S3TestServer.MINIO);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -213,6 +200,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test(expected = BackgroundException.class)
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -227,6 +215,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testLaxHostnameVerification() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -265,6 +254,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListFileDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session).touch(
@@ -275,6 +265,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListPlaceholderDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session).mkdir(
@@ -297,6 +288,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testDetermineCorrectRegionFrom400Reply() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS regions");
+        this.assumeNot(S3TestServer.MINIO, "AWS regions");
         final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);

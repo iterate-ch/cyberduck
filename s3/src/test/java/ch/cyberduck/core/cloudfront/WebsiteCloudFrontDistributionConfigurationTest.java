@@ -33,6 +33,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     public void requireAWS() {
         // AWS CloudFront
         this.assumeNot(S3TestServer.LOCALSTACK, "Not available");
+        this.assumeNot(S3TestServer.MINIO, "Not available");
     }
 
     @Test

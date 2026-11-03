@@ -55,6 +55,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     @Test
     public void testSetupConnection() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "AWS endpoint");
+        this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(session, new HttpConnectionPoolBuilder(session.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
                 new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), LoginCallback.noop));
@@ -75,6 +76,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     @Test
     public void testSetupConnectionVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(virtualhost, new HttpConnectionPoolBuilder(virtualhost.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), virtualhost.getHost().getHostname()),
                 new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), LoginCallback.noop));

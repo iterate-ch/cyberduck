@@ -29,6 +29,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test
     public void testFile() {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertFalse(new S3TouchFeature(session).isSupported(Home.root(), Optional.empty()));
         assertTrue(new S3TouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
@@ -38,6 +39,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTouch() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Attributes differ");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session);
@@ -56,6 +58,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test
     public void testTouchObjectLockBucket() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Object lock not enforced");
+        this.assumeNot(S3TestServer.MINIO, "Object lock not enforced");
         final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session);
@@ -76,6 +79,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test
     public void testTouchVirtualHost() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final S3TouchFeature feature = new S3TouchFeature(virtualhost);
         final String filename = new AsciiRandomStringService().random();
@@ -91,6 +95,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTouchCarriageReturnKey() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Attributes differ");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(
@@ -152,6 +157,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test(expected = AccessDeniedException.class)
     public void testFailureWithServerSideEncryptionBucketPolicy() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Bucket policies not enforced");
+        this.assumeNot(S3TestServer.MINIO, "Bucket policies not enforced");
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session);
@@ -162,6 +168,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Bucket policy not enforced");
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session);

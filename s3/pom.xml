@@ -102,6 +102,7 @@
                 <configuration>
                     <environmentVariables>
                         <LOCALSTACK/>
+                        <MINIO/>
                     </environmentVariables>
                 </configuration>
             </plugin>

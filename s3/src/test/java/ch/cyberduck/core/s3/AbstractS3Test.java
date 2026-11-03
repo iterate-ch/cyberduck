@@ -128,7 +128,7 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Before
     public void setupDefault() throws Exception {
-        if(server == S3TestServer.LOCALSTACK) {
+        if(server != S3TestServer.AWS) {
             session = this.connect();
             return;
         }
@@ -160,7 +160,7 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Before
     public void setupVirtualHost() throws Exception {
-        if(server == S3TestServer.LOCALSTACK) {
+        if(server != S3TestServer.AWS) {
             virtualhost = this.connect();
             return;
         }
@@ -184,7 +184,7 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Before
     public void setupCloudFront() throws Exception {
-        if(server == S3TestServer.LOCALSTACK) {
+        if(server != S3TestServer.AWS) {
             // Not available
             return;
         }

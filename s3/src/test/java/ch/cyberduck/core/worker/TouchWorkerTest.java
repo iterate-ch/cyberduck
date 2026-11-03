@@ -45,6 +45,7 @@ public class TouchWorkerTest extends AbstractS3Test {
     @Test
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));

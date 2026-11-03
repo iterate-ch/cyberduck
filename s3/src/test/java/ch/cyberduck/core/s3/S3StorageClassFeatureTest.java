@@ -45,6 +45,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
     @Test
     public void testGetClasses() {
         this.assumeNot(S3TestServer.LOCALSTACK, "Storage classes differ");
+        this.assumeNot(S3TestServer.MINIO, "Storage classes differ");
         assertArrayEquals(Collections.singletonList(S3Object.STORAGE_CLASS_STANDARD).toArray(),
                 new S3StorageClassFeature(new S3Session(new Host(new S3Protocol())), new S3AccessControlListFeature(session)).getClasses(Home.root()).toArray());
         assertArrayEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "INTELLIGENT_TIERING",
@@ -62,6 +63,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetClassFile() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Storage classes differ");
         final S3StorageClassFeature feature = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(container));
@@ -77,6 +79,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test(expected = AccessDeniedException.class)
     public void testSetClassFileInGlacier() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Storage classes differ");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("GLACIER");
@@ -93,6 +96,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetClassPlaceholder() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Storage classes differ");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3DirectoryFeature(session).mkdir(

@@ -36,6 +36,7 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
     @Test
     public void testGetConfiguration() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Bucket logging not supported");
+        this.assumeNot(S3TestServer.MINIO, "Bucket logging not supported");
         final S3LoggingFeature feature = new S3LoggingFeature(session);
         final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         feature.setConfiguration(bucket, new LoggingConfiguration(true, "test-logging-us-east-1-cyberduck"));
@@ -54,6 +55,7 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
         new S3LoggingFeature(session).setConfiguration(
             new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
         );

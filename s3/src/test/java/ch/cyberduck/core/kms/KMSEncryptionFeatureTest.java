@@ -53,6 +53,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     public void requireAWS() {
         // AWS KMS
         this.assumeNot(S3TestServer.LOCALSTACK, "Not available");
+        this.assumeNot(S3TestServer.MINIO, "Not available");
     }
 
     @Test

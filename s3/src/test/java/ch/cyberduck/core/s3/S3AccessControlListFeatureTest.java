@@ -52,6 +52,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
 
     @Test
     public void testReadBucketDisabledAcl() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Bucket ownership controls not supported");
         final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotEquals(Acl.EMPTY, f.getPermission(container));
@@ -60,6 +61,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
 
     @Test
     public void testBucketOwnerEnforced() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Bucket ownership controls not supported");
         final Path container = new Path("test-eu-central-1-cyberduck-ownerenforced", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
@@ -78,6 +80,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testReadContainer() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
+        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         final Path container = new Path("test-acl-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Acl acl = new S3AccessControlListFeature(session).getPermission(container);
         assertTrue(acl.containsKey(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")));
@@ -96,6 +99,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testReadKey() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
+        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         final Path container = new Path("test-acl-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Acl acl = new S3AccessControlListFeature(session).getPermission(new Path(container, "test", EnumSet.of(Path.Type.file)));
         assertTrue(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
@@ -107,6 +111,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testWrite() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
+        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
@@ -124,6 +129,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testWriteVirtualHostBucket() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "Virtual host style requests");
+        this.assumeNot(S3TestServer.MINIO, "Virtual host style requests");
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(virtualhost);
         new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, f), test, new TransferStatus());
@@ -157,6 +163,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
+        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
@@ -240,6 +247,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testWriteBucketCannedPublicRead() throws Exception {
         this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
+        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, f), container, new TransferStatus()

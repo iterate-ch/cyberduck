@@ -250,6 +250,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
      */
     @Test
     public void testDirectoyPlaceholderNoChildren() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -265,6 +266,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
      */
     @Test
     public void testDirectoyPlaceholderWithChildren() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, acl), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -336,6 +338,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListFileDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session).touch(
@@ -350,6 +353,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListPlaceholderDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session).mkdir(
