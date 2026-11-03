@@ -30,6 +30,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testDeleteFileWithLock() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Locking not compatible");
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         String lock = null;
