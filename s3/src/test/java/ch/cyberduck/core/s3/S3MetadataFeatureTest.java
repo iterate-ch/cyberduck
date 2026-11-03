@@ -50,6 +50,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     @Test
     public void testGetMetadataFile() throws Exception {
         this.assumeNot(S3TestServer.RUSTFS, "Metadata header names differ");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Metadata header names differ");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -74,6 +75,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     @Test
     public void testSetMetadataHttpHeaders() throws Exception {
         this.assumeNot(S3TestServer.RUSTFS, "Metadata header names differ");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Metadata header names differ");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(
@@ -109,6 +111,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         this.assumeNot(S3TestServer.CEPH, "ACLs not supported");
         this.assumeNot(S3TestServer.RUSTFS, "ACLs not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "ACLs not supported");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acls = new S3AccessControlListFeature(session);
@@ -154,6 +157,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     @Test
     public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
         this.assumeNot(S3TestServer.RUSTFS, "Metadata header names differ");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Metadata header names differ");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

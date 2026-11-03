@@ -48,6 +48,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMove() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of objects differs");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -113,6 +114,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMoveVersioned() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -168,6 +170,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Bucket policy not enforced");
         this.assumeNot(S3TestServer.CEPH, "Bucket policy not enforced");
         this.assumeNot(S3TestServer.RUSTFS, "Bucket policy not enforced");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Bucket policy not enforced");
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

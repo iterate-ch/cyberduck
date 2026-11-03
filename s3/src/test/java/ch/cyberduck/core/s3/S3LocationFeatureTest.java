@@ -59,6 +59,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS regions");
         this.assumeNot(S3TestServer.CEPH, "AWS regions");
         this.assumeNot(S3TestServer.RUSTFS, "AWS regions");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS regions");
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         final S3LocationFeature feature = new S3LocationFeature(session, cache);
         final String bucket = new AsciiRandomStringService().random();
@@ -72,6 +73,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS regions");
         this.assumeNot(S3TestServer.CEPH, "AWS regions");
         this.assumeNot(S3TestServer.RUSTFS, "AWS regions");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS regions");
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         final S3LocationFeature feature = new S3LocationFeature(session, cache);
         assertEquals(new S3LocationFeature.S3Region("eu-west-1"), feature.getLocation(
@@ -96,6 +98,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
         this.assumeNot(S3TestServer.CEPH, "AWS endpoint");
         this.assumeNot(S3TestServer.RUSTFS, "AWS endpoint");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS endpoint");
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
@@ -122,6 +125,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS regions");
         this.assumeNot(S3TestServer.CEPH, "AWS regions");
         this.assumeNot(S3TestServer.RUSTFS, "AWS regions");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS regions");
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
@@ -135,6 +139,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         )) {

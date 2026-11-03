@@ -55,6 +55,7 @@ public class GlacierTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Glacier restore requires AWS");
         this.assumeNot(S3TestServer.CEPH, "Glacier restore requires AWS");
         this.assumeNot(S3TestServer.RUSTFS, "Glacier restore requires AWS");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Glacier restore requires AWS");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512);

@@ -202,6 +202,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -219,6 +220,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
@@ -260,6 +262,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
         this.assumeNot(S3TestServer.CEPH, "Dot object keys not supported");
         this.assumeNot(S3TestServer.RUSTFS, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session).touch(
@@ -273,6 +276,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
         this.assumeNot(S3TestServer.CEPH, "Dot object keys not supported");
         this.assumeNot(S3TestServer.RUSTFS, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session).mkdir(
@@ -298,6 +302,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS regions");
         this.assumeNot(S3TestServer.CEPH, "AWS regions");
         this.assumeNot(S3TestServer.RUSTFS, "AWS regions");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS regions");
         final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);

@@ -46,6 +46,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Not available");
         this.assumeNot(S3TestServer.CEPH, "Not available");
         this.assumeNot(S3TestServer.RUSTFS, "Not available");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Not available");
     }
 
     @Test

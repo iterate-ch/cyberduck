@@ -64,7 +64,11 @@ public enum S3TestServer {
     /**
      * RustFS. Container image can be overridden with environment <code>RUSTFS_IMAGE</code>.
      */
-    RUSTFS;
+    RUSTFS,
+    /**
+     * SeaweedFS. Container image can be overridden with environment <code>SEAWEEDFS_IMAGE</code>.
+     */
+    SEAWEEDFS;
 
     public static final String ACCESS_KEY = "test";
     public static final String SECRET_KEY = "testtest";
@@ -72,6 +76,7 @@ public enum S3TestServer {
     private static final int MINIO_PORT = 9000;
     private static final int CEPH_PORT = 8080;
     private static final int RUSTFS_PORT = 9000;
+    private static final int SEAWEEDFS_PORT = 8333;
 
     private GenericContainer<?> container;
 
@@ -101,6 +106,7 @@ public enum S3TestServer {
                 return StringUtils.isNotBlank(System.getenv("MINIO_LICENSE"));
             case CEPH:
             case RUSTFS:
+            case SEAWEEDFS:
                 return true;
             default:
                 return StringUtils.isNotBlank(System.getenv("VAULT_TOKEN"));
@@ -122,6 +128,9 @@ public enum S3TestServer {
                     break;
                 case RUSTFS:
                     created = rustfs();
+                    break;
+                case SEAWEEDFS:
+                    created = seaweedfs();
                     break;
                 default:
                     throw new IllegalStateException(String.format("No container for %s", this));
@@ -184,6 +193,21 @@ public enum S3TestServer {
         return created;
     }
 
+    private static GenericContainer<?> seaweedfs() {
+        final Network network = Network.newNetwork();
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("SEAWEEDFS_IMAGE"), "chrislusf/seaweedfs:latest")))
+                .withNetwork(network)
+                .withNetworkAliases("seaweedfs")
+                .withCopyToContainer(MountableFile.forClasspathResource("seaweedfs/s3.json"), "/etc/seaweedfs/s3.json")
+                .withCommand("server", "-s3", "-s3.config=/etc/seaweedfs/s3.json", "-dir=/data")
+                .withExposedPorts(SEAWEEDFS_PORT)
+                // Unauthenticated request is rejected once the S3 gateway is ready
+                .waitingFor(Wait.forHttp("/").forPort(SEAWEEDFS_PORT).forStatusCode(403).withStartupTimeout(Duration.ofMinutes(5)));
+        created.start();
+        createBuckets(network, null, "http://seaweedfs:8333", null);
+        return created;
+    }
+
     private static GenericContainer<?> ceph() {
         final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/demo:latest")))
                 .withEnv("MON_IP", "127.0.0.1")
@@ -239,6 +263,8 @@ public enum S3TestServer {
                 return this.container().getMappedPort(CEPH_PORT);
             case RUSTFS:
                 return this.container().getMappedPort(RUSTFS_PORT);
+            case SEAWEEDFS:
+                return this.container().getMappedPort(SEAWEEDFS_PORT);
             default:
                 return this.container().getMappedPort(LOCALSTACK_PORT);
         }

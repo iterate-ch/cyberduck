@@ -49,6 +49,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Reply for missing bucket differs");
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session, new S3AccessControlListFeature(session), 5 * 1024L);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -85,6 +86,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePartUsEast() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Upload checksum not supported");
         this.assumeNot(S3TestServer.CEPH, "Upload checksum not supported");
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session, new S3AccessControlListFeature(session), 5 * 1024L);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

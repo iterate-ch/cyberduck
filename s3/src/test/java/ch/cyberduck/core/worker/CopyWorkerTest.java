@@ -51,6 +51,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
         this.assumeNot(S3TestServer.CEPH, "ACLs not supported");
         this.assumeNot(S3TestServer.RUSTFS, "ACLs not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "ACLs not supported");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

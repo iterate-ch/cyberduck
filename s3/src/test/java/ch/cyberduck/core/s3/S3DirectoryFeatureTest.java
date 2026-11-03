@@ -66,6 +66,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -103,6 +104,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -154,6 +156,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "No notification of request");
         this.assumeNot(S3TestServer.CEPH, "No notification of request");
         this.assumeNot(S3TestServer.RUSTFS, "No notification of request");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "No notification of request");
         final AtomicBoolean b = new AtomicBoolean();
         final String name = new AlphanumericRandomStringService().random();
         session.withListener(new TranscriptListener() {
@@ -218,6 +221,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -238,6 +242,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path parent = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,

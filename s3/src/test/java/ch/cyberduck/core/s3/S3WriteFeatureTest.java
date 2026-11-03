@@ -47,6 +47,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Canned ACL not reported");
         this.assumeNot(S3TestServer.CEPH, "Canned ACL not reported");
         this.assumeNot(S3TestServer.RUSTFS, "Canned ACL not reported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Canned ACL not reported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
@@ -64,6 +65,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteCustomTimestamp() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Custom timestamp metadata not supported");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setModified(1630305150672L).setCreated(1695159781972L);
@@ -98,6 +100,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Chunked transfer with AWS4 signature not rejected");
         this.assumeNot(S3TestServer.CEPH, "Chunked transfer with AWS4 signature not rejected");
         this.assumeNot(S3TestServer.RUSTFS, "Chunked transfer with AWS4 signature not rejected");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Chunked transfer with AWS4 signature not rejected");
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
@@ -119,6 +122,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -151,6 +155,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
         this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
         this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));

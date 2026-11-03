@@ -44,6 +44,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Attributes differ");
         this.assumeNot(S3TestServer.CEPH, "Attributes differ");
         this.assumeNot(S3TestServer.RUSTFS, "Attributes differ");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Attributes differ");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session);
@@ -65,6 +66,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Object lock not enforced");
         this.assumeNot(S3TestServer.CEPH, "Object lock not enforced");
         this.assumeNot(S3TestServer.RUSTFS, "Object lock not enforced");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Object lock not enforced");
         final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session);
@@ -103,6 +105,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Attributes differ");
         this.assumeNot(S3TestServer.CEPH, "Attributes differ");
         this.assumeNot(S3TestServer.RUSTFS, "Attributes differ");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Attributes differ");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(
@@ -167,6 +170,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Bucket policies not enforced");
         this.assumeNot(S3TestServer.CEPH, "Bucket policies not enforced");
         this.assumeNot(S3TestServer.RUSTFS, "Bucket policies not enforced");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Bucket policies not enforced");
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session);
@@ -180,6 +184,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Bucket policy not enforced");
         this.assumeNot(S3TestServer.CEPH, "Bucket policy not enforced");
         this.assumeNot(S3TestServer.RUSTFS, "Bucket policy not enforced");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Bucket policy not enforced");
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session);

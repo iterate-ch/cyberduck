@@ -41,6 +41,7 @@ import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3ListService;
 import ch.cyberduck.core.s3.S3MultipartWriteFeature;
 import ch.cyberduck.core.s3.S3ReadFeature;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -159,6 +160,7 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveFolder() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of directories differs");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
@@ -250,6 +252,7 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveDirectoryWithoutPlaceholderIntoVault() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of directories differs");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

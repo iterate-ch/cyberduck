@@ -128,6 +128,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
         this.assumeNot(S3TestServer.CEPH, "Server side encryption requires TLS");
         this.assumeNot(S3TestServer.RUSTFS, "Server side encryption requires TLS");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Server side encryption requires TLS");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService service = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -201,6 +202,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
         this.assumeNot(S3TestServer.CEPH, "Server side encryption requires TLS");
         this.assumeNot(S3TestServer.RUSTFS, "Server side encryption requires TLS");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Server side encryption requires TLS");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -222,6 +224,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testMultiplePartsObjectLock() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Object lock not supported");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));

@@ -88,6 +88,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Object lock not enforced");
         this.assumeNot(S3TestServer.CEPH, "Object lock not enforced");
         this.assumeNot(S3TestServer.RUSTFS, "Object lock not enforced");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Object lock not enforced");
         final Path home = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);

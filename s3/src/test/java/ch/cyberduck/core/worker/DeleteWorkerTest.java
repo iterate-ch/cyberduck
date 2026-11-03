@@ -66,6 +66,7 @@ public class DeleteWorkerTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path folder = new S3DirectoryFeature(session).mkdir(

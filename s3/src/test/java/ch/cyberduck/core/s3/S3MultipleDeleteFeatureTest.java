@@ -138,6 +138,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
         this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
         this.assumeNot(S3TestServer.RUSTFS, "Reply for missing bucket differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Reply for missing bucket differs");
         final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }

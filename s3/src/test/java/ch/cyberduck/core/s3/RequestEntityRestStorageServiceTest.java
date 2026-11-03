@@ -58,6 +58,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
         this.assumeNot(S3TestServer.CEPH, "AWS endpoint");
         this.assumeNot(S3TestServer.RUSTFS, "AWS endpoint");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS endpoint");
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(session, new HttpConnectionPoolBuilder(session.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
                 new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), LoginCallback.noop));

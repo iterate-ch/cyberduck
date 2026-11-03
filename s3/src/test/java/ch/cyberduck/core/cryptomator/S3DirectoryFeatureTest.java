@@ -70,6 +70,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);

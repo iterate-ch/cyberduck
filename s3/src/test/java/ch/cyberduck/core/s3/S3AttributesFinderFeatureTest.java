@@ -159,6 +159,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindCommonPrefix() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix lookup differs");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertTrue(new S3FindFeature(session, acl).find(container));
@@ -191,6 +192,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
         this.assumeNot(S3TestServer.CEPH, "AWS endpoint");
         this.assumeNot(S3TestServer.RUSTFS, "AWS endpoint");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS endpoint");
         final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));
@@ -212,6 +214,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeletedWithMarker() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

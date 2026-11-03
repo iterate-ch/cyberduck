@@ -66,6 +66,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindCommonPrefix() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix lookup differs");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertTrue(new S3FindFeature(session, acl).find(container));

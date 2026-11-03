@@ -69,6 +69,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Server side encryption requires TLS");
         this.assumeNot(S3TestServer.CEPH, "Server side encryption requires TLS");
         this.assumeNot(S3TestServer.RUSTFS, "Server side encryption requires TLS");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Server side encryption requires TLS");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

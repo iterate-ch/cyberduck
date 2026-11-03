@@ -39,6 +39,7 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Bucket logging not supported");
         this.assumeNot(S3TestServer.CEPH, "Bucket logging not supported");
         this.assumeNot(S3TestServer.RUSTFS, "Bucket logging not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Bucket logging not supported");
         final S3LoggingFeature feature = new S3LoggingFeature(session);
         final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         feature.setConfiguration(bucket, new LoggingConfiguration(true, "test-logging-us-east-1-cyberduck"));
@@ -60,6 +61,7 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
         this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
         this.assumeNot(S3TestServer.RUSTFS, "Reply for missing bucket differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Reply for missing bucket differs");
         new S3LoggingFeature(session).setConfiguration(
             new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
         );

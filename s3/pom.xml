@@ -105,6 +105,7 @@
                         <MINIO/>
                         <CEPH/>
                         <RUSTFS/>
+                        <SEAWEEDFS/>
                     </environmentVariables>
                 </configuration>
             </plugin>
