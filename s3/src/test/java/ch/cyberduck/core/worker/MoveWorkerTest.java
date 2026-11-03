@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
@@ -54,12 +55,8 @@ import static org.junit.Assert.*;
 public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testMoveFile() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
-        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
-        this.assumeNot(S3TestServer.CEPH, "ACLs not supported");
-        this.assumeNot(S3TestServer.RUSTFS, "ACLs not supported");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "ACLs not supported");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

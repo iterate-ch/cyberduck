@@ -34,12 +34,8 @@ import static org.junit.Assert.*;
 public class S3LoggingFeatureTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testGetConfiguration() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Bucket logging not supported");
-        this.assumeNot(S3TestServer.MINIO, "Bucket logging not supported");
-        this.assumeNot(S3TestServer.CEPH, "Bucket logging not supported");
-        this.assumeNot(S3TestServer.RUSTFS, "Bucket logging not supported");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Bucket logging not supported");
         final S3LoggingFeature feature = new S3LoggingFeature(session);
         final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         feature.setConfiguration(bucket, new LoggingConfiguration(true, "test-logging-us-east-1-cyberduck"));

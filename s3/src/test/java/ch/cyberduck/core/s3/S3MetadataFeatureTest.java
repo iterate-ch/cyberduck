@@ -106,12 +106,8 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
-        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
-        this.assumeNot(S3TestServer.CEPH, "ACLs not supported");
-        this.assumeNot(S3TestServer.RUSTFS, "ACLs not supported");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "ACLs not supported");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acls = new S3AccessControlListFeature(session);

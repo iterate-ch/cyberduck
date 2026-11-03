@@ -187,12 +187,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testRedirectWithNoLocationHeader() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "AWS endpoint");
-        this.assumeNot(S3TestServer.MINIO, "AWS endpoint");
-        this.assumeNot(S3TestServer.CEPH, "AWS endpoint");
-        this.assumeNot(S3TestServer.RUSTFS, "AWS endpoint");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "AWS endpoint");
         final Path container = new Path("profiles.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "S3 (HTTP).cyberduckprofile", EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));

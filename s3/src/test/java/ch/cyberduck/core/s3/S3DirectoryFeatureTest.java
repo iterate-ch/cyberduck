@@ -61,12 +61,8 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testCreateBucketAWS2SignaturePathStyle() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));
@@ -99,12 +95,8 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testCreateBucketAWS2Signature() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.MINIO, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.CEPH, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.RUSTFS, "Requires AWS credentials");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Requires AWS credentials");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 AWS2 Signature Version (HTTPS).cyberduckprofile"));

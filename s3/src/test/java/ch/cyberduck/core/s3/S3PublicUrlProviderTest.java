@@ -37,12 +37,8 @@ import static org.junit.Assert.*;
 public class S3PublicUrlProviderTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void toDownloadUrl() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "ACLs not supported");
-        this.assumeNot(S3TestServer.MINIO, "ACLs not supported");
-        this.assumeNot(S3TestServer.CEPH, "ACLs not supported");
-        this.assumeNot(S3TestServer.RUSTFS, "ACLs not supported");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "ACLs not supported");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

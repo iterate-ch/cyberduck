@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -83,12 +84,8 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testTouchObjectLockBucket() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Object lock not enforced");
-        this.assumeNot(S3TestServer.MINIO, "Object lock not enforced");
-        this.assumeNot(S3TestServer.CEPH, "Object lock not enforced");
-        this.assumeNot(S3TestServer.RUSTFS, "Object lock not enforced");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Object lock not enforced");
         final Path home = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
