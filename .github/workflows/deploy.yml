@@ -69,6 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          persist-credentials: false
           fetch-depth: 0
       - name: Set up JDK
         uses: actions/setup-java@v6
@@ -299,3 +300,7 @@ jobs:
       - name: Cleanup Developer ID certificate
         if: always()
         uses: ./.github/actions/import-developer-id-certificate/cleanup
+      - name: Remove Sparkle Updater Private Keys
+        if: always()
+        shell: bash
+        run: rm -f www/update/private.pem www/update/private-ed25519.pem

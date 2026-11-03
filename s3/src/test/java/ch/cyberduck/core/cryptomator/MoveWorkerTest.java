@@ -244,6 +244,37 @@ public class MoveWorkerTest extends AbstractS3Test {
     }
 
     @Test
+    public void testMoveDirectoryWithoutPlaceholderIntoVault() throws Exception {
+        final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        // No placeholder objects for folders, only existing as common prefix of the file
+        final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path clearSubFolder = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path clearFile = new Path(clearSubFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, acl), clearFile, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(clearFile));
+        assertFalse(session.getClient().isObjectInBucket(home.getName(), clearFolder.getName() + "/"));
+        assertFalse(session.getClient().isObjectInBucket(home.getName(), clearFolder.getName() + "/" + clearSubFolder.getName() + "/"));
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
+        // move directory structure into vault
+        final Path encryptedFolder = new Path(vault, clearFolder.getName(), EnumSet.of(Path.Type.directory));
+        final Path encryptedSubFolder = new Path(encryptedFolder, clearSubFolder.getName(), EnumSet.of(Path.Type.directory));
+        final Path encryptedFile = new Path(encryptedSubFolder, clearFile.getName(), EnumSet.of(Path.Type.file));
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
+        worker.run(session);
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFolder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedSubFolder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(encryptedFile));
+        assertFalse(new S3FindFeature(session, acl).find(clearFile));
+        session.getRegistry().clear();
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
+    }
+
+    @Test
     public void testMoveFileOutsideVault() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

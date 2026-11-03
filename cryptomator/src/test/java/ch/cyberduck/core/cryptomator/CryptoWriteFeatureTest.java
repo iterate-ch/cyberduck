@@ -17,8 +17,10 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
@@ -29,22 +31,22 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +60,7 @@ import java.io.OutputStream;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
@@ -252,10 +255,35 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, md5proxy, cryptomator);
         final Path file = new Path(vault, "t", EnumSet.of(Path.Type.file));
         // Checksum set in the status as in the touch worker
-        final TransferStatus status = new TransferStatus();
-        status.setChecksum(this.upload(session, cryptomator, HashAlgorithm.md5).checksum(file, status).compute(new NullInputStream(0L), status));
+        final TransferStatus status = new TransferStatus().setLength(0L);
         sent.set(null);
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(writer, file, status);
         assertEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()).hex, sent.get().hex);
+    }
+
+    @Test
+    public void testDigestOfUploadWithVerify() throws Exception {
+        final NullSession session = this.session();
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final byte[] content = RandomUtils.nextBytes(2500);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try(OutputStream out = local.getOutputStream(false)) {
+            out.write(content);
+        }
+        try {
+            final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
+            // Verify checksum of content when upload is complete as in the upload filter
+            final TransferStatus status = new TransferStatus().setLength(content.length).setVerify(HashAlgorithm.md5);
+            this.upload(session, cryptomator, HashAlgorithm.md5).upload(new CryptoWriteFeature<>(session, proxy, cryptomator), file, local,
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
+            // Digest must be of the encrypted content sent to the server and not of the local content
+            assertEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(written.get()), new TransferStatus()), status.getDigest());
+            assertNotEquals(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ByteArrayInputStream(content), new TransferStatus()), status.getDigest());
+        }
+        finally {
+            local.delete();
+        }
     }
 }

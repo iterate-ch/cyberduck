@@ -40,7 +40,7 @@ public class CteraDirectoryFeature extends DAVDirectoryFeature {
             if(!validate(filename.get())) {
                 throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
             }
+            assumeRole(workdir, filename.get(), CREATEDIRECTORIESPERMISSION);
         }
-        assumeRole(workdir, CREATEDIRECTORIESPERMISSION);
     }
 }
