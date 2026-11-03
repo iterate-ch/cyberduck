@@ -145,7 +145,8 @@ public abstract class AbstractS3Test extends VaultTest {
     public final TestRule availability = (base, description) -> new Statement() {
         @Override
         public void evaluate() throws Throwable {
-            final RunOn only = description.getAnnotation(RunOn.class);
+            final RunOn only = null != description.getAnnotation(RunOn.class) ? description.getAnnotation(RunOn.class)
+                    : description.getTestClass().getAnnotation(RunOn.class);
             if(null == only) {
                 assumeFalse(String.format("Only runs with annotation for %s", server), server.isVariant());
             }

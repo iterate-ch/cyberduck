@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -50,12 +51,8 @@ import static org.junit.Assert.assertEquals;
 public class GlacierTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testRestore() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Glacier restore requires AWS");
-        this.assumeNot(S3TestServer.MINIO, "Glacier restore requires AWS");
-        this.assumeNot(S3TestServer.CEPH, "Glacier restore requires AWS");
-        this.assumeNot(S3TestServer.RUSTFS, "Glacier restore requires AWS");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Glacier restore requires AWS");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512);

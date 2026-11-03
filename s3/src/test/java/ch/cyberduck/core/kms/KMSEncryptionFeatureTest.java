@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
@@ -36,7 +37,6 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -47,17 +47,8 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class KMSEncryptionFeatureTest extends AbstractS3Test {
-
-    @Before
-    public void requireAWS() {
-        // AWS KMS
-        this.assumeNot(S3TestServer.LOCALSTACK, "Not available");
-        this.assumeNot(S3TestServer.MINIO, "Not available");
-        this.assumeNot(S3TestServer.CEPH, "Not available");
-        this.assumeNot(S3TestServer.RUSTFS, "Not available");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Not available");
-    }
 
     @Test
     public void testSetEncryptionKMSDefaultKeySignatureVersionV4() throws Exception {

@@ -10,6 +10,7 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -18,7 +19,6 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -27,17 +27,8 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Test {
-
-    @Before
-    public void requireAWS() {
-        // AWS CloudFront
-        this.assumeNot(S3TestServer.LOCALSTACK, "Not available");
-        this.assumeNot(S3TestServer.MINIO, "Not available");
-        this.assumeNot(S3TestServer.CEPH, "Not available");
-        this.assumeNot(S3TestServer.RUSTFS, "Not available");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Not available");
-    }
 
     @Test
     public void testGetMethodsAWS() {

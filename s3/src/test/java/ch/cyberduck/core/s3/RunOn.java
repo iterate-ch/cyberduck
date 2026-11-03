@@ -21,11 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Run test only with the given server configurations. Tests without this annotation do not run with variants of
+ * Run test or all tests of a class only with the given server configurations. A method annotation takes precedence. Tests without this annotation do not run with variants of
  * a server such as {@link S3TestServer#AWS_VIRTUALHOST}.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface RunOn {
     S3TestServer[] value();
 }
