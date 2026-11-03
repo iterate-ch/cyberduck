@@ -131,12 +131,12 @@ DQ
                 <constraints>
                     <constraint firstItem="cfF-Iv-FNQ" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="8bB-Fe-itP"/>
                     <constraint firstAttribute="trailing" secondItem="cfF-Iv-FNQ" secondAttribute="trailing" constant="20" symbolic="YES" id="E5r-vt-izh"/>
-                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="I6Z-cR-xk2"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="LMi-v3-klK"/>
                     <constraint firstItem="15" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="NEP-Ec-4US"/>
                     <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="Spw-Z5-Co6"/>
                     <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="Tvi-Wv-CFu"/>
                     <constraint firstItem="9" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="8" symbolic="YES" id="UNL-sT-YuO"/>
+                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="bep-eB-qID"/>
                     <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="fWP-WV-dP6"/>
                     <constraint firstAttribute="bottom" secondItem="cfF-Iv-FNQ" secondAttribute="bottom" constant="13" id="uGM-me-aM6"/>
                     <constraint firstItem="9" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="uU6-u9-m4K"/>
@@ -166,7 +166,7 @@ DQ
                             </textFieldCell>
                         </textField>
                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="hSP-0U-eb2">
-                            <rect key="frame" x="16" y="114" width="16" height="32"/>
+                            <rect key="frame" x="16" y="130" width="16" height="16"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="pGg-sp-iHL"/>
                                 <constraint firstAttribute="width" constant="16" id="v08-Z7-BRE"/>
