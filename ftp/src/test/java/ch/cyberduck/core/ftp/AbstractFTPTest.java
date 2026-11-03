@@ -23,6 +23,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -43,6 +44,16 @@ import static org.junit.Assume.assumeTrue;
 @Category(TestcontainerTest.class)
 @RunWith(Parameterized.class)
 public abstract class AbstractFTPTest {
+
+    static {
+        // Servers advertising AUTH TLS prompt to switch to secure connection
+        ProtocolFactory.get().register(new FTPTLSProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        });
+    }
 
     protected FTPSession session;
 

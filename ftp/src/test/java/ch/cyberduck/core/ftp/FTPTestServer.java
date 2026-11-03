@@ -15,6 +15,7 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
+import com.github.dockerjava.api.model.Capability;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -51,6 +52,12 @@ public enum FTPTestServer {
     PROFTPD("/home/test", 21020, 21030, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-proftpd-ftp", false)
             .withFileFromPath("Dockerfile", Paths.get("src/test/resources/proftpd/Dockerfile"))
             .withFileFromPath("proftpd.conf", Paths.get("src/test/resources/proftpd/proftpd.conf")))
+            .withExposedPorts(FTPTestServer.PORT)
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)))),
+    PUREFTPD("/home/test", 21040, 21050, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-pure-ftpd", false)
+            .withFileFromPath("Dockerfile", Paths.get("src/test/resources/pure-ftpd/Dockerfile")))
+            // Required to drop privileges
+            .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.SYS_NICE, Capability.DAC_READ_SEARCH))
             .withExposedPorts(FTPTestServer.PORT)
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5))));
 
