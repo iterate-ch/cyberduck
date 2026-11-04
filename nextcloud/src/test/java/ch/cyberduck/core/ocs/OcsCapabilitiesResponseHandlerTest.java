@@ -89,4 +89,19 @@ public class OcsCapabilitiesResponseHandlerTest {
         final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
         assertFalse(capabilities.locking);
     }
+
+    @Test
+    public void testHandleEntityChunking() throws Exception {
+        final String xml = "<?xml version=\"1.0\"?>\n" +
+                "<ocs>\n" +
+                " <meta><status>ok</status><statuscode>100</statuscode><message>OK</message></meta>\n" +
+                " <data>\n" +
+                "  <capabilities>\n" +
+                "   <dav><chunking>1.0</chunking></dav>\n" +
+                "  </capabilities>\n" +
+                " </data>\n" +
+                "</ocs>";
+        final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+        assertTrue(capabilities.chunking);
+    }
 }

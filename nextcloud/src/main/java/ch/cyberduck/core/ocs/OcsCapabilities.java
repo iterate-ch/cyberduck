@@ -20,6 +20,10 @@ public final class OcsCapabilities {
     public boolean versioning;
     public boolean locking;
     /**
+     * Chunked upload (v2) at dav/uploads
+     */
+    public boolean chunking;
+    /**
      * Storage spaces with project spaces and share jail
      */
     public boolean spaces;
@@ -38,6 +42,11 @@ public final class OcsCapabilities {
 
     public OcsCapabilities withLocking(final boolean locking) {
         this.locking = locking;
+        return this;
+    }
+
+    public OcsCapabilities withChunking(final boolean chunking) {
+        this.chunking = chunking;
         return this;
     }
 
@@ -61,6 +70,7 @@ public final class OcsCapabilities {
         final String sb = "OcsCapabilities{" + "webdav='" + webdav + '\'' +
                 ", versioning=" + versioning +
                 ", locking=" + locking +
+                ", chunking=" + chunking +
                 ", spaces=" + spaces +
                 ", projects=" + projects +
                 ", sharejail=" + sharejail +

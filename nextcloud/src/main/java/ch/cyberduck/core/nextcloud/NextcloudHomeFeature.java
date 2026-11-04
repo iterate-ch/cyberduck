@@ -74,6 +74,7 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
             }
         },
         versions,
+        uploads,
         meta {
             @Override
             public Home home(final Host bookmark) {
