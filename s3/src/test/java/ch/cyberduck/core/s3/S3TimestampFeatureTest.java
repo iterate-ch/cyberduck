@@ -41,8 +41,6 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindTimestamp() throws Exception {
-        this.assumeNot(S3TestServer.RUSTFS, "Metadata header names differ");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Metadata header names differ");
         this.assumeNot(S3TestServer.CEPH, "Version ID of copy is not returned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
