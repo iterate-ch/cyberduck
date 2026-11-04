@@ -42,11 +42,10 @@ public class S3WriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWritePublicReadCannedAcl() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Canned ACL not reported");
-        this.assumeNot(S3TestServer.MINIO, "Canned ACL not reported");
-        this.assumeNot(S3TestServer.CEPH, "Canned ACL not reported");
-        this.assumeNot(S3TestServer.RUSTFS, "Canned ACL not reported");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Canned ACL not reported");
+        this.assumeNot(S3TestServer.MINIO, "Canned ACL ignored and object ACL always reported as owner full control only");
+        this.assumeNot(S3TestServer.RUSTFS, "Canned ACL ignored and object ACL always reported as owner full control only");
+        this.assumeNot(S3TestServer.LOCALSTACK, "Bucket reports BucketOwnerEnforced but still stores object ACL, so ACL ignored by getPermission");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Bucket reports BucketOwnerEnforced but still stores object ACL, so ACL ignored by getPermission");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
@@ -57,8 +56,8 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        assertTrue(new S3AccessControlListFeature(session)
-                .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
+        assertTrue(new S3AccessControlListFeature(session).getPermission(test).asList()
+                .contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
