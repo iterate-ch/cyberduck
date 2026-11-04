@@ -31,7 +31,6 @@ jobs:
       artifact-metadata: write
     uses: ./.github/workflows/deploy.yml
     with:
-      MAVEN_PROFILES: 'appstore'
       # App Store artifacts are already published by the release/snapshot macOS leg;
       # this run only needs to build the sandboxed .pkg for upload.
       MAVEN_GOAL: install
