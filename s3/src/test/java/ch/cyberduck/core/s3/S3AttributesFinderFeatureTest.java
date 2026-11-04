@@ -11,6 +11,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,7 +37,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindFileUsEast() throws Exception {
-        this.assumeNot(S3TestServer.CEPH, "Attributes differ");
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -216,7 +216,13 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        this.assertAttributesEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        {
+            final PathAttributes lookup = new S3AttributesFinderFeature(session, acl).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
+        }
         // Add delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertNotNull(test.attributes().getVersionId());

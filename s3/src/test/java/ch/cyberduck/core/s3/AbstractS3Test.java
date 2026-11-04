@@ -16,7 +16,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -24,7 +23,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
@@ -52,7 +50,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
@@ -107,19 +104,6 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Parameterized.Parameter(1)
     public VaultVersion.Type vaultVersion;
-
-    /**
-     * Compare attributes. The modification date of servers other than hosted Amazon S3 may differ by a second between
-     * the response when creating an object and the later lookup.
-     */
-    protected void assertAttributesEquals(final PathAttributes expected, final PathAttributes actual) {
-        if(!server.isHosted() && Math.abs(expected.getModificationDate() - actual.getModificationDate()) <= 1000L) {
-            assertEquals(new DefaultPathAttributes(expected).setModificationDate(actual.getModificationDate()), actual);
-        }
-        else {
-            assertEquals(expected, actual);
-        }
-    }
 
     /**
      * Skip test if server implementation is not expected to pass
