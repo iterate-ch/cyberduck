@@ -212,10 +212,9 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreatePlaceholderVersioningDeleteWithMarker() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.RUSTFS, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -233,10 +232,9 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDirectoryDeleteWithVersioning() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.RUSTFS, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path parent = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,

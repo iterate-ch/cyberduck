@@ -210,8 +210,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeletedWithMarker() throws Exception {
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Delete marker versions are not found with 404 instead of 405 response");
+        this.assumeNot(S3TestServer.CEPH, "Delete marker versions are not found with 404 instead of 405 response");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

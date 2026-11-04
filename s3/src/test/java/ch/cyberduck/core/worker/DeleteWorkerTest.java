@@ -63,10 +63,8 @@ public class DeleteWorkerTest extends AbstractS3Test {
 
     @Test
     public void testDeleteVersioning() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.MINIO, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix is listed for a directory containing delete markers only");
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path folder = new S3DirectoryFeature(session).mkdir(

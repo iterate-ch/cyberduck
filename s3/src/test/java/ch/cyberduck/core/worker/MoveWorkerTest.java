@@ -106,10 +106,9 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveVersionedDirectory() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.MINIO, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.CEPH, "Delete marker versions are not found with 404 instead of 405 response");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path sourceDirectory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,

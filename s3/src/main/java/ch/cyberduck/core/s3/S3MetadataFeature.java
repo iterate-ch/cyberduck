@@ -42,6 +42,7 @@ import org.jets3t.service.model.S3Object;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class S3MetadataFeature implements Headers {
     private static final Logger log = LogManager.getLogger(S3MetadataFeature.class);
@@ -102,7 +103,9 @@ public class S3MetadataFeature implements Headers {
             final Path bucket = containerService.getContainer(file);
             final Map<String, Object> result = session.getClient().updateObjectMetadata(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
             final PathAttributes attributes = new S3AttributesAdapter(session.getHost()).toAttributes(target);
-            final Map complete = (Map) result.get(Constants.KEY_FOR_COMPLETE_METADATA);
+            // HTTP header names are case-insensitive
+            final Map<String, Object> complete = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+            complete.putAll((Map<String, Object>) result.get(Constants.KEY_FOR_COMPLETE_METADATA));
             attributes.setVersionId((String) complete.get(Constants.AMZ_VERSION_ID));
             status.setResponse(attributes);
         }

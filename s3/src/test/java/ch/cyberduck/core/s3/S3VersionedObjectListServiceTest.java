@@ -59,7 +59,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testList() throws Exception {
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Empty ETag listed for objects in a bucket without versioning");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         file.attributes().setVersionId("null");
@@ -140,7 +140,6 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testEnableVersioningExistingFiles() throws Exception {
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path bucket = new S3DirectoryFeature(session)
                 .mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -198,6 +197,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListEncodedCharacter() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -209,7 +209,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListInvisibleCharacter() throws Exception {
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -221,7 +221,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListFilePlusCharacter() throws Exception {
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -233,7 +233,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListPlaceholderPlusCharacter() throws Exception {
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         bucket.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -256,10 +256,9 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
      */
     @Test
     public void testDirectoyPlaceholderNoChildren() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.RUSTFS, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -275,10 +274,9 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
      */
     @Test
     public void testDirectoyPlaceholderWithChildren() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.CEPH, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Versioning behaviour differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Versioning behaviour differs");
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.RUSTFS, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, acl), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
