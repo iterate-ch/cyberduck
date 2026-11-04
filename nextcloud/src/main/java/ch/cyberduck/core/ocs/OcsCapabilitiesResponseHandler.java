@@ -63,6 +63,16 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                             }
                         }
                     }
+                    if(value.data.capabilities.dav != null) {
+                        if(value.data.capabilities.dav.chunking != null) {
+                            try {
+                                capabilities.withChunking(Double.parseDouble(value.data.capabilities.dav.chunking) >= 1.0);
+                            }
+                            catch(NumberFormatException e) {
+                                log.warn("Failure parsing {}", value.data.capabilities.dav.chunking);
+                            }
+                        }
+                    }
                     if(value.data.capabilities.spaces != null) {
                         capabilities.withSpaces(toBoolean(value.data.capabilities.spaces.enabled));
                         capabilities.withProjects(toBoolean(value.data.capabilities.spaces.projects));
