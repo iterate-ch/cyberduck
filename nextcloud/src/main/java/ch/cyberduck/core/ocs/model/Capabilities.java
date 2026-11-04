@@ -67,6 +67,7 @@ public final class Capabilities {
     public static final class capabilities {
         public core core;
         public files files;
+        public dav dav;
         public spaces spaces;
     }
 
@@ -74,6 +75,11 @@ public final class Capabilities {
     public static final class core {
         @JsonProperty("webdav-root")
         public String webdav;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static final class dav {
+        public String chunking;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
