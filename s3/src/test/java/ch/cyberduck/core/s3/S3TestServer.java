@@ -68,7 +68,11 @@ public enum S3TestServer {
     /**
      * SeaweedFS. Container image can be overridden with environment <code>SEAWEEDFS_IMAGE</code>.
      */
-    SEAWEEDFS;
+    SEAWEEDFS,
+    /**
+     * Scality CloudServer. Container image can be overridden with environment <code>CLOUDSERVER_IMAGE</code>.
+     */
+    CLOUDSERVER;
 
     public static final String ACCESS_KEY = "test";
     public static final String SECRET_KEY = "testtest";
@@ -77,6 +81,7 @@ public enum S3TestServer {
     private static final int CEPH_PORT = 8080;
     private static final int RUSTFS_PORT = 9000;
     private static final int SEAWEEDFS_PORT = 8333;
+    private static final int CLOUDSERVER_PORT = 8000;
 
     private GenericContainer<?> container;
 
@@ -107,6 +112,7 @@ public enum S3TestServer {
             case CEPH:
             case RUSTFS:
             case SEAWEEDFS:
+            case CLOUDSERVER:
                 return true;
             default:
                 return StringUtils.isNotBlank(System.getenv("VAULT_TOKEN"));
@@ -131,6 +137,9 @@ public enum S3TestServer {
                     break;
                 case SEAWEEDFS:
                     created = seaweedfs();
+                    break;
+                case CLOUDSERVER:
+                    created = cloudserver();
                     break;
                 default:
                     throw new IllegalStateException(String.format("No container for %s", this));
@@ -208,6 +217,21 @@ public enum S3TestServer {
         return created;
     }
 
+    private static GenericContainer<?> cloudserver() {
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CLOUDSERVER_IMAGE"), "ghcr.io/scality/cloudserver:9.5.2")))
+                .withEnv("S3BACKEND", "mem")
+                .withEnv("REMOTE_MANAGEMENT_DISABLE", "1")
+                .withEnv("SCALITY_ACCESS_KEY_ID", ACCESS_KEY)
+                .withEnv("SCALITY_SECRET_ACCESS_KEY", SECRET_KEY)
+                .withExposedPorts(CLOUDSERVER_PORT)
+                // Unauthenticated request is rejected once ready
+                .waitingFor(Wait.forHttp("/").forPort(CLOUDSERVER_PORT).forStatusCode(403).withStartupTimeout(Duration.ofMinutes(5)));
+        created.start();
+        // Only the default location constraint is configured. Requests are only accepted with a known host name
+        createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8000", "us-east-1");
+        return created;
+    }
+
     private static GenericContainer<?> ceph() {
         final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/demo:latest")))
                 .withEnv("MON_IP", "127.0.0.1")
@@ -265,6 +289,8 @@ public enum S3TestServer {
                 return this.container().getMappedPort(RUSTFS_PORT);
             case SEAWEEDFS:
                 return this.container().getMappedPort(SEAWEEDFS_PORT);
+            case CLOUDSERVER:
+                return this.container().getMappedPort(CLOUDSERVER_PORT);
             default:
                 return this.container().getMappedPort(LOCALSTACK_PORT);
         }

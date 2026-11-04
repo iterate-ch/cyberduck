@@ -119,6 +119,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTouchCarriageReturnKey() throws Exception {
+        this.assumeNot(S3TestServer.CLOUDSERVER, "Object keys with control characters are rejected");
         this.assumeNot(S3TestServer.RUSTFS, "Object keys with control characters are rejected");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

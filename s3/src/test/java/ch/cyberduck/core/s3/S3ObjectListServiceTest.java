@@ -141,6 +141,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListInvisibleCharacter() throws Exception {
+        this.assumeNot(S3TestServer.CLOUDSERVER, "Object keys with control characters are rejected");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3TouchFeature(session).touch(

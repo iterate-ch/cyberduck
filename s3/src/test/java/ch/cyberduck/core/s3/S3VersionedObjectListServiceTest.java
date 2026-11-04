@@ -209,6 +209,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListInvisibleCharacter() throws Exception {
+        this.assumeNot(S3TestServer.CLOUDSERVER, "Object keys with control characters are rejected");
         this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");

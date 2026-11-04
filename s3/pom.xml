@@ -106,6 +106,7 @@
                         <CEPH/>
                         <RUSTFS/>
                         <SEAWEEDFS/>
+                        <CLOUDSERVER/>
                     </environmentVariables>
                 </configuration>
             </plugin>
