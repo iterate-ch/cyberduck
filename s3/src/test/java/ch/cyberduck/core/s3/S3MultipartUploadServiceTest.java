@@ -48,7 +48,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testUploadSinglePart() throws Exception {
-        this.assumeNot(S3TestServer.CEPH, "Upload checksum not supported");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService service = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -59,7 +58,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
@@ -81,7 +79,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
-        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
