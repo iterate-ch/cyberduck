@@ -42,6 +42,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
@@ -146,19 +147,16 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "No notification of request");
-        this.assumeNot(S3TestServer.MINIO, "No notification of request");
-        this.assumeNot(S3TestServer.CEPH, "No notification of request");
-        this.assumeNot(S3TestServer.RUSTFS, "No notification of request");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "No notification of request");
         final AtomicBoolean b = new AtomicBoolean();
         final String name = new AlphanumericRandomStringService().random();
+        // Bucket name is part of the path unless using virtual host style requests. Verify trailing delimiter only
+        final Pattern pattern = Pattern.compile(String.format("^PUT /(.+/)?%s/ HTTP/1\\.1$", Pattern.quote(name)));
         session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("PUT /" + name + "/ HTTP/1.1").equals(message)) {
+                        if(pattern.matcher(message).matches()) {
                             b.set(true);
                         }
                 }

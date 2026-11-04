@@ -50,10 +50,9 @@ public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListMultipartUploadDot() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Multipart upload listing differs");
-        this.assumeNot(S3TestServer.CEPH, "Multipart upload listing differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Multipart upload listing differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Multipart upload listing differs");
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.RUSTFS, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Dot object keys not supported");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session).mkdir(
