@@ -31,10 +31,10 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class S3LoggingFeatureTest extends AbstractS3Test {
 
     @Test
-    @RunOn(S3TestServer.AWS)
     public void testGetConfiguration() throws Exception {
         final S3LoggingFeature feature = new S3LoggingFeature(session);
         final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -48,18 +48,12 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         new S3LoggingFeature(session).getConfiguration(
-            new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
-        );
+                new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)));
     }
 
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
-        this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Reply for missing bucket differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Reply for missing bucket differs");
         new S3LoggingFeature(session).setConfiguration(
-            new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
-        );
+                new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false));
     }
 }
