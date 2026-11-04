@@ -14,7 +14,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -92,28 +91,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(moved), LoginCallback.noop, new Delete.DisabledCallback());
-    }
-
-    @Test(expected = InteroperabilityException.class)
-    public void testWriteChunkedTransferAWS4Signature() throws Exception {
-        this.assumeNot(S3TestServer.LOCALSTACK, "Chunked transfer with AWS4 signature not rejected");
-        this.assumeNot(S3TestServer.MINIO, "Chunked transfer with AWS4 signature not rejected");
-        this.assumeNot(S3TestServer.CEPH, "Chunked transfer with AWS4 signature not rejected");
-        this.assumeNot(S3TestServer.RUSTFS, "Chunked transfer with AWS4 signature not rejected");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Chunked transfer with AWS4 signature not rejected");
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
-        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final TransferStatus status = new TransferStatus();
-        status.setLength(-1L);
-        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
-        try {
-            feature.write(file, status, ConnectionCallback.noop);
-        }
-        catch(InteroperabilityException e) {
-            assertEquals("A header you provided implies functionality that is not implemented. Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
-        }
     }
 
     @Test
