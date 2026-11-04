@@ -278,7 +278,7 @@ jobs:
             Compress-Archive -Path $_.FullName -DestinationPath $upload -Force
             $msixupload = [System.IO.Path]::ChangeExtension($upload, ".msixupload")
             Move-Item $upload $msixupload -Force
-            msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID
+            msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID --noCommit
           }
 
       # The self-hosted runner account persists the CLI configuration and token cache
