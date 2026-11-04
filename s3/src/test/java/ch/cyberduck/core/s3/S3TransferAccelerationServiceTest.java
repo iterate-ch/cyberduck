@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertTrue;
 
 @Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class S3TransferAccelerationServiceTest extends AbstractS3Test {
 
     @Test
@@ -49,7 +50,6 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
     }
 
     @Test
-    @RunOn(S3TestServer.AWS)
     public void testWrite() throws Exception {
         final AtomicBoolean b = new AtomicBoolean();
         session.withListener(new TranscriptListener() {
