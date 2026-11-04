@@ -24,25 +24,24 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
-import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
-import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
-import java.io.ByteArrayInputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -153,16 +152,16 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        this.assumeNot(S3TestServer.MINIO, "Reply for missing bucket differs");
-        this.assumeNot(S3TestServer.CEPH, "Reply for missing bucket differs");
-        this.assumeNot(S3TestServer.RUSTFS, "Reply for missing bucket differs");
-        this.assumeNot(S3TestServer.SEAWEEDFS, "Reply for missing bucket differs");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "No reply for missing bucket");
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        LocalTouchFactory.get().touch(local);
-        final TransferStatus status = new TransferStatus();
+        final byte[] random = RandomUtils.nextBytes(512);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        out.close();
+        final TransferStatus status = new TransferStatus().setLength(random.length);
         m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status, LoginCallback.noop);
     }
