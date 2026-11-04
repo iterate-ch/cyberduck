@@ -32,13 +32,15 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 public class FTPUTIMETimestampFeatureTest extends AbstractFTPTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
+        assumeTrue("SITE UTIME is accepted but does not change the modification date", server != FTPTestServer.PUREFTPD);
         final FTPWorkdirService workdir = new FTPWorkdirService(session);
-        final long modified = System.currentTimeMillis();
+        final long modified = 1599047952805L;
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         try {
