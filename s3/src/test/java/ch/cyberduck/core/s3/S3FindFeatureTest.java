@@ -43,7 +43,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindUnknownBucket() throws Exception {
-        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
     }
 

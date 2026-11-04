@@ -58,7 +58,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     public void testNotfound() throws Exception {
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         final S3LocationFeature feature = new S3LocationFeature(session, cache);
-        final String bucket = new AsciiRandomStringService().random();
+        final String bucket = new AsciiRandomStringService().random().toLowerCase();
         feature.getLocation(new Path(bucket, EnumSet.of(Path.Type.volume, Path.Type.directory)));
         assertNull(cache.getRegionForBucketName(bucket));
     }

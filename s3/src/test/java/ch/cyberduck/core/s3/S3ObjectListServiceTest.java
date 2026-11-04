@@ -114,7 +114,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assumeTrue(server == S3TestServer.MINIO);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             new S3ObjectListService(session, acl).list(new Path(directory, new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         }
@@ -291,7 +291,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     @RunOn(S3TestServer.AWS)
     public void testDetermineCorrectRegionFrom400Reply() throws Exception {
-        final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), bucket, new TransferStatus().setRegion("eu-central-1"));

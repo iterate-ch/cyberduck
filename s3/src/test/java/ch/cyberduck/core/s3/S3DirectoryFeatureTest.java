@@ -55,7 +55,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         this.assumeNot(S3TestServer.CEPH, "Bucket location constraint differs");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
-        final Path bucket = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         feature.mkdir(new S3WriteFeature(session, acl), bucket, new TransferStatus()
                 .setAcl(Acl.CANNED_PRIVATE)
                 .setRegion("eu-central-1"));
@@ -86,7 +86,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         for(Location.Name region : Collections.singletonList(new S3LocationFeature.S3Region("us-east-1"))) {
-            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             assertTrue(feature.isSupported(test.getParent(), Optional.of(test.getName())));
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
@@ -120,7 +120,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         for(Location.Name region : Collections.singletonList(new S3LocationFeature.S3Region("us-east-1"))) {
-            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             assertTrue(feature.isSupported(test.getParent(), Optional.of(test.getName())));
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
@@ -182,7 +182,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path bucket = new S3DirectoryFeature(session).mkdir(
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session, acl).find(test));
@@ -272,7 +272,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreatePlaceholderVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3DirectoryFeature(session).mkdir(
-                new S3WriteFeature(session, acl), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new S3WriteFeature(session, acl), new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session, acl).list(test, new DisabledListProgressListener()).isEmpty());

@@ -115,7 +115,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteContainer() throws Exception {
-        final Path container = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), container, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(container));
@@ -135,7 +135,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
-        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

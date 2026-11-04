@@ -142,7 +142,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     public void testEnableVersioningExistingFiles() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path bucket = new S3DirectoryFeature(session)
-                .mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                .mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(bucket));
         final Path file = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3WriteFeature feature = new S3WriteFeature(session, acl);
