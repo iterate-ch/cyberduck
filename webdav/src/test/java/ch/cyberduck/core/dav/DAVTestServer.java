@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.time.Duration;
@@ -39,7 +38,8 @@ public enum DAVTestServer {
             .withExposedPorts(80)
             .waitingFor(Wait.forHttp("/").forPort(80).withBasicCredentials(DAVTestServer.USER, DAVTestServer.PASSWORD).forStatusCode(200)
                     .withStartupTimeout(Duration.ofMinutes(5)))),
-    SFTPGO(8090, () -> new GenericContainer<>(DockerImageName.parse("drakkan/sftpgo:latest"))
+    SFTPGO(8090, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-sftpgo-dav", false)
+            .withFileFromClasspath("Dockerfile", "sftpgo/Dockerfile"))
             .withCopyToContainer(MountableFile.forClasspathResource("sftpgo/data.json", 0644), "/etc/sftpgo/data.json")
             .withEnv("SFTPGO_LOADDATA_FROM", "/etc/sftpgo/data.json")
             .withEnv("SFTPGO_LOADDATA_MODE", "1")

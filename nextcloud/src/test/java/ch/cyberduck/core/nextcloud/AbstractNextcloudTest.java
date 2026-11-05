@@ -38,7 +38,7 @@ import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +57,8 @@ public abstract class AbstractNextcloudTest {
     private static final String PASSWORD = "admin-password";
     private static final int HTTP_PORT = 80;
 
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("nextcloud:32-apache"))
+    private static final GenericContainer<?> container = new GenericContainer<>(new ImageFromDockerfile("cyberduck-nextcloud", false)
+            .withFileFromClasspath("Dockerfile", "nextcloud/Dockerfile"))
             .withEnv("SQLITE_DATABASE", "nextcloud")
             .withEnv("NEXTCLOUD_ADMIN_USER", USER)
             .withEnv("NEXTCLOUD_ADMIN_PASSWORD", PASSWORD)

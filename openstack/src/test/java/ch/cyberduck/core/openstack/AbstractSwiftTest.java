@@ -38,7 +38,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -55,7 +55,8 @@ public abstract class AbstractSwiftTest {
     private static final String PASSWORD = "testing";
     private static final int HTTP_PORT = 8080;
 
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("openstackswift/saio:latest"))
+    private static final GenericContainer<?> container = new GenericContainer<>(new ImageFromDockerfile("cyberduck-swift-saio", false)
+            .withFileFromClasspath("Dockerfile", "saio/Dockerfile"))
             .withExposedPorts(HTTP_PORT)
             .waitingFor(Wait.forHttp("/healthcheck").forPort(HTTP_PORT).withStartupTimeout(Duration.ofMinutes(2)));
 

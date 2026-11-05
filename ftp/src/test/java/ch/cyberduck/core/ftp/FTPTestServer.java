@@ -19,7 +19,6 @@ import com.github.dockerjava.api.model.Capability;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.utility.DockerImageName;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +36,8 @@ import java.util.stream.IntStream;
  * on first use and shared for the lifetime of the JVM.
  */
 public enum FTPTestServer {
-    VSFTPD("/ftp/test", 21000, 21010, () -> new GenericContainer<>(DockerImageName.parse("delfer/alpine-ftp-server:latest"))
+    VSFTPD("/ftp/test", 21000, 21010, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-vsftpd", false)
+            .withFileFromClasspath("Dockerfile", "vsftpd/Dockerfile"))
             .withEnv("USERS", String.format("%s|%s", FTPTestServer.USER, FTPTestServer.PASSWORD))
             // Run vsftpd in foreground. The default startup script monitors the newest process matching vsftpd which is a
             // connection handler when a client connects early and stops the container once that connection is closed.

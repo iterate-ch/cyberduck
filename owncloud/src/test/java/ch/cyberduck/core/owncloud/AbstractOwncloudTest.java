@@ -36,7 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.time.Duration;
 
@@ -49,7 +49,8 @@ public abstract class AbstractOwncloudTest {
     private static final String PASSWORD = "admin-password";
     private static final int HTTP_PORT = 8080;
 
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("owncloud/server:latest"))
+    private static final GenericContainer<?> container = new GenericContainer<>(new ImageFromDockerfile("cyberduck-owncloud", false)
+            .withFileFromClasspath("Dockerfile", "owncloud/Dockerfile"))
             .withEnv("OWNCLOUD_ADMIN_USERNAME", USER)
             .withEnv("OWNCLOUD_ADMIN_PASSWORD", PASSWORD)
             .withEnv("OWNCLOUD_DOMAIN", "localhost")

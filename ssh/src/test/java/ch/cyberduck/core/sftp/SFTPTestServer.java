@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.nio.file.Paths;
@@ -30,7 +29,8 @@ import java.util.function.Supplier;
  * on first use and shared for the lifetime of the JVM.
  */
 public enum SFTPTestServer {
-    OPENSSH("/config", 2222, () -> new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
+    OPENSSH("/config", 2222, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-openssh-sftp", false)
+            .withFileFromClasspath("Dockerfile", "openssh/Dockerfile"))
             .withEnv("PUID", "1000")
             .withEnv("PGID", "1000")
             .withEnv("PASSWORD_ACCESS", "true")
@@ -43,7 +43,8 @@ public enum SFTPTestServer {
             .withFileFromPath("proftpd.conf", Paths.get("src/test/resources/proftpd/proftpd.conf")))
             .withExposedPorts(2222)
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)))),
-    SFTPGO("/", 2022, () -> new GenericContainer<>(DockerImageName.parse("drakkan/sftpgo:latest"))
+    SFTPGO("/", 2022, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-sftpgo-sftp", false)
+            .withFileFromClasspath("Dockerfile", "sftpgo/Dockerfile"))
             .withCopyToContainer(MountableFile.forClasspathResource("sftpgo/data.json", 0644), "/etc/sftpgo/data.json")
             .withEnv("SFTPGO_LOADDATA_FROM", "/etc/sftpgo/data.json")
             .withEnv("SFTPGO_LOADDATA_MODE", "1")

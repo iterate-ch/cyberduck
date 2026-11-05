@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.InputStream;
@@ -69,7 +69,8 @@ public class SFTPPublicKeyAuthenticationCertificateTest {
     private static final GenericContainer<?> legacy = container("sshd-legacy.conf");
 
     private static GenericContainer<?> container(final String config) {
-        return new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
+        return new GenericContainer<>(new ImageFromDockerfile("cyberduck-openssh-sftp", false)
+                .withFileFromClasspath("Dockerfile", "openssh/Dockerfile"))
                 .withEnv("PUID", "1000")
                 .withEnv("PGID", "1000")
                 .withEnv("USER_NAME", USER)
