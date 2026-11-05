@@ -29,6 +29,7 @@ import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -43,6 +44,7 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -166,8 +168,12 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
                     break;
             }
         }
-        final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
-                new DAVPathEncoder(session).encode(file));
+        final String path = new DAVPathEncoder(session).encode(file);
+        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
+            // Indicate that the client has knowledge of that state token of the destination
+            headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", path, status.getLockId()));
+        }
+        final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()), path);
         final String source = String.format("%s/.file", new DAVPathEncoder(session).encode(collection));
         log.debug("Assemble {} to {} with headers {}", source, target, headers);
         session.getClient().move(source, target, true, headers);
