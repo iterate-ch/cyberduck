@@ -233,7 +233,7 @@ public enum S3TestServer {
     }
 
     private static GenericContainer<?> ceph() {
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/ceph:latest")))
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/ceph:v21.2")))
                 .withCopyToContainer(MountableFile.forClasspathResource("ceph/init.sh", 0755), "/init.sh")
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("root").withEntrypoint("sh", "-c", "sh /init.sh && sleep infinity"))
                 .withEnv("S3_ACCESS_KEY", ACCESS_KEY)
