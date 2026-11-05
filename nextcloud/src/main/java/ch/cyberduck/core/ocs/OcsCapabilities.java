@@ -24,6 +24,14 @@ public final class OcsCapabilities {
      */
     public boolean chunking;
     /**
+     * Maximum size of a chunk in bytes advertised by the server. Zero if unknown.
+     */
+    public long chunksize;
+    /**
+     * Maximum number of chunks uploaded in parallel advertised by the server. Zero if unknown.
+     */
+    public int chunkconcurrency;
+    /**
      * Storage spaces with project spaces and share jail
      */
     public boolean spaces;
@@ -50,6 +58,16 @@ public final class OcsCapabilities {
         return this;
     }
 
+    public OcsCapabilities withChunkSize(final long chunksize) {
+        this.chunksize = chunksize;
+        return this;
+    }
+
+    public OcsCapabilities withChunkConcurrency(final int chunkconcurrency) {
+        this.chunkconcurrency = chunkconcurrency;
+        return this;
+    }
+
     public OcsCapabilities withSpaces(final boolean spaces) {
         this.spaces = spaces;
         return this;
@@ -71,6 +89,8 @@ public final class OcsCapabilities {
                 ", versioning=" + versioning +
                 ", locking=" + locking +
                 ", chunking=" + chunking +
+                ", chunksize=" + chunksize +
+                ", chunkconcurrency=" + chunkconcurrency +
                 ", spaces=" + spaces +
                 ", projects=" + projects +
                 ", sharejail=" + sharejail +
