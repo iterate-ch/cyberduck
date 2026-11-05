@@ -36,6 +36,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -77,11 +78,21 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
     private final long chunksize;
     private final int concurrency;
 
-    public NextcloudChunkedUploadFeature(final DAVSession session) {
+    public NextcloudChunkedUploadFeature(final DAVSession session, final OcsCapabilities capabilities) {
         super(EnumSet.of(Flags.checksumOptional), HashAlgorithm.sha1);
         this.session = session;
-        this.chunksize = HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.size");
-        this.concurrency = HostPreferencesFactory.get(session.getHost()).getInteger("nextcloud.upload.multipart.concurrency");
+        // Limit to values advertised by the server
+        this.chunksize = limit(HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.size"), capabilities.chunksize);
+        this.concurrency = (int) limit(HostPreferencesFactory.get(session.getHost()).getInteger("nextcloud.upload.multipart.concurrency"), capabilities.chunkconcurrency);
+    }
+
+    /**
+     * @param configured Configured value
+     * @param advertised Limit of the server or zero if unknown
+     * @return Smaller of both values
+     */
+    private static long limit(final long configured, final long advertised) {
+        return advertised > 0 ? Math.min(configured, advertised) : configured;
     }
 
     @Override
@@ -173,7 +184,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", path, status.getLockId()));
         }
         final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()), path);
-        final String source = String.format("%s/.file", new DAVPathEncoder(session).encode(collection));
+        final String source = String.format("%s.file", new DAVPathEncoder(session).encode(collection));
         log.debug("Assemble {} to {} with headers {}", source, target, headers);
         session.getClient().move(source, target, true, headers);
     }

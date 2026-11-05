@@ -133,7 +133,7 @@ public class NextcloudSession extends DAVSession {
         }
         if(type == Upload.class) {
             if(ocs.chunking) {
-                return (T) new NextcloudThresholdUploadFeature(this);
+                return (T) new NextcloudThresholdUploadFeature(this, ocs);
             }
             return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
