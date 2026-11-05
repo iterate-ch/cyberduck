@@ -29,6 +29,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -49,11 +50,11 @@ public class NextcloudThresholdUploadFeature implements Upload<Void> {
     private final Upload<Void> single;
     private final Upload<Void> chunked;
 
-    public NextcloudThresholdUploadFeature(final DAVSession session) {
+    public NextcloudThresholdUploadFeature(final DAVSession session, final OcsCapabilities capabilities) {
         this.session = session;
         this.threshold = HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.threshold");
         this.single = new HttpUploadFeature<>(EnumSet.of(Flags.checksumOptional), HashAlgorithm.sha1);
-        this.chunked = new NextcloudChunkedUploadFeature(session);
+        this.chunked = new NextcloudChunkedUploadFeature(session, capabilities);
     }
 
     @Override
