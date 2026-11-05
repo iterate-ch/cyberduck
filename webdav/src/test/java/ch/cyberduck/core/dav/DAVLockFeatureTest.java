@@ -41,6 +41,7 @@ public class DAVLockFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testLockNotSupported() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Locking not compatible");
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);

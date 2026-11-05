@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -39,10 +40,15 @@ public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
-        new FTPMDTMTimestampFeature(session).setTimestamp(test, modified);
-        // Listing has minute precision and is in server timezone
-        assertEquals(new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")),
-                session.getClient().getModificationTime(test.getAbsolute()));
+        try {
+            new FTPMDTMTimestampFeature(session).setTimestamp(test, modified);
+            // Listing has minute precision and is in server timezone
+            assertEquals(new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")),
+                    session.getClient().getModificationTime(test.getAbsolute()));
+        }
+        catch(InteroperabilityException e) {
+            // MDTM advertised to read the time only
+        }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

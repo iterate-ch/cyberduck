@@ -59,6 +59,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMoveWithLock() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Locking not compatible");
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lock = new DAVLockFeature(session).lock(test);
         assertNotNull(lock);
@@ -112,6 +113,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Forbidden reply for missing source");
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }

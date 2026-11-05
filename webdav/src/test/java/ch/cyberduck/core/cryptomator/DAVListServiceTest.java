@@ -48,6 +48,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(value = Parameterized.class)
 public class DAVListServiceTest extends AbstractDAVTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     public void testListCryptomator() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();

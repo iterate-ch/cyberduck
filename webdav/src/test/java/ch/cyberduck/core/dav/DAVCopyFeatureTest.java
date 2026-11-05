@@ -54,6 +54,7 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testCopyWithLock() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Locking not compatible");
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lock = new DAVLockFeature(session).lock(test);
         assertNotNull(lock);

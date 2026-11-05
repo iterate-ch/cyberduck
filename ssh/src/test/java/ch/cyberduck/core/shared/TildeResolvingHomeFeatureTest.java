@@ -15,10 +15,13 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 
 import org.junit.Test;
+
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +33,7 @@ public class TildeResolvingHomeFeatureTest extends AbstractSFTPTest {
         final TildeResolvingHomeFeature feature = new TildeResolvingHomeFeature(session.getHost(), new SFTPHomeDirectoryService(session));
         assertNotNull(feature.find());
         session.getHost().setDefaultPath("~/d");
-        assertEquals(String.format("%s/d", HOME), feature.find().getAbsolute());
+        assertEquals(new Path(new Path(server.home(), EnumSet.of(Path.Type.directory)), "d", EnumSet.of(Path.Type.directory)).getAbsolute(), feature.find().getAbsolute());
         session.getHost().setDefaultPath("~d");
         assertEquals("/~d", feature.find().getAbsolute());
         session.getHost().setDefaultPath("/~d");
