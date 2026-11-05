@@ -233,16 +233,13 @@ public enum S3TestServer {
     }
 
     private static GenericContainer<?> ceph() {
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/demo:latest")))
-                .withEnv("MON_IP", "127.0.0.1")
-                .withEnv("RGW_NAME", "localhost")
-                .withEnv("CEPH_PUBLIC_NETWORK", "0.0.0.0/0")
-                .withEnv("DEMO_DAEMONS", "osd,rgw")
-                .withEnv("CEPH_DEMO_UID", ACCESS_KEY)
-                .withEnv("CEPH_DEMO_ACCESS_KEY", ACCESS_KEY)
-                .withEnv("CEPH_DEMO_SECRET_KEY", SECRET_KEY)
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/ceph:latest")))
+                .withCopyToContainer(MountableFile.forClasspathResource("ceph/init.sh", 0755), "/init.sh")
+                .withCreateContainerCmdModifier(cmd -> cmd.withUser("root").withEntrypoint("sh", "-c", "sh /init.sh && sleep infinity"))
+                .withEnv("S3_ACCESS_KEY", ACCESS_KEY)
+                .withEnv("S3_SECRET_KEY", SECRET_KEY)
                 .withExposedPorts(CEPH_PORT)
-                .waitingFor(Wait.forHttp("/").forPort(CEPH_PORT).withStartupTimeout(Duration.ofMinutes(10)));
+                .waitingFor(Wait.forLogMessage(".*ceph init done.*", 1).withStartupTimeout(Duration.ofMinutes(10)));
         created.start();
         // Location constraint must match the zonegroup. Requests are only accepted with the host name of the gateway
         createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8080", "us-east-1");
