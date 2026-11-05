@@ -1,7 +1,6 @@
 # Changelog
 
 [9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
-* [Feature] Upgrade runtime (macOS) ([#17509](https://trac.cyberduck.io/ticket/17509))
 * [Feature] Support `ProxyCommand` from ssh_config (SFTP) ([#8688](https://trac.cyberduck.io/ticket/8688))
 * [Feature] Sign in with AWS Console browser sign-in (S3) ([#18543](https://trac.cyberduck.io/ticket/18543))
 * [Feature] Support authentication with Microsoft Entra ID (Azure) ([#17115](https://trac.cyberduck.io/ticket/17115))
