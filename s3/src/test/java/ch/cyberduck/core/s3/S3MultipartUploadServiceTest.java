@@ -24,7 +24,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3MultipartUploadServiceTest extends AbstractS3Test {
 
     @Test
@@ -58,7 +58,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
@@ -80,15 +79,15 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
-        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testUploadBucketInHostname() throws Exception {
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final S3MultipartUploadService service = new S3MultipartUploadService(virtualhost, acl, 5 * 1024L * 1024L, 2);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = String.format(" %s.txt", UUID.randomUUID());
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -99,7 +98,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(new S3WriteFeature(virtualhost, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         // ETag of an object uploaded in multiple parts is not the MD5 of the content
@@ -107,8 +106,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(random.length, status.getResponse().getSize());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        final PathAttributes attr = new S3AttributesFinderFeature(virtualhost, acl).find(test);
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
@@ -116,12 +115,13 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
-        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(virtualhost, acl).getClass(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testUploadSinglePartEncrypted() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService service = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 2);
@@ -192,6 +192,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testMultiplePartsEncrypted() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
@@ -213,6 +214,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testMultiplePartsObjectLock() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);

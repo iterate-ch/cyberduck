@@ -83,6 +83,8 @@ jobs:
       - name: Test ${{ matrix.protocol }}
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+          MINIO_LICENSE: ${{ secrets.MINIO_LICENSE }}
           SKIP_SIGN: true
           JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ runner.temp }}
         run: mvn verify -pl ${{ matrix.protocol }} --no-transfer-progress --batch-mode --fail-at-end -D"enforcer.skip"

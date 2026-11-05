@@ -41,6 +41,7 @@ import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3ListService;
 import ch.cyberduck.core.s3.S3MultipartWriteFeature;
 import ch.cyberduck.core.s3.S3ReadFeature;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -53,7 +54,7 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.MoveWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -71,9 +72,14 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class MoveWorkerTest extends AbstractS3Test {
+
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
 
     @Test
     public void testMoveSameFolderCryptomator() throws Exception {
@@ -154,6 +160,7 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveFolder() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of directories differs");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
@@ -245,6 +252,7 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveDirectoryWithoutPlaceholderIntoVault() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of directories differs");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

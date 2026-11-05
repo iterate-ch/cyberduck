@@ -13,7 +13,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
@@ -33,7 +33,7 @@ import java.util.zip.GZIPOutputStream;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3ReadFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
@@ -145,6 +145,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_CLOUDFRONT)
     public void testCloudFront() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
@@ -152,30 +153,31 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(2018);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setAcl(Acl.CANNED_PUBLIC_READ);
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(file, status, ConnectionCallback.noop);
+        final OutputStream out = new S3WriteFeature(aws, new S3AccessControlListFeature(aws)).write(file, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(cloudfront).read(
+        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop));
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(content.length, count.getRecv());
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(aws, new S3AccessControlListFeature(aws)).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testVirtualHostStyle() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(name, EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2018);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final OutputStream out = new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).write(file, status, ConnectionCallback.noop);
+        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(file, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(virtualhost).read(
+        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop));
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(content.length, count.getRecv());
-        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

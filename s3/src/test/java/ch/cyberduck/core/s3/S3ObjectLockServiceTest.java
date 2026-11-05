@@ -16,7 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -26,7 +26,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3ObjectLockServiceTest extends AbstractS3Test {
 
     @Test

@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.model.StorageOwner;
@@ -40,7 +40,7 @@ import java.util.Locale;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3AccessControlListFeatureTest extends AbstractS3Test {
 
     @Test
@@ -51,6 +51,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testReadBucketDisabledAcl() throws Exception {
         final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
@@ -59,6 +60,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testBucketOwnerEnforced() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck-ownerenforced", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -76,6 +78,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testReadContainer() throws Exception {
         final Path container = new Path("test-acl-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Acl acl = new S3AccessControlListFeature(session).getPermission(container);
@@ -93,6 +96,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testReadKey() throws Exception {
         final Path container = new Path("test-acl-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Acl acl = new S3AccessControlListFeature(session).getPermission(new Path(container, "test", EnumSet.of(Path.Type.file)));
@@ -103,6 +107,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testWrite() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -119,17 +124,18 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testWriteVirtualHostBucket() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final S3AccessControlListFeature f = new S3AccessControlListFeature(virtualhost);
-        new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, f), test, new TransferStatus());
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, f), test, new TransferStatus());
         final Acl acl = new Acl();
         acl.addAll(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
         f.setPermission(test, acl);
         assertEquals(acl, f.getPermission(test));
-        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -151,6 +157,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test(expected = NotfoundException.class)
+    @RunOn(S3TestServer.AWS)
     public void testReadNotFound() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -233,6 +240,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testWriteBucketCannedPublicRead() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
