@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -150,8 +151,21 @@ public enum S3TestServer {
         return container;
     }
 
+    /**
+     * @param environment Name of environment variable to override the image
+     * @param directory   Directory in test resources with the Dockerfile that defines the image to allow updates with Dependabot
+     */
+    private static GenericContainer<?> image(final String environment, final String directory) {
+        final String override = System.getenv(environment);
+        if(StringUtils.isNotBlank(override)) {
+            return new GenericContainer<>(DockerImageName.parse(override));
+        }
+        return new GenericContainer<>(new ImageFromDockerfile(String.format("cyberduck-s3-%s", directory), false)
+                .withFileFromClasspath("Dockerfile", String.format("%s/Dockerfile", directory)));
+    }
+
     private static GenericContainer<?> localstack() {
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("LOCALSTACK_IMAGE"), "localstack/localstack:latest")))
+        final GenericContainer<?> created = image("LOCALSTACK_IMAGE", "localstack")
                 .withEnv("SERVICES", "s3,kms")
                 .withCopyToContainer(MountableFile.forClasspathResource("localstack/init.sh", 0755), "/etc/localstack/init/ready.d/init.sh")
                 .withExposedPorts(LOCALSTACK_PORT)
@@ -174,7 +188,7 @@ public enum S3TestServer {
             throw new UncheckedIOException(e);
         }
         final Network network = Network.newNetwork();
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("MINIO_IMAGE"), "quay.io/minio/aistor/minio:latest")))
+        final GenericContainer<?> created = image("MINIO_IMAGE", "minio")
                 .withNetwork(network)
                 .withNetworkAliases("minio")
                 .withEnv("MINIO_ROOT_USER", ACCESS_KEY)
@@ -190,7 +204,7 @@ public enum S3TestServer {
 
     private static GenericContainer<?> rustfs() {
         final Network network = Network.newNetwork();
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("RUSTFS_IMAGE"), "rustfs/rustfs:latest")))
+        final GenericContainer<?> created = image("RUSTFS_IMAGE", "rustfs")
                 .withNetwork(network)
                 .withNetworkAliases("rustfs")
                 .withEnv("RUSTFS_ACCESS_KEY", ACCESS_KEY)
@@ -204,7 +218,7 @@ public enum S3TestServer {
 
     private static GenericContainer<?> seaweedfs() {
         final Network network = Network.newNetwork();
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("SEAWEEDFS_IMAGE"), "chrislusf/seaweedfs:4.52")))
+        final GenericContainer<?> created = image("SEAWEEDFS_IMAGE", "seaweedfs")
                 .withNetwork(network)
                 .withNetworkAliases("seaweedfs")
                 .withCopyToContainer(MountableFile.forClasspathResource("seaweedfs/s3.json"), "/etc/seaweedfs/s3.json")
@@ -218,7 +232,7 @@ public enum S3TestServer {
     }
 
     private static GenericContainer<?> cloudserver() {
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CLOUDSERVER_IMAGE"), "ghcr.io/scality/cloudserver:9.5.2")))
+        final GenericContainer<?> created = image("CLOUDSERVER_IMAGE", "cloudserver")
                 .withEnv("S3BACKEND", "mem")
                 .withEnv("REMOTE_MANAGEMENT_DISABLE", "1")
                 .withEnv("SCALITY_ACCESS_KEY_ID", ACCESS_KEY)
@@ -233,7 +247,7 @@ public enum S3TestServer {
     }
 
     private static GenericContainer<?> ceph() {
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("CEPH_IMAGE"), "quay.io/ceph/ceph:v21.2")))
+        final GenericContainer<?> created = image("CEPH_IMAGE", "ceph")
                 .withCopyToContainer(MountableFile.forClasspathResource("ceph/init.sh", 0755), "/init.sh")
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("root").withEntrypoint("sh", "-c", "sh /init.sh && sleep infinity"))
                 .withEnv("S3_ACCESS_KEY", ACCESS_KEY)
@@ -254,7 +268,7 @@ public enum S3TestServer {
      * @param region      Create all buckets in this region or null to use the region in the bucket name
      */
     private static void createBuckets(final Network network, final String networkMode, final String endpoint, final String region) {
-        try(GenericContainer<?> mc = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("MC_IMAGE"), "quay.io/minio/aistor/mc:latest")))
+        try(GenericContainer<?> mc = image("MC_IMAGE", "mc")
                 .withCopyToContainer(MountableFile.forClasspathResource("mc/init.sh", 0755), "/init.sh")
                 .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("sh", "-c", "sh /init.sh && sleep 3600"))
                 .withEnv("S3_ENDPOINT", endpoint)
