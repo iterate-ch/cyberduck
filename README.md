@@ -3,6 +3,7 @@
 [![GitHub commit](https://img.shields.io/github/last-commit/iterate-ch/cyberduck)](https://github.com/iterate-ch/cyberduck/commits/master)
 [![GitHub license](https://img.shields.io/badge/license-GPL-blue.svg)](https://raw.githubusercontent.com/iterate-ch/cyberduck/master/LICENSE)
 [![Build Status](https://github.com/iterate-ch/cyberduck/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/iterate-ch/cyberduck/actions)
+[![Integration Tests](https://github.com/iterate-ch/cyberduck/actions/workflows/ci.yml/badge.svg)](https://github.com/iterate-ch/cyberduck/actions/workflows/ci.yml)
 [![Mastodon](https://img.shields.io/mastodon/follow/109698908353278292?domain=https%3A%2F%2Ffosstodon.org%2F&style=flat)](https://fosstodon.org/@cyberduck)
 [![Gurubase](https://img.shields.io/badge/Gurubase-Ask%20Cyberduck%20Guru-006BFF)](https://gurubase.io/g/cyberduck)
 
