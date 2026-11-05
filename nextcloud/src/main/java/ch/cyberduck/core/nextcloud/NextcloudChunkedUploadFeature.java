@@ -27,7 +27,6 @@ import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
@@ -102,7 +101,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             long remaining = status.getLength();
             for(int number = 1; remaining > 0; number++) {
                 final long length = Math.min(size, remaining);
-                chunks.add(this.submit(pool, file, collection, local, throttle, listener, status, number, offset, length, callback));
+                chunks.add(this.submit(pool, write, file, collection, local, throttle, listener, status, number, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
@@ -125,7 +124,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
         }
     }
 
-    private Future<Void> submit(final ThreadPool pool, final Path file, final Path collection, final Local local,
+    private Future<Void> submit(final ThreadPool pool, final Write<Void> write, final Path file, final Path collection, final Local local,
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final int number, final long offset, final long length,
                                 final ConnectionCallback callback) {
@@ -143,7 +142,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
                 status.setPart(number);
                 // Chunks are sorted by name when assembled
                 final Path chunk = new Path(collection, String.format("%05d", number), EnumSet.of(Path.Type.file));
-                NextcloudChunkedUploadFeature.super.upload(new DAVWriteFeature(session), chunk, local, throttle,
+                NextcloudChunkedUploadFeature.super.upload(write, chunk, local, throttle,
                         ProgressListener.noop, counter, status, overall, status, callback);
                 return null;
             }
