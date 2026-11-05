@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.24
 
 RUN apk update && apk add --no-cache tini samba samba-common-tools supervisor bash
 
