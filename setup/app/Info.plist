@@ -412,7 +412,9 @@
         <key>NSAppleEventsUsageDescription</key>
         <string>Allow to execute command in Terminal</string>
         <key>NSDownloadsFolderUsageDescription</key>
-        <string>Allow to download files</string>
+        <string>Cyberduck may save files you download from servers to your Downloads folder</string>
+        <key>NSDesktopFolderUsageDescription</key>
+        <string>Cyberduck may save files you download from servers to your Desktop folder</string>
         <key>ITSAppUsesNonExemptEncryption</key>
         <false/>
     </dict>
