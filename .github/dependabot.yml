@@ -11,12 +11,6 @@ updates:
     open-pull-requests-limit: 99
   - package-ecosystem: docker
     directories:
-      - "/s3/src/test/resources/ceph"
-      - "/s3/src/test/resources/cloudserver"
-      - "/s3/src/test/resources/localstack"
-      - "/s3/src/test/resources/mc"
-      - "/s3/src/test/resources/minio"
-      - "/s3/src/test/resources/rustfs"
-      - "/s3/src/test/resources/seaweedfs"
+      - "/*/src/test/resources/*"
     schedule:
       interval: "weekly"
