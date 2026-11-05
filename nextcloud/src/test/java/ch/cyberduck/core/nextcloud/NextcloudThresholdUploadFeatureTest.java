@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.ocs.OcsCapabilities;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,7 +56,7 @@ public class NextcloudThresholdUploadFeatureTest extends AbstractNextcloudTest {
             }
             final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            new NextcloudThresholdUploadFeature(session).upload(new NextcloudWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new NextcloudThresholdUploadFeature(session, new OcsCapabilities()).upload(new NextcloudWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new DisabledProgressListener(), new DisabledStreamListener(), status, ConnectionCallback.noop);
             assertTrue(status.isComplete());
             final byte[] read = new byte[content.length];
