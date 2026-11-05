@@ -172,7 +172,7 @@ jobs:
       - name: Download App
         uses: actions/download-artifact@v8
         with:
-          pattern: Cyberduck-*
+          pattern: '{Cyberduck-*,Cyberduck_*}'
           path: release
           merge-multiple: true
           # Keep the app ZIP as is instead of extracting Cyberduck.app
@@ -198,7 +198,7 @@ jobs:
             release/Cyberduck-*.pkg
             release/Cyberduck-*.exe
             release/Cyberduck-*.msi
-            release/Cyberduck-*.appx
+            release/Cyberduck_*.appx
             release/duck-*.pkg
             release/duck-*.exe
             release/duck-*.msi
@@ -258,9 +258,10 @@ jobs:
       - name: Download APPX
         uses: actions/download-artifact@v8
         with:
-          pattern: Cyberduck-*.appx
+          pattern: Cyberduck_*.appx
           path: release
           merge-multiple: true
+          skip-decompress: true
 
       - name: Setup Microsoft Store Developer CLI
         uses: microsoft/microsoft-store-apppublisher@v1.4
@@ -279,7 +280,7 @@ jobs:
         env:
           MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
         run: |
-          Get-ChildItem "release\Cyberduck-*.appx" | ForEach-Object {
+          Get-ChildItem "release\Cyberduck_*.appx" | ForEach-Object {
             $upload = Join-Path $_.DirectoryName ($_.BaseName + ".zip")
             Compress-Archive -Path $_.FullName -DestinationPath $upload -Force
             $msixupload = [System.IO.Path]::ChangeExtension($upload, ".msixupload")
