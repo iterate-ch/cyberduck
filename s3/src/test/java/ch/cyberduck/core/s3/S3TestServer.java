@@ -204,7 +204,7 @@ public enum S3TestServer {
 
     private static GenericContainer<?> seaweedfs() {
         final Network network = Network.newNetwork();
-        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("SEAWEEDFS_IMAGE"), "chrislusf/seaweedfs:latest")))
+        final GenericContainer<?> created = new GenericContainer<>(DockerImageName.parse(StringUtils.defaultIfBlank(System.getenv("SEAWEEDFS_IMAGE"), "chrislusf/seaweedfs:4.52")))
                 .withNetwork(network)
                 .withNetworkAliases("seaweedfs")
                 .withCopyToContainer(MountableFile.forClasspathResource("seaweedfs/s3.json"), "/etc/seaweedfs/s3.json")
