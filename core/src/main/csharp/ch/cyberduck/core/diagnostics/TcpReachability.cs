@@ -18,6 +18,8 @@
 using System;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
+using System.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
 using org.apache.logging.log4j;
@@ -49,17 +51,50 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
     class NetworkChangeMonitor : Reachability.Monitor
     {
+        private const ulong WINHTTP_PROXY_NOTIFY_CHANGE = 0x1;
+        // Proxy settings are written in bursts, wait for them to settle
+        private static readonly TimeSpan ProxyChangeDelay = TimeSpan.FromMilliseconds(500);
+
+        private static readonly Logger Log = LogManager.getLogger(typeof(NetworkChangeMonitor).FullName);
+
+        [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+        private delegate void ProxyChangeCallback(ulong flags, IntPtr context);
+
+        [DllImport("winhttp.dll")]
+        private static extern uint WinHttpRegisterProxyChangeNotification(ulong flags, ProxyChangeCallback callback, IntPtr context, out IntPtr registration);
+
+        [DllImport("winhttp.dll")]
+        private static extern uint WinHttpUnregisterProxyChangeNotification(IntPtr registration);
+
         private readonly Reachability.Callback _callback;
+        // Keep a reference to prevent the delegate from being collected while registered
+        private readonly ProxyChangeCallback _proxyChanged;
+        private readonly Timer _proxyChangeTimer;
+        private IntPtr _proxyRegistration;
 
         public NetworkChangeMonitor(Host h, Reachability.Callback callback)
         {
             _callback = callback;
+            _proxyChanged = (flags, context) => _proxyChangeTimer.Change(ProxyChangeDelay, Timeout.InfiniteTimeSpan);
+            _proxyChangeTimer = new Timer(_ => _callback.change(), null, Timeout.Infinite, Timeout.Infinite);
         }
 
         public Reachability.Monitor start()
         {
             NetworkChange.NetworkAvailabilityChanged += Changed;
             NetworkChange.NetworkAddressChanged += Changed;
+            if (_proxyRegistration == IntPtr.Zero)
+            {
+                var result = WinHttpRegisterProxyChangeNotification(WINHTTP_PROXY_NOTIFY_CHANGE, _proxyChanged, IntPtr.Zero, out var registration);
+                if (result == 0)
+                {
+                    _proxyRegistration = registration;
+                }
+                else
+                {
+                    Log.warn($"Failure {result} registering for proxy configuration changes");
+                }
+            }
             return this;
         }
 
@@ -67,6 +102,12 @@ namespace Ch.Cyberduck.Core.Diagnostics
         {
             NetworkChange.NetworkAvailabilityChanged -= Changed;
             NetworkChange.NetworkAddressChanged -= Changed;
+            if (_proxyRegistration != IntPtr.Zero)
+            {
+                WinHttpUnregisterProxyChangeNotification(_proxyRegistration);
+                _proxyRegistration = IntPtr.Zero;
+            }
+            _proxyChangeTimer.Change(Timeout.Infinite, Timeout.Infinite);
             return this;
         }
 
