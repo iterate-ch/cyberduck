@@ -5,11 +5,6 @@
       <Payload Name="icon.ico" SourceFile="$(CyberduckDir)cyberduck-application.ico" Compressed="yes" />
     </BootstrapperApplication>
     <Variable Name="InstallFolder" Type="formatted" Value="[ProgramFiles64Folder]Cyberduck" />
-    <Variable Name="InstallBonjour" bal:Overridable="yes" Type="numeric" Value="1" />
-
-    <!-- Do search for Bonjour Upgrade Code -->
-    <!-- BonjourState: 1: Advertised, 2: Absent, 5: Locally Installed -->
-    <util:ProductSearch Id="BonjourState" UpgradeCode="{46AE3251-43D6-41CF-8CDF-E902C38516D1}" Result="state" Variable="BonjourState" />
 
     <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
     <util:RegistrySearch Id="CurrentBuild" Variable="CBNumber" Result="value" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Value="CurrentBuildNumber" />
@@ -23,7 +18,6 @@
       <MsiPackage Id="Setup" Compressed="yes" SourceFile="$(Cyberduck.Bundle.TargetPath)" Vital="yes">
         <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
       </MsiPackage>
-      <MsiPackage SourceFile="$(SetupDir)Bonjour64.msi" Compressed="yes" Permanent="yes" Visible="yes" Vital="no" InstallCondition="NOT (InstallBonjour=0 AND BonjourState=2)" />
     </Chain>
   </Bundle>
 </Wix>

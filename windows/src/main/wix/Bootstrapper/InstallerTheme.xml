@@ -54,8 +54,6 @@
                 <Text>#(loc.OptionsBrowseButton)</Text>
                 <BrowseDirectoryAction VariableName="InstallFolder" />
             </Button>
-            <Checkbox Name="InstallBonjour" X="11" Y="170" Width="578" Height="21" TabStop="yes" FontId="3">Bonjour</Checkbox>
-            
             <Button Name="OptionsOkButton" X="-91" Y="-11" Width="75" Height="23" TabStop="yes" FontId="0">
                 <Text>#(loc.OptionsOkButton)</Text>
                 <ChangePageAction Page="Install" />
