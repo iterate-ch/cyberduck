@@ -95,6 +95,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
 
     @Test
     public void testToDownloadUrlPasswordTooShort() throws Exception {
+        this.assumeOnly(NextcloudTestServer.NEXTCLOUD, "No password policy enforced by default");
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         try {
@@ -147,7 +148,8 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             fail();
         }
         catch(AccessDeniedException e) {
-            assertEquals("You cannot share your root folder. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals(NextcloudTestServer.OWNCLOUD == server ? "You can't share your root folder. Please contact your web hosting service provider for assistance."
+                : "You cannot share your root folder. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
     }
 
@@ -167,6 +169,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
 
     @Test
     public void testToUploadUrlPasswordTooShort() throws Exception {
+        this.assumeOnly(NextcloudTestServer.NEXTCLOUD, "No password policy enforced by default");
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         try {

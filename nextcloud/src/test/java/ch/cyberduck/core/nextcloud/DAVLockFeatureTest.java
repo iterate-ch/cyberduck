@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
+import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.features.Delete;
@@ -50,7 +51,7 @@ public class DAVLockFeatureTest extends AbstractNextcloudTest {
         final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session),
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
                 new TransferStatus());
-        final Lock<String> feature = session.getFeature(Lock.class);
+        final Lock<String> feature = new DAVLockFeature(session);
         assertNull(new NextcloudAttributesFinderFeature(session).find(test).getLockId());
         final String lock = feature.lock(test);
         assertNotNull(lock);
