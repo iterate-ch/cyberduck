@@ -19,7 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoOutputStream;
+import ch.cyberduck.core.cryptomator.legacy.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.cryptomator.legacy.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
