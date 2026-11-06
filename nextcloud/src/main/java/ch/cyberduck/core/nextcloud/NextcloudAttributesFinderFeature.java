@@ -125,14 +125,22 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
                 }
             }
             if(properties.containsKey(OC_CHECKSUMS_CUSTOM_NAMESPACE)) {
+                // Multiple checksums may be listed, e.g. SHA1:... MD5:... ADLER32:... Prefer SHA-1 otherwise the first supported
+                Checksum checksum = null;
                 for(String v : StringUtils.split(properties.get(OC_CHECKSUMS_CUSTOM_NAMESPACE), StringUtils.SPACE)) {
                     try {
-                        attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(StringUtils.lowerCase(StringUtils.split(v, ":")[0])),
-                                StringUtils.lowerCase(StringUtils.split(v, ":")[1])));
+                        final Checksum parsed = new Checksum(HashAlgorithm.valueOf(StringUtils.lowerCase(StringUtils.split(v, ":")[0])),
+                                StringUtils.lowerCase(StringUtils.split(v, ":")[1]));
+                        if(null == checksum || HashAlgorithm.sha1 == parsed.algorithm) {
+                            checksum = parsed;
+                        }
                     }
                     catch(IllegalArgumentException e) {
                         log.warn("Unsupported checksum {}", v);
                     }
+                }
+                if(checksum != null) {
+                    attributes.setChecksum(checksum);
                 }
             }
         }
