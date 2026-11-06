@@ -111,6 +111,10 @@ public final class TerminalOptionsBuilder {
                 .longOpt(Params.identity.name())
                 .desc("Selects a file from which the identity (private key) for public key authentication is read.")
                 .hasArg().argName("private key file").build());
+        options.addOption(Option.builder()
+                .longOpt(Params.certificate.name())
+                .desc("Selects the alias of the TLS client certificate to use for authentication from the certificate store.")
+                .hasArg().argName("alias").build());
 
         options.addOption(Option.builder()
                 .longOpt(Params.chmod.name())
@@ -216,6 +220,7 @@ public final class TerminalOptionsBuilder {
         anonymous,
         password,
         identity,
+        certificate,
         application,
         chmod,
         profile,
