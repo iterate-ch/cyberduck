@@ -16,6 +16,7 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cache.LRUCache;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,7 @@ public class HostPreferences implements PreferencesReader {
 
     private final PreferencesReader proxy;
     private final Host bookmark;
+    private Protocol protocol;
 
     public HostPreferences(final Host bookmark) {
         this(bookmark, PreferencesFactory.get());
@@ -36,6 +38,7 @@ public class HostPreferences implements PreferencesReader {
     public HostPreferences(final Host bookmark, final PreferencesReader proxy) {
         this.bookmark = bookmark;
         this.proxy = proxy;
+        this.protocol = bookmark.getProtocol();
     }
 
     /**
@@ -47,6 +50,11 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public String getProperty(final String key) {
+        final Protocol current = bookmark.getProtocol();
+        if(protocol != current) {
+            this.clear();
+            protocol = current;
+        }
         final String value = cache.get(key);
         if(StringUtils.equals(MISSING_PROPERTY, value)) {
             return proxy.getProperty(key);

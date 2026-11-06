@@ -17,9 +17,45 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Properties;
+
+import static org.junit.Assert.*;
 
 public class DefaultHostPasswordStoreTest {
+
+    @Test
+    public void testLoginPasswordRoundTripWithAndWithoutUsername() throws Exception {
+        final UnsecureHostPasswordStore store = new UnsecureHostPasswordStore(null) {
+            private final Properties properties = new Properties();
+
+            @Override
+            protected Properties load() {
+                return properties;
+            }
+
+            @Override
+            protected void save(final Properties properties) {
+                // Keep credentials in memory for this test.
+            }
+        };
+        final Protocol protocol = new TestProtocol(Scheme.https) {
+            @Override
+            public String getPasswordPlaceholder() {
+                return "API Key";
+            }
+        };
+        for(String username : new String[]{"", "jane"}) {
+            final Host host = new Host(protocol, "customer.files.com", new Credentials(username, "api-key"));
+            store.addLoginPassword(host, "api-key");
+            assertEquals("api-key", store.findLoginPassword(host));
+            store.deleteLoginPassword(host);
+            assertNull(store.findLoginPassword(host));
+            store.save(host);
+            assertEquals("api-key", store.findLoginPassword(host));
+            store.deleteLoginPassword(host);
+            assertNull(store.findLoginPassword(host));
+        }
+    }
 
     @Test
     public void testGetOAuthPrefix() {

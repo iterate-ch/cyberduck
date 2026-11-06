@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -14,6 +15,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 public class KeychainLoginServiceTest {
+
+    @Test
+    public void testAuthenticationPromptUsesBookmarkPasswordLabel() throws Exception {
+        for(String label : new String[]{"", "API Key (optional)"}) {
+            final Host host = new Host(new TestProtocol(), "host", new Credentials("user"));
+            host.setProperty("bookmark.password.label", label);
+            final LoginOptions defaults = new LoginOptions(host.getProtocol());
+            final AtomicBoolean prompted = new AtomicBoolean();
+            final Session session = new NullSession(host) {
+                @Override
+                public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+                    throw new LoginFailureException("Sign out in your browser and sign in to the expected account.");
+                }
+            };
+            final KeychainLoginService service = new KeychainLoginService(new DisabledPasswordStore());
+            assertFalse(service.authenticate(session, ProgressListener.noop, new DisabledLoginCallback() {
+                @Override
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
+                                          final LoginOptions options) {
+                    prompted.set(true);
+                    assertEquals(label.isEmpty() ? defaults.getPasswordPlaceholder() : label, options.getPasswordPlaceholder());
+                    assertTrue(reason.startsWith("Sign out in your browser and sign in to the expected account."));
+                    return new Credentials(username, "api-key");
+                }
+            }, CancelCallback.noop));
+            assertTrue(prompted.get());
+            assertEquals("api-key", host.getCredentials().getPassword());
+            assertEquals(defaults.getPasswordPlaceholder(), host.getProtocol().getPasswordPlaceholder());
+        }
+    }
 
     @Test(expected = LoginCanceledException.class)
     public void testMessages() throws Exception {

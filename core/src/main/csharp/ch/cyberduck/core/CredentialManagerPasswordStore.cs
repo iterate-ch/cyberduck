@@ -56,6 +56,10 @@ namespace Ch.Cyberduck.Core
             {
                 logger.warn(string.Format("Failure adding password in keychain for {0}", bookmark));
             }
+            else if (!string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(bookmark.getHostname()))
+            {
+                DeleteLegacyBrickCredentials(bookmark);
+            }
         }
 
         public override void addPassword(string serviceName, string user, string password)
@@ -87,6 +91,7 @@ namespace Ch.Cyberduck.Core
             {
                 WinCredentialManager.RemoveCredentials(descriptor.AbsoluteUri);
             }
+            DeleteLegacyBrickCredentials(bookmark);
             base.delete(bookmark);
         }
 
@@ -120,6 +125,7 @@ namespace Ch.Cyberduck.Core
                 : bookmark.getCredentials().getUsername();
             WinCredentialManager.RemoveCredentials(
                 hostUrlProvider.get(bookmark.getProtocol().getScheme(), bookmark.getPort(), user, bookmark.getHostname(), string.Empty));
+            DeleteLegacyBrickCredentials(bookmark);
         }
 
         public override void deletePassword(string serviceName, string user)
@@ -272,6 +278,29 @@ namespace Ch.Cyberduck.Core
             {
                 base.save(bookmark);
             }
+            else if (!string.IsNullOrWhiteSpace(credential.getPassword()))
+            {
+                DeleteLegacyBrickCredentials(bookmark);
+            }
+        }
+
+        private static void DeleteLegacyBrickCredentials(Host bookmark)
+        {
+            if (bookmark.getProtocol().getType() != Protocol.Type.brick)
+            {
+                return;
+            }
+            // Retired entries have no site binding: remove locally without using the key for authentication or revocation.
+            var target = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty)
+            {
+                Path = bookmark.getProtocol().getIdentifier()
+            };
+            WinCredentialManager.RemoveCredentials(target.Uri.AbsoluteUri);
+            if (!string.IsNullOrWhiteSpace(bookmark.getCredentials().getUsername()))
+            {
+                target.Query = "user=" + bookmark.getCredentials().getUsername();
+                WinCredentialManager.RemoveCredentials(target.Uri.AbsoluteUri);
+            }
         }
 
         private static List<Uri> ToUri(Host bookmark)
@@ -285,10 +314,12 @@ namespace Ch.Cyberduck.Core
                 var targetBuilder = new UriBuilder(PreferencesFactory.get().getProperty("application.container.name"), string.Empty);
                 var pathBuilder = new StringBuilder();
                 pathBuilder.Append(descriptor);
-                if (protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
+                // Legacy Files.com keys without a hostname have no site binding and cannot be safely reused.
+                var isBrick = protocol.getType() == Protocol.Type.brick;
+                if (isBrick || protocol.isHostnameConfigurable() || !(protocol.isTokenConfigurable() || protocol.isOAuthConfigurable()))
                 {
                     pathBuilder.Append(":" + bookmark.getHostname());
-                    if (protocol.isPortConfigurable() && !Equals(protocol.getDefaultPort(), bookmark.getPort()))
+                    if ((isBrick || protocol.isPortConfigurable()) && !Equals(protocol.getDefaultPort(), bookmark.getPort()))
                     {
                         pathBuilder.Append(":" + bookmark.getPort());
                     }

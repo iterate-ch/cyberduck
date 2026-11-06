@@ -34,7 +34,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     public void addLoginPassword(final Host bookmark, final String password) {
         try {
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                    bookmark.getHostname(), bookmark.getCredentials().getUsername(), password);
+                    bookmark.getHostname(), StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ?
+                            bookmark.getProtocol().getPasswordPlaceholder() : bookmark.getCredentials().getUsername(), password);
         }
         catch(AccessDeniedException e) {
             log.warn("Failure {} adding password in keychain for {}", e, bookmark);
@@ -45,7 +46,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     public void deleteLoginPassword(final Host bookmark) {
         try {
             this.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
-                    bookmark.getCredentials().getUsername());
+                    StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ?
+                            bookmark.getProtocol().getPasswordPlaceholder() : bookmark.getCredentials().getUsername());
         }
         catch(AccessDeniedException e) {
             log.warn("Failure {} deleting password in keychain for {}", e, bookmark);

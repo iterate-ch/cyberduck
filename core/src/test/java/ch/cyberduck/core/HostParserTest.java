@@ -16,11 +16,13 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -28,6 +30,71 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HostParserTest {
+    @Test
+    public void testDefaultUsernameUnchangedForOtherProtocols() throws Exception {
+        final String previous = PreferencesFactory.get().getProperty("connection.login.name");
+        PreferencesFactory.get().setProperty("connection.login.name", "os-user");
+        try {
+            for(boolean configurable : new boolean[]{false, true}) {
+                final Protocol protocol = new TestProtocol(Scheme.https) {
+                    @Override
+                    public boolean isUsernameConfigurable() {
+                        return configurable;
+                    }
+                };
+                final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(protocol)), protocol);
+                for(String url : new String[]{"https://host/path", "host/path"}) {
+                    assertEquals("os-user", parser.get(url).getCredentials().getUsername());
+                }
+                assertEquals("explicit-user", parser.get("https://explicit-user@host/path").getCredentials().getUsername());
+            }
+        }
+        finally {
+            PreferencesFactory.get().setProperty("connection.login.name", previous);
+        }
+    }
+
+    @Test
+    public void testFixedUsernameProtocolFindsExistingOAuthTokens() throws Exception {
+        final String previous = PreferencesFactory.get().getProperty("connection.login.name");
+        PreferencesFactory.get().setProperty("connection.login.name", "os-user");
+        try {
+            final Protocol protocol = new TestProtocol(Scheme.https) {
+                @Override
+                public boolean isUsernameConfigurable() {
+                    return false;
+                }
+
+                @Override
+                public String getOAuthClientId() {
+                    return "clientid";
+                }
+            };
+            final UnsecureHostPasswordStore store = new UnsecureHostPasswordStore(null) {
+                private final Properties properties = new Properties();
+
+                @Override
+                protected Properties load() {
+                    return properties;
+                }
+
+                @Override
+                protected void save(final Properties properties) {
+                    // Keep credentials in memory for this test.
+                }
+            };
+            final Host previousConnection = new Host(protocol, "host", new Credentials("os-user"));
+            previousConnection.getCredentials().setOauth(new OAuthTokens("access-token", "refresh-token", 3600L));
+            store.save(previousConnection);
+            final Host parsed = new HostParser(new ProtocolFactory(Collections.singleton(protocol)), protocol).get("https://host/path");
+            assertEquals("access-token", store.findOAuthTokens(parsed).getAccessToken());
+            assertEquals("refresh-token", store.findOAuthTokens(parsed).getRefreshToken());
+        }
+        finally {
+            PreferencesFactory.get().setProperty("connection.login.name", previous);
+        }
+    }
+
 
     @Test
     public void parse() throws HostParserException {

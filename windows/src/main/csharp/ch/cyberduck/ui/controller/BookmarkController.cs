@@ -159,7 +159,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
-                if (string.IsNullOrEmpty(_host.getCredentials().getUsername()))
+                if (_options.user() && string.IsNullOrEmpty(_host.getCredentials().getUsername()))
                 {
                     return;
                 }
@@ -271,7 +271,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Otherwise read from keychain and not kept in model
                 View.Password = _host.getCredentials().getPassword();
             }
-            View.PasswordLabel = $"{_options.getPasswordPlaceholder()}:";
+            string passwordLabel = HostPreferencesFactory.get(_host).getProperty("bookmark.password.label");
+            View.PasswordLabel = $"{(string.IsNullOrWhiteSpace(passwordLabel) ? _options.getPasswordPlaceholder() : passwordLabel)}:";
+            View.PasswordToolTip = HostPreferencesFactory.get(_host).getProperty("bookmark.password.placeholder");
             View.PasswordEnabled = PasswordEditable && !_host.getCredentials().isAnonymousLogin();
             View.AnonymousEnabled = _options.anonymous();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
