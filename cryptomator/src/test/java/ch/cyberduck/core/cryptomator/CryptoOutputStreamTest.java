@@ -30,7 +30,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -73,9 +72,9 @@ public class CryptoOutputStreamTest extends AbstractCryptoTests {
     public void testSmallChunksToWrite() throws Exception {
         final AbstractVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-        final FileHeader header = vault.getFileHeaderCryptor().create();
+        final ByteBuffer header = vault.createHeader();
         final CryptoOutputStream stream = new CryptoOutputStream(
-                new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(vault.getNonceSize()), 0);
+                new ProxyOutputStream(cipherText), vault, vault.openFile(header), new RandomNonceGenerator(vault.getNonceSize()), 0);
 
         final byte[] part1 = RandomUtils.nextBytes(1024);
         final byte[] part2 = RandomUtils.nextBytes(1024);
@@ -85,7 +84,7 @@ public class CryptoOutputStreamTest extends AbstractCryptoTests {
 
         final byte[] read = new byte[part1.length + part2.length];
         final byte[] expected = ByteBuffer.allocate(part1.length + part2.length).put(part1).put(part2).array();
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getFileContentCryptor(), header, 0);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault, vault.openFile(header), 0);
         assertEquals(expected.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -96,16 +95,16 @@ public class CryptoOutputStreamTest extends AbstractCryptoTests {
     public void testWriteWithChunkSize() throws Exception {
         final AbstractVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-        final FileHeader header = vault.getFileHeaderCryptor().create();
+        final ByteBuffer header = vault.createHeader();
         final CryptoOutputStream stream = new CryptoOutputStream(
-                new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(vault.getNonceSize()), 0);
+                new ProxyOutputStream(cipherText), vault, vault.openFile(header), new RandomNonceGenerator(vault.getNonceSize()), 0);
 
-        final byte[] cleartext = RandomUtils.nextBytes(vault.getFileContentCryptor().cleartextChunkSize());
+        final byte[] cleartext = RandomUtils.nextBytes(vault.getCleartextChunkSize());
         stream.write(cleartext, 0, cleartext.length);
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getFileContentCryptor(), header, 0);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault, vault.openFile(header), 0);
         assertEquals(cleartext.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -116,16 +115,16 @@ public class CryptoOutputStreamTest extends AbstractCryptoTests {
     public void testWriteLargeChunk() throws Exception {
         final AbstractVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-        final FileHeader header = vault.getFileHeaderCryptor().create();
+        final ByteBuffer header = vault.createHeader();
         final CryptoOutputStream stream = new CryptoOutputStream(
-                new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(vault.getNonceSize()), 0);
+                new ProxyOutputStream(cipherText), vault, vault.openFile(header), new RandomNonceGenerator(vault.getNonceSize()), 0);
 
-        final byte[] cleartext = RandomUtils.nextBytes(vault.getFileContentCryptor().cleartextChunkSize() + 1);
+        final byte[] cleartext = RandomUtils.nextBytes(vault.getCleartextChunkSize() + 1);
         stream.write(cleartext, 0, cleartext.length);
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getFileContentCryptor(), header, 0);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault, vault.openFile(header), 0);
         IOUtils.readFully(cryptoInputStream, read);
         cryptoInputStream.close();
 
