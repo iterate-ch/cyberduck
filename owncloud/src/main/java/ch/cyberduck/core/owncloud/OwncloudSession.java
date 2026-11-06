@@ -108,8 +108,12 @@ public class OwncloudSession extends DAVSession {
         ocs.withSpaces(false);
         super.login(prompt, cancel);
         try {
-            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs))
-                    .withSpaces(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable"));
+            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
+            if(ocs.spaces) {
+                // Infinite Scale and OpenCloud implement WebDAV locking but do not advertise files.locking
+                ocs.withLocking(true);
+            }
+            ocs.withSpaces(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable"));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
