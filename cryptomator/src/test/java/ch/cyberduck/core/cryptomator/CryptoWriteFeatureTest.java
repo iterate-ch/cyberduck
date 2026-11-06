@@ -90,19 +90,19 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
         };
         final AbstractVault vault = new CryptomatorVault(home);
         vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
-        int headerSize = vault.getFileHeaderCryptor().headerSize();
+        int headerSize = vault.getHeaderSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));
         // one-byte file
         assertEquals(headerSize + 28 + 1, vault.toCiphertextSize(0L, 1));
         // file with chunk size length
-        assertEquals(headerSize + vault.getFileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(0L, vault.getFileContentCryptor().cleartextChunkSize()));
+        assertEquals(headerSize + vault.getCiphertextChunkSize(), vault.toCiphertextSize(0L, vault.getCleartextChunkSize()));
         // file with chunk size length + 1
-        assertEquals(headerSize + vault.getFileContentCryptor().ciphertextChunkSize() + 28 + 1, vault.toCiphertextSize(0L, vault.getFileContentCryptor().cleartextChunkSize() + 1));
+        assertEquals(headerSize + vault.getCiphertextChunkSize() + 28 + 1, vault.toCiphertextSize(0L, vault.getCleartextChunkSize() + 1));
         // file with 2 * chunk size length
-        assertEquals(headerSize + 2 * vault.getFileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(0L, 2 * vault.getFileContentCryptor().cleartextChunkSize()));
+        assertEquals(headerSize + 2 * vault.getCiphertextChunkSize(), vault.toCiphertextSize(0L, 2 * vault.getCleartextChunkSize()));
         // file with 2 * chunk size length + 100
-        assertEquals(headerSize + 2 * vault.getFileContentCryptor().ciphertextChunkSize() + 28 + 100, vault.toCiphertextSize(0L, 2 * vault.getFileContentCryptor().cleartextChunkSize() + 100));
+        assertEquals(headerSize + 2 * vault.getCiphertextChunkSize() + 28 + 100, vault.toCiphertextSize(0L, 2 * vault.getCleartextChunkSize() + 100));
     }
 
     private final Path vault = new Path("/vault", EnumSet.of(Path.Type.directory));

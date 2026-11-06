@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -97,7 +98,7 @@ public class CryptoBulkFeatureTest {
             }
         }).collect(Collectors.toSet())) {
             assertEquals(encryptedDirectory, file.remote.getParent());
-            assertEquals(directoryId, file.remote.getParent().attributes().getDirectoryId());
+            assertArrayEquals(directoryId, file.remote.getParent().attributes().getDirectoryId());
         }
     }
 
@@ -137,6 +138,8 @@ public class CryptoBulkFeatureTest {
         files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().setExists(false));
+        // Directory ID created when the directory is uploaded. An empty directory file is rejected
+        cryptomator.getDirectoryProvider().createDirectoryId(directory);
         bulk.post(Transfer.Type.upload, files, ConnectionCallback.noop);
     }
 }
