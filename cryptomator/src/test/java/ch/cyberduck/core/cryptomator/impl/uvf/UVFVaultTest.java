@@ -31,7 +31,8 @@ import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.cryptomator.cryptolib.api.DirectoryMetadata;
+import org.cryptomator.cryptolib.api.VaultDirectory;
+import org.cryptomator.cryptolib.api.UvfUnlockedVault;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -47,6 +48,11 @@ public class UVFVaultTest {
 
     @Test
     public void testLoad() throws Exception {
+        // Vault metadata and directory metadata of a new vault with the same seeds
+        final UvfUnlockedVault fixture = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).create();
+        final String vaultUVF = new String(fixture.serializeConfig(), StandardCharsets.US_ASCII);
+        final byte[] dirUVF = fixture.newDirectory().encryptedMetadata();
+        fixture.destroy();
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -55,8 +61,6 @@ public class UVFVaultTest {
                     return (T) new Read() {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            final String vaultUVF = "eyJ1dmYuc3BlYy52ZXJzaW9uIjoxLCJwMnMiOiJwRWtoX1JQNVdwVSIsInAyYyI6MTAwMCwiY3JpdCI6WyJ1dmYuc3BlYy52ZXJzaW9uIl0sImprdSI6Imp3a3MuanNvbiIsImtpZCI6Im9yZy5jcnlwdG9tYXRvci51dmYudmF1bHRwYXNzd29yZCIsImN0eSI6Impzb24iLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUEJFUzItSFM1MTIrQTI1NktXIn0.Juj2_l_pQjecxsE8gdMhv_jDdcKcyFN5uxjfdC0u2HpD9fj4NLaIfw.pXH6VLzWNURg7OPK.8G_woIWtt7s3jwDhJ1i1QabXPZiH1T5Yu2OgeraqtQPr852om4X51UtBOcqdIRmjadC7xSY2pxLYT8khOvm-r6ecRXOr_ZHBuFgQkFkQSj2QLZNYCoyGiSyeq_pRWTkaXPAM-4VvTFHk3xgs19cSUlPv2aImjQ2GMMnbD-8raSI3yeqkajJzdNAxkrsSRqa8-zY9j29ghigg114biR4OUMscZmq0zy7lqQtLcVw4M5-O-pBueDft2Gfnl6RlR7RRkJw-i-nMPhdrYXmu01oUkQUIZAb86rnymEO2C0uHEdvS55pPjWiUp9XnENzSYka3e1lR-hd7N1uRXjJ7HONELh6Efvw.LSyGUqlWdfBosogJJMnazg";
-                            final byte[] dirUVF = new byte[]{117, 118, 102, 0, 97, 103, 114, 98, 87, -5, -42, 105, 82, 93, -27, -63, 50, 104, -102, -6, -8, -43, 50, 66, -88, 73, -68, 25, -52, -105, 111, -57, 27, -20, 26, 104, -67, 73, -19, -104, -16, 57, -83, -106, -128, 12, -101, -39, 20, 80, 28, 95, 1, -38, -23, -89, -40, 52, 127, 28, -109, -124, -31, 11, -121, -103, -75, 31, 46, 101, -66, 64, 79, -15, -3, 30, 4, -108, -87, -105, 71, -43, 34, -46, -43, -48, -84, 86, -63, 118, 51, -124, -119, -44, -64, -4, -36, -42, 27, -70, -73, -101, -117, 70, 110, 5, 104, 61, 0, -17, -10, 99, -127, 90, -127, -110, -118, -84, -128, -11, 26, -103, 39, -34, -41, -67, -126, 108};
 
                             if("vault.uvf".equals(file.getName())) {
                                 return IOUtils.toInputStream(vaultUVF, StandardCharsets.US_ASCII);
@@ -79,8 +83,7 @@ public class UVFVaultTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final UVFVault vault = new UVFVault(home);
         vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
-        assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v3"));
-        assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v3"));
+        assertTrue(vault.getUnlockedVault() instanceof UvfUnlockedVault);
         assertEquals(Vault.State.open, vault.getState());
         assertNotSame(home, vault.encrypt(session, home));
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
@@ -99,20 +102,20 @@ public class UVFVaultTest {
         );
         assertTrue(
                 equalMetadata(
-                        vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(
+                        vault.getUnlockedVault().directory(
                                 vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId()
                         ),
-                        vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(
+                        vault.getUnlockedVault().directory(
                                 vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId()
                         )
                 )
         );
         assertTrue(
                 equalMetadata(
-                        vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(
+                        vault.getUnlockedVault().directory(
                                 vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)))).attributes().getDirectoryId()
                         ),
-                        vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(
+                        vault.getUnlockedVault().directory(
                                 vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)))).attributes().getDirectoryId()
                         )
                 )
@@ -123,38 +126,8 @@ public class UVFVaultTest {
         assertEquals(Vault.State.closed, vault.getState());
     }
 
-    private boolean equalMetadata(final DirectoryMetadata a, final DirectoryMetadata b) throws Exception {
-        if(a == b) {
-            return true;
-        }
-        if(a == null || b == null) {
-            return false;
-        }
-        if(!a.getClass().equals(b.getClass())) {
-            return false;
-        }
-
-        for(Field field : FieldUtils.getAllFields(a.getClass())) {
-            Object valueA = FieldUtils.readField(field, a, true);
-            Object valueB = FieldUtils.readField(field, b, true);
-
-            if(valueA == null && valueB == null) {
-                continue;
-            }
-            if(valueA == null || valueB == null) {
-                return false;
-            }
-            // byte[] Arrays mit Arrays.equals vergleichen
-            if(valueA instanceof byte[] && valueB instanceof byte[]) {
-                if(!Arrays.equals((byte[]) valueA, (byte[]) valueB)) {
-                    return false;
-                }
-            }
-            else if(!valueA.equals(valueB)) {
-                return false;
-            }
-        }
-        return true;
+    private boolean equalMetadata(final VaultDirectory a, final VaultDirectory b) {
+        return Arrays.equals(a.dirId(), b.dirId()) && a.dirPath().equals(b.dirPath());
     }
 
     @Test

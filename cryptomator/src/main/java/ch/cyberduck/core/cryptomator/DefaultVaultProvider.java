@@ -28,19 +28,16 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultProvider;
-import ch.cyberduck.core.vault.VaultUnlockException;
 import ch.cyberduck.core.vault.VaultVersion;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.EnumSet;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.nimbusds.jose.JWEObject;
 
 /**
  * Cryptomator vault implementation
@@ -93,13 +90,7 @@ public class DefaultVaultProvider implements VaultProvider {
                 break;
             case UVF:
                 vault = new UVFVault(directory);
-                try {
-                    vault.load(session, new DefaultUVFVaultMetadataProvider(JWEObject.parse(
-                            new String(new ContentReader(session).readBytes(vault.getMasterkeyPath()), StandardCharsets.US_ASCII)), credentials));
-                }
-                catch(ParseException e) {
-                    throw new VaultUnlockException(e.getMessage());
-                }
+                vault.load(session, new DefaultUVFVaultMetadataProvider(credentials));
                 break;
             default:
                 log.error("Unknown vault type {}", version.type);

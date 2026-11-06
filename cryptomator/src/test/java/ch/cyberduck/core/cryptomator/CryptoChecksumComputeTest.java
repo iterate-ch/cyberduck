@@ -21,6 +21,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoChecksumCompute;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -109,7 +110,7 @@ public class CryptoChecksumComputeTest extends AbstractCryptoTests {
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
         provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
-        final ByteBuffer header = cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create());
+        final ByteBuffer header = cryptomator.createHeader();
         // DEFAULT_PIPE_SIZE=1024
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, cryptomator);
@@ -118,8 +119,10 @@ public class CryptoChecksumComputeTest extends AbstractCryptoTests {
         assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().setLength(1025L).setHeader(header).setNonces(nonces)),
                 compute.compute(new NullInputStream(1025L), new TransferStatus().setLength(1025L).setHeader(header).setNonces(nonces)));
         assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().setLength(0L).setHeader(header).setNonces(nonces)).hash);
-        assertEquals(compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(nonces)),
-                compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(nonces)));
+        // Trailing empty chunk for vault formats requiring it is encrypted with a nonce
+        final RotatingNonceGenerator empty = new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(0L));
+        assertEquals(compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(empty)),
+                compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(empty)));
         assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().setHeader(header).setNonces(nonces)),
                 sha.compute(new NullInputStream(0L), new TransferStatus()));
     }

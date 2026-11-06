@@ -15,7 +15,7 @@ package ch.cyberduck.core.cryptomator.legacy.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.cryptomator.CryptoOutputStream;
+import ch.cyberduck.core.cryptomator.legacy.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.legacy.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
