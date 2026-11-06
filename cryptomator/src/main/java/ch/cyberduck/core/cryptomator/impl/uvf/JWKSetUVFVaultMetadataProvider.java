@@ -1,7 +1,7 @@
 package ch.cyberduck.core.cryptomator.impl.uvf;
 
 /*
- * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,111 +15,65 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.vault.VaultException;
 
-import java.util.Collections;
+import org.cryptomator.cryptolib.api.UvfKeyEncryptionKey;
+import org.cryptomator.cryptolib.api.UvfLockedVault;
+import org.cryptomator.cryptolib.api.UvfRecoveryKey;
+import org.cryptomator.cryptolib.api.UvfUnlockedVault;
+
+import javax.crypto.SecretKey;
 import java.util.Optional;
 
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEObject;
-import com.nimbusds.jose.JWEObjectJSON;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.MultiDecrypter;
-import com.nimbusds.jose.crypto.MultiEncrypter;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
 
+/**
+ * Vault with member key provided by key management service such as Cryptomator Hub. The key set contains the
+ * symmetric member key and the recovery key. The private part of the recovery key is only required to create a vault.
+ */
 public class JWKSetUVFVaultMetadataProvider implements UVFVaultMetadataProvider {
 
-    private static final String UVF_SPEC_VERSION_KEY_PARAM = "uvf.spec.version";
+    private final JWKSet keys;
 
-    private final JWEObjectJSON metadata;
-    private final JWKSet jwk;
-
-    /**
-     * The cached decrypted payload of the JWE object. Preserves the original
-     * plaintext across that state transition.
-     */
-    private Payload payload;
-
-    /**
-     * Constructs a new instance of {@code DefaultVaultMetadataUVFProvider}.
-     *
-     * @param metadata The JWE object representing the vault metadata in encrypted or unencrypted state.
-     * @param jwk      The {@code JWKCallback} instance used for key management and related operations.
-     */
-    public JWKSetUVFVaultMetadataProvider(final JWEObjectJSON metadata, final JWKSet jwk) {
-        this.metadata = metadata;
-        this.jwk = jwk;
-        if(metadata.getState() == JWEObject.State.UNENCRYPTED) {
-            this.payload = metadata.getPayload();
-        }
+    public JWKSetUVFVaultMetadataProvider(final JWKSet keys) {
+        this.keys = keys;
     }
 
     @Override
-    public String computeRootDirIdHash() {
-        return this.computeRootDirIdHash(metadata.getPayload().toString());
+    public UvfUnlockedVault unlock(final UvfLockedVault metadata) throws BackgroundException {
+        return metadata.unlock(this.getMemberKey(), FastSecureRandomProvider.get().provide());
     }
 
     @Override
-    public byte[] computeRootDirUvf() {
-        return this.computeRootDirUvf(metadata.getPayload().toString());
-    }
-
-    @Override
-    public String encrypt() throws VaultException {
-        switch(metadata.getState()) {
-            case UNENCRYPTED:
-                encrypt(metadata, jwk);
-                break;
-        }
-        return metadata.serializeGeneral();
-    }
-
-    private static JWEObjectJSON encrypt(final JWEObjectJSON jwe, final JWKSet keys) throws VaultException {
+    public UvfUnlockedVault create() throws BackgroundException {
+        final ECKey key = this.find(ECKey.class).orElseThrow(() -> new VaultException("Missing recovery key"));
         try {
-            jwe.encrypt(new MultiEncrypter(keys));
-            return jwe;
+            final UvfRecoveryKey recoveryKey = key.isPrivate() ?
+                    UvfRecoveryKey.of(key.toKeyPair()) : UvfRecoveryKey.of(key.toECPublicKey());
+            return UvfUnlockedVault.create(FastSecureRandomProvider.get().provide(),
+                    UvfKeyEncryptionKey.memberKey(this.getMemberKey()), recoveryKey);
         }
-        catch(JOSEException | IllegalStateException e) {
-            throw new VaultException("Failure encrypting metadata", e);
+        catch(JOSEException e) {
+            throw new VaultException("Invalid recovery key", e);
         }
     }
 
-    @Override
-    public String decrypt() throws VaultException {
-        if(payload == null) {
-            // Encrypted state
-            final Optional<JWK> key = jwk.getKeys().stream().findFirst();
-            if(!key.isPresent()) {
-                throw new VaultException("Missing key");
-            }
-            payload = decrypt(metadata, key.get());
-        }
-        return payload.toString();
+    private SecretKey getMemberKey() throws VaultException {
+        return this.find(OctetSequenceKey.class).orElseThrow(() -> new VaultException("Missing member key")).toSecretKey("AES");
     }
 
-    private static Payload decrypt(final JWEObjectJSON jwe, final JWK key) throws VaultException {
-        final Object uvfSpecVersion = jwe.getHeader().getCustomParams().get(UVF_SPEC_VERSION_KEY_PARAM);
-        if(null == uvfSpecVersion) {
-            throw new VaultException(String.format("Missing value for critical header %s",
-                    UVF_SPEC_VERSION_KEY_PARAM));
-        }
-        if(1 != Integer.parseInt(uvfSpecVersion.toString())) {
-            throw new VaultException(String.format("Unexpected value \"%s\" for critical header %s. Expected \"1\"",
-                    UVF_SPEC_VERSION_KEY_PARAM, uvfSpecVersion));
-        }
-        try {
-            jwe.decrypt(new MultiDecrypter(key, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
-            return jwe.getPayload();
-        }
-        catch(JOSEException | IllegalStateException e) {
-            throw new VaultException("Failure decrypting metadata", e);
-        }
+    private <K extends JWK> Optional<K> find(final Class<K> type) {
+        return keys.getKeys().stream().filter(type::isInstance).map(type::cast).findFirst();
     }
 
     @Override
     public void close() {
-        payload = null;
+        //
     }
 }
