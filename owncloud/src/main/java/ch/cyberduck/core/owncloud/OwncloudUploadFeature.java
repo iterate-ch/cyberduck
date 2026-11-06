@@ -18,9 +18,9 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusUploadFeature;
 
-public class OcisUploadFeature extends TusUploadFeature {
+public class OwncloudUploadFeature extends TusUploadFeature {
 
-    public OcisUploadFeature(final OwncloudSession session, final TusCapabilities capabilities) {
+    public OwncloudUploadFeature(final OwncloudSession session, final TusCapabilities capabilities) {
         super(session, capabilities);
     }
 }

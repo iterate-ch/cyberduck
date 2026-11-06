@@ -20,10 +20,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,11 +29,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
+
 /**
  * ownCloud Infinite Scale and OpenCloud running in a container to execute integration tests against. Containers are
  * started on first use and shared for the lifetime of the JVM.
  */
-public enum OcisTestServer {
+public enum OwncloudTestServer {
     /**
      * ownCloud Infinite Scale
      */
@@ -57,7 +57,7 @@ public enum OcisTestServer {
     private GenericContainer<?> container;
     private int port;
 
-    OcisTestServer(final String image, final String resources, final String binary, final String prefix) {
+    OwncloudTestServer(final String image, final String resources, final String binary, final String prefix) {
         this.image = image;
         this.resources = resources;
         this.binary = binary;
