@@ -65,4 +65,4 @@ jobs:
         env:
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
-        run: xcrun altool --verbose --upload-app -f release/Cyberduck-*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"
+        run: xcrun altool --verbose --upload-app -f release/Cyberduck-*.pkg -t osx -u "$NOTARIZATION_USER" -p @env:NOTARIZATION_PW
