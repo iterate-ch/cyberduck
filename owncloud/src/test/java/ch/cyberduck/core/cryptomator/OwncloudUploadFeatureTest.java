@@ -38,10 +38,10 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
-import ch.cyberduck.core.owncloud.AbstractOcisTest;
-import ch.cyberduck.core.owncloud.OcisUploadFeature;
+import ch.cyberduck.core.owncloud.AbstractOwncloudTest;
 import ch.cyberduck.core.owncloud.OwncloudAttributesFinderFeature;
 import ch.cyberduck.core.owncloud.OwncloudHomeFeature;
+import ch.cyberduck.core.owncloud.OwncloudUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusWriteFeature;
@@ -63,7 +63,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class OcisUploadFeatureTest extends AbstractOcisTest {
+public class OwncloudUploadFeatureTest extends AbstractOwncloudTest {
 
     @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
     public static Object[][] data() {
@@ -84,7 +84,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
                 .withExtension(TusCapabilities.Extension.checksum)
                 .withExtension(TusCapabilities.Extension.creation);
         final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
-                new OcisUploadFeature(session,
+                new OwncloudUploadFeature(session,
                         capabilities),
                 cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

@@ -35,13 +35,13 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class DAVLockFeatureTest extends AbstractOwncloudTest {
+public class OwncloudLockFeatureTest extends AbstractOwncloudTest {
 
     /**
-     * Built-in locking reported as file_locking_support in the capabilities
+     * Locking is not advertised in the capabilities of OpenCloud but implemented
      */
     @Test
-    public void testLockSupported() {
+    public void testLockAvailable() {
         assertTrue(session.ocs.locking);
         assertNotNull(session.getFeature(Lock.class));
     }

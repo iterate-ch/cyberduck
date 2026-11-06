@@ -170,7 +170,7 @@ public class OwncloudSession extends DAVSession {
         }
         if(type == Upload.class) {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new OcisUploadFeature(this, tus);
+                return (T) new OwncloudUploadFeature(this, tus);
             }
             return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
