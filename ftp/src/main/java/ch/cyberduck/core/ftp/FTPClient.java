@@ -45,6 +45,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +60,14 @@ public class FTPClient extends FTPSClient {
 
     private final Preferences preferences
             = PreferencesFactory.get();
+
+    /**
+     * Keepalive NOOP commands sent during a data transfer without reply received yet
+     */
+    private int pendingKeepAliveReplies;
+    private long lastKeepAliveNanos = System.nanoTime();
+    private int transferReplyCode;
+    private String transferReplyString;
 
     /**
      * Session of control connection put in the session cache for the data connection to resume
@@ -89,8 +98,80 @@ public class FTPClient extends FTPSClient {
                 log.warn("Session {} for data connection {} does not resume session {} of control connection. Expect data connection to be rejected by server requiring session reuse", session, socket, resume);
             }
         }
+        lastKeepAliveNanos = System.nanoTime();
         // Wrap socket to ensure proper TCP shutdown sequence
         return new FTPSocket(socket);
+    }
+
+    /**
+     * Send NOOP on the control channel if idle for longer than the keepalive timeout while a data transfer is in
+     * progress. Waits for the reply only for the keepalive reply timeout. A reply not received in time is read later in
+     * {@link #getTransferReply()}.
+     */
+    public void keepAlive() {
+        final long idleNanos = this.getControlKeepAliveTimeoutDuration().toNanos();
+        if(idleNanos <= 0 || System.nanoTime() - lastKeepAliveNanos < idleNanos) {
+            return;
+        }
+        lastKeepAliveNanos = System.nanoTime();
+        final long replyMillis = this.getControlKeepAliveReplyTimeoutDuration().toMillis();
+        int original = -1;
+        try {
+            original = this.getSoTimeout();
+            if(replyMillis > 0) {
+                this.setSoTimeout((int) Math.min(replyMillis, Integer.MAX_VALUE));
+            }
+            this.__noop();
+        }
+        catch(SocketTimeoutException e) {
+            pendingKeepAliveReplies++;
+            log.warn("Timeout waiting for keepalive reply, {} pending", pendingKeepAliveReplies);
+        }
+        catch(IOException e) {
+            log.warn("Failure sending keepalive NOOP", e);
+        }
+        finally {
+            if(original >= 0) {
+                try {
+                    this.setSoTimeout(original);
+                }
+                catch(IOException e) {
+                    log.warn("Failure restoring socket timeout", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Read the reply for the completed data transfer, skipping replies to keepalive NOOP commands not yet received.
+     *
+     * @return Reply code of the transfer completion
+     * @see #getTransferReplyString()
+     */
+    public int getTransferReply() throws IOException {
+        int result = -1;
+        String text = null;
+        while(result == -1 || pendingKeepAliveReplies > 0) {
+            final int code = this.getReply();
+            if(result == -1 && !(pendingKeepAliveReplies > 0 && FTPReply.COMMAND_OK == code)) {
+                result = code;
+                text = this.getReplyString();
+            }
+            else {
+                pendingKeepAliveReplies--;
+            }
+        }
+        transferReplyCode = result;
+        transferReplyString = text;
+        return result;
+    }
+
+    public int getTransferReplyCode() {
+        return transferReplyCode;
+    }
+
+    public String getTransferReplyString() {
+        return transferReplyString;
     }
 
     @Override
