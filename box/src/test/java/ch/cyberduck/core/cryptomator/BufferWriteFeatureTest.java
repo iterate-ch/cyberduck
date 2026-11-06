@@ -44,7 +44,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -74,8 +73,7 @@ public class BufferWriteFeatureTest extends AbstractBoxTest {
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new BufferWriteFeature(session), cryptomator);
         final byte[] content = RandomUtils.nextBytes(1024 * 1024);
         final TransferStatus writeStatus = new TransferStatus();
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setHeader(cryptomator.createHeader());
         writeStatus.setLength(content.length);
         // Checksum of the encrypted content calculated with the header and the nonces set in the status used for writing
         writeStatus.setChecksum(session.getFeature(Upload.class).checksum(test, writeStatus).compute(new ByteArrayInputStream(content), writeStatus));

@@ -53,7 +53,6 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -92,8 +91,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         final Write<StorageObject> writer = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session, acl), cryptomator);
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        status.setHeader(cryptomator.createHeader());
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
         status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final StatusOutputStream<StorageObject> out = writer.write(test, status, ConnectionCallback.noop);

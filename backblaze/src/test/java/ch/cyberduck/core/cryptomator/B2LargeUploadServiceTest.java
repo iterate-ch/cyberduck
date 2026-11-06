@@ -51,7 +51,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -90,8 +89,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(5242885);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus writeStatus = new TransferStatus();
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setHeader(cryptomator.createHeader());
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
