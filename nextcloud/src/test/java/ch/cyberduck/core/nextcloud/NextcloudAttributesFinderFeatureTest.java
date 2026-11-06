@@ -63,7 +63,8 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindFile() throws Exception {
-        final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L), new TransferStatus());
+        // ownCloud Server reports the md5 checksum
+        final Checksum checksum = ChecksumComputeFactory.get(NextcloudTestServer.OWNCLOUD == server ? HashAlgorithm.md5 : HashAlgorithm.sha1).compute(new NullInputStream(0L), new TransferStatus());
         final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setChecksum(checksum));
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
