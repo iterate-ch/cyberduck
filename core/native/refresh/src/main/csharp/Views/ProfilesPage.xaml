@@ -61,16 +61,27 @@
                       AutomationProperties.HelpText="{Binding Text,ElementName=TitleDescription}"
                       Grid.Row="1">
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Binding="{Binding Installed}"
-                                            Width="32">
+                    <DataGridCheckBoxColumn Header="xaml:Text 'Installed',Table=Profiles"
+                                            Binding="{Binding Installed}"
+                                            Width="32"
+                                            EditingElementStyle="{Binding ElementStyle, RelativeSource={RelativeSource Self}}">
+                        <DataGridCheckBoxColumn.CellStyle>
+                            <Style TargetType="DataGridCell"
+                                   BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                <Setter Property="AutomationProperties.Name"
+                                        Value="{xaml:Text 'Installed',Table=Profiles}" />
+                            </Style>
+                        </DataGridCheckBoxColumn.CellStyle>
                         <DataGridCheckBoxColumn.ElementStyle>
                             <Style TargetType="CheckBox">
+                                <Setter Property="IsEnabled"
+                                        Value="{Binding Enabled}" />
                                 <Setter Property="Margin"
                                         Value="{StaticResource UIItemSpacing}" />
                                 <Setter Property="VerticalContentAlignment"
                                         Value="Center" />
-                                <Setter Property="IsEnabled"
-                                        Value="{Binding Enabled}" />
+                                <Setter Property="AutomationProperties.LabeledBy"
+                                        Value="{Binding RelativeSource={RelativeSource AncestorType=DataGridCell}}" />
                             </Style>
                         </DataGridCheckBoxColumn.ElementStyle>
                     </DataGridCheckBoxColumn>
@@ -108,6 +119,13 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="54">
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell"
+                                   BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                <Setter Property="Focusable"
+                                        Value="False" />
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="vm:ProfileViewModel">
                                 <Button Command="{Binding OpenHelp}"
