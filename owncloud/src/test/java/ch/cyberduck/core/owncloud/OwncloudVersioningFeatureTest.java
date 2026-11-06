@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -41,7 +40,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Ignore
 public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
 
     @Test
@@ -75,20 +73,21 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
         }
         while(versions.size() != 2);
         assertEquals(2, versions.size());
-        final Path initialVersion = versions.get(1);
+        // Modification dates of versions have a resolution of seconds, so the order is not guaranteed. Lookup by size
+        final Path initialVersion = versions.toList().stream().filter(v -> v.attributes().getSize() == initialContent.length).findFirst().orElseThrow(AssertionError::new);
         {
             assertEquals(initialAttributes.getSize(), initialVersion.attributes().getSize());
             assertEquals(initialAttributes.getModificationDate(), initialVersion.attributes().getModificationDate());
             assertNotNull(initialVersion.attributes().getVersionId());
             assertNotEquals(initialAttributes, new OwncloudAttributesFinderFeature(session).find(test));
-            assertEquals(initialVersion.attributes(), new OwncloudAttributesFinderFeature(session).find(initialVersion));
+            // Infinite Scale and OpenCloud do not respond to PROPFIND for a version
             {
                 final InputStream reader = new OwncloudReadFeature(session).read(initialVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(initialContent, IOUtils.readFully(reader, initialContent.length));
                 reader.close();
             }
-            final Path updatedVersion = versions.get(0);
-            assertEquals(contentUpdate.length, new OwncloudAttributesFinderFeature(session).find(updatedVersion).getSize());
+            final Path updatedVersion = versions.toList().stream().filter(v -> v.attributes().getSize() == contentUpdate.length).findFirst().orElseThrow(AssertionError::new);
+            assertEquals(contentUpdate.length, updatedVersion.attributes().getSize());
             {
                 final InputStream reader = new OwncloudReadFeature(session).read(updatedVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(contentUpdate, IOUtils.readFully(reader, contentUpdate.length));

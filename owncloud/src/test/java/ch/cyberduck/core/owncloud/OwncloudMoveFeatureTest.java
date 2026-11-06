@@ -15,26 +15,23 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.EnumSet;
 import java.util.Optional;
 
-public class OwncloudMoveFeatureTest {
+public class OwncloudMoveFeatureTest extends AbstractOwncloudTest {
 
-    private final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("u")),
-            new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    private final OwncloudMoveFeature feature = new OwncloudMoveFeature(session);
+    private OwncloudMoveFeature feature;
 
-    {
+    @Before
+    public void feature() {
+        feature = new OwncloudMoveFeature(session);
         session.ocs.withSpaces(true);
     }
 
