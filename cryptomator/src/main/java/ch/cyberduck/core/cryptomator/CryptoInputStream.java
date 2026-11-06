@@ -18,42 +18,67 @@ package ch.cyberduck.core.cryptomator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.cryptomator.cryptolib.api.CryptoException;
-import org.cryptomator.cryptolib.api.FileContentCryptor;
-import org.cryptomator.cryptolib.api.FileHeader;
+import org.cryptomator.cryptolib.api.VaultFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * Decrypts ciphertext chunks read from the proxy stream positioned at the beginning of a chunk after the file header.
+ * When the end of the ciphertext is reached, the structure of the last chunks is validated.
+ */
 public class CryptoInputStream extends ProxyInputStream {
 
     private final InputStream proxy;
-    private final FileContentCryptor cryptor;
-    private final FileHeader header;
+    private final VaultFile file;
+    private final int ciphertextChunkSize;
+    private final int cleartextChunkSize;
+    /**
+     * Vault format requires a trailing empty chunk when the size is a multiple of the chunk size
+     */
+    private final boolean eofChunk;
 
     private ByteBuffer buffer = ByteBuffer.allocate(0);
 
     /**
-     * Position proxy content cryptor
+     * Index of next chunk read from proxy
      */
-    private long chunkIndexOffset;
-    private final int chunkSize;
+    private long chunkIndex;
+    /**
+     * An empty chunk is only valid in the final position
+     */
+    private boolean emptyChunkRead = false;
+    /**
+     * True when no chunk was read yet or the last chunk read was a full chunk
+     */
+    private boolean lastChunkFull = true;
+    private boolean eof = false;
 
-    public CryptoInputStream(final InputStream proxy, final FileContentCryptor cryptor, final FileHeader header, final long chunkIndexOffset) {
+    /**
+     * @param proxy            Ciphertext positioned at the beginning of the chunk with the given index
+     * @param vault            Vault to determine chunk sizes and whether a trailing empty chunk is required
+     * @param file             File opened with the header of this file. Closed when this stream is closed.
+     * @param chunkIndexOffset Index of first chunk read
+     */
+    public CryptoInputStream(final InputStream proxy, final AbstractVault vault, final VaultFile file, final long chunkIndexOffset) {
         super(proxy);
         this.proxy = proxy;
-        this.cryptor = cryptor;
-        this.header = header;
-        this.chunkSize = cryptor.ciphertextChunkSize();
-        this.chunkIndexOffset = chunkIndexOffset;
+        this.file = file;
+        this.ciphertextChunkSize = vault.getCiphertextChunkSize();
+        this.cleartextChunkSize = vault.getCleartextChunkSize();
+        this.eofChunk = vault.numberOfChunks(0L) > 0;
+        this.chunkIndex = chunkIndexOffset;
     }
 
     @Override
     public int read() throws IOException {
-        if(!buffer.hasRemaining()) {
-            this.readNextChunk();
+        final byte[] b = new byte[1];
+        final int read = this.read(b, 0, 1);
+        if(read == IOUtils.EOF) {
+            return IOUtils.EOF;
         }
-        return buffer.get();
+        return b[0] & 0xFF;
     }
 
     @Override
@@ -63,9 +88,12 @@ public class CryptoInputStream extends ProxyInputStream {
 
     @Override
     public int read(final byte[] dst, final int off, final int len) throws IOException {
-        if(!buffer.hasRemaining()) {
-            final int read = this.readNextChunk();
-            if(read == IOUtils.EOF) {
+        if(len == 0) {
+            return 0;
+        }
+        // Skip empty trailing chunk
+        while(!buffer.hasRemaining()) {
+            if(!this.readNextChunk()) {
                 return IOUtils.EOF;
             }
         }
@@ -79,20 +107,59 @@ public class CryptoInputStream extends ProxyInputStream {
         return IOUtils.skip(this, len);
     }
 
-    private int readNextChunk() throws IOException {
-        final ByteBuffer ciphertextBuf = ByteBuffer.allocate(chunkSize);
-        final int read = IOUtils.read(proxy, ciphertextBuf.array());
+    /**
+     * @return False when end of ciphertext is reached
+     */
+    private boolean readNextChunk() throws IOException {
+        if(eof) {
+            return false;
+        }
+        final ByteBuffer ciphertext = ByteBuffer.allocate(ciphertextChunkSize);
+        final int read = IOUtils.read(proxy, ciphertext.array());
         if(read == 0) {
-            return IOUtils.EOF;
+            eof = true;
+            this.validate();
+            return false;
         }
-        ciphertextBuf.position(read);
-        ciphertextBuf.flip();
+        if(emptyChunkRead) {
+            // Reordered or spliced ciphertext
+            throw this.failure(String.format("Empty chunk in non-final position %d", chunkIndex - 1), null);
+        }
+        ciphertext.limit(read);
+        final ByteBuffer cleartext = ByteBuffer.allocate(cleartextChunkSize);
         try {
-            buffer = cryptor.decryptChunk(ciphertextBuf, chunkIndexOffset++, header, true);
+            file.decryptChunk(ciphertext, cleartext, chunkIndex++);
         }
-        catch(CryptoException e) {
-            throw new IOException(e.getMessage(), new CryptoAuthenticationException(e.getMessage(), e));
+        catch(CryptoException | IllegalArgumentException e) {
+            throw this.failure(e.getMessage(), e);
         }
-        return read;
+        cleartext.flip();
+        buffer = cleartext;
+        emptyChunkRead = !cleartext.hasRemaining();
+        lastChunkFull = cleartext.remaining() == cleartextChunkSize;
+        return true;
+    }
+
+    /**
+     * Detect truncated file missing the trailing empty chunk
+     */
+    private void validate() throws IOException {
+        if(eofChunk && !emptyChunkRead && lastChunkFull) {
+            throw this.failure("Missing trailing empty chunk. File may be truncated", null);
+        }
+    }
+
+    private IOException failure(final String message, final Throwable cause) {
+        return new IOException(message, new CryptoAuthenticationException(message, cause));
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            super.close();
+        }
+        finally {
+            file.close();
+        }
     }
 }
