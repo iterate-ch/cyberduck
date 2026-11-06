@@ -35,7 +35,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,8 +63,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 return proxy.write(vault.encrypt(session, file), status, callback);
             }
             if(null == status.getHeader()) {
-                final FileHeader header = vault.getFileHeaderCryptor().create();
-                status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
+                status.setHeader(vault.createHeader());
             }
             if(null == status.getNonces()) {
                 final NonceGenerator nonces = status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
@@ -86,8 +84,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 ciphertext.write(status.getHeader().array());
             }
             return new StatusOutputStream<Reply>(new CryptoOutputStream(ciphertext,
-                    vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
-                    status.getNonces(), vault.numberOfChunks(status.getOffset()))) {
+                    vault, vault.openFile(status.getHeader()),
+                    status.getNonces(), vault.chunkIndex(status.getOffset()), CryptoTransferStatus.isLastSegment(status))) {
                 // Digest can only be completed once. Cleared when the stream is closed.
                 private MessageDigest pending = digest;
 

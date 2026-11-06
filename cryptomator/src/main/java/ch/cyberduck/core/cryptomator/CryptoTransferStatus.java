@@ -37,10 +37,18 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
         super(proxy);
         this.vault = vault;
         this.file = file;
-        this.setLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
-                // Assume single chunk upload
-                .setOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
-                .setMime(null);
+        if(vault instanceof AbstractVault) {
+            final AbstractVault cryptomator = (AbstractVault) vault;
+            // Segments must start at the beginning of a chunk. Trailing empty chunk only for last segment
+            this.setLength(cryptomator.toCiphertextSize(proxy.getOffset(), proxy.getLength(), isLastSegment(proxy)))
+                    .setOffset(cryptomator.toCiphertextOffset(proxy.getOffset()));
+        }
+        else {
+            this.setLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
+                    // Assume single chunk upload
+                    .setOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()));
+        }
+        this.setMime(null);
         if(proxy.isSegment()) {
             // Retrieve plaintext overall status
             final TransferStatus plaintext = proxy.getParent();
@@ -51,6 +59,21 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
             // Ciphertext status is overall status
             this.setParent(null);
         }
+    }
+
+    /**
+     * @param status Cleartext transfer status
+     * @return False for a segment that is followed by other segments of the same file
+     */
+    public static boolean isLastSegment(final TransferStatus status) {
+        if(!status.isSegment()) {
+            return true;
+        }
+        final TransferStatus overall = status.getParent();
+        if(null == overall || TransferStatus.UNKNOWN_LENGTH == overall.getLength() || TransferStatus.UNKNOWN_LENGTH == status.getLength()) {
+            return true;
+        }
+        return status.getOffset() + status.getLength() >= overall.getOffset() + overall.getLength();
     }
 
     @Override

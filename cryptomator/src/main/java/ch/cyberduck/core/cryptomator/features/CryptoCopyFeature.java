@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -53,8 +52,7 @@ public class CryptoCopyFeature implements Copy {
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(vault.contains(copy)) {
             // Write header to be reused in writer
-            final FileHeader header = vault.getFileHeaderCryptor().create();
-            status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
+            status.setHeader(vault.createHeader());
             status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                     new RandomNonceGenerator(vault.getNonceSize()) :
                     new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));

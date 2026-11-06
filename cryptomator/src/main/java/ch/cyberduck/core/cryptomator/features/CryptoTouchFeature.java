@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.AbstractVault;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Touch;
@@ -31,7 +31,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -52,9 +51,9 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     @Override
     public Path touch(final Write<Reply> writer, final Path file, final TransferStatus status) throws BackgroundException {
         // Write header
-        final FileHeader header = vault.getFileHeaderCryptor().create();
-        status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
+        status.setHeader(vault.createHeader());
+        // Same nonce for checksum calculation and upload of trailing empty chunk where required by vault format
+        status.setNonces(new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(0L)));
         final Path target = proxy.touch(writer, vault.encrypt(session, file), new TransferStatus(status) {
             @Override
             public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
