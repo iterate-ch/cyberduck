@@ -19,7 +19,11 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.http.client.methods.HttpRequestBase;
 
 import java.text.MessageFormat;
 
@@ -28,10 +32,12 @@ import java.text.MessageFormat;
  */
 public class OwncloudDeleteFeature extends NextcloudDeleteFeature {
 
+    private final OwncloudSession session;
     private final OwncloudPathContainerService containerService;
 
     public OwncloudDeleteFeature(final OwncloudSession session) {
         super(session);
+        this.session = session;
         this.containerService = new OwncloudPathContainerService(session.ocs);
     }
 
@@ -42,5 +48,15 @@ public class OwncloudDeleteFeature extends NextcloudDeleteFeature {
                     "Cannot delete {0}", "Error"), file.getName())).withFile(file);
         }
         super.preflight(file);
+    }
+
+    @Override
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+        final HttpRequestBase request = super.toRequest(file, status);
+        if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
+            // Infinite Scale ignores the lock token in the If header when deleting and requires the Lock-Token header
+            request.setHeader("Lock-Token", String.format("<%s>", status.getLockId()));
+        }
+        return request;
     }
 }
