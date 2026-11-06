@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.DirectoryMetadata;
+import org.cryptomator.cryptolib.api.VaultDirectory;
 
 import java.util.EnumSet;
 
@@ -41,7 +41,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
         this.vault = vault;
     }
 
-    protected DirectoryMetadata load(final Session<?> session, final Path directory) throws BackgroundException {
+    protected VaultDirectory load(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return vault.getRootDirId();
         }
@@ -53,6 +53,6 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
         log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
         final Path metadataFile = new Path(metadataParent, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
         final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
-        return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(ciphertext);
+        return this.toDirectory(ciphertext);
     }
 }

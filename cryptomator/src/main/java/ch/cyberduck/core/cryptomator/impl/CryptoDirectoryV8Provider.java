@@ -24,6 +24,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
+import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,7 +34,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.DirectoryMetadata;
+import org.cryptomator.cryptolib.api.AuthenticationFailedException;
+import org.cryptomator.cryptolib.api.VaultDirectory;
 
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -65,9 +67,9 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
 
     @Override
     public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final DirectoryMetadata dirMetadata = this.getDirectoryId(session, parent);
-        vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename);
-        final String ciphertextName = vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename);
+        final VaultDirectory dirMetadata = this.getDirectoryId(session, parent);
+        // Full ciphertext name. Name shortening is applied by filename provider
+        final String ciphertextName = dirMetadata.encryptName(filename).inflated();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
@@ -83,11 +85,11 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
             attributes.setVersionId(null);
             attributes.setFileId(null);
             // Remember random directory metadata for use in vault
-            final DirectoryMetadata dirMetadata = this.getDirectoryId(session, directory);
+            final VaultDirectory dirMetadata = this.getDirectoryId(session, directory);
             log.debug("Use directory ID '{}' for folder {}", dirMetadata, directory);
-            attributes.setDirectoryId(vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata));
+            attributes.setDirectoryId(dirMetadata.encryptedMetadata());
             attributes.setDecrypted(directory);
-            final String dirPath = vault.getCryptor().directoryContentCryptor().dirPath(dirMetadata);
+            final String dirPath = dirMetadata.dirPath();
             final String[] segments = StringUtils.split(dirPath, '/');
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, segments[1], dataRoot.getType());
@@ -100,7 +102,7 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         throw new NotfoundException(directory.getAbsolute());
     }
 
-    protected DirectoryMetadata toDirectoryId(final Session<?> session, final Path directory) throws BackgroundException {
+    protected VaultDirectory toDirectoryId(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return vault.getRootDirId();
         }
@@ -111,7 +113,7 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
                 if(cached == NOT_FOUND) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
-                return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(cached);
+                return this.toDirectory(cached);
             }
         }
         finally {
@@ -121,8 +123,8 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
             log.debug("Acquire lock for {}", directory);
             lock.writeLock().lock();
             try {
-                final DirectoryMetadata id = this.load(session, directory);
-                cache.put(new SimplePathPredicate(directory), vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(id));
+                final VaultDirectory id = this.load(session, directory);
+                cache.put(new SimplePathPredicate(directory), id.encryptedMetadata());
                 return id;
             }
             catch(NotfoundException e) {
@@ -157,26 +159,31 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
     }
 
     @Override
-    public DirectoryMetadata getDirectoryId(final Session<?> session, final Path file) throws BackgroundException {
-        if(file.attributes().getDirectoryId() != null) {
-            return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(file.attributes().getDirectoryId());
+    public VaultDirectory getDirectoryId(final Session<?> session, final Path file) throws BackgroundException {
+        final byte[] metadata = file.attributes().getDirectoryId();
+        if(metadata != null) {
+            if(metadata.length == 0) {
+                // Root directory of vault format 8 with empty directory ID. Only set by vault and not read from storage
+                return vault.getRootDirId();
+            }
+            return this.toDirectory(metadata);
         }
         final Path decrypted = file.getType().contains(Path.Type.encrypted) ? file.attributes().getDecrypted() : file;
         return this.toDirectoryId(session, decrypted.getType().contains(Path.Type.file) ? decrypted.getParent() : decrypted);
     }
 
     @Override
-    public DirectoryMetadata createDirectoryId(final Path directory) {
+    public VaultDirectory createDirectoryId(final Path directory) {
         lock.writeLock().lock();
         try {
             if(cache.contains(new SimplePathPredicate(directory))) {
                 final byte[] cached = cache.get(new SimplePathPredicate(directory));
                 if(cached != NOT_FOUND) {
-                    return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(cached);
+                    return vault.getUnlockedVault().directory(cached);
                 }
             }
-            final DirectoryMetadata metadata = vault.getCryptor().directoryContentCryptor().newDirectoryMetadata();
-            final byte[] encrypted = vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(metadata);
+            final VaultDirectory metadata = vault.getUnlockedVault().newDirectory();
+            final byte[] encrypted = metadata.encryptedMetadata();
             cache.put(new SimplePathPredicate(directory), encrypted);
             return metadata;
         }
@@ -185,7 +192,7 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         }
     }
 
-    protected DirectoryMetadata load(final Session<?> session, final Path directory) throws BackgroundException {
+    protected VaultDirectory load(final Session<?> session, final Path directory) throws BackgroundException {
         final Path encryptedParent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();
         final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));
@@ -194,6 +201,19 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
         final Path metadataFile = new Path(metadataParent, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
         final byte[] bytes = new ContentReader(session).readBytes(metadataFile);
-        return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(bytes);
+        return this.toDirectory(bytes);
+    }
+
+    /**
+     * @param metadata Contents of directory metadata file
+     * @return Directory with its ID and for UVF its seed
+     */
+    protected VaultDirectory toDirectory(final byte[] metadata) throws CryptoAuthenticationException {
+        try {
+            return vault.getUnlockedVault().directory(metadata);
+        }
+        catch(AuthenticationFailedException | IllegalArgumentException e) {
+            throw new CryptoAuthenticationException("Failure to decrypt directory metadata", e);
+        }
     }
 }
