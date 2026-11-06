@@ -44,7 +44,6 @@ import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -78,8 +77,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<DriveItem.Metadata> writer = new CryptoWriteFeature<>(session, new GraphWriteFeature(session, fileid), cryptomator);
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        status.setHeader(cryptomator.createHeader());
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
