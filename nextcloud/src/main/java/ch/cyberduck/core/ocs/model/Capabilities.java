@@ -79,6 +79,11 @@ public final class Capabilities {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class files {
         public String locking;
+        /**
+         * ownCloud Server built-in file locking
+         */
+        @JsonProperty("file_locking_support")
+        public String lockingSupport;
         public String versioning;
     }
 

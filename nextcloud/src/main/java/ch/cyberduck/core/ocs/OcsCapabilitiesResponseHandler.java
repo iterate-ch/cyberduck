@@ -54,6 +54,12 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                                 log.warn("Failure parsing {}", value.data.capabilities.files.locking);
                             }
                         }
+                        if(value.data.capabilities.files.lockingSupport != null) {
+                            // ownCloud Server reports built-in WebDAV locking as file_locking_support
+                            if(toBoolean(value.data.capabilities.files.lockingSupport)) {
+                                capabilities.withLocking(true);
+                            }
+                        }
                         if(value.data.capabilities.files.versioning != null) {
                             try {
                                 capabilities.withVersioning(1 == Integer.parseInt(value.data.capabilities.files.versioning));
