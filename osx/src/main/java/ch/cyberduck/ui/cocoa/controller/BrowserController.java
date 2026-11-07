@@ -2976,7 +2976,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 invoke(new WindowMainAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        reload(selected, selected);
+                        if(transfer.getType() == Transfer.Type.download) {
+                            // Download does not change the server. Render from cache and keep the current selection
+                            reload(Collections.emptySet(), getSelectedPaths(), false);
+                        }
+                        else {
+                            reload(selected, selected);
+                        }
                     }
                 });
             }
