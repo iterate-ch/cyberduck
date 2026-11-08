@@ -39,7 +39,10 @@ public enum FTPTestServer {
     VSFTPD("/ftp/test", 21000, 21010, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-vsftpd", false)
             .withFileFromClasspath("Dockerfile", "vsftpd/Dockerfile")
             .withFileFromClasspath("vsftpd.conf", "vsftpd/vsftpd.conf")
-            .withFileFromClasspath("pam", "vsftpd/pam"))
+            .withFileFromClasspath("pam", "vsftpd/pam")
+            .withBuildArg("FTP_USER", FTPTestServer.USER)
+            .withBuildArg("FTP_PASSWORD", FTPTestServer.PASSWORD)
+            .withBuildArg("FTP_HOME", "/ftp/test"))
             // Configuration file must be first as it would otherwise override options on the command line
             .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
                     "-opasv_min_port=21000",

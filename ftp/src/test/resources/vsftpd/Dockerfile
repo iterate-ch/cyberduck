@@ -2,9 +2,13 @@ FROM alpine:3.24
 
 RUN apk add --no-cache vsftpd linux-pam tini
 
-RUN mkdir -p /ftp \
-    && adduser -D -h /ftp/test -s /bin/sh test \
-    && echo "test:test" | chpasswd
+ARG FTP_USER
+ARG FTP_PASSWORD
+ARG FTP_HOME
+
+RUN mkdir -p "$(dirname "${FTP_HOME}")" \
+    && adduser -D -h "${FTP_HOME}" -s /bin/sh "${FTP_USER}" \
+    && echo "${FTP_USER}:${FTP_PASSWORD}" | chpasswd
 
 COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 COPY pam /etc/pam.d/vsftpd
