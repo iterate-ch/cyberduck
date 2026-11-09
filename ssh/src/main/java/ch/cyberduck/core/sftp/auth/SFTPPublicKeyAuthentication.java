@@ -198,7 +198,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             throw new IOException("No security key provider configured");
         }
         log.debug("Load middleware {} for security key", library);
-        return new NativeSecurityKeyMiddleware(library);
+        return new LibcSecurityKeyMiddleware(library);
     }
 
     /**

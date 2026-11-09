@@ -36,8 +36,8 @@ import com.sun.jna.ptr.PointerByReference;
  *
  * @see <a href="https://github.com/openssh/openssh-portable/blob/master/sk-api.h">sk-api.h</a>
  */
-public class NativeSecurityKeyMiddleware implements SecurityKeyMiddleware {
-    private static final Logger log = LogManager.getLogger(NativeSecurityKeyMiddleware.class);
+public class LibcSecurityKeyMiddleware implements SecurityKeyMiddleware {
+    private static final Logger log = LogManager.getLogger(LibcSecurityKeyMiddleware.class);
 
     private static final int SSH_SK_ERR_GENERAL = -1;
     private static final int SSH_SK_ERR_UNSUPPORTED = -2;
@@ -51,7 +51,7 @@ public class NativeSecurityKeyMiddleware implements SecurityKeyMiddleware {
      * @param library Path to the shared library implementing the middleware
      * @throws IOException Library not found or not implementing the expected API version
      */
-    public NativeSecurityKeyMiddleware(final String library) throws IOException {
+    public LibcSecurityKeyMiddleware(final String library) throws IOException {
         this.library = library;
         try {
             sk = Native.load(library, SecurityKeyLibrary.class);
@@ -150,7 +150,7 @@ public class NativeSecurityKeyMiddleware implements SecurityKeyMiddleware {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NativeSecurityKeyMiddleware{");
+        final StringBuilder sb = new StringBuilder("LibcSecurityKeyMiddleware{");
         sb.append("library='").append(library).append('\'');
         sb.append('}');
         return sb.toString();

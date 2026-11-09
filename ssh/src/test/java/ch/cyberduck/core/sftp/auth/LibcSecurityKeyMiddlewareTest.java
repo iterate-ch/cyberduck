@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-public class NativeSecurityKeyMiddlewareTest {
+public class LibcSecurityKeyMiddlewareTest {
 
     /**
      * Library for keys in the Secure Enclave on macOS
@@ -34,7 +34,7 @@ public class NativeSecurityKeyMiddlewareTest {
     @Test
     public void testApiVersion() throws Exception {
         assumeTrue(new File(SSH_KEYCHAIN).exists());
-        final NativeSecurityKeyMiddleware middleware = new NativeSecurityKeyMiddleware(SSH_KEYCHAIN);
+        final LibcSecurityKeyMiddleware middleware = new LibcSecurityKeyMiddleware(SSH_KEYCHAIN);
         assertEquals(SecurityKeyMiddleware.SSH_SK_VERSION_MAJOR,
                 middleware.version() & SecurityKeyMiddleware.SSH_SK_VERSION_MAJOR_MASK);
     }
@@ -42,7 +42,7 @@ public class NativeSecurityKeyMiddlewareTest {
     @Test
     public void testLoadFailure() {
         try {
-            new NativeSecurityKeyMiddleware("/nonexistent/libsk.dylib");
+            new LibcSecurityKeyMiddleware("/nonexistent/libsk.dylib");
             fail("Expected failure loading middleware");
         }
         catch(IOException e) {
