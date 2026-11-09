@@ -15,11 +15,13 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hierynomus.sshj.userauth.fido.SecurityKeyPrivateKey;
@@ -111,7 +115,7 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
         final int algorithm = KeyType.SK_ED25519 == type
                 ? SecurityKeyMiddleware.SSH_SK_ED25519 : SecurityKeyMiddleware.SSH_SK_ECDSA;
         try {
-            return middleware.sign(algorithm, data, application, keyHandle, flags, null);
+            return this.sign(algorithm, data, application, keyHandle, flags, null);
         }
         catch(SecurityKeyPinRequiredException e) {
             final Credentials input;
@@ -130,8 +134,56 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
             if(StringUtils.isBlank(input.getPassword())) {
                 throw new IOException("Missing PIN for security key");
             }
-            return middleware.sign(algorithm, data, application, keyHandle, flags, input.getPassword());
+            return this.sign(algorithm, data, application, keyHandle, flags, input.getPassword());
         }
+    }
+
+    /**
+     * Sign with the middleware. When the key requires user presence, the call blocks until the token is
+     * touched without any indication. In this case, sign in the background while displaying a prompt to touch the
+     * security key with the option to cancel.
+     */
+    private SecurityKeyMiddleware.Response sign(final int algorithm, final byte[] data, final String application,
+                                                final byte[] keyHandle, final byte flags, final String pin)
+            throws IOException {
+        if(0 == (flags & SecurityKeyMiddleware.SSH_SK_USER_PRESENCE_REQD)) {
+            return middleware.sign(algorithm, data, application, keyHandle, flags, pin);
+        }
+        final CountDownLatch signal = new CountDownLatch(1);
+        final AtomicReference<SecurityKeyMiddleware.Response> response = new AtomicReference<>();
+        final AtomicReference<Exception> failure = new AtomicReference<>();
+        // Native call cannot be interrupted and returns once confirmed or the device gives up
+        final Thread thread = new Thread(() -> {
+            try {
+                response.set(middleware.sign(algorithm, data, application, keyHandle, flags, pin));
+            }
+            catch(IOException | RuntimeException e) {
+                failure.set(e);
+            }
+            finally {
+                signal.countDown();
+            }
+        }, "security-key-sign");
+        thread.setDaemon(true);
+        thread.start();
+        try {
+            prompt.await(signal, bookmark,
+                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
+                    LocaleFactory.localizedString("Touch your security key", "Credentials"));
+        }
+        catch(ConnectionCanceledException e) {
+            // Signal cancel to the authentication provider mapping the failure to LoginCanceledException
+            canceled.set(true);
+            throw new IOException("Confirmation for security key canceled", e);
+        }
+        final Exception e = failure.get();
+        if(e instanceof IOException) {
+            throw (IOException) e;
+        }
+        if(e != null) {
+            throw new IOException(String.format("Failure signing with security key %s", keys), e);
+        }
+        return response.get();
     }
 
     /**

@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
@@ -40,6 +41,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Base64;
+import java.util.concurrent.CountDownLatch;
 
 import net.schmizz.sshj.SSHClient;
 
@@ -100,7 +102,7 @@ public class SFTPSecurityKeyFileAuthenticationTest extends AbstractSFTPTest {
                 protected SecurityKeyMiddleware middleware(final Host bookmark) {
                     return middleware;
                 }
-            }.authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+            }.authenticate(session.getHost(), new AwaitingLoginCallback(), new DisabledCancelCallback()));
             assertTrue(session.getClient().isAuthenticated());
             assertEquals("Authenticator must have signed once", 1, middleware.getAttempts());
             assertEquals("Credential handle from key file must be sent to the authenticator",
@@ -153,7 +155,7 @@ public class SFTPSecurityKeyFileAuthenticationTest extends AbstractSFTPTest {
                 protected String provider(final Host bookmark) {
                     return StringUtils.EMPTY;
                 }
-            }.authenticate(this.bookmark(key), new DisabledLoginCallback(), new DisabledCancelCallback());
+            }.authenticate(this.bookmark(key), new AwaitingLoginCallback(), new DisabledCancelCallback());
             fail("Expected failure for security key without middleware");
         }
         catch(LoginFailureException e) {
@@ -175,7 +177,7 @@ public class SFTPSecurityKeyFileAuthenticationTest extends AbstractSFTPTest {
                 protected String provider(final Host bookmark) {
                     return "/nonexistent/libsk.dylib";
                 }
-            }.authenticate(this.bookmark(key), new DisabledLoginCallback(), new DisabledCancelCallback());
+            }.authenticate(this.bookmark(key), new AwaitingLoginCallback(), new DisabledCancelCallback());
             fail("Expected failure for security key without middleware");
         }
         catch(LoginFailureException e) {
@@ -198,6 +200,22 @@ public class SFTPSecurityKeyFileAuthenticationTest extends AbstractSFTPTest {
         final Local pub = LocalFactory.get(String.format("%s.pub", key.getAbsolute()));
         if(pub.exists()) {
             pub.delete();
+        }
+    }
+
+    /**
+     * Wait for the signature in the background instead of displaying a prompt to touch the security key
+     */
+    private static final class AwaitingLoginCallback extends DisabledLoginCallback {
+        @Override
+        public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message)
+                throws ConnectionCanceledException {
+            try {
+                signal.await();
+            }
+            catch(InterruptedException e) {
+                throw new ConnectionCanceledException(e);
+            }
         }
     }
 }

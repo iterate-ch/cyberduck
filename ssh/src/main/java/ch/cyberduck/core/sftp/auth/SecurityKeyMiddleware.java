@@ -40,6 +40,11 @@ public interface SecurityKeyMiddleware {
     int SSH_SK_ED25519 = 0x01;
 
     /**
+     * Flag of the key requiring the user to confirm presence on the authenticator, such as touching a token
+     */
+    byte SSH_SK_USER_PRESENCE_REQD = 0x01;
+
+    /**
      * @return Version of the API implemented by the library, to be compared against
      * {@link #SSH_SK_VERSION_MAJOR} after masking with {@link #SSH_SK_VERSION_MAJOR_MASK}
      */
