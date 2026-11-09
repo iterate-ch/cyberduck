@@ -2970,19 +2970,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param browser  Transfer in browser window
      */
     public void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
-        final TransferCallback callback = new TransferCallback() {
+        final TransferCallback callback = transfer.getType() == Transfer.Type.download ? TransferCallback.disabled : new TransferCallback() {
             @Override
             public void complete(final Transfer transfer) {
                 invoke(new WindowMainAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        if(transfer.getType() == Transfer.Type.download) {
-                            // Download does not change the server. Render from cache and keep the current selection
-                            reload(Collections.emptySet(), getSelectedPaths(), false);
-                        }
-                        else {
-                            reload(selected, selected);
-                        }
+                        reload(selected, selected);
                     }
                 });
             }

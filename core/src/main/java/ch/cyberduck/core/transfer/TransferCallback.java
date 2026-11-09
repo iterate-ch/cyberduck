@@ -19,5 +19,12 @@ package ch.cyberduck.core.transfer;
 
 public interface TransferCallback {
 
+    TransferCallback disabled = new TransferCallback() {
+        @Override
+        public void complete(final Transfer transfer) {
+
+        }
+    };
+
     void complete(Transfer transfer);
 }
