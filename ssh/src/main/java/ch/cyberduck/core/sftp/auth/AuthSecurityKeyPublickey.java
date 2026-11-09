@@ -62,11 +62,6 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
     private final AtomicBoolean canceled;
 
     public AuthSecurityKeyPublickey(final KeyProvider keys, final SecurityKeyMiddleware middleware,
-                                    final Host bookmark, final LoginCallback prompt) {
-        this(keys, middleware, bookmark, prompt, new AtomicBoolean());
-    }
-
-    public AuthSecurityKeyPublickey(final KeyProvider keys, final SecurityKeyMiddleware middleware,
                                     final Host bookmark, final LoginCallback prompt, final AtomicBoolean canceled) {
         super(keys);
         this.keys = keys;
