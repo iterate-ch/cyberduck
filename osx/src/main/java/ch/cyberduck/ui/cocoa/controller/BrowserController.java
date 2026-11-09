@@ -2970,7 +2970,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param browser  Transfer in browser window
      */
     public void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
-        final TransferCallback callback = new TransferCallback() {
+        final TransferCallback callback = transfer.getType() == Transfer.Type.download ? TransferCallback.disabled : new TransferCallback() {
             @Override
             public void complete(final Transfer transfer) {
                 invoke(new WindowMainAction(BrowserController.this) {
