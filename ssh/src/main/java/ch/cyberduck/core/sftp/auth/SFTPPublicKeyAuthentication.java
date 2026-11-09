@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp.auth;
 
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -187,6 +188,10 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
      * @throws IOException Middleware library not found or not implementing the expected API version
      */
     protected SecurityKeyMiddleware middleware(final Host bookmark) throws IOException {
+        if(Factory.Platform.getDefault() == Factory.Platform.Name.windows) {
+            // Middleware libraries are not supported on Windows
+            throw new IOException("Security key authentication is not supported on Windows");
+        }
         final String library = this.provider(bookmark);
         if(StringUtils.isBlank(library)) {
             // No default middleware library other than for keys in the Secure Enclave on macOS
