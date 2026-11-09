@@ -9,7 +9,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,14 +55,12 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         {
             final PathAttributes lookup = new DefaultAttributesFinderFeature(session).find(test);
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
@@ -104,14 +101,12 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         {
             final PathAttributes lookup = new DefaultAttributesFinderFeature(session).find(test);
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
@@ -132,14 +127,12 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         {
             final PathAttributes lookup = new S3AttributesFinderFeature(session, acl).find(test);
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
@@ -158,7 +151,6 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));

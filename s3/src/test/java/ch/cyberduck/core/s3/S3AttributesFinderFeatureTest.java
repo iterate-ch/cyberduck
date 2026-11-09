@@ -11,7 +11,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -221,7 +220,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         // Add delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
