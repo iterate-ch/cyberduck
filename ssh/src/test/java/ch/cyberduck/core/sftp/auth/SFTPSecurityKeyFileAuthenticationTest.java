@@ -18,52 +18,51 @@ package ch.cyberduck.core.sftp.auth;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
+import ch.cyberduck.core.sftp.SFTPTestServer;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.DisabledCancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sshd.common.NamedFactory;
-import org.apache.sshd.common.config.keys.KeyUtils;
-import org.apache.sshd.common.signature.BuiltinSignatures;
-import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
-import org.apache.sshd.server.SshServer;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.junit.After;
 import org.junit.Test;
+import org.testcontainers.images.builder.Transferable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PublicKey;
 import java.security.spec.ECGenParameterSpec;
+import java.util.Base64;
 
-import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Authenticate with a key file for a FIDO/U2F security key without an authentication agent. The file holds the
  * credential handle only, signing is delegated to the middleware of the authenticator.
  */
-public class SFTPSecurityKeyFileAuthenticationTest {
+public class SFTPSecurityKeyFileAuthenticationTest extends AbstractSFTPTest {
 
     private static final String APPLICATION = "ssh:";
     private static final byte[] HANDLE = "credential-handle".getBytes(StandardCharsets.UTF_8);
 
-    private SshServer server;
+    private static final String AUTHORIZED_KEYS = "/config/.ssh/authorized_keys";
 
     @After
-    public void stop() throws Exception {
-        if(server != null) {
-            server.stop(true);
+    public void revoke() throws Exception {
+        if(server == SFTPTestServer.OPENSSH) {
+            server.container().execInContainer("rm", "-f", AUTHORIZED_KEYS);
         }
     }
 
@@ -87,26 +86,22 @@ public class SFTPSecurityKeyFileAuthenticationTest {
     }
 
     private void authenticate(final KeyPair pair) throws Exception {
+        assumeTrue("Authorized keys installed in OpenSSH only", server == SFTPTestServer.OPENSSH);
         final SoftwareSecurityKeyMiddleware middleware = new SoftwareSecurityKeyMiddleware(pair, 11L);
         final Local key = SecurityKeyFileWriter.write(pair, APPLICATION, HANDLE, true);
         try {
-            this.start(new ByteArrayBuffer(SecurityKeyFileWriter.blob(pair.getPublic(), APPLICATION)).getRawPublicKey());
-            final SSHClient client = new SSHClient(new DefaultConfig());
-            client.addHostKeyVerifier(new PromiscuousVerifier());
-            client.connect("localhost", server.getPort());
-            try {
-                final Host bookmark = this.bookmark(key);
-                assertTrue(new SFTPPublicKeyAuthentication(client) {
-                    @Override
-                    protected SecurityKeyMiddleware middleware(final Host bookmark) {
-                        return middleware;
-                    }
-                }.authenticate(bookmark, new DisabledLoginCallback(), new DisabledCancelCallback()));
-                assertTrue(client.isAuthenticated());
-            }
-            finally {
-                client.disconnect();
-            }
+            this.authorize(pair);
+            session.getHost().getCredentials().setIdentity(key);
+            // Reconnect without authentication
+            session.disconnect();
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, new DisabledLoginCallback(), CancelCallback.noop);
+            assertTrue(new SFTPPublicKeyAuthentication(session.getClient()) {
+                @Override
+                protected SecurityKeyMiddleware middleware(final Host bookmark) {
+                    return middleware;
+                }
+            }.authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+            assertTrue(session.getClient().isAuthenticated());
             assertEquals("Authenticator must have signed once", 1, middleware.getAttempts());
             assertEquals("Credential handle from key file must be sent to the authenticator",
                     new String(HANDLE, StandardCharsets.UTF_8), new String(middleware.getKeyHandle(), StandardCharsets.UTF_8));
@@ -115,6 +110,16 @@ public class SFTPSecurityKeyFileAuthenticationTest {
         finally {
             this.delete(key);
         }
+    }
+
+    /**
+     * Accept the security key for the test user in the container
+     */
+    private void authorize(final KeyPair pair) throws Exception {
+        final String line = String.format("%s %s test@localhost%n", SecurityKeyFileWriter.type(pair),
+                Base64.getEncoder().encodeToString(SecurityKeyFileWriter.blob(pair.getPublic(), APPLICATION)));
+        server.container().execInContainer("mkdir", "-p", "/config/.ssh");
+        server.container().copyFileToContainer(Transferable.of(line.getBytes(StandardCharsets.US_ASCII), 0644), AUTHORIZED_KEYS);
     }
 
     /**
@@ -179,23 +184,6 @@ public class SFTPSecurityKeyFileAuthenticationTest {
         finally {
             this.delete(key);
         }
-    }
-
-    private void start(final PublicKey accepted) throws Exception {
-        server = SshServer.setUpDefaultServer();
-        server.setPort(0);
-        server.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
-        final java.util.List<NamedFactory<org.apache.sshd.common.signature.Signature>> signatures
-                = new java.util.ArrayList<>(server.getSignatureFactories());
-        if(!signatures.contains(BuiltinSignatures.sk_ecdsa_sha2_nistp256)) {
-            signatures.add(BuiltinSignatures.sk_ecdsa_sha2_nistp256);
-        }
-        if(!signatures.contains(BuiltinSignatures.sk_ssh_ed25519)) {
-            signatures.add(BuiltinSignatures.sk_ssh_ed25519);
-        }
-        server.setSignatureFactories(signatures);
-        server.setPublickeyAuthenticator((username, key, session) -> KeyUtils.compareKeys(accepted, key));
-        server.start();
     }
 
     private Host bookmark(final Local key) {
