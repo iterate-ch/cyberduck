@@ -111,6 +111,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
         assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
+        assertNotEquals(-1L, attr.getModificationDate());
         // Response to PUT request has no modification date
         testWithVersionId.attributes().setModificationDate(attr.getModificationDate());
         assertEquals(testWithVersionId.attributes(), attr);
