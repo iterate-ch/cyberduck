@@ -17,7 +17,7 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,6 +26,7 @@ import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,19 +42,21 @@ public class STSAssumeRoleWithWebIdentityCredentialsStrategy extends STSCredenti
      */
     private final OAuth2RequestInterceptor oauth;
     private final Host host;
+    private final CancelCallback cancel;
 
     public STSAssumeRoleWithWebIdentityCredentialsStrategy(final OAuth2RequestInterceptor oauth, final Host host,
                                                            final X509TrustManager trust, final X509KeyManager key,
-                                                           final LoginCallback prompt) {
+                                                           final PasswordCallback prompt, final CancelCallback cancel) {
         super(host, trust, key, prompt);
         this.oauth = oauth;
         this.host = host;
+        this.cancel = cancel;
     }
 
     @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
         log.debug("Retrieve temporary credentials with {} for role ARN {}", credentials, arn);
-        return this.assumeRoleWithWebIdentity(oauth.save(oauth.validate(credentials.getOauth())), arn);
+        return this.assumeRoleWithWebIdentity(oauth.save(oauth.validate(credentials.getOauth(), cancel)), arn);
     }
 }

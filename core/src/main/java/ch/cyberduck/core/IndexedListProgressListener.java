@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
@@ -23,7 +24,7 @@ public abstract class IndexedListProgressListener implements ListProgressListene
     private Integer index = 0;
 
     @Override
-    public IndexedListProgressListener reset() throws ConnectionCanceledException {
+    public IndexedListProgressListener reset() throws BackgroundException {
         index = 0;
         return this;
     }

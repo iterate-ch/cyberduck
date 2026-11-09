@@ -57,6 +57,7 @@ import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RequestEntityRestStorageService extends RestS3Service {
@@ -147,7 +148,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         // Hostname taking into account transfer acceleration and bucket region
         String endpoint = host.getHostname();
         // Apply default configuration
-        if(S3Session.isAwsHostname(host.getHostname(), false)) {
+        if(S3Session.isAwsStandardHostname(host.getHostname())) {
             if(StringUtils.isNotBlank(bucketName)) {
                 // Only for AWS set endpoint to region specific
                 if(preferences.getBoolean(String.format("s3.transferacceleration.%s.enable", bucketName))) {
@@ -261,6 +262,25 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 throw new IllegalArgumentException(String.format("Unrecognised HTTP method name %s", method));
         }
         return request;
+    }
+
+    @Override
+    protected void putAclImpl(final String bucketName, final String objectKey, final AccessControlList acl, final String versionId) throws ServiceException {
+        final String canned = acl.getValueForRESTHeaderACL();
+        if(null == canned) {
+            super.putAclImpl(bucketName, objectKey, acl, versionId);
+            return;
+        }
+        // Canned ACL is sent as header with empty body as the XML representation requires an owner
+        final Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put("acl", StringUtils.EMPTY);
+        if(versionId != null) {
+            requestParameters.put("versionId", versionId);
+        }
+        final Map<String, Object> metadata = new HashMap<>();
+        metadata.put(this.getRestHeaderPrefix() + "acl", canned);
+        metadata.put("Content-Length", "0");
+        this.performRestPut(bucketName, objectKey, metadata, requestParameters, null, true);
     }
 
     @Override
@@ -429,14 +449,16 @@ public class RequestEntityRestStorageService extends RestS3Service {
             log.debug("No default hostname set in {}", host.getProtocol());
             return null;
         }
-        final String hostname = host.getHostname();
-        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+        final String hostname = StringUtils.lowerCase(host.getHostname());
+        final String defaultHostname = StringUtils.lowerCase(host.getProtocol().getDefaultHostname());
+        if(hostname.equals(defaultHostname)) {
             return null;
         }
-        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+        if(hostname.endsWith(defaultHostname)) {
             log.debug("Find bucket name in {}", hostname);
-            return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
+            return ServiceUtils.findBucketNameInHostname(hostname, defaultHostname);
         }
-        return null;
+        // Bucket prefixed to region specific endpoint
+        return S3Session.findBucketInAwsHostname(hostname);
     }
 }

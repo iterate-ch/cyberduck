@@ -17,16 +17,13 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
 
-@Category(IntegrationTest.class)
 public class SwiftAccountLoaderTest extends AbstractSwiftTest {
 
     @Test

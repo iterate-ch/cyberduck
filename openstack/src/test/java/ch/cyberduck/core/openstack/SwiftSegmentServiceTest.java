@@ -4,11 +4,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -20,13 +18,11 @@ import ch.iterate.openstack.swift.model.StorageObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class SwiftSegmentServiceTest extends AbstractSwiftTest {
 
     @Test
     public void testList() throws Exception {
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("IAD");
         assertTrue(new SwiftSegmentService(session).list(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))).isEmpty());
     }
 
@@ -34,7 +30,6 @@ public class SwiftSegmentServiceTest extends AbstractSwiftTest {
     public void testManifest() {
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final StorageObject a = new StorageObject("a");
         a.setMd5sum("m1");
         a.setSize(1L);
@@ -49,7 +44,6 @@ public class SwiftSegmentServiceTest extends AbstractSwiftTest {
     public void testChecksum() throws Exception {
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path file = new Path(container, "a", EnumSet.of(Path.Type.file));
         final StorageObject a = new StorageObject("a");
         a.setMd5sum("m1");

@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,8 +66,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 return new B2TouchFeature(session, fileid).touch(writer, folder.withType(type), status
-                        .setMime(MimeTypeService.DEFAULT_CONTENT_TYPE)
-                        .setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
+                        .setMime(MimeTypeService.DEFAULT_CONTENT_TYPE));
             }
         }
         catch(B2ApiException e) {

@@ -49,7 +49,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +58,7 @@ import java.util.concurrent.Future;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
+public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(SwiftLargeObjectUploadFeature.class);
 
     private final SwiftSession session;
@@ -97,7 +96,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     @Override
     public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local,
                                 final BandwidthThrottle throttle,
-                                final ProgressListener progress, final StreamListener streamListener,
+                                final ProgressListener progress, final StreamListener listener,
                                 final TransferStatus status,
                                 final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
@@ -146,7 +145,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, write, segment, local, throttle, streamListener, status, offset, length, callback));
+                segments.add(this.submit(pool, write, segment, local, throttle, listener, status, offset, length, callback));
                 log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
                 remaining -= length;
                 offset += length;
@@ -205,9 +204,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         .setLength(length)
                         .setOffset(offset);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
+                // Optional checksum of the segment for the server to verify
+                status.setChecksum(status.compute(local, HashAlgorithm.md5));
                 return SwiftLargeObjectUploadFeature.this.upload(
-                        write, segment, local, throttle, counter, status, overall, status, callback);
+                        write, segment, local, throttle, ProgressListener.noop, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }
@@ -231,5 +231,4 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         return new Write.Append(true).withStatus(status).withOffset(size);
     }
-
 }

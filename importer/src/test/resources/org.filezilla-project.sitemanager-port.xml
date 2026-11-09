@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<FileZilla3>
+    <Servers>
+        <Server>
+            <Host>cyberduck.io</Host>
+            <Port>2222</Port>
+            <Protocol>1</Protocol>
+            <Type>0</Type>
+            <User>u</User>
+            <Logontype>0</Logontype>
+            <Name>SFTP on another port</Name>
+        </Server>
+    </Servers>
+</FileZilla3>

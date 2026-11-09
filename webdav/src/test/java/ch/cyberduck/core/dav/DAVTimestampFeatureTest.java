@@ -23,10 +23,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,11 +33,11 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-@Category(IntegrationTest.class)
 public class DAVTimestampFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Modification date cannot be set");
         final TransferStatus status = new TransferStatus();
         final Path file = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         new DAVTimestampFeature(session).setTimestamp(file, status.setModified(5100L));
@@ -56,6 +54,7 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testSetTimestampFolderExplicitImplicit() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Modification date cannot be set");
         final Path folder = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new DAVTimestampFeature(session).setTimestamp(folder, 5100L);
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(folder).getModificationDate());

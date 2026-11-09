@@ -18,7 +18,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
-public class NullAttributesFinder implements AttributesFinder {
+public class NullAttributesFinder extends VoidAttributesAdapter implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {

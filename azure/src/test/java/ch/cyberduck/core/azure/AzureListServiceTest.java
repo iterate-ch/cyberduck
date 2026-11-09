@@ -1,0 +1,138 @@
+package ch.cyberduck.core.azure;
+
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.azure.core.util.BinaryData;
+import com.azure.core.util.Context;
+import com.azure.storage.blob.options.BlockBlobSimpleUploadOptions;
+import com.azure.storage.common.implementation.Constants;
+
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
+
+@Category(IntegrationTest.class)
+public class AzureListServiceTest extends AbstractAzureTest {
+
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotFoundFolder() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new AzureListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testListEmptyFolder() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AtomicBoolean callback = new AtomicBoolean();
+        assertTrue(new AzureListService(session).list(folder, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) {
+                assertNotSame(AttributedList.EMPTY, list);
+                callback.set(true);
+            }
+        }).isEmpty());
+        assertTrue(callback.get());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListEmptyFolderInParent() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AttributedList<Path> list = new AzureListService(session).list(container, new DisabledListProgressListener());
+        assertTrue(list.contains(folder));
+        assertTrue(list.get(folder).isDirectory());
+        assertFalse(list.contains(new Path(folder).withType(EnumSet.of(Path.Type.file))));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFolderBlobWithDirectoryMetadata() throws Exception {
+        assumeTrue(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        // Folder as created by other tools: zero length blob without trailing delimiter flagged with metadata
+        session.getClient().getBlobServiceClient().getBlobContainerClient(container.getName())
+                .getBlobClient(folder.getName()).getBlockBlobClient().uploadWithResponse(
+                        new BlockBlobSimpleUploadOptions(BinaryData.fromBytes(new byte[0]))
+                                .setMetadata(Collections.singletonMap(Constants.HeaderConstants.DIRECTORY_METADATA_KEY, "true")), null, Context.NONE);
+        final AttributedList<Path> list = new AzureListService(session).list(container, new DisabledListProgressListener());
+        assertTrue(list.contains(folder));
+        assertFalse(list.contains(new Path(folder).withType(EnumSet.of(Path.Type.file))));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotfoundContainer() throws Exception {
+        final Path container = new Path("notfound-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new AzureListService(session).list(container, new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testList() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertTrue(new AzureListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), file, new TransferStatus());
+        final AttributedList<Path> list = new AzureListService(session).list(directory, new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        assertEquals(1, list.size());
+        assertTrue(list.contains(file));
+        final PathAttributes attributes = list.get(0).attributes();
+        assertEquals(attributes.getETag(), new AzureAttributesFinderFeature(session).find(file).getETag());
+        assertSame(directory, list.get(0).getParent());
+        new AzureDeleteFeature(session).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListLexicographicSortOrderAssumption() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path directory = new AzureDirectoryFeature(session).mkdir(
+                new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new AzureListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
+        final List<String> files = Arrays.asList(
+                "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+        );
+        for(String f : files) {
+            new AzureTouchFeature(session).touch(new AzureWriteFeature(session), new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        files.sort(session.getHost().getProtocol().getListComparator());
+        final AttributedList<Path> list = new AzureListService(session).list(directory, new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path file) {
+                assertEquals(files.get(index), file.getName());
+            }
+        });
+        for(int i = 0; i < list.size(); i++) {
+            assertEquals(files.get(i), list.get(i).getName());
+            new AzureDeleteFeature(session).delete(Collections.singletonList(list.get(i)), LoginCallback.noop, new Delete.DisabledCallback());
+        }
+        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+}

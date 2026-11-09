@@ -17,6 +17,7 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProtocolFactory;
@@ -52,8 +53,18 @@ public class RemoteProfilesFinderTest {
                 return true;
             }
         }));
-        final Session session = new S3Session(new HostParser(protocols).get("s3:/profiles.cyberduck.io")
-                .setCredentials(new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"))), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final Host host = new Host(new HostParser(protocols).get("s3:/profiles.cyberduck.io")
+                .setCredentials(new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))) {
+            @Override
+            public String getProperty(final String key) {
+                // Versioned listing is disabled by default but required to find previous versions of profiles
+                if("s3.listing.versioning.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();

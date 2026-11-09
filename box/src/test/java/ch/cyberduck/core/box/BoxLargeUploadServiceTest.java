@@ -29,6 +29,10 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamListener;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -69,6 +73,33 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         final byte[] compare = new byte[content.length];
         IOUtils.readFully(new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+
+    @Test
+    public void testUploadChecksumRequired() throws Exception {
+        final BoxFileidProvider fileid = new BoxFileidProvider(session);
+        final BoxLargeUploadService s = new BoxLargeUploadService(session, fileid);
+        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final byte[] content = RandomUtils.nextBytes(20 * 1024 * 1024);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        assertTrue(s.features(file, status).contains(Upload.Flags.checksumRequired));
+        assertTrue(s.features(file, status).contains(Upload.Flags.checksumResponse));
+        assertEquals(HashAlgorithm.sha1, s.checksum(file, status).getAlgorithm());
+        // Calculated prior to the transfer and sent with every part and when committing
+        final Checksum checksum = s.checksum(file, status).compute(local.getInputStream(), new TransferStatus());
+        status.setChecksum(checksum);
+        final File response = s.upload(new BoxWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
+        assertEquals(checksum.hash, response.getSha1());
+        // Checksum returned by the server
+        assertEquals(checksum, status.getResponse().getChecksum());
+        assertEquals(checksum, new BoxAttributesFinderFeature(session, fileid).find(file).getChecksum());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }

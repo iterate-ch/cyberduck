@@ -19,15 +19,26 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
 
 public class MD5ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
+    public MessageDigest digest() throws ChecksumException {
+        return instance("MD5");
+    }
+
+    @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-        return new Checksum(HashAlgorithm.md5, this.digest("MD5",
-                this.normalize(in, status), status));
+        return new Checksum(HashAlgorithm.md5, this.digest(this.normalize(in, status), this.digest(), status));
+    }
+
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.md5;
     }
 }

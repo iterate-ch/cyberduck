@@ -21,11 +21,9 @@ import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +32,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)

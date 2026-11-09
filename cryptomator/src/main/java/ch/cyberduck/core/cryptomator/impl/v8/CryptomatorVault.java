@@ -217,7 +217,8 @@ public class CryptomatorVault extends AbstractVault {
             if(encryption != null) {
                 status.setEncryption(encryption.getDefault(home));
             }
-            directory.mkdir(session._getFeature(Write.class), home, status);
+            final Write writer = session._getFeature(Write.class);
+            directory.mkdir(writer, home, status);
             new ContentWriter(session).write(masterkeyPath, mkArray.toByteArray());
             // Create vaultconfig.cryptomator
             final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
@@ -234,9 +235,9 @@ public class CryptomatorVault extends AbstractVault {
             final Path firstLevel = secondLevel.getParent();
             final Path dataDir = firstLevel.getParent();
             log.debug("Create vault root directory at {}", secondLevel);
-            directory.mkdir(session._getFeature(Write.class), dataDir, status);
-            directory.mkdir(session._getFeature(Write.class), firstLevel, status);
-            directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+            directory.mkdir(writer, dataDir, status);
+            directory.mkdir(writer, firstLevel, status);
+            directory.mkdir(writer, secondLevel, status);
         }
     }
 

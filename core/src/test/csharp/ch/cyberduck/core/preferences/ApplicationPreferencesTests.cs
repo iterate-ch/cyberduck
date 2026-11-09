@@ -1,6 +1,7 @@
 ﻿using java.util;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Ch.Cyberduck.Core.Preferences;
 
@@ -45,6 +46,15 @@ public class ApplicationPreferencesTests
         ]);
 
         Assert.That(preferences.getProperty("test.core.override"), Is.Empty);
+    }
+
+    [TestCase]
+    public void CommonSupportDirectoryInProgramData()
+    {
+        // Initializes EnvironmentInfo.DataFolderName before the finder caches its location
+        _ = new TestPreferences();
+        Assert.That(CommonSupportDirectoryFinder.Local.getAbsolute(),
+            Is.EqualTo(Path.Combine(EnvironmentInfo.CommonAppDataPath, EnvironmentInfo.DataFolderName)));
     }
 
     public class TestPreferences : ApplicationPreferences<TestPreferences>

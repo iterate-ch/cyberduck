@@ -28,7 +28,6 @@ import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -66,13 +65,13 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
         final Local localFile = TemporaryFileServiceFactory.get().create(test.getName());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
-            final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+            final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
             final StatusOutputStream out = new AzureWriteFeature(session).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         }
         final byte[] content = RandomUtils.nextBytes(39864);
-        final TransferStatus writeStatus = new TransferStatus().setExists(true).setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+        final TransferStatus writeStatus = new TransferStatus().setExists(true).setLength(content.length);
         final StatusOutputStream<Void> out = new AzureWriteFeature(session).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);

@@ -160,6 +160,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public Host Bookmark() => _host;
 
+        protected virtual bool PasswordEditable => _options.password() && _options.keychain();
+
         public void ReadPasswordFromKeychain()
         {
             if (_options.keychain() && _options.password())
@@ -173,11 +175,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 string password = _keychain.findLoginPassword(_host);
-                if (!string.IsNullOrWhiteSpace(password))
-                {
-                    View.Password = password;
-                }
+                // Password is read from keychain and never kept in the model; empty if none saved
+                SetPasswordFromKeychain(password);
             }
+        }
+
+        protected virtual void SetPasswordFromKeychain(string password)
+        {
+            View.Password = password ?? string.Empty;
         }
 
         internal void View_ChangedPathEvent()
@@ -272,9 +277,13 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Username = _host.getCredentials().getUsername();
             View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
             View.UsernameLabel = $"{_host.getProtocol().getUsernamePlaceholder()}:";
-            View.Password = _host.getCredentials().getPassword();
+            if (!(_options.password() && _options.keychain()))
+            {
+                // Otherwise read from keychain and not kept in model
+                View.Password = _host.getCredentials().getPassword();
+            }
             View.PasswordLabel = $"{_options.getPasswordPlaceholder()}:";
-            View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
+            View.PasswordEnabled = PasswordEditable && !_host.getCredentials().isAnonymousLogin();
             View.AnonymousEnabled = _options.anonymous();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();

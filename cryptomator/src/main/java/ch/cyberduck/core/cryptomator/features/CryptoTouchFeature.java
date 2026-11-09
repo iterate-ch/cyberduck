@@ -26,10 +26,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.FileHeader;
 
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Optional;
 
@@ -53,6 +57,11 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = proxy.touch(writer, vault.encrypt(session, file), new TransferStatus(status) {
             @Override
+            public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
+                // Checksum of the content after it is encrypted
+                return new CryptoChecksumCompute(ChecksumComputeFactory.get(algorithm), vault).compute(local, segment);
+            }
+
             public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);
                 // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.

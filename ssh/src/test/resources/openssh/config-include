@@ -1,0 +1,14 @@
+Include include-a
+# Missing files are ignored
+Include nonexistent-xyz-file
+# Including itself must not loop
+Include config-include
+
+Host main-host
+    HostName main.example.com
+    User mainuser
+
+# Matched against the target hostname after substitution by HostName from include-a
+Match host host-a.example.com
+    User alice
+    IdentityFile ~/.ssh/match-key

@@ -39,13 +39,23 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @param expireDuration In millis
      */
     public AbstractCache(int size, Long expireDuration) {
+        this(size, expireDuration, true);
+    }
+
+    /**
+     * @param size              Maximum size
+     * @param expireDuration    In millis
+     * @param expireAfterAccess Expire cached value after the last access. Expire after the time of caching only when false
+     *                          such that frequently accessed contents are not served longer than the expiry duration.
+     */
+    public AbstractCache(int size, Long expireDuration, boolean expireAfterAccess) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            impl = LRUCache.build(-1L, expireDuration);
+            impl = LRUCache.build(null, -1L, expireDuration, expireAfterAccess);
         }
         else {
             // Will inflate to the given size
-            impl = LRUCache.build(size, expireDuration);
+            impl = LRUCache.build(null, size, expireDuration, expireAfterAccess);
         }
     }
 

@@ -34,7 +34,7 @@ public class MemoryListProgressListener extends ProxyListProgressListener {
     }
 
     @Override
-    public ListProgressListener reset() throws ConnectionCanceledException {
+    public ListProgressListener reset() throws BackgroundException {
         contents.set(AttributedList.emptyList());
         super.reset();
         return this;
@@ -49,10 +49,8 @@ public class MemoryListProgressListener extends ProxyListProgressListener {
 
     @Override
     public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
-        // Cache contents in proxy
+        // Cache contents in proxy. Keep contents for access by caller after notifying
         super.cleanup(directory, contents.get(), e);
-        log.debug("Clear cached contents for {}", directory);
-        contents.set(AttributedList.emptyList());
     }
 
     /**

@@ -34,6 +34,7 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -82,13 +83,8 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new SHA1ChecksumCompute();
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.mime);
+        return EnumSet.of(Flags.timestamp, Flags.mime);
     }
 
     private class MultipartDelayedHttpEntityCallable extends DelayedHttpEntityCallable<File> {
@@ -115,11 +111,9 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                             String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                 }
                 final Checksum checksum = status.getChecksum();
-                if(Checksum.NONE != checksum) {
-                    switch(checksum.algorithm) {
-                        case sha1:
-                            request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
-                    }
+                switch(checksum.algorithm) {
+                    case sha1:
+                        request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
                 }
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
@@ -192,7 +186,10 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                 // Must not overlap with the range of a part already uploaded this session.
                 request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                         Long.valueOf(overall_length))));
-                request.addHeader(new BasicHeader("Digest", String.format("sha=%s", status.getChecksum().base64)));
+                final Checksum checksum = status.getChecksum();
+                if(checksum.algorithm == HashAlgorithm.sha1) {
+                    request.addHeader(new BasicHeader("Digest", String.format("sha=%s", checksum.base64)));
+                }
                 request.setEntity(entity);
                 final UploadPart response = session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
                     @Override

@@ -204,6 +204,9 @@ public class STSAuthorizationService {
                 request.setRoleArn(input.getPassword());
             }
         }
+        if(StringUtils.isNotBlank(settings.getProperty(Profile.STS_EXTERNAL_ID_PROPERTY_KEY))) {
+            request.setExternalId(settings.getProperty(Profile.STS_EXTERNAL_ID_PROPERTY_KEY));
+        }
         final String mfaArn = settings.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY);
         if(StringUtils.isNotBlank(mfaArn)) {
             log.debug("Found MFA ARN {} for {}", mfaArn, bookmark);

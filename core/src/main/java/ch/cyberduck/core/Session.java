@@ -291,7 +291,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature<>(this);
+            return (T) new DefaultUploadFeature<>();
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(this);

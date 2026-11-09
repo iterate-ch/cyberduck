@@ -22,8 +22,22 @@ import ch.cyberduck.core.URIEncoder;
 
 public class DAVPathEncoder {
 
+    private final DAVPathMapper mapper;
+
+    public DAVPathEncoder() {
+        this(DAVPathMapper.noop);
+    }
+
+    public DAVPathEncoder(final DAVSession session) {
+        this(session.getMapper());
+    }
+
+    public DAVPathEncoder(final DAVPathMapper mapper) {
+        this.mapper = mapper;
+    }
+
     public String encode(final Path file) {
-        final String encoded = URIEncoder.encode(file.getAbsolute());
+        final String encoded = URIEncoder.encode(mapper.map(file).getAbsolute());
         if(file.isDirectory()) {
             if(file.isRoot()) {
                 return encoded;

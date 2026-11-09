@@ -110,7 +110,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
 
     protected PathAttributes head(final Path file) throws IOException {
         final Map<String, String> headers = session.getClient().execute(
-                new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
+                new HttpHead(new DAVPathEncoder(session).encode(file)), new HeadersResponseHandler());
         final PathAttributes attributes = new DefaultPathAttributes();
         try {
             attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
@@ -134,7 +134,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
     }
 
     protected List<DavResource> list(final Path file) throws IOException, BackgroundException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0,
+        return session.getClient().list(new DAVPathEncoder(session).encode(file), 0,
                 Stream.of(
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                                 DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).

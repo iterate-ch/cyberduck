@@ -32,11 +32,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.logging.log4j.LogManager;
@@ -45,27 +42,26 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
 
+    /**
+     * Value for header {@code x-amz-content-sha256} to exclude the payload from the request signature. No hash of the
+     * file contents must be calculated prior to the transfer.
+     */
+    private static final String UNSIGNED_PAYLOAD = "UNSIGNED-PAYLOAD";
+
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature acl;
     private final S3Session session;
 
     public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(session.getHost(), new S3AttributesAdapter(session.getHost()));
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
-        this.acl = acl;
     }
 
     @Override
@@ -115,17 +111,24 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             object.setContentType(mime);
         }
         final Checksum checksum = status.getChecksum();
-        if(Checksum.NONE != checksum) {
-            switch(checksum.algorithm) {
-                case sha256:
-                    if(!status.isSegment()) {
-                        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.checksum.header")) {
-                            object.addMetadata("x-amz-checksum-sha256", checksum.base64);
-                        }
-                    }
-                    object.addMetadata("x-amz-content-sha256", checksum.hash);
-                    break;
-            }
+        switch(checksum.algorithm) {
+            case sha256:
+                if(!status.isSegment()) {
+                    // Additional optional checksum verified by the server and stored with the object for integrity
+                    object.addMetadata("x-amz-checksum-sha256", checksum.base64);
+                }
+                // Payload hash for the request signature
+                object.addMetadata("x-amz-content-sha256", checksum.hash);
+                break;
+            case md5:
+                // Verified by the server and required for upload to a bucket with Object Lock
+                object.addMetadata("Content-MD5", checksum.base64);
+                object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
+                break;
+            default:
+                // No checksum calculated prior to the transfer or algorithm not supported. Exclude payload from the
+                // request signature and do not send an additional checksum for the server to verify.
+                object.addMetadata("x-amz-content-sha256", UNSIGNED_PAYLOAD);
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
             object.setStorageClass(status.getStorageClass());
@@ -138,13 +141,11 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
             object.addMetadata(m.getKey(), m.getValue());
         }
-        if(!Acl.EMPTY.equals(status.getAcl())) {
-            if(status.getAcl().isCanned()) {
-                log.debug("Set canned ACL {} for {}", status.getAcl(), file);
-                object.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
-                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
-                status.setAcl(Acl.EMPTY);
-            }
+        if(status.getAcl().isCanned()) {
+            log.debug("Set canned ACL {} for {}", status.getAcl(), file);
+            object.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+            // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+            status.setAcl(Acl.EMPTY);
         }
         if(status.getModified() != null) {
             // Interoperable with rsync
@@ -161,35 +162,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.acl, Flags.mime);
+        return EnumSet.of(Flags.timestamp, Flags.acl, Flags.mime);
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new ChecksumCompute() {
-            @Override
-            public Set<Checksum> computeAll(final InputStream in, final TransferStatus status) throws BackgroundException {
-                final HashSet<Checksum> checksums = new HashSet<>(Arrays.asList(
-                        ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ProxyInputStream(in) {
-                            @Override
-                            public void close() throws IOException {
-                                in.reset();
-                            }
-                        }, status),
-                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new ProxyInputStream(in) {
-                            @Override
-                            public void close() throws IOException {
-                                in.reset();
-                            }
-                        }, status)));
-                IOUtils.closeQuietly(in);
-                return checksums;
-            }
-
-            @Override
-            public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
-                return ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(in, status);
-            }
-        };
-    }
 }

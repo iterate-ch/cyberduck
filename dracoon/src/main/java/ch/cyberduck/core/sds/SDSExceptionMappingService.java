@@ -213,6 +213,6 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 // [-10106] Username must be changed
                 return new LoginFailureException(buffer.toString(), failure);
         }
-        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode(), failure.getResponseHeaders());
     }
 }

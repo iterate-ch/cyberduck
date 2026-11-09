@@ -25,26 +25,28 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.security.MessageDigest;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static ch.cyberduck.core.eue.EueWriteFeature.RESOURCE_ID;
 
-public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
+public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;
 
     public EueSingleUploadService(final EueSession session, final EueResourceIdProvider fileid) {
+        super(EnumSet.of(Flags.checksumOptional), HashAlgorithm.sha256);
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
         final String resourceId;
@@ -61,8 +63,6 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
         }
         status.setParameters(Collections.singletonMap(RESOURCE_ID, resourceId));
         status.setUrl(uploadUri);
-        status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
-        return super.upload(write, file, local, throttle, progress, streamListener, status, callback);
+        return super.upload(write, file, local, throttle, progress, listener, status, callback);
     }
-
 }

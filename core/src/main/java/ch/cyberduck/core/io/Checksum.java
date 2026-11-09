@@ -129,5 +129,5 @@ public final class Checksum {
         return result;
     }
 
-    public static final Checksum NONE = new Checksum(null, null, null);
+    public static final Checksum NONE = new Checksum(HashAlgorithm.none, null, null);
 }

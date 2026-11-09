@@ -105,7 +105,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
+        assertEquals(Checksum.NONE, attributes.getChecksum());
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertTrue(attributes.getPermission().isExecutable());
@@ -129,7 +129,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
+        assertEquals(Checksum.NONE, attributes.getChecksum());
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertTrue(attributes.getPermission().isExecutable());

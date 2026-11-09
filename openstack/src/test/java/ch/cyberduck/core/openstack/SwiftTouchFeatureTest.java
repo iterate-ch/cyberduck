@@ -6,17 +6,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftTouchFeatureTest extends AbstractSwiftTest {
 
     @Test
@@ -28,7 +25,6 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
     @Test
     public void testTouch() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
                 new SwiftWriteFeature(session, new SwiftRegionService(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(test);

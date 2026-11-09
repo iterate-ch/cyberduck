@@ -27,14 +27,14 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -42,7 +42,6 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
 
     @Test
@@ -107,8 +106,9 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             });
             fail();
         }
-        catch(AccessDeniedException e) {
-            assertEquals("Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
+        catch(InteroperabilityException e) {
+            // Other policies may report violations in addition such as common or compromised password
+            assertTrue(e.getDetail(), StringUtils.contains(e.getDetail(), "Password needs to be at least 10 characters long."));
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
@@ -178,8 +178,9 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
             });
             fail();
         }
-        catch(AccessDeniedException e) {
-            assertEquals("Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
+        catch(InteroperabilityException e) {
+            // Other policies may report violations in addition such as common or compromised password
+            assertTrue(e.getDetail(), StringUtils.contains(e.getDetail(), "Password needs to be at least 10 characters long."));
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

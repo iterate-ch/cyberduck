@@ -22,6 +22,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
@@ -82,7 +83,7 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(8235);
         final long ts = System.currentTimeMillis();
         final TransferStatus status = new TransferStatus().setLength(content.length).setModified(ts);
-        final Checksum checksum = new EueWriteFeature(session, fileid).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = new EueWriteFeature(session, fileid).write(file, status.setExists(true), ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);

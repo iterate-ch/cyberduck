@@ -95,6 +95,17 @@ jobs:
           pattern: changelog-*
           path: update
 
+      - name: Detect Feeds
+        id: feeds
+        shell: bash
+        run: |
+          # A platform build may have failed or been cancelled; publish only the feeds that exist
+          for os in macOS Windows; do
+            if compgen -G "update/changelog-$os/changelog.*" > /dev/null; then
+              echo "$os=true" >> "$GITHUB_OUTPUT"
+            fi
+          done
+
       - name: Credentials
         id: identity
         env:
@@ -106,9 +117,10 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: Upload Feed (macOS)
+        if: steps.feeds.outputs.macOS == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -117,15 +129,21 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed (Windows)
+        if: steps.feeds.outputs.Windows == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
           url: ${{ format('sftp://version.cyberduck.io/var/data/version.cyberduck.io/windows/{0}/', inputs['SPARKLE_FEED']) }}
           path: update/changelog-Windows/changelog.*
           args: '--existing overwrite --verbose'
+
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem
 
   deb:
     needs: cli
@@ -183,6 +201,14 @@ jobs:
             --gpg-options="--no-tty" \
             "${packages[@]}"
 
+      - name: Remove GPG Signing Key
+        if: always()
+        shell: bash
+        run: |
+          GNUPGHOME="${{ runner.temp }}/gnupg"
+          gpgconf --homedir "$GNUPGHOME" --kill all || true
+          rm -rf "$GNUPGHOME"
+
   rpm:
     needs: cli
     permissions:
@@ -217,7 +243,7 @@ jobs:
       - name: SFTP Upload (aarch64)
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -228,7 +254,7 @@ jobs:
       - name: SFTP Upload (x86_64)
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -238,7 +264,7 @@ jobs:
 
       - name: Rebuild Repository Metadata
         env:
-          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_USER: ${{ vars.SFTP_USER }}
           KEYFILE: ${{ steps.identity.outputs.KEYFILE }}
         shell: bash
         run: |
@@ -250,3 +276,8 @@ jobs:
               -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
               "$host" "/usr/bin/createrepo --update '$remote'"
           done
+
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem

@@ -127,7 +127,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
         // Request checksum registration on the server and verification against local file
-        status.setChecksum(new IRODSWriteFeature(session).checksum(test, status).compute(local.getInputStream(), new TransferStatus()));
+        status.setChecksum(new IRODSUploadFeature(session).checksum(test, status).compute(local.getInputStream(), new TransferStatus()));
         assertEquals(HashAlgorithm.sha256, status.getChecksum().algorithm);
         final BytecountStreamListener count = new BytecountStreamListener();
         final List<String> reply = new IRODSUploadFeature(session).upload(
@@ -169,7 +169,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
         // Request checksum registration on the server and verification against local file
-        status.setChecksum(new IRODSWriteFeature(session).checksum(test, status).compute(local.getInputStream(), new TransferStatus()));
+        status.setChecksum(new IRODSUploadFeature(session).checksum(test, status).compute(local.getInputStream(), new TransferStatus()));
         final BytecountStreamListener count = new BytecountStreamListener();
         final List<String> reply = new IRODSUploadFeature(session).upload(
                 new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);

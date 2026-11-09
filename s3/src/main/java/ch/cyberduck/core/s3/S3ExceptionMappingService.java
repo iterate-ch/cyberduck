@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -41,6 +42,10 @@ import org.jets3t.service.ServiceException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class S3ExceptionMappingService extends AbstractExceptionMappingService<ServiceException> {
     private static final Logger log = LogManager.getLogger(S3ExceptionMappingService.class);
@@ -59,6 +64,11 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                     EntityUtils.toString(response.getEntity()));
         }
         failure.setResponseCode(response.getStatusLine().getStatusCode());
+        final Map<String, String> headers = new HashMap<>();
+        for(Header header : response.getAllHeaders()) {
+            headers.put(header.getName(), header.getValue());
+        }
+        failure.setResponseHeaders(headers);
         if(response.containsHeader(MINIO_ERROR_CODE)) {
             failure.setErrorCode(response.getFirstHeader(MINIO_ERROR_CODE).getValue());
         }
@@ -121,6 +131,11 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
         if(-1 == e.getResponseCode()) {
             return new InteroperabilityException(buffer.toString(), e);
         }
-        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getResponseCode(), buffer.toString()));
+        final Map<String, List<String>> headers = new HashMap<>();
+        if(e.getResponseHeaders() != null) {
+            e.getResponseHeaders().forEach((name, value) -> headers.put(name, Collections.singletonList(value)));
+        }
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getResponseCode(), buffer.toString()),
+                buffer, e.getResponseCode(), headers);
     }
 }

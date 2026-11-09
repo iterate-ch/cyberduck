@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobContainerAccessPolicies;
 import com.azure.storage.blob.models.PublicAccessType;
@@ -72,10 +71,15 @@ public class AzureAclPermissionFeature implements AclPermission {
     }
 
     @Override
+    public Acl getDefault(final Path file) throws BackgroundException {
+        return Acl.EMPTY;
+    }
+
+    @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final BlobContainerClient client = session.getClient()
+                final BlobContainerClient client = session.getClient().getBlobServiceClient()
                         .getBlobContainerClient(containerService.getContainer(file).getName());
                 final BlobContainerAccessPolicies accessPolicy = client.getAccessPolicy();
                 final Acl acl = new Acl();
@@ -89,7 +93,7 @@ public class AzureAclPermissionFeature implements AclPermission {
             }
             return Acl.EMPTY;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
@@ -98,7 +102,7 @@ public class AzureAclPermissionFeature implements AclPermission {
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final BlobContainerClient client = session.getClient()
+                final BlobContainerClient client = session.getClient().getBlobServiceClient()
                         .getBlobContainerClient(containerService.getContainer(file).getName());
                 if(status.getAcl().asList().isEmpty()) {
                     client.setAccessPolicy(null, Collections.emptyList());
@@ -112,7 +116,7 @@ public class AzureAclPermissionFeature implements AclPermission {
                 }
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }

@@ -26,7 +26,7 @@
                 <rect key="frame" x="0.0" y="240" width="400" height="60"/>
                 <subviews>
                     <customView id="cjf-RS-AF0" userLabel="Content View">
-                        <rect key="frame" x="0.0" y="60" width="800" height="0.0"/>
+                        <rect key="frame" x="0.0" y="60" width="400" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">

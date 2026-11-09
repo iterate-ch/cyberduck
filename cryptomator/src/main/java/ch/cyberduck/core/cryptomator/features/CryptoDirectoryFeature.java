@@ -57,9 +57,9 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             dirMetadata = vault.getDirectoryProvider().createDirectoryId(folder);
         }
         // Create metadata file for directory
-        final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
-                session._getFeature(Write.class), vault.encrypt(session, folder, true),
-                new TransferStatus().setRegion(status.getRegion()));
+        final Write write = session._getFeature(Write.class);
+        final Path metadataFolder = vault.encrypt(session, folder, true);
+        final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(write, metadataFolder, new TransferStatus().setRegion(status.getRegion()));
         final Path directoryMetadataFile = new Path(directoryMetadataFolder,
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
@@ -69,7 +69,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
+            session._getFeature(Directory.class).mkdir(write, intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
         final Path target = delegate.mkdir(writer, encrypt, status);
         final Path recoveryDirectoryMetadataFile = new Path(target,

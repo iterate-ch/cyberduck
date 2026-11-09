@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,7 +30,8 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class S3LoggingFeatureTest extends AbstractS3Test {
 
     @Test
@@ -47,14 +48,12 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         new S3LoggingFeature(session).getConfiguration(
-            new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
-        );
+                new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)));
     }
 
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
         new S3LoggingFeature(session).setConfiguration(
-            new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
-        );
+                new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false));
     }
 }

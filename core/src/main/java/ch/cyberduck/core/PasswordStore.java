@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 public interface PasswordStore {
 
     /**
-     * Find generic password for application
+     * Find a generic password for the application
      *
      * @param serviceName Service
      * @param accountName Account
@@ -32,7 +32,7 @@ public interface PasswordStore {
     String getPassword(String serviceName, String accountName) throws AccessDeniedException;
 
     /**
-     * Add generic password for application
+     * Add a generic password for the application
      *
      * @param serviceName Service
      * @param accountName Account
@@ -47,7 +47,8 @@ public interface PasswordStore {
      * @param scheme   Protocol scheme
      * @param port     Port
      * @param hostname Hostname
-     * @param user     Credentials  @return Password if found or null otherwise
+     * @param user     Credentials
+     * @return Password if found or null otherwise
      */
     String getPassword(Scheme scheme, int port, String hostname, String user) throws AccessDeniedException;
 

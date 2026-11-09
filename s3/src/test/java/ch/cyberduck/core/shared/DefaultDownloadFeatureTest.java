@@ -22,7 +22,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -33,7 +32,7 @@ import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -51,18 +50,18 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class DefaultDownloadFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTransferVersioning() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(
+        final Path test = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
-            final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+            final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
             final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
@@ -70,7 +69,7 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         {
-            final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
+            final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
             final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);

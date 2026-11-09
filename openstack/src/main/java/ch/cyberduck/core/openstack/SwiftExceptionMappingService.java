@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
@@ -29,6 +30,7 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.iterate.openstack.swift.exception.ContainerExistsException;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftExceptionMappingService extends AbstractExceptionMappingService<GenericException> {
@@ -42,6 +44,10 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
         final StatusLine status = e.getHttpStatusLine();
         if(null != status) {
             this.append(buffer, String.format("%d %s", status.getStatusCode(), status.getReasonPhrase()));
+        }
+        if(e instanceof ContainerExistsException) {
+            // 202 Accepted for existing container
+            return new ConflictException(buffer.toString(), e);
         }
         switch(e.getHttpStatusCode()) {
             case HttpStatus.SC_BAD_REQUEST:

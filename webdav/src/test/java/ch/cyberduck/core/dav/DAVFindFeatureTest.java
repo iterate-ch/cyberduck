@@ -3,17 +3,14 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class DAVFindFeatureTest extends AbstractDAVTest {
 
     @Test

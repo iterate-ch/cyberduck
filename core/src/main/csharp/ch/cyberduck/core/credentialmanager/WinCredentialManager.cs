@@ -20,6 +20,7 @@ using org.apache.logging.log4j;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -126,8 +127,19 @@ namespace Ch.Cyberduck.Core.CredentialManager
         {
             if (!CredDelete(target, CRED_TYPE_GENERIC))
             {
-                var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-                log.error($"Could not remove credentials \"{target}\": {message.Message}");
+                var error = Marshal.GetLastWin32Error();
+                if (error == (int)WIN32_ERROR.ERROR_NOT_FOUND)
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug($"No credentials found for \"{target}\" to remove");
+                    }
+
+                    return true;
+                }
+
+                var message = new Win32Exception(error);
+                log.error($"Could not remove credentials \"{target}\" (error {error}): {message.Message}");
                 return false;
             }
             return true;

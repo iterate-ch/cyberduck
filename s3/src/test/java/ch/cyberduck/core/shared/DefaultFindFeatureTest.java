@@ -25,7 +25,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -36,7 +36,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class DefaultFindFeatureTest extends AbstractS3Test {
 
     @Test
@@ -45,7 +45,7 @@ public class DefaultFindFeatureTest extends AbstractS3Test {
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertFalse(new DefaultFindFeature(session).find(file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), file, new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), file, new TransferStatus());
         // Find without version id set in attributes
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(file));

@@ -20,7 +20,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -67,7 +66,6 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new SpectraWriteFeature(session).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);

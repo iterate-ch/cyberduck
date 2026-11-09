@@ -57,6 +57,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
+            this.assertResponseMatchesFinder(fileid, file, status);
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
             final byte[] compare = new byte[content.length];
@@ -71,6 +72,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
+            this.assertResponseMatchesFinder(fileid, file, status);
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
             final byte[] compare = new byte[content.length];

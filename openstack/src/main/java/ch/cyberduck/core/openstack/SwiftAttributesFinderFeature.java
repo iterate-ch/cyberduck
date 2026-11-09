@@ -147,7 +147,9 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
             // the concatenated string of ETags for each of the segments in the manifest.
             attributes.setChecksum(Checksum.parse(object.getMd5sum()));
         }
-        attributes.setSize(object.getSize());
+        if(object.getSize() != null) {
+            attributes.setSize(object.getSize());
+        }
         final String lastModified = object.getLastModified();
         if(lastModified != null) {
             try {

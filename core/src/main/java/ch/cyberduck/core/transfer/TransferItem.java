@@ -64,7 +64,7 @@ public class TransferItem implements Referenceable, Serializable {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof TransferItem)) {
             return false;
         }
         TransferItem that = (TransferItem) o;

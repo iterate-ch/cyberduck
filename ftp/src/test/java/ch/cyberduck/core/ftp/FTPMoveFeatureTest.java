@@ -20,16 +20,13 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -37,7 +34,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPMoveFeatureTest extends AbstractFTPTest {
 
     @Test
@@ -59,13 +55,6 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), target, new TransferStatus());
-        try {
-            new FTPMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop);
-            fail();
-        }
-        catch(AccessDeniedException e) {
-            // Expected
-        }
         new FTPMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));

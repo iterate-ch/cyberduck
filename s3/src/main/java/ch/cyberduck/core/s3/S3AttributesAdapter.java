@@ -26,10 +26,13 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.utils.RestUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
 
@@ -63,7 +66,11 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
         // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
         // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
         // not the MD5 of the object data.
-        attributes.setChecksum(Checksum.parse(object.getETag()));
+        if(null == object.getServerSideEncryptionAlgorithm() || "AES256".equals(object.getServerSideEncryptionAlgorithm())) {
+            // Objects uploaded in multiple parts have the MD5 of the concatenated MD5 digests of the parts
+            // and not of the whole object as ETag.
+            attributes.setChecksum(Checksum.parse(StringUtils.remove(object.getETag(), '"')));
+        }
         if(object instanceof S3Object) {
             if(HostPreferencesFactory.get(host).getBoolean("s3.listing.versioning.enable")) {
                 attributes.setVersionId(((S3Object) object).getVersionId());
@@ -110,7 +117,13 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
      * @return Pruned metadata with user editable headers only
      */
     public static Map<String, String> metadata(final StorageObject object) {
-        final Map<String, String> metadata = new HashMap<>(Maps.transformValues(object.getModifiableMetadata(), Object::toString));
+        final Map<String, String> metadata = new HashMap<>();
+        for(Map.Entry<String, Object> entry : object.getModifiableMetadata().entrySet()) {
+            // HTTP header names are case-insensitive. Some implementations return lowercase names
+            metadata.put(RestUtils.HTTP_HEADER_METADATA_NAMES.contains(StringUtils.lowerCase(entry.getKey()))
+                    ? Arrays.stream(StringUtils.split(StringUtils.lowerCase(entry.getKey()), '-')).map(StringUtils::capitalize).collect(Collectors.joining("-"))
+                    : entry.getKey(), entry.getValue().toString());
+        }
         metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "storage-class"));
         metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "server-side-encryption"));
         metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "expiration"));

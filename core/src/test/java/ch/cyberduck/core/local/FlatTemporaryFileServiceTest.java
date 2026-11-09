@@ -126,6 +126,30 @@ public class FlatTemporaryFileServiceTest {
     }
 
     @Test
+    public void testFilenameTooLong() throws Exception {
+        // Maximum length for a single path component on APFS
+        final String name = StringUtils.repeat("a", 251) + ".txt";
+        assertEquals(255, name.length());
+        final Path file = new Path(String.format("/f/%s", name), EnumSet.of(Path.Type.file));
+        final Local local = new FlatTemporaryFileService().create(file);
+        LocalTouchFactory.get().touch(local);
+        assertTrue(local.exists());
+        local.delete();
+    }
+
+    @Test
+    public void testFilenameTooLongCustomPrefix() throws Exception {
+        // Maximum length for a single path component on APFS
+        final String name = StringUtils.repeat("a", 251) + ".txt";
+        assertEquals(255, name.length());
+        final Path file = new Path(String.format("/f/%s", name), EnumSet.of(Path.Type.file));
+        final Local local = new FlatTemporaryFileService().create(new AlphanumericRandomStringService().random(), file);
+        LocalTouchFactory.get().touch(local);
+        assertTrue(local.exists());
+        local.delete();
+    }
+
+    @Test
     public void testTemporaryPathCustomPrefix() {
         final Path file = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
         file.attributes().setDuplicate(true);

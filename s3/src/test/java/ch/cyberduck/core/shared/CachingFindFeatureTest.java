@@ -30,7 +30,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,7 +40,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class CachingFindFeatureTest extends AbstractS3Test {
 
     @Test
@@ -51,7 +51,7 @@ public class CachingFindFeatureTest extends AbstractS3Test {
         final CachingFindFeature f = new CachingFindFeature(session, cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertFalse(f.find(test));
         cache.clear();
         assertTrue(f.find(test));

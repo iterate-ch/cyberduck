@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>9.6.0-SNAPSHOT</version>
+        <version>9.6.1-SNAPSHOT</version>
     </parent>
     <artifactId>openstack</artifactId>
     <packaging>jar</packaging>
@@ -50,6 +50,11 @@
             <groupId>ch.iterate.openstack</groupId>
             <artifactId>swift</artifactId>
             <version>${openstack-swift-version}</version>
+        </dependency>
+            <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

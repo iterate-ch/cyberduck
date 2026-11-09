@@ -29,11 +29,9 @@ import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,7 +42,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 
-@Category(IntegrationTest.class)
 public class DefaultUploadFeatureTest extends AbstractFTPTest {
 
     @Test
@@ -58,14 +55,14 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            final Void reply = new DefaultUploadFeature<Void>(session).upload(
+            final Void reply = new DefaultUploadFeature<Void>().upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            final Void reply = new DefaultUploadFeature<Void>(session).upload(
+            final Void reply = new DefaultUploadFeature<Void>().upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     ConnectionCallback.noop);

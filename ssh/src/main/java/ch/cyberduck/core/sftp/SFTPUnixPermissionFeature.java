@@ -20,18 +20,19 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-public class SFTPUnixPermissionFeature implements UnixPermission {
+public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature {
 
     private final SFTPSession session;
 
     public SFTPUnixPermissionFeature(final SFTPSession session) {
+        super(session.getHost());
         this.session = session;
     }
 

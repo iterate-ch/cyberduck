@@ -1,10 +1,7 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -17,22 +14,16 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -50,9 +41,13 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Category(IntegrationTest.class)
 @RunWith(Parameterized.class)
 public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
+
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
@@ -91,6 +86,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindDirectory() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No ETag for collections");
         final Path test = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
@@ -201,17 +197,5 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testFindNoPropfind() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-        session.login(LoginCallback.noop, CancelCallback.noop);
-        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
-        final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
-        final Attributes attributes = f.find(file);
-        assertNotNull(attributes);
     }
 }

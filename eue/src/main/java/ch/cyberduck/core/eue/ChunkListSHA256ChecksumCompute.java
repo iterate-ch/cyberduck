@@ -30,9 +30,13 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
+
+    @Override
+    public MessageDigest digest() throws ChecksumException {
+        return instance("SHA-256");
+    }
 
     public static byte[] intToBytes(final int i) {
         final ByteBuffer bb = ByteBuffer.allocate(4);
@@ -45,18 +49,17 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
         return this.compute(status.getLength(), super.digest("SHA-256", this.normalize(in, status), status));
     }
 
+    @Override
+    public HashAlgorithm getAlgorithm() {
+        return HashAlgorithm.sha256;
+    }
+
     /**
      * @param length        File length
      * @param contentDigest SHA-256
      */
     public Checksum compute(final Number length, final byte[] contentDigest) throws ChecksumException {
-        final MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new ChecksumException(e.getMessage(), e);
-        }
+        final MessageDigest digest = this.digest();
         digest.update(contentDigest);
         digest.update(intToBytes(length.intValue()));
         return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));

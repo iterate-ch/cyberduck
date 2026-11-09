@@ -178,8 +178,4 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
         uploader.finish();
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new DropboxChecksumCompute();
-    }
 }

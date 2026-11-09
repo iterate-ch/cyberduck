@@ -15,15 +15,12 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class NextcloudSessionTest extends AbstractNextcloudTest {
 
     @Test

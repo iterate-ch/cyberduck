@@ -10,11 +10,9 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -28,7 +26,6 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftWriteFeatureTest extends AbstractSwiftTest {
 
     @Test
@@ -38,7 +35,6 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         status.setLength(content.length);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         status.setMetadata(Collections.singletonMap("C", "duck"));

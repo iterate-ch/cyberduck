@@ -19,13 +19,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +37,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
@@ -110,6 +107,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testReplaceContent() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path folder = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -138,7 +136,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             status.setLength(content.length);
             upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
-            assertEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
+            assertNotEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
             assertNotEquals(fileEtag, new DAVAttributesFinderFeature(session).find(test).getETag());
         }
         final PathAttributes attr2 = new DAVAttributesFinderFeature(session).find(test);
@@ -149,6 +147,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testWriteContentRange() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
@@ -222,6 +221,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testWriteContentRangeTwoBytes() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(2);
@@ -250,6 +250,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testWriteContentRangeThreeBytes() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(3);

@@ -19,11 +19,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
 
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -39,10 +36,5 @@ public class AzureTouchFeature extends DefaultTouchFeature<Void> {
         if(workdir.isRoot()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }
-    }
-
-    @Override
-    public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(writer, file, status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 }

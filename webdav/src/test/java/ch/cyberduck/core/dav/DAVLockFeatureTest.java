@@ -28,22 +28,20 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 
-@Category(IntegrationTest.class)
 public class DAVLockFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testLockNotSupported() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "Locking not compatible");
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);

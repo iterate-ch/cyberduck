@@ -15,6 +15,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -29,11 +30,9 @@ import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.security.PublicKey;
 import java.util.Collections;
@@ -50,7 +49,6 @@ import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test
@@ -65,13 +63,21 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 new HMACSHA2256.Factory(),
                 new HMACSHA2512.Factory()
         );
+        int supported = 0;
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
-            final SSHClient client = session.connect(HostKeyCallback.noop, LoginCallback.noop, configuration);
-            assertTrue(client.isConnected());
-            client.close();
+            try {
+                final SSHClient client = session.connect(HostKeyCallback.noop, LoginCallback.noop, configuration);
+                assertTrue(client.isConnected());
+                client.close();
+                supported++;
+            }
+            catch(ConnectionRefusedException e) {
+                // No algorithm in common with server
+            }
         }
+        assertTrue("No MAC algorithm in common with server", supported > 0);
     }
 
     @Test

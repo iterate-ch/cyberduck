@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>9.6.0-SNAPSHOT</version>
+        <version>9.6.1-SNAPSHOT</version>
     </parent>
     <artifactId>osx</artifactId>
     <packaging>jar</packaging>
@@ -133,7 +133,7 @@
                                             <groupId>net.temurin</groupId>
                                             <artifactId>jdk</artifactId>
                                             <type>zip</type>
-                                            <version>25.0.4.1</version>
+                                            <version>25.0.5</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>

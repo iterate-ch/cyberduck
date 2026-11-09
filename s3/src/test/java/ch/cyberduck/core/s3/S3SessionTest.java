@@ -32,7 +32,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.utils.SignatureUtils;
 import org.junit.Test;
@@ -48,10 +48,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3SessionTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testHttpProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -94,6 +95,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testAWS2SignatureVersion() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -110,6 +112,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testConnectSessionTokenStatic() throws Exception {
         final S3Protocol protocol = new S3Protocol();
         final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials()
@@ -132,6 +135,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testConnectDefaultPath() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -147,6 +151,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test(expected = BackgroundException.class)
+    @RunOn(S3TestServer.AWS)
     public void testCustomHostnameUnknown() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -201,6 +206,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testBucketVirtualHostStyleAmazon() throws Exception {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
@@ -212,6 +218,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testTrustChain() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
@@ -237,25 +244,6 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testInteroperabilityMinio() throws Exception {
-        final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
-                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
-        )) {
-            @Override
-            public String getProperty(final String key) {
-                if("s3.bucket.virtualhost.disable".equals(key)) {
-                    return String.valueOf(true);
-                }
-                return super.getProperty(key);
-            }
-        };
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-        session.login(LoginCallback.noop, CancelCallback.noop);
-        session.close();
-    }
-
-    @Test
     public void testAwsHostnames() {
         assertFalse(S3Session.isAwsHostname("play.min.io"));
         assertTrue(S3Session.isAwsHostname("test-eu-west-3-cyberduck.s3.amazonaws.com"));
@@ -267,6 +255,90 @@ public class S3SessionTest extends AbstractS3Test {
         assertTrue(S3Session.isAwsHostname("s3.cn-north-1.amazonaws.com.cn"));
         assertFalse(S3Session.isAwsHostname("s3.cn-north-1.amazonaws.com.cn", false));
         assertTrue(S3Session.isAwsHostname("vpce-0971cacd1f2.s3.eu-west-1.vpce.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("bucket.s3.us-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3-us-west-2.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("bucket.s3-us-west-2.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3-us-gov-west-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3-fips.us-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3-fips.dualstack.us-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("s3-external-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("my.bucket.s3.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("ap-123456789012.s3-accesspoint.us-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("bucket.vpce-1a2b3c4d-5e6f.s3.us-east-1.vpce.amazonaws.com"));
+        assertTrue(S3Session.isAwsHostname("S3.amazonaws.com"));
+        assertFalse(S3Session.isAwsHostname("s3.amazonaws.com.evil.com"));
+        assertFalse(S3Session.isAwsHostname("evil-s3.example.com"));
+        assertTrue(S3Session.isAwsHostname("s3-fips-us-gov-west-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsHostname("bucket.s3-website-us-east-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsHostname("bucket.s3-website.us-east-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsHostname("123456789012.s3-control.us-east-1.amazonaws.com"));
+    }
+
+    @Test
+    public void testAwsHostnamesWithoutChina() {
+        assertTrue(S3Session.isAwsHostname("s3.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("bucket.s3.us-east-1.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("s3-us-west-2.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("bucket.s3-us-west-2.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("s3-us-gov-west-1.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("s3-fips.us-east-1.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("s3-fips.dualstack.us-east-1.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("s3-external-1.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("my.bucket.s3.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("ap-123456789012.s3-accesspoint.us-east-1.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("bucket.vpce-1a2b3c4d-5e6f.s3.us-east-1.vpce.amazonaws.com", false));
+        assertTrue(S3Session.isAwsHostname("S3.amazonaws.com", false));
+        assertFalse(S3Session.isAwsHostname("bucket.s3-website-us-east-1.amazonaws.com", false));
+        assertFalse(S3Session.isAwsHostname("s3.amazonaws.com.evil.com", false));
+    }
+
+    @Test
+    public void testAwsStandardHostnames() {
+        assertTrue(S3Session.isAwsStandardHostname("s3.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("bucket.s3.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("s3.us-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("s3.dualstack.eu-west-3.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("s3-us-west-2.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("s3-us-gov-west-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("s3-external-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsStandardHostname("s3-fips.us-east-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsStandardHostname("s3-fips.dualstack.us-east-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsStandardHostname("ap-123456789012.s3-accesspoint.us-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsStandardHostname("vpce-0971cacd1f2.s3.eu-west-1.vpce.amazonaws.com"));
+        assertFalse(S3Session.isAwsStandardHostname("bucket.vpce-1a2b3c4d-5e6f.s3.us-east-1.vpce.amazonaws.com"));
+        assertFalse(S3Session.isAwsStandardHostname("s3.cn-north-1.amazonaws.com.cn"));
+        assertFalse(S3Session.isAwsStandardHostname("play.min.io"));
+    }
+
+    @Test
+    public void testAwsChinaHostnames() {
+        assertTrue(S3Session.isAwsChinaHostname("s3.cn-north-1.amazonaws.com.cn"));
+        assertTrue(S3Session.isAwsChinaHostname("s3.amazonaws.com.cn"));
+        assertFalse(S3Session.isAwsChinaHostname("s3.amazonaws.com"));
+        assertFalse(S3Session.isAwsChinaHostname("play.min.io"));
+    }
+
+    @Test
+    public void testFindBucketInAwsHostname() {
+        assertNull(S3Session.findBucketInAwsHostname("s3.amazonaws.com"));
+        assertNull(S3Session.findBucketInAwsHostname("s3.us-east-1.amazonaws.com"));
+        assertNull(S3Session.findBucketInAwsHostname("s3-us-west-2.amazonaws.com"));
+        assertEquals("bucket", S3Session.findBucketInAwsHostname("bucket.s3.us-east-1.amazonaws.com"));
+        assertEquals("bucket", S3Session.findBucketInAwsHostname("bucket.s3-us-west-2.amazonaws.com"));
+        assertEquals("bucket", S3Session.findBucketInAwsHostname("Bucket.S3.dualstack.eu-west-3.amazonaws.com"));
+        assertEquals("my.bucket", S3Session.findBucketInAwsHostname("my.bucket.s3.amazonaws.com"));
+        assertNull(S3Session.findBucketInAwsHostname("ap-123456789012.s3-accesspoint.us-east-1.amazonaws.com"));
+        assertNull(S3Session.findBucketInAwsHostname("bucket.vpce-1a2b3c4d-5e6f.s3.us-east-1.vpce.amazonaws.com"));
+        assertNull(S3Session.findBucketInAwsHostname("vpce-0971cacd1f2.s3.eu-west-1.vpce.amazonaws.com"));
+    }
+
+    @Test
+    public void testAwsGovCloudHostnames() {
+        assertTrue(S3Session.isAwsGovCloudHostname("s3-us-gov-west-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsGovCloudHostname("s3.us-gov-east-1.amazonaws.com"));
+        assertTrue(S3Session.isAwsGovCloudHostname("bucket.s3-fips.dualstack.us-gov-west-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsGovCloudHostname("s3.us-east-1.amazonaws.com"));
+        assertFalse(S3Session.isAwsGovCloudHostname("s3.amazonaws.com"));
     }
 
     @Test

@@ -70,6 +70,8 @@ public class BoxExceptionMappingService extends AbstractExceptionMappingService<
                 return new ConnectionCanceledException(cause);
             }
         }
-        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getCode(), failure.getMessage()));
+        final StringBuilder buffer = new StringBuilder();
+        this.append(buffer, failure.getMessage());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode(), failure.getResponseHeaders());
     }
 }

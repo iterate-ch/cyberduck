@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -49,7 +48,6 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
@@ -81,7 +79,6 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         // Replace content
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.setExists(true)), ConnectionCallback.noop);
         final OutputStream out = new SpectraWriteFeature(session).write(test, status, ConnectionCallback.noop);
@@ -101,7 +98,6 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
         {
             final byte[] content1 = RandomUtils.nextBytes(1000);
             final TransferStatus status = new TransferStatus().setLength(content1.length);
-            status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content1), status));
             bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
             final OutputStream out = new SpectraWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);

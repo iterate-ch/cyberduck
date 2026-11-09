@@ -23,6 +23,8 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -83,6 +85,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
         };
     }
 
+    /**
+     * The MD5 of a segment is sent with the request for the server to verify the segment
+     */
+
     private final class LargeUploadOutputStream extends OutputStream {
         private final List<StorageObject> completed = new ArrayList<>();
         private final Path file;
@@ -112,9 +118,9 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().setLength(len);
-                        status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file, status)
-                                .compute(new ByteArrayInputStream(content, off, len), status)
-                        );
+                        // Optional checksum of the segment for the server to verify
+                        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5)
+                                .compute(new ByteArrayInputStream(content, off, len), status));
                         // Segment name with left padded segment number
                         final Path segment = segmentService.getSegment(file, ++segmentNumber);
                         final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);

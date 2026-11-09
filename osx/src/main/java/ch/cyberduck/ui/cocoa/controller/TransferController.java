@@ -562,12 +562,7 @@ public class TransferController extends WindowController implements TransferList
     }
 
     public void start(final Transfer transfer, final TransferOptions options) {
-        this.start(transfer, options, new TransferCallback() {
-            @Override
-            public void complete(final Transfer transfer) {
-                //
-            }
-        });
+        this.start(transfer, options, TransferCallback.disabled);
     }
 
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {

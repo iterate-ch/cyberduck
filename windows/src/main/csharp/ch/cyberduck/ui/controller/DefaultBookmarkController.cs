@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPasswordEvent()
         {
-            if (_options.keychain() && _options.password())
+            if (_options.keychain())
             {
                 if (string.IsNullOrWhiteSpace(_host.getHostname()))
                 {
@@ -46,18 +46,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
+
+                var store = PasswordStoreFactory.get();
                 if (string.IsNullOrWhiteSpace(View.Password))
                 {
-                    return;
+                    store.deleteLoginPassword(_host);
                 }
-                try
+                else
                 {
-                    _host.getCredentials().setPassword(View.Password);
-                    PasswordStoreFactory.get().save(_host);
-                }
-                catch (LocalAccessDeniedException e)
-                {
-                    Log.error($"Failure saving credentials for ${_host} in keychain. ${e.getDetail()}");
+                    store.addLoginPassword(_host, View.Password);
                 }
             }
         }

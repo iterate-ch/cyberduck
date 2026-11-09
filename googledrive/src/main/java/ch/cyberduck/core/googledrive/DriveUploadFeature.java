@@ -16,13 +16,15 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.http.HttpUploadFeature;
-
-import java.security.MessageDigest;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import com.google.api.services.drive.model.File;
 
-public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
+import java.util.EnumSet;
 
-    public DriveUploadFeature(final DriveSession session) {
+public class DriveUploadFeature extends HttpUploadFeature<File> {
+
+    public DriveUploadFeature() {
+        super(EnumSet.of(Flags.checksumResponse), HashAlgorithm.md5);
     }
 }

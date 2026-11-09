@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesAdapter;
@@ -36,7 +35,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -51,7 +50,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
@@ -77,7 +76,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path file = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialVersion = file.attributes().getVersionId();
         assertNotNull(initialVersion);
         final PathAttributes lookup = f.find(file);
@@ -104,7 +103,6 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         // Overwrite with new version
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(12);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(file, status, ConnectionCallback.noop);
         IOUtils.copy(new ByteArrayInputStream(content), out);

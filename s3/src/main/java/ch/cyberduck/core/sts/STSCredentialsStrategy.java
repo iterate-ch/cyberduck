@@ -17,7 +17,7 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
@@ -38,7 +38,7 @@ public abstract class STSCredentialsStrategy extends STSAuthorizationService imp
     private final ReentrantLock lock = new ReentrantLock();
     private final Host host;
 
-    public STSCredentialsStrategy(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+    public STSCredentialsStrategy(final Host host, final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
         super(host, trust, key, prompt);
         this.host = host;
     }

@@ -19,17 +19,22 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+
+import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobType;
 
-public class AzureUploadFeature extends DefaultUploadFeature<Void> {
+import java.util.EnumSet;
+
+public class AzureUploadFeature extends DefaultUploadFeature<BlobItemProperties> {
 
     private final AzureSession session;
 
     public AzureUploadFeature(final AzureSession session) {
-        super(session);
+        super(EnumSet.of(Flags.checksumOptional), HashAlgorithm.md5);
         this.session = session;
     }
 

@@ -22,10 +22,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -34,13 +32,11 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testGetContainerMetadata() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
         assertFalse(metadata.isEmpty());
     }
@@ -48,7 +44,6 @@ public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
     @Test
     public void testSetMetadata() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus().setMime("text/plain"));
         final String v = UUID.randomUUID().toString();

@@ -240,6 +240,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
                     .withSigningRequired(preferences.getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
                     .withMultiProtocolNegotiate(preferences.getBoolean("smb.protocol.negotiate.enable"))
+                    .withDirectoryLeasingEnabled(preferences.getBoolean("smb.directory.leasing.enable"))
                     .withTransportLayerFactory(new AsyncDirectTcpTransportFactory<>())
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
@@ -319,6 +320,10 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     public void releaseShare(final DiskShareWrapper share) throws BackgroundException {
+        if(null == share) {
+            // Not obtained or already released
+            return;
+        }
         final String shareName = share.get().getSmbPath().getShareName();
         lock.lock();
         try {

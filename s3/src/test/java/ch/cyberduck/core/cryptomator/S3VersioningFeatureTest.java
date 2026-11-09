@@ -33,6 +33,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -49,7 +50,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
@@ -65,9 +66,14 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class S3VersioningFeatureTest extends AbstractS3Test {
+
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
 
     @Test
     public void testRevert() throws Exception {
@@ -79,7 +85,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final AttributesFinder f = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl));
-        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
@@ -89,7 +95,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
-        status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final StatusOutputStream<StorageObject> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

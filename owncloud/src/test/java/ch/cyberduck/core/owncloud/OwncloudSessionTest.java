@@ -15,15 +15,12 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 @Ignore
 public class OwncloudSessionTest extends AbstractOwncloudTest {
 
