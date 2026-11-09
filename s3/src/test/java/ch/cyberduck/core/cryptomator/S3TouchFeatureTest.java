@@ -26,7 +26,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.RunOn;
@@ -85,7 +84,6 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         session.getRegistry().clear();
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
@@ -114,7 +112,6 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         session.getRegistry().clear();
         assertThrows(InteroperabilityException.class, () -> new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session));

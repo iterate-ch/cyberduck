@@ -50,9 +50,11 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
     public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(object.getContentLength());
-        final Date lastmodified = object.getLastModifiedDate();
-        if(lastmodified != null) {
-            attributes.setModificationDate(lastmodified.getTime());
+        // Do not fall back to the Date response header when Last-Modified is missing, as in the response
+        // to a PUT request. Date is the time of the response and not the modification date of the object.
+        final Object lastmodified = object.getMetadata(StorageObject.METADATA_HEADER_LAST_MODIFIED_DATE);
+        if(lastmodified instanceof Date) {
+            attributes.setModificationDate(((Date) lastmodified).getTime());
         }
         if(StringUtils.isNotBlank(object.getStorageClass())) {
             attributes.setStorageClass(object.getStorageClass());

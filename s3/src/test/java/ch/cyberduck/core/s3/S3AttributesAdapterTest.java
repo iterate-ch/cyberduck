@@ -22,6 +22,8 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 
 public class S3AttributesAdapterTest {
@@ -32,6 +34,20 @@ public class S3AttributesAdapterTest {
         object.addMetadata("ETag", "a43c1b0aa53a0c908810c06ab1ff3967");
         object.addMetadata("Mtime", "1647683127.160620746");
         assertEquals(1647683127000L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
+    }
+
+    @Test
+    public void testLastModified() {
+        final StorageObject object = new StorageObject();
+        object.setLastModifiedDate(new Date(1647683127000L));
+        assertEquals(1647683127000L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
+    }
+
+    @Test
+    public void testIgnoreDateHeader() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("Date", new Date(1647683127000L));
+        assertEquals(-1L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
     }
 
     @Test
