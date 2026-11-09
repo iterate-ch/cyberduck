@@ -10,10 +10,8 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,20 +19,17 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftFindFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testFindContainer() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         assertTrue(new SwiftFindFeature(session).find(container));
     }
 
     @Test
     public void testFindKeyWithSamePrefix() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final String prefix = new AlphanumericRandomStringService().random();
         final Path other = new Path(container, String.format("%s.%s", prefix, new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), other, new TransferStatus());
@@ -56,7 +51,6 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
     @Test
     public void testFindKeyWithSameSuffix() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final String suffix = new AlphanumericRandomStringService().random();
         final Path other = new Path(container, String.format("%s.%s", new AlphanumericRandomStringService().random(), suffix), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), other, new TransferStatus());
@@ -83,7 +77,6 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
     @Test
     public void testFindCommonPrefix() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         assertTrue(new SwiftFindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(

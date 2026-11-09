@@ -149,7 +149,7 @@ public class RenameExistingFilterTest {
                         }
                     };
                 }
-                return null;
+                return super._getFeature(type);
             }
         };
         final UploadFilterOptions options = new UploadFilterOptions(host).withTemporary(true);

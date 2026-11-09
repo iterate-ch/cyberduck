@@ -29,7 +29,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -72,8 +72,11 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                 request.setEntity(entity);
                 request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
                 final Checksum checksum = status.getChecksum();
-                if(Checksum.NONE != checksum) {
-                    request.setHeader(TUS_HEADER_UPLOAD_CHECKSUM, String.format("%s %s", checksum.algorithm, checksum.hex));
+                // Only the algorithm of the checksum extension supported by the server
+                if(capabilities.extensions.contains(Extension.checksum)) {
+                    if(checksum.algorithm == capabilities.hashAlgorithm) {
+                        request.setHeader(TUS_HEADER_UPLOAD_CHECKSUM, String.format("%s %s", checksum.algorithm, checksum.hex));
+                    }
                 }
                 request.setHeader(TUS_HEADER_UPLOAD_OFFSET, String.valueOf(status.getOffset()));
                 // All PATCH requests MUST use Content-Type: application/offset+octet-stream
@@ -135,16 +138,7 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(capabilities.extensions.contains(Extension.checksum)) {
-            return ChecksumComputeFactory.get(capabilities.hashAlgorithm);
-        }
-        log.debug("No checksum support in capabilities {}", capabilities);
-        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
-    }
-
-    @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum, Flags.mime);
+        return EnumSet.of(Flags.mime);
     }
 }

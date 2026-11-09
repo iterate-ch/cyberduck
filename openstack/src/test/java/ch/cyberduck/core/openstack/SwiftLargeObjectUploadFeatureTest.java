@@ -12,23 +12,24 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,13 +44,11 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testAppendNoPartCompleted() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String name = new AlphanumericRandomStringService().random();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -107,7 +106,6 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testAppendSecondPart() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String name = new AlphanumericRandomStringService().random();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -121,13 +119,13 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService,
                 1024L * 1024L, 1) {
             @Override
-            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener message, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 1L * 1024L * 1024L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.upload(write, file, local, throttle, message, listener, status, cancel, progress, callback);
             }
         };
         final BytecountStreamListener listener = new BytecountStreamListener();
@@ -170,7 +168,6 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testUploadOverwrite() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
 
@@ -196,6 +193,9 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             final BytecountStreamListener count = new BytecountStreamListener();
             final StorageObject object = upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
                     status, ConnectionCallback.noop);
+            // Not verifying
+            assertFalse(status.isVerify());
+            assertEquals(Checksum.NONE, status.getResponse().getChecksum());
             assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
             assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
             assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
@@ -280,11 +280,36 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testAppendNoSegmentFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService)
                 .append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertFalse(append.append);
         assertEquals(Write.override, append);
+    }
+
+    @Test
+    public void testSmallObjectUploadVerifyChecksum() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final byte[] content = RandomUtils.nextBytes(1025);
+        IOUtils.write(content, local.getOutputStream(false));
+        final SwiftSmallObjectUploadFeature upload = new SwiftSmallObjectUploadFeature();
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        assertTrue(upload.features(test, status).contains(Upload.Flags.checksumOptional));
+        assertTrue(upload.features(test, status).contains(Upload.Flags.checksumResponse));
+        assertEquals(HashAlgorithm.md5, upload.checksum(test, status).getAlgorithm());
+        // Calculated while streaming
+        status.setVerify(upload.checksum(test, status).getAlgorithm());
+        upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
+        final Checksum expected = upload.checksum(test, status).compute(new ByteArrayInputStream(content), new TransferStatus());
+        assertEquals(expected, status.getDigest());
+        // Checksum returned by the server
+        assertEquals(expected, status.getResponse().getChecksum());
+        assertEquals(expected, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
     }
 }

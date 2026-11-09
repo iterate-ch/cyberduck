@@ -53,7 +53,8 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
         directoryMetadataFile.setAttributes(new ContentWriter(session).write(directoryMetadataFile, directoryId, new TransferStatus()));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
+            final Write write = session._getFeature(Write.class);
+            session._getFeature(Directory.class).mkdir(write, intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
         final Path target = delegate.mkdir(writer, encrypt, status);
         // Implementation may return new copy of attributes without encryption attributes

@@ -80,7 +80,7 @@ public class StoregateExceptionMappingService extends AbstractExceptionMappingSe
         }
         final StringBuilder buffer = new StringBuilder();
         this.parse(buffer, failure.getResponseBody());
-        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode(), failure.getResponseHeaders());
     }
 
     private void parse(final StringBuilder buffer, final String message) {

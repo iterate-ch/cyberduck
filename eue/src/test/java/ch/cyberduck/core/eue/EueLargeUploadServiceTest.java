@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -53,14 +54,19 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] content = RandomUtils.nextBytes(5242881);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        assertEquals(EnumSet.of(Upload.Flags.checksumResponse), s.features(file, new TransferStatus().setLength(content.length)));
+        // Calculated for the checksum of the parts and compared with the checksum calculated by the server
+        final TransferStatus status = new TransferStatus().setVerify(s.checksum(file, new TransferStatus()).getAlgorithm());
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final EueWriteFeature.Chunk uploadResponse = s.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
-        assertEquals(PathAttributes.EMPTY, status.getResponse());
         assertTrue(status.isComplete());
+        this.assertResponseMatchesFinder(fileid, file, status);
+        // Compared with the checksum of the server by the upload filter
+        assertTrue(status.isVerify());
+        assertEquals(status.getResponse().getChecksum(), status.getDigest());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];

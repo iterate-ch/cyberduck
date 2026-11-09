@@ -1,0 +1,11 @@
+IdentityAgent /global.sock
+
+Include included
+# Applies after blocks from the included file
+User global
+
+Host x
+    User x
+
+Match all
+    PreferredAuthentications publickey

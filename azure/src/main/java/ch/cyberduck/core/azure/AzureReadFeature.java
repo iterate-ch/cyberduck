@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.models.BlobRange;
 import com.azure.storage.blob.models.BlobRequestConditions;
 
@@ -52,15 +51,15 @@ public class AzureReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.isAppend()) {
-                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file)).openInputStream(new BlobRange(status.getOffset()), new BlobRequestConditions());
             }
             else {
-                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                return session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file)).openInputStream();
             }
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Download {0} failed", e, file);
         }
     }

@@ -336,6 +336,7 @@ public class FTPClient extends FTPSClient {
         if(null == status) {
             throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
-        return StringUtils.chomp(status.substring(3).trim());
+        // Reply code already removed from reply by parent
+        return StringUtils.chomp(status.trim());
     }
 }

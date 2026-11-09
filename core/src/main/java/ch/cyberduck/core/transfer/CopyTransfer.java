@@ -75,7 +75,7 @@ public class CopyTransfer extends Transfer {
     public CopyTransfer(final Host source, final Host destination,
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<>(), bandwidth);
-        this.destination = destination;
+        this.destination = new Host(destination);
         this.selected = selected;
         this.mapping = new HashMap<>(selected);
         for(Path f : selected.keySet()) {

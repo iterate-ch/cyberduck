@@ -32,13 +32,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +45,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class DAVUploadFeatureTest extends AbstractDAVTest {
 
     @Test(expected = AccessDeniedException.class)
@@ -74,6 +71,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testAppend() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final int length = 32770;
         final byte[] content = RandomUtils.nextBytes(length);

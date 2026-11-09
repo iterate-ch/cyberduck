@@ -204,8 +204,7 @@ public final class PathNormalizer {
             if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
                 return root;
             }
-            return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
-                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+            return attach(root, normalized);
         }
         else {
             final String normalized;
@@ -221,7 +220,41 @@ public final class PathNormalizer {
             if(StringUtils.equals(normalized, String.valueOf(Path.DELIMITER))) {
                 return root;
             }
-            return new Path(String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
+            return append(root, normalized);
         }
+    }
+
+    /**
+     * Compose directory from absolute path reusing the closest ancestor of the working directory, so type
+     * and attributes such as the vault home are preserved in the parent hierarchy of the result.
+     *
+     * @param root     Working directory
+     * @param absolute Normalized absolute path
+     * @return Directory with parent hierarchy sharing the ancestors of the working directory
+     */
+    private static Path attach(final Path root, final String absolute) {
+        for(Path ancestor = root; !ancestor.isRoot(); ancestor = ancestor.getParent()) {
+            final String prefix = ancestor.getAbsolute();
+            if(StringUtils.equals(absolute, prefix)) {
+                return ancestor;
+            }
+            if(StringUtils.startsWith(absolute, prefix + Path.DELIMITER)) {
+                return append(ancestor, StringUtils.removeStart(absolute, prefix));
+            }
+        }
+        return new Path(absolute, EnumSet.of(Path.Type.directory));
+    }
+
+    /**
+     * @param directory Parent directory
+     * @param relative  Normalized path relative to directory
+     * @return Directory with parent hierarchy below the given directory
+     */
+    private static Path append(final Path directory, final String relative) {
+        Path result = directory;
+        for(String name : StringUtils.split(relative, Path.DELIMITER)) {
+            result = new Path(result, name, EnumSet.of(Path.Type.directory));
+        }
+        return result;
     }
 }

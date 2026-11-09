@@ -43,6 +43,7 @@ import ch.cyberduck.core.cryptomator.legacy.features.CryptoMoveV7Feature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoMultipartWriteFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.legacy.features.CryptoUploadFeature;
 import ch.cyberduck.core.cryptomator.legacy.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.legacy.impl.CryptoDirectoryV7Provider;
@@ -186,7 +187,8 @@ public class CryptomatorVault implements Vault {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        directory.mkdir(session._getFeature(Write.class), home, status);
+        final Write writer = session._getFeature(Write.class);
+        directory.mkdir(writer, home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
         if(VAULT_VERSION == version) {
             // Create vaultconfig.cryptomator
@@ -209,9 +211,9 @@ public class CryptomatorVault implements Vault {
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         log.debug("Create vault root directory at {}", secondLevel);
-        directory.mkdir(session._getFeature(Write.class), dataDir, status);
-        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
-        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+        directory.mkdir(writer, dataDir, status);
+        directory.mkdir(writer, firstLevel, status);
+        directory.mkdir(writer, secondLevel, status);
     }
 
     @Override

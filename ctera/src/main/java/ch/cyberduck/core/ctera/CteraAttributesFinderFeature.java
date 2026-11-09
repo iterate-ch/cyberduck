@@ -116,6 +116,10 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
      * @throws AccessDeniedException ACLs do not contain role
      */
     protected static void assumeRole(final Path file, final Acl.Role role) throws BackgroundException {
+        assumeRole(file, file.getName(), role);
+    }
+
+    protected static void assumeRole(final Path file, final String filename, final Acl.Role role) throws BackgroundException {
         final Acl acl = file.attributes().getAcl();
         if(acl == Acl.EMPTY) {
             log.warn("Missing ACL for {}", file);
@@ -130,11 +134,11 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
             log.warn("ACL {} for {} does not include {}", acl, file, role);
             if(role == READPERMISSION) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"),
-                        file.getName())).withFile(file);
+                        filename)).withFile(file);
             }
             if(role == WRITEPERMISSION) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"),
-                        file.getName())).withFile(file);
+                        filename)).withFile(file);
             }
             if(role == DELETEPERMISSION) {
                 throw new AccessDeniedException(MessageFormat.format(
@@ -142,7 +146,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
             }
             if(role == CREATEDIRECTORIESPERMISSION) {
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"),
-                        file.getName())).withFile(file);
+                        filename)).withFile(file);
             }
             throw new AccessDeniedException(MessageFormat.format(
                     LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getName())).withFile(file);
@@ -151,7 +155,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0, Collections.unmodifiableSet(Stream.concat(Stream.concat(
+        return session.getClient().list(new DAVPathEncoder(session).encode(file), 0, Collections.unmodifiableSet(Stream.concat(Stream.concat(
                 Stream.of(GUID_QN), ALL_ACL_QN.stream()), Stream.of(FILEID_QN)
         ).collect(Collectors.toSet())));
     }

@@ -32,11 +32,9 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.Principal;
@@ -53,7 +51,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class DAVSessionTest extends AbstractDAVTest {
 
     @Test(expected = ConnectionRefusedException.class)

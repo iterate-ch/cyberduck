@@ -51,7 +51,7 @@ public class ProxyListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public ListProgressListener reset() throws ConnectionCanceledException {
+    public ListProgressListener reset() throws BackgroundException {
         for(ListProgressListener listener : proxy) {
             listener.reset();
         }

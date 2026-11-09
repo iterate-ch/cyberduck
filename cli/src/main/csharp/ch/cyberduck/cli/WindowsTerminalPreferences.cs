@@ -29,6 +29,8 @@ using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Proxy;
 using java.security;
 using sun.security.mscapi;
+using CoreLocal = ch.cyberduck.core.Local;
+using CoreLocalFactory = ch.cyberduck.core.LocalFactory;
 using JavaSystem = java.lang.System;
 
 namespace Ch.Cyberduck.Cli
@@ -67,6 +69,16 @@ namespace Ch.Cyberduck.Cli
             this.setDefault("keychain.secure", true.ToString());
 
             this.setDefault("local.normalize.unicode", false.ToString());
+        }
+
+        /// <summary>
+        /// Invoked with the defaults of the user after all other defaults. Apply machine-wide defaults first
+        /// to allow overrides by the user.
+        /// </summary>
+        protected override void setDefaults(CoreLocal defaults)
+        {
+            base.setDefaults(CoreLocalFactory.get(CommonSupportDirectoryFinder.Local, "default.properties"));
+            base.setDefaults(defaults);
         }
 
         protected override void setFactories()

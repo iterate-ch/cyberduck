@@ -61,7 +61,6 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         status.setLength(content.length);
         status.setModified(System.currentTimeMillis());
         final Write writer = new SMBWriteFeature(session);
-        status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

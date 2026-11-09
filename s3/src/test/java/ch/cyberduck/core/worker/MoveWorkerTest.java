@@ -29,15 +29,18 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3VersionedObjectListService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -48,15 +51,16 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testMoveFile() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), source, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), source, new TransferStatus());
         new S3AccessControlListFeature(session).setPermission(source, new Acl(
                 new Acl.UserAndRole(
                         new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
@@ -82,14 +86,36 @@ public class MoveWorkerTest extends AbstractS3Test {
     }
 
     @Test
+    public void testMoveCommonPrefixWithoutPlaceholder() throws Exception {
+        final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        // No placeholder object, directory only exists as common prefix of the file
+        final Path sourceDirectory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path targetDirectory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path sourceFile = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl),
+                new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Map<Path, Path> result = new MoveWorker(Collections.singletonMap(sourceDirectory, targetDirectory), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop).run(session);
+        assertEquals(2, result.size());
+        assertFalse(new S3FindFeature(session, acl).find(sourceFile));
+        assertTrue(new S3FindFeature(session, acl).find(new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file))));
+        assertTrue(new S3FindFeature(session, acl).find(targetDirectory));
+        // Placeholder object created at target
+        assertTrue(session.getClient().isObjectInBucket(home.getName(), new S3PathContainerService(session.getHost()).getKey(targetDirectory)));
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(targetDirectory), ProgressListener.noop).run(session);
+    }
+
+    @Test
     public void testMoveVersionedDirectory() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.CEPH, "Delete marker versions are not found with 404 instead of 405 response");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path sourceDirectory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
+        final Path sourceDirectory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path targetDirectory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
+        final Path targetDirectory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final S3TouchFeature touch = new S3TouchFeature(session, acl);
+        final S3TouchFeature touch = new S3TouchFeature(session);
         Path test = touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session, acl);

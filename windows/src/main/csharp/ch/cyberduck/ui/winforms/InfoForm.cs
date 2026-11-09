@@ -973,9 +973,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                     return; // Filter out other columns
                 }
 
-                aclDataGridView.BeginEdit(true);
-                ComboBox comboBox = (ComboBox)aclDataGridView.EditingControl;
-                comboBox.DroppedDown = true;
+                if (aclDataGridView.BeginEdit(true) && aclDataGridView.EditingControl is ComboBox comboBox)
+                {
+                    comboBox.DroppedDown = true;
+                }
             };
 
             aclDataGridView.CellBeginEdit += delegate (object sender, DataGridViewCellCancelEventArgs args)

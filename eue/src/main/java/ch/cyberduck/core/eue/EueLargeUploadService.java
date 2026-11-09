@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -42,21 +43,20 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
+public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     private final EueSession session;
@@ -70,6 +70,9 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long chunksize, final Integer concurrency) {
+        // Checksum of the parts. No checksum of the whole file is calculated but verified with the checksum calculated
+        // by the server from the checksums of the parts when completed.
+        super(EnumSet.of(Flags.checksumResponse), HashAlgorithm.sha256);
         this.session = session;
         this.chunksize = chunksize;
         this.concurrency = concurrency;
@@ -77,7 +80,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -100,7 +103,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             log.debug("Upload {} to {}", file, uploadUri);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
-                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
@@ -122,17 +125,12 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                     .getCompletedUploadResponse(uploadUri, size, cdash64);
-            if(!StringUtils.equals(cdash64, completedUploadResponse.getCdash64())) {
-                if(file.getType().contains(Path.Type.encrypted)) {
-                    log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-                }
-                else {
-                    throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                    HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
-                }
+            if(status.isVerify()) {
+                // Compared with the checksum calculated by the server by the upload filter when the upload is complete
+                status.setVerify(HashAlgorithm.cdash64).setDigest(new Checksum(HashAlgorithm.cdash64, cdash64));
             }
-            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
+            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size,
+                    new Checksum(HashAlgorithm.cdash64, completedUploadResponse.getCdash64()));
             // Mark parent status as complete
             status.setResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
             return object;
@@ -167,10 +165,10 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                         .setParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(status.compute(local, HashAlgorithm.sha256));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, ProgressListener.noop, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", chunk, partNumber);
                 return chunk;
             }

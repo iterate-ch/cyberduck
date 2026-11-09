@@ -291,7 +291,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueTimestampFeature(this, resourceid);
         }
         if(type == Upload.class) {
-            return (T) new EueThresholdUploadService(this, resourceid, registry);
+            return (T) new EueThresholdUploadService(this, resourceid);
         }
         if(type == UrlProvider.class) {
             return (T) new EueShareUrlProvider(host, this.userShares());

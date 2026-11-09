@@ -39,7 +39,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.HashMap;
 
 import ch.iterate.openstack.swift.Constants;
@@ -104,13 +103,4 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         return this.write(file, status, command);
     }
 
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return ChecksumComputeFactory.get(HashAlgorithm.md5);
-    }
-
-    @Override
-    public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.checksum);
-    }
 }

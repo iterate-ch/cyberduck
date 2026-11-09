@@ -50,7 +50,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     }
 
     @Override
-    public VaultFinderListProgressListener reset() throws ConnectionCanceledException {
+    public VaultFinderListProgressListener reset() throws BackgroundException {
         super.reset();
         proxy.reset();
         return this;

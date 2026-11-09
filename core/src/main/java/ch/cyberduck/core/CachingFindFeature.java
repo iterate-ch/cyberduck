@@ -83,27 +83,42 @@ public class CachingFindFeature implements Find {
         log.debug("Find {} with listener {}", file, listener);
         final Path directory = file.getParent();
         if(cache.isValid(directory)) {
-            final AttributedList<Path> list = cache.get(directory);
-            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
-            if(found != null) {
-                log.debug("Found {} in cache", file);
-                return true;
-            }
-            log.debug("Cached directory listing does not contain {}", file);
-            return false;
+            return this.cached(file, directory);
         }
-        final MemoryListProgressListener memory = new MemoryListProgressListener(listener);
+        // Wait for concurrent lookup of the same directory
+        cache.lock(directory);
         try {
-            final boolean found = delegate.find(file, memory);
-            // Notify listener with contents
-            memory.cleanup(directory, AttributedList.emptyList(), Optional.empty());
-            return found;
+            if(cache.isValid(directory)) {
+                return this.cached(file, directory);
+            }
+            final MemoryListProgressListener memory = new MemoryListProgressListener(listener);
+            try {
+                final boolean found = delegate.find(file, memory);
+                // Default features list the directory but do not signal the end of the listing. Pass the contents
+                // recorded in memory to the listener on cleanup to be cached.
+                memory.cleanup(directory, AttributedList.emptyList(), Optional.empty());
+                return found;
+            }
+            catch(NotfoundException e) {
+                log.warn("Parent directory for file {} not found", file);
+                memory.cleanup(directory, AttributedList.emptyList(), Optional.of(e));
+                return false;
+            }
         }
-        catch(NotfoundException e) {
-            log.warn("Parent directory for file {} not found", file);
-            memory.cleanup(directory, AttributedList.emptyList(), Optional.of(e));
-            return false;
+        finally {
+            cache.unlock(directory);
         }
+    }
+
+    private boolean cached(final Path file, final Path directory) {
+        final AttributedList<Path> list = cache.get(directory);
+        final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(sensitivity, file));
+        if(found != null) {
+            log.debug("Found {} in cache", file);
+            return true;
+        }
+        log.debug("Cached directory listing does not contain {}", file);
+        return false;
     }
 
     @Override

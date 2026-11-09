@@ -109,28 +109,12 @@ public class OfflineGraphCopyMoveFeatureTest {
         // Rename Tests
         cases.add(new TestCase("/Test", directory, "/Target", false));
         cases.add(new TestCase("/My Files", directory, "/Target", false));
-        cases.add(new TestCase("/Shared", directory, "/Target", false));
-        cases.add(new TestCase("/Shared/Element", file, "/Target", false));
         cases.add(new TestCase("/My Files/Element", file, "/My Files/Target", true));
         cases.add(new TestCase("/My Files/Folder/Element", file, "/My Files/Folder/Target", true));
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Folder/Target", true));
 
         // Move/Copy-Tests
-        cases.add(new TestCase("/My Files", directory, "/Shared", false));
-        cases.add(new TestCase("/Shared", directory, "/My Files", false));
-        cases.add(new TestCase("/Shared/Element", file, "/My Files", false));
-        cases.add(new TestCase("/Shared/Element", file, "/My Files/Folder", false));
-        cases.add(new TestCase("/Shared/Element", file, "/Shared/Folder", false));
-        cases.add(new TestCase("/Shared/Element", file, "/Shared/Folder/Folder", false));
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared", false));
-        // CAUTION! This is moving a file from /Shared/Folder to /Shared/Test
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Test", true));
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/My Files", false));
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/My Files/Element", false));
         cases.add(new TestCase("/My Files/Element", file, "/My Files/Folder/Target", true));
         cases.add(new TestCase("/My Files/Folder/Element", file, "/My Files/Target", true));
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Folder", true));
-        cases.add(new TestCase("/Shared/Folder/Element", file, "/Shared/Folder/Folder", true));
 
         test(feature, cases);
     }

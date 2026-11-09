@@ -330,4 +330,17 @@ public class StaticPermission implements Permission, Serializable {
     public int hashCode() {
         return Objects.hash(user, group, other);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("StaticPermission{");
+        sb.append("user=").append(user);
+        sb.append(", group=").append(group);
+        sb.append(", other=").append(other);
+        sb.append(", setuid=").append(setuid);
+        sb.append(", setgid=").append(setgid);
+        sb.append(", sticky=").append(sticky);
+        sb.append('}');
+        return sb.toString();
+    }
 }

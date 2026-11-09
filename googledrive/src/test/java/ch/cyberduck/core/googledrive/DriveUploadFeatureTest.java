@@ -28,10 +28,15 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.io.ByteArrayInputStream;
 
 import static org.junit.Assert.*;
 
@@ -56,7 +62,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         status.setLength(content.length);
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final DriveUploadFeature upload = new DriveUploadFeature(session);
+        final DriveUploadFeature upload = new DriveUploadFeature();
         upload.upload(new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status, ConnectionCallback.noop);
         test.attributes().setFileId(fileid.getFileId(test));
@@ -79,5 +85,32 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         }
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop,
             new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testUploadVerifyChecksum() throws Exception {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomUtils.nextBytes(1025);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final DriveUploadFeature upload = new DriveUploadFeature();
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        assertTrue(upload.features(test, status).contains(Upload.Flags.checksumResponse));
+        assertEquals(HashAlgorithm.md5, upload.checksum(test, status).getAlgorithm());
+        // Calculated while streaming
+        status.setVerify(upload.checksum(test, status).getAlgorithm());
+        upload.upload(new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                status, ConnectionCallback.noop);
+        test.attributes().setFileId(fileid.getFileId(test));
+        final Checksum expected = new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
+        assertEquals(expected, status.getDigest());
+        // Checksum returned by the server
+        assertEquals(expected, status.getResponse().getChecksum());
+        assertEquals(expected, new DriveAttributesFinderFeature(session, fileid).find(test).getChecksum());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
     }
 }

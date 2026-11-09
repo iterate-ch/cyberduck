@@ -68,6 +68,11 @@ public class ReadAclWorkerTest {
                                 public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                                     throw new UnsupportedOperationException();
                                 }
+
+                                @Override
+                                public Acl getDefault(final Path file) {
+                                    return Acl.EMPTY;
+                                }
                             };
                         }
                         return super._getFeature(type);

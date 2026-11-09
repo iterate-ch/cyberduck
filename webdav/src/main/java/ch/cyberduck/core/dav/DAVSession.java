@@ -193,7 +193,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         try {
             final Path home = this.getFeature(Home.class).find();
-            final HttpHead head = new HttpHead(new DAVPathEncoder().encode(home));
+            final HttpHead head = new HttpHead(new DAVPathEncoder(this).encode(home));
             try {
                 client.execute(head, new MicrosoftIISFeaturesResponseHandler(capabilities));
             }
@@ -253,6 +253,13 @@ public class DAVSession extends HttpSession<DAVClient> {
         //
     }
 
+    /**
+     * @return Mapping of path in browser to path on server applied when building request URI
+     */
+    public DAVPathMapper getMapper() {
+        return DAVPathMapper.noop;
+    }
+
     @Override
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(super.alert(callback)) {
@@ -261,7 +268,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             try {
                 // Request configuration replaces client defaults. Copy from client to retain connect and pool timeouts
                 final RequestConfig defaults = ((Configurable) client.getClient()).getConfig();
-                final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));
+                final HttpHead request = new HttpHead(new DAVPathEncoder(this).encode(home));
                 request.setConfig(RequestConfig.copy(defaults).setRedirectsEnabled(false).build());
                 final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
                     @Override

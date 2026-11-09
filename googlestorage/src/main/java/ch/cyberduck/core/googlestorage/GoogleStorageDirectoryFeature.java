@@ -17,6 +17,7 @@ package ch.cyberduck.core.googlestorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -32,11 +33,15 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
-import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
+import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.StorageObject;
+
+import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toBucketAccessControl;
+import static ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature.toPredefinedAcl;
 
 public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
@@ -54,12 +59,23 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                final Storage.Buckets.Insert request = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
-                        new Bucket()
-                                .setLocation(status.getRegion())
-                                .setStorageClass(status.getStorageClass())
-                                .setName(containerService.getContainer(folder).getName()));
-                final Bucket bucket = request.execute();
+                final List<BucketAccessControl> acl = toBucketAccessControl(status.getAcl());
+                final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
+                                new Bucket()
+                                        // ACLs are disabled with uniform bucket-level access
+                                        .setIamConfiguration(new Bucket.IamConfiguration().setUniformBucketLevelAccess(
+                                                new Bucket.IamConfiguration.UniformBucketLevelAccess().setEnabled(null == acl)))
+                                        .setLocation(status.getRegion())
+                                        .setStorageClass(status.getStorageClass())
+                                        // An empty ACL list in the request body is ignored and applies projectPrivate. Use predefinedAcl for canned ACLs instead.
+                                        .setAcl(status.getAcl().isCanned() ? null : acl)
+                                        .setName(containerService.getContainer(folder).getName()))
+                        // Bucket owner canned ACLs apply to objects only
+                        .setPredefinedAcl(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(status.getAcl()) || Acl.CANNED_BUCKET_OWNER_READ.equals(status.getAcl())
+                                ? null : toPredefinedAcl(status.getAcl()))
+                        .execute();
+                // Reset in status to skip setting ACL in upload filter already applied as canned ACL
+                status.setAcl(Acl.EMPTY);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
                 return new Path(folder).withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));

@@ -43,6 +43,29 @@ namespace Ch.Cyberduck.Core.credentialmanager
         }
 
         [Test]
+        public void TestRemoveMissing()
+        {
+            Assert.That(WinCredentialManager.RemoveCredentials(UUID.randomUUID().toString()), Is.True);
+        }
+
+        [Test]
+        public void TestRemoveRepeatedly()
+        {
+            var target = UUID.randomUUID().toString();
+            try
+            {
+                Assert.That(WinCredentialManager.SaveCredentials(target, new NetworkCredential("user", "secret")), Is.True);
+                Assert.That(WinCredentialManager.RemoveCredentials(target), Is.True);
+                Assert.That(WinCredentialManager.RemoveCredentials(target), Is.True);
+                Assert.That(WinCredentialManager.GetCredentials(target).Password, Is.Null.Or.Empty);
+            }
+            finally
+            {
+                WinCredentialManager.RemoveCredentials(target);
+            }
+        }
+
+        [Test]
         public void TestSaveServiceEmbeddedUser([ValueSource(nameof(UserNames))] string user)
         {
             var target = $"protocol://{user}@service.{UUID.randomUUID().toString()}.tld";

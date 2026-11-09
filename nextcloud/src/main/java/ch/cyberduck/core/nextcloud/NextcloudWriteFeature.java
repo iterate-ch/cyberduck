@@ -45,21 +45,19 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
         if(null != status.getCreated()) {
             headers.add(new BasicHeader("X-OC-CTime", String.valueOf(status.getCreated() / 1000)));
         }
-        if(Checksum.NONE != status.getChecksum()) {
-            final Checksum checksum = status.getChecksum();
-            headers.add(new BasicHeader("OC-Checksum", String.format("%s:%s", checksum.algorithm.toString(), checksum.hash)));
+        final Checksum checksum = status.getChecksum();
+        switch(checksum.algorithm) {
+            // Algorithms supported by the server
+            case sha1:
+            case md5:
+                headers.add(new BasicHeader("OC-Checksum", String.format("%s:%s", checksum.algorithm, checksum.hash)));
+                break;
         }
         return headers;
     }
 
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new SHA1ChecksumCompute();
-    }
-
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp, Flags.checksum);
+        return EnumSet.of(Flags.timestamp);
     }
 }

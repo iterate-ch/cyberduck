@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
@@ -77,13 +78,14 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(100072);
         // Multipart
         final TransferStatus status = new TransferStatus().setLength(-1L);
-        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
-        assertEquals(checksum, out.getStatus().getChecksum());
+        assertEquals(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)), out.getStatus().getChecksum());
+        this.assertResponseMatchesFinder(fileid, file, status);
         assertEquals(content.length, out.getStatus().getLength(), 0L);
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(attr.getFileId(), out.getStatus().getResourceId());
@@ -107,13 +109,14 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(512000);
         final long ts = System.currentTimeMillis();
         final TransferStatus status = new TransferStatus().setLength(-1L).setModified(ts);
-        final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+        final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
-        assertEquals(checksum, out.getStatus().getChecksum());
+        assertEquals(new ChunkListSHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)), out.getStatus().getChecksum());
+        this.assertResponseMatchesFinder(fileid, file, status);
         assertEquals(content.length, out.getStatus().getLength(), 0L);
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(attr.getFileId(), out.getStatus().getResourceId());
@@ -140,7 +143,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         {
             final byte[] content = RandomUtils.nextBytes(8943045);
             final TransferStatus status = new TransferStatus().setLength(-1L).setModified(timestamp);
-            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+            final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -163,7 +166,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         {
             final byte[] content = RandomUtils.nextBytes(4943045);
             final TransferStatus status = new TransferStatus().setLength(-1L).setExists(true).setModified(timestamp + 1000L);
-            final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
+            final Checksum checksum = session.getFeature(Upload.class).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

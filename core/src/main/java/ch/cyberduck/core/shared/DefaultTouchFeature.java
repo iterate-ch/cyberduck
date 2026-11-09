@@ -25,10 +25,12 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,14 +39,20 @@ import java.io.IOException;
 public class DefaultTouchFeature<T> implements Touch<T> {
     private static final Logger log = LogManager.getLogger(DefaultTouchFeature.class);
 
+    private final Session<?> session;
+
     public DefaultTouchFeature(final Session<?> session) {
+        this.session = session;
     }
 
     @Override
     public Path touch(final Write<T> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final StatusOutputStream<T> out = writer.write(file, status.setLength(
-                    TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength()), ConnectionCallback.noop);
+            final StatusOutputStream<T> out = writer.write(file, status
+                            .setLength(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength())
+                            // Checksum of empty content required for upload to a bucket with Object Lock
+                            .setChecksum(status.compute(new NullInputStream(0L), session.getFeature(Upload.class).checksum(file, status).getAlgorithm())),
+                    ConnectionCallback.noop);
             out.close();
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 log.debug("Received reply {} for creating file {}", status.getResponse(), file);

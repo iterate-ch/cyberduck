@@ -21,9 +21,15 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class FlatTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
+
+    /**
+     * Maximum length of a single path component
+     */
+    private static final int NAME_MAX = 255;
 
     private final Local temp;
 
@@ -43,7 +49,7 @@ public class FlatTemporaryFileService extends AbstractTemporaryFileService imple
      */
     @Override
     public Local create(final Path file) {
-        return this.create(String.format("%s-%s", new AlphanumericRandomStringService().random(), file.getName()));
+        return this.create(this.toFilename(new AlphanumericRandomStringService().random(), file.getName()));
     }
 
     /**
@@ -55,8 +61,26 @@ public class FlatTemporaryFileService extends AbstractTemporaryFileService imple
     @Override
     public Local create(final String uid, final Path file) {
         final Local folder = LocalFactory.get(temp, uid);
-        return this.create(folder, String.format("%d-%s", file.attributes().hashCode(),
+        return this.create(folder, this.toFilename(String.valueOf(file.attributes().hashCode()),
                 StringUtils.isNotBlank(file.attributes().getDisplayname()) ? file.attributes().getDisplayname() : file.getName()));
+    }
+
+    /**
+     * @param prefix   Prefix
+     * @param filename Filename
+     * @return Filename with prefix. Replace filename with its hash retaining the extension if the result exceeds the maximum length of a path component
+     */
+    private String toFilename(final String prefix, final String filename) {
+        final String name = String.format("%s-%s", prefix, filename);
+        if(name.length() <= NAME_MAX) {
+            return name;
+        }
+        final String hash = String.format("%s-%s", prefix, DigestUtils.md5Hex(filename));
+        final String extension = Path.getExtension(filename);
+        if(StringUtils.isNotBlank(extension) && hash.length() + extension.length() + 1 <= NAME_MAX) {
+            return String.format("%s.%s", hash, extension);
+        }
+        return hash;
     }
 
     /**

@@ -23,15 +23,14 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -40,10 +39,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
 
-    @Test
+    @Test(expected = LoginFailureException.class)
     public void testAuthenticateKeyNoPassword() throws Exception {
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {

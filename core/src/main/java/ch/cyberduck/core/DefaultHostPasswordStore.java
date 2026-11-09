@@ -30,6 +30,28 @@ import java.util.Set;
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     private static final Logger log = LogManager.getLogger(DefaultHostPasswordStore.class);
 
+    @Override
+    public void addLoginPassword(final Host bookmark, final String password) {
+        try {
+            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                    bookmark.getHostname(), bookmark.getCredentials().getUsername(), password);
+        }
+        catch(AccessDeniedException e) {
+            log.warn("Failure {} adding password in keychain for {}", e, bookmark);
+        }
+    }
+
+    @Override
+    public void deleteLoginPassword(final Host bookmark) {
+        try {
+            this.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
+                    bookmark.getCredentials().getUsername());
+        }
+        catch(AccessDeniedException e) {
+            log.warn("Failure {} deleting password in keychain for {}", e, bookmark);
+        }
+    }
+
     /**
      * Find password for login
      *
@@ -51,7 +73,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             bookmark.getProtocol().getPasswordPlaceholder() : credentials.getUsername());
         }
         catch(AccessDeniedException e) {
-            log.warn("Failure {} searching in keychain", e.getMessage());
+            log.warn("Failure {} searching in keychain for {}", e, bookmark);
             return null;
         }
         if(null == password) {
@@ -77,7 +99,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()));
         }
         catch(AccessDeniedException e) {
-            log.warn("Failure {} searching in keychain", e.getMessage());
+            log.warn("Failure {} searching in keychain for {}", e, bookmark);
             return null;
         }
         if(null == token) {
@@ -122,7 +144,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 return passphrase;
             }
             catch(AccessDeniedException e) {
-                log.warn("Failure {} searching in keychain", e.getMessage());
+                log.warn("Failure {} searching in keychain for {}", e, bookmark);
                 return null;
             }
         }
@@ -158,7 +180,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 // Continue with deprecated descriptors
             }
             catch(AccessDeniedException e) {
-                log.warn("Failure {} searching in keychain", e.getMessage());
+                log.warn("Failure {} searching in keychain for {}", e, bookmark);
                 return OAuthTokens.EMPTY;
             }
         }

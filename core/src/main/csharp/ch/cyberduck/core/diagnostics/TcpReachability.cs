@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 
+using System;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using ch.cyberduck.core;
@@ -58,16 +59,23 @@ namespace Ch.Cyberduck.Core.Diagnostics
         public Reachability.Monitor start()
         {
             NetworkChange.NetworkAvailabilityChanged += Changed;
+            NetworkChange.NetworkAddressChanged += Changed;
             return this;
         }
 
         public Reachability.Monitor stop()
         {
             NetworkChange.NetworkAvailabilityChanged -= Changed;
+            NetworkChange.NetworkAddressChanged -= Changed;
             return this;
         }
 
         void Changed(object sender, NetworkAvailabilityEventArgs args)
+        {
+            _callback.change();
+        }
+
+        void Changed(object sender, EventArgs args)
         {
             _callback.change();
         }

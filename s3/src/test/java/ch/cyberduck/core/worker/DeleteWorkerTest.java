@@ -28,11 +28,12 @@ import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,17 +44,17 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class DeleteWorkerTest extends AbstractS3Test {
 
     @Test
     public void testDelete() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path folder = new S3DirectoryFeature(session, acl).mkdir(
+        final Path folder = new S3DirectoryFeature(session).mkdir(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(folder));
-        final Path file = new S3TouchFeature(session, acl).touch(
+        final Path file = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(file.attributes().getVersionId());
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(folder), ProgressListener.noop).run(session);
@@ -62,12 +63,14 @@ public class DeleteWorkerTest extends AbstractS3Test {
 
     @Test
     public void testDeleteVersioning() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix is listed for a directory containing delete markers only");
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path folder = new S3DirectoryFeature(session, acl).mkdir(
+        final Path folder = new S3DirectoryFeature(session).mkdir(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(folder));
-        final Path file = new S3TouchFeature(session, acl).touch(
+        final Path file = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(file));

@@ -25,9 +25,10 @@ import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
-import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.models.BlobContainerItem;
 import com.azure.storage.blob.models.BlobContainerListDetails;
 import com.azure.storage.blob.models.ListBlobContainersOptions;
@@ -44,18 +45,18 @@ public class AzureContainerListService implements RootListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> containers = new AttributedList<>();
-            for(BlobContainerItem container : session.getClient().listBlobContainers(new ListBlobContainersOptions()
+            for(BlobContainerItem container : session.getClient().getBlobServiceClient().listBlobContainers(new ListBlobContainersOptions()
                     .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))
                     .setDetails(new BlobContainerListDetails().setRetrieveDeleted(false).setRetrieveMetadata(true)), null)) {
                 final PathAttributes attributes = new DefaultPathAttributes();
-                attributes.setETag(container.getProperties().getETag());
+                attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(container.getProperties().getETag(), "\""), "\""));
                 attributes.setModificationDate(container.getProperties().getLastModified().toInstant().toEpochMilli());
                 containers.add(new Path(PathNormalizer.normalize(container.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 listener.chunk(directory, containers);
             }
             return containers;
         }
-        catch(HttpResponseException e) {
+        catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

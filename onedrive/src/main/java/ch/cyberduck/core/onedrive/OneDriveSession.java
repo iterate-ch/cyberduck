@@ -37,15 +37,12 @@ import org.nuxeo.onedrive.client.types.ItemReference;
 import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.MYFILES_NAME;
-import static ch.cyberduck.core.onedrive.OneDriveHomeFinderService.SHARED_NAME;
 
 public class OneDriveSession extends GraphSession {
 
     public final static ContainerItem MYFILES = new ContainerItem(MYFILES_NAME, null, true);
-    public final static ContainerItem SHAREDFILES = new ContainerItem(null, SHARED_NAME, false);
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -140,46 +137,19 @@ public class OneDriveSession extends GraphSession {
         // copy, move: Only for target check
         // Operations not using container access:
         // copy, move: For source check.
-
-        // For touch/directory:
-        // Allow inside any directory that is either /My Files or a subfolder of /Shared.
-
-        // For copy/move
-        // Allow from a non-container item to a container-item.
-        // e.g.
-        // * /My Files/Folder/ToBeMoved to /My Files
-        // * /Shared/Shared Folder/Nested/ToBeMoved to /Shared/Shared Folder/
-
-        // Test for Container.
         if(containerItem.isDrive()) {
             // Is /My Files.
             // Tests whether container access is used, orelse deny access to /My Files.
             return container || !containerItem.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false);
         }
-        else {
-            // Check for /Shared-path
-            // Catches modification of items in /Shared
-            Optional<Boolean> predicate = containerItem.getCollectionPath().map(new SimplePathPredicate(file)::test);
-            if(!container) {
-                // Append condition to /Shared-path check for
-                // If file parent is /Shared then return inaccessible below
-                // Cannot modify items in /Shared/*, but /Shared/**/*
-                // User must not be able to rename, move or copy first level of /Shared.
-                predicate = predicate.map(o -> o || containerItem.getCollectionPath().map(new SimplePathPredicate(file.getParent())::test).get());
-            }
-            // Fallback to deny access for invalid paths (/Invalid).
-            // Logic is upside down. Predicate determines whether to block access. Flip it.
-            return !predicate.orElse(true);
-        }
+        // Deny access for invalid paths (/Invalid).
+        return false;
     }
 
     @Override
     public ContainerItem getContainer(final Path file) {
         if(new SimplePathPredicate(MYFILES_NAME).test(file) || file.isChild(MYFILES_NAME)) {
             return MYFILES;
-        }
-        if(new SimplePathPredicate(SHARED_NAME).test(file) || file.isChild(SHARED_NAME)) {
-            return SHAREDFILES;
         }
         return ContainerItem.EMPTY;
     }

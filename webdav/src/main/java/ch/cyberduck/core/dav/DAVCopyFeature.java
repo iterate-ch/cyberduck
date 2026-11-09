@@ -19,14 +19,13 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
@@ -48,15 +47,15 @@ public class DAVCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy,
-                    EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
+            final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
+                    new DAVPathEncoder(session).encode(copy));
             if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
                 // Indicate that the client has knowledge of that state token
-                session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists(),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder().encode(source), status.getLockId())));
+                session.getClient().copy(new DAVPathEncoder(session).encode(source), target, status.isExists(),
+                        Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(source), status.getLockId())));
             }
             else {
-                session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists());
+                session.getClient().copy(new DAVPathEncoder(session).encode(source), target, status.isExists());
             }
             listener.sent(status.getLength());
             return new Path(copy).withAttributes(new DefaultPathAttributes(source.attributes())

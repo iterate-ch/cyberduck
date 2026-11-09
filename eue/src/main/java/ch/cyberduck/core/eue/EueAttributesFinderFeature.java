@@ -29,6 +29,8 @@ import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -114,6 +116,10 @@ public class EueAttributesFinderFeature implements AttributesFinder {
             default:
                 if(entity.getVersion() != null) {
                     attr.setRevision(Long.valueOf(entity.getVersion()));
+                }
+                // Content ETag is the checksum of the file contents matching cdash64 returned with the upload response
+                if(StringUtils.isNotBlank(entity.getContentETag())) {
+                    attr.setChecksum(new Checksum(HashAlgorithm.cdash64, StringUtils.remove(entity.getContentETag(), '"')));
                 }
                 break;
         }

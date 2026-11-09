@@ -29,10 +29,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.unicode.NFDNormalizer;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,11 +40,11 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class SFTPListServiceTest extends AbstractSFTPTest {
 
     @Test
     public void testList() throws Exception {
+        this.assumeSymlink();
         final Path home = new SFTPHomeDirectoryService(session).find();
         final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
         final Path file = new Path(home, filename, EnumSet.of(Path.Type.file));
@@ -72,6 +70,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
 
     @Test
     public void testInvalidSymlinkTarget() throws Exception {
+        this.assumeSymlink();
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         final String target = new AlphanumericRandomStringService().random();

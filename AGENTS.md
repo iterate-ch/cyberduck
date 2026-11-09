@@ -7,12 +7,12 @@ repository.
 
 Cyberduck is a libre file transfer client for macOS and Windows, plus a CLI (`duck`) for Linux/macOS/Windows. The same
 core libraries power [Mountain Duck](https://mountainduck.io/). The codebase is Java (targeting Java 8 bytecode, built
-with JDK 21) organized as a large multi-module Maven reactor. Native desktop UIs are bridged: macOS via Cocoa bindings
+with JDK 25) organized as a large multi-module Maven reactor. Native desktop UIs are bridged: macOS via Cocoa bindings
 (Rococoa/`binding`), Windows via IKVM/.NET (MSBuild invoked from Maven).
 
 ## Build & test
 
-Prerequisites: JDK 21, Apache Ant 1.10.1+, Apache Maven 3.5+. macOS also needs Xcode; Windows needs Visual Studio 2022
+Prerequisites: JDK 25, Apache Ant 1.10.1+, Apache Maven 3.5+. macOS also needs Xcode; Windows needs Visual Studio 2022
 build tools, the Bonjour SDK, and NuGet credentials for GitHub Package Registry (see README.md).
 
 ```bash

@@ -2,12 +2,26 @@ name: Publish Release
 on:
   push:
     tags: [ '*' ]
+  # Dispatched by prepare.yml on the release tag, whose push does not trigger this
+  workflow_dispatch:
 # Queue instead of running in parallel
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 jobs:
+  # Dispatched runs must be on a tag, as the version is derived from the ref name
+  check:
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Require Tag
+        if: ${{ github.ref_type != 'tag' }}
+        shell: bash
+        run: |
+          echo "::error::Dispatch on a release tag, not on ${GITHUB_REF}"
+          exit 1
+
   deploy:
+    needs: check
     strategy:
       fail-fast: false
       matrix:
@@ -44,6 +58,7 @@ jobs:
   # only. Uploaded as a `duck-*` artifact so the `cli`, `sftp` and `release` jobs
   # pick it up.
   source:
+    needs: check
     permissions:
       contents: read
       id-token: write
@@ -53,6 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          persist-credentials: false
           # The revision is the commit count at the tag
           fetch-depth: 0
 
@@ -78,8 +94,8 @@ jobs:
           archive: false
 
   publish:
-    needs: [ deploy, source ]
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy, source ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     uses: ./.github/workflows/publish.yml
     with:
       SPARKLE_FEED: release
@@ -88,8 +104,8 @@ jobs:
   # Mirror the CLI installers to the dist.duck.sh SFTP host. Release only, so it
   # lives here rather than in the shared publish.yml.
   sftp:
-    needs: [ deploy, source ]
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy, source ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     permissions:
       actions: read
       contents: read
@@ -119,7 +135,7 @@ jobs:
       - name: SFTP Upload
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
+          USERNAME: '${{ vars.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -127,12 +143,17 @@ jobs:
           path: release/duck-*
           args: '--existing overwrite --verbose'
 
+      - name: Remove Credentials
+        if: always()
+        shell: bash
+        run: rm -f private-key.pem
+
   # Publish a GitHub Release for the pushed tag with the installer artifacts
   # attached. Runs independently of `publish` so a delivery-channel failure
   # never blocks the release, and vice versa.
   release:
-    needs: [ deploy, source ]
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy, source ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     permissions:
       contents: write
     runs-on: [ linux, x64 ]
@@ -151,7 +172,7 @@ jobs:
       - name: Download App
         uses: actions/download-artifact@v8
         with:
-          pattern: Cyberduck-*
+          pattern: '{Cyberduck-*,Cyberduck_*}'
           path: release
           merge-multiple: true
           # Keep the app ZIP as is instead of extracting Cyberduck.app
@@ -177,7 +198,7 @@ jobs:
             release/Cyberduck-*.pkg
             release/Cyberduck-*.exe
             release/Cyberduck-*.msi
-            release/Cyberduck-*.appx
+            release/Cyberduck_*.appx
             release/duck-*.pkg
             release/duck-*.exe
             release/duck-*.msi
@@ -188,8 +209,8 @@ jobs:
   # Push to the Chocolatey community repository. Release only, so it lives here
   # rather than in the shared publish.yml.
   chocolatey:
-    needs: deploy
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     permissions:
       actions: read
       contents: read
@@ -220,3 +241,62 @@ jobs:
           Get-ChildItem "release\duck.*.nupkg" | ForEach-Object {
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
+
+  # Submit the APPX to the Microsoft Store. Release only. Creates a new submission
+  # from the built package and commits it for certification.
+  store:
+    needs: [ check, deploy ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ self-hosted, windows, x64 ]
+    steps:
+      - name: Clean
+        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
+
+      - name: Download APPX
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck_*.appx
+          path: release
+          merge-multiple: true
+          skip-decompress: true
+
+      - name: Setup Microsoft Store Developer CLI
+        uses: microsoft/microsoft-store-apppublisher@v1.4
+
+      - name: Configure Microsoft Store credentials
+        env:
+          MSSTORE_SELLER_ID: ${{ vars.MSSTORE_SELLER_ID }}
+          MSSTORE_TENANT_ID: ${{ vars.MSSTORE_TENANT_ID }}
+          MSSTORE_CLIENT_ID: ${{ vars.MSSTORE_CLIENT_ID }}
+          MSSTORE_CLIENT_SECRET: ${{ secrets.MSSTORE_CLIENT_SECRET }}
+        run: msstore reconfigure --tenantId $env:MSSTORE_TENANT_ID --sellerId $env:MSSTORE_SELLER_ID --clientId $env:MSSTORE_CLIENT_ID --clientSecret $env:MSSTORE_CLIENT_SECRET
+
+      # msstore publish only recognizes .msix, .msixbundle and .msixupload. An
+      # .msixupload is a zip containing the package, which the Store accepts for APPX.
+      - name: Publish to Microsoft Store
+        env:
+          MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
+        run: |
+          Get-ChildItem "release\Cyberduck_*.appx" | ForEach-Object {
+            $upload = Join-Path $_.DirectoryName ($_.BaseName + ".zip")
+            Compress-Archive -Path $_.FullName -DestinationPath $upload -Force
+            $msixupload = [System.IO.Path]::ChangeExtension($upload, ".msixupload")
+            Move-Item $upload $msixupload -Force
+            msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID --noCommit
+          }
+
+      # The self-hosted runner account persists the CLI configuration and token cache
+      # beyond the job. Remove them unconditionally, including on failure.
+      - name: Remove Microsoft Store credentials
+        if: ${{ always() }}
+        run: |
+          msstore reconfigure --reset 2>$null
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Microsoft\msstore" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\.IdentityService" -ErrorAction SilentlyContinue
+          cmdkey /list | Select-String -Pattern 'msstore' | ForEach-Object {
+            if ($_ -match 'Target:\s*(\S+)') { cmdkey /delete:$Matches[1] }
+          }
+          exit 0

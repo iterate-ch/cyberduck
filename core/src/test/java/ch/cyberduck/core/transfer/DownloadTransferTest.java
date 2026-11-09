@@ -2,6 +2,8 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -34,7 +36,9 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -386,5 +390,38 @@ public class DownloadTransferTest {
         // Make sure folder is first in list
         assertEquals(new TransferItem(new Path("/f", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir"), "f")), list.get(0));
         assertTrue(list.contains(new TransferItem(new Path("/f", EnumSet.of(Path.Type.file)), new Local(System.getProperty("java.io.tmpdir"), "f"))));
+    }
+
+    @Test
+    public void testPostPreservesDirectoryModificationDate() throws Exception {
+        final java.nio.file.Path tmp = java.nio.file.Files.createTempDirectory("cyberduck-download");
+        try {
+            final Host host = new Host(new TestProtocol());
+            final Path parent = new Path("/t", EnumSet.of(Path.Type.directory));
+            final Path child = new Path("/t/a", EnumSet.of(Path.Type.directory));
+            final Local parentLocal = new Local(tmp.toString(), "t");
+            final Local childLocal = new Local(parentLocal.getAbsolute(), "a");
+            final long parentModified = 1_000_000_000_000L;
+            final long childModified = 1_100_000_000_000L;
+            final Transfer transfer = new DownloadTransfer(host, parent, parentLocal);
+            final NullSession session = new NullSession(host);
+            final Map<TransferItem, TransferStatus> files = new LinkedHashMap<>();
+            files.put(new TransferItem(parent, parentLocal), new TransferStatus().setModified(parentModified));
+            files.put(new TransferItem(child, childLocal), new TransferStatus().setModified(childModified));
+            final ProgressListener listener = new DisabledProgressListener();
+            transfer.pre(session, null, files, transfer.filter(session, null, TransferAction.overwrite, listener),
+                    new DisabledTransferErrorCallback(), listener, new DisabledConnectionCallback());
+            // Adding files to a directory updates its modification date
+            java.nio.file.Files.write(java.nio.file.Paths.get(childLocal.getAbsolute(), "f"), new byte[]{1});
+            java.nio.file.Files.write(java.nio.file.Paths.get(parentLocal.getAbsolute(), "g"), new byte[]{1});
+            assertNotEquals(childModified, childLocal.attributes().getModificationDate());
+            assertNotEquals(parentModified, parentLocal.attributes().getModificationDate());
+            transfer.post(session, null, files, new DisabledTransferErrorCallback(), listener, new DisabledConnectionCallback());
+            assertEquals(childModified, childLocal.attributes().getModificationDate());
+            assertEquals(parentModified, parentLocal.attributes().getModificationDate());
+        }
+        finally {
+            org.apache.commons.io.FileUtils.deleteDirectory(tmp.toFile());
+        }
     }
 }

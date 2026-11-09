@@ -20,32 +20,38 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Optional;
 
 public class AzureMoveFeature implements Move {
 
-    private final AzureCopyFeature proxy;
-    private final AzureDeleteFeature delete;
+    private final AzureSession session;
 
     public AzureMoveFeature(final AzureSession session) {
-        this.proxy = new AzureCopyFeature(session);
-        this.delete = new AzureDeleteFeature(session);
+        this.session = session;
     }
 
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
-        proxy.preflight(source, target);
-        delete.preflight(source);
+        this.proxy().preflight(source, target);
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = proxy.copy(file, renamed, status, connectionCallback, StreamListener.noop);
-        delete.delete(Collections.singletonList(file), connectionCallback, callback);
-        return copy;
+        return this.proxy().move(file, renamed, status, callback, connectionCallback);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return this.proxy().features(source, target);
+    }
+
+    private Move proxy() {
+        if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+            return new AzureDataLakeMoveFeature(session);
+        }
+        return new AzureBlobMoveFeature(session);
     }
 }

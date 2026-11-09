@@ -17,8 +17,13 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.HashAlgorithm;
 
-import java.security.MessageDigest;
+import java.util.EnumSet;
 
-public class BoxSmallUploadService extends HttpUploadFeature<File, MessageDigest> {
+public class BoxSmallUploadService extends HttpUploadFeature<File> {
+
+    public BoxSmallUploadService() {
+        super(EnumSet.of(Flags.checksumRequired, Flags.checksumResponse), HashAlgorithm.sha1);
+    }
 }

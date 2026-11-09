@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import java.util.Map;
 
 public interface Cache<T extends Referenceable> {
@@ -83,6 +85,28 @@ public interface Cache<T extends Referenceable> {
      * Remove all cached directory listing
      */
     void clear();
+
+    /**
+     * Acquire exclusive access to look up the contents of a directory. Threads missing the cache at the same time
+     * wait for the first to complete the listing instead of listing the same directory concurrently. Reentrant for the
+     * owning thread. No exclusive access by default.
+     *
+     * @param parent Directory
+     * @throws ConnectionCanceledException If interrupted while waiting
+     * @see #unlock(Referenceable)
+     */
+    default void lock(T parent) throws ConnectionCanceledException {
+        //
+    }
+
+    /**
+     * Release exclusive access acquired with {@link #lock(Referenceable)} by the current thread
+     *
+     * @param parent Directory
+     */
+    default void unlock(T parent) {
+        //
+    }
 
     /**
      * @param reference Key for item in cached list

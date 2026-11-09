@@ -600,7 +600,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         log.trace("draggedImage_endedAt_operation:{}", operation);
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            new DeleteController(controller, controller.getSession()).delete(pasteboard, new ReloadCallback() {
+            new DeleteController(controller, controller.getSession(), controller.getCache()).delete(pasteboard, new ReloadCallback() {
                 @Override
                 public void done(final List<Path> files) {
                     controller.reload(pasteboard, Collections.emptyList());

@@ -18,11 +18,9 @@ package ch.cyberduck.core.ftp.list;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,7 +30,6 @@ import java.util.TimeZone;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class FTPMlsdListResponseReaderTest {
 
     @Test
@@ -78,7 +75,7 @@ public class FTPMlsdListResponseReaderTest {
         assertTrue(children.get(0).attributes().getPermission().isExecutable());
     }
 
-    @Test(expected = FTPInvalidListException.class)
+    @Test
     public void testMlsdCdir1() throws Exception {
         Path path = new Path(
                 "/www", EnumSet.of(Path.Type.directory));
@@ -86,10 +83,10 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
                 "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
+        assertTrue(new FTPMlsdListResponseReader().read(path, Arrays.asList(replies)).isEmpty());
     }
 
-    @Test(expected = FTPInvalidListException.class)
+    @Test
     public void testMlsdCdir2() throws Exception {
         Path path = new Path(
                 "/www", EnumSet.of(Path.Type.directory));
@@ -97,10 +94,10 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
                 "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
+        assertTrue(new FTPMlsdListResponseReader().read(path, Arrays.asList(replies)).isEmpty());
     }
 
-    @Test(expected = FTPInvalidListException.class)
+    @Test
     public void testMlsdPdir() throws Exception {
         Path path = new Path(
                 "/www", EnumSet.of(Path.Type.directory));
@@ -108,7 +105,7 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
                 "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
+        assertTrue(new FTPMlsdListResponseReader().read(path, Arrays.asList(replies)).isEmpty());
     }
 
     @Test

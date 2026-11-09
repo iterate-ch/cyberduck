@@ -58,11 +58,7 @@ public class S3StorageClassFeature implements Redundancy {
     @Override
     public String getClass(final Path file) throws BackgroundException {
         if(containerService.isContainer(file)) {
-            final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
-            if(StringUtils.isNotBlank(HostPreferencesFactory.get(session.getHost()).getProperty(key))) {
-                return HostPreferencesFactory.get(session.getHost()).getProperty(key);
-            }
-            return null;
+            return this.getDefault(file);
         }
         // HEAD request provides storage class information of the object.
         // S3 returns this header for all objects except for Standard storage class objects.
@@ -75,6 +71,9 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            return;
+        }
         try {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             final TransferStatus status = new TransferStatus();

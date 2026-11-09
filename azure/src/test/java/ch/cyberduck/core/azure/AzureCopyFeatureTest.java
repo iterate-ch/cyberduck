@@ -71,6 +71,6 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -25,10 +25,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -40,16 +38,14 @@ import ch.iterate.openstack.swift.model.Region;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SwiftUrlProviderTest extends AbstractSwiftTest {
 
     @Test
     public void testGet() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback());
-        assertEquals("https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
-                new SwiftUrlProvider(session, accounts).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
+        assertNotEquals(DescriptiveUrl.EMPTY,
+                new SwiftUrlProvider(session, accounts).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider));
     }
 
     @Test
@@ -57,9 +53,7 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
         final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback());
         final UrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        container.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);
         final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);

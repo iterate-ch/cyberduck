@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,6 +32,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import synapticloop.b2.response.BaseB2Response;
+
+import java.util.EnumSet;
 
 public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2ThresholdUploadService.class);
@@ -58,14 +61,30 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     }
 
     @Override
-    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener,
                                  final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status)) {
-            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
+            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, listener, status, callback);
         }
         else {
-            return new B2SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
+            return new B2SingleUploadService().upload(write, file, local, throttle, progress, listener, status, callback);
         }
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(this.threshold(status)) {
+            return new B2LargeUploadService(session, fileid).checksum(file, status);
+        }
+        return new B2SingleUploadService().checksum(file, status);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
+        if(this.threshold(status)) {
+            return new B2LargeUploadService(session, fileid).features(file, status);
+        }
+        return new B2SingleUploadService().features(file, status);
     }
 
     protected boolean threshold(final TransferStatus status) {

@@ -26,9 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.MessageDigest;
-
-public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class DAVUploadFeature extends HttpUploadFeature<Void> {
     private static final Logger log = LogManager.getLogger(DAVUploadFeature.class);
 
     private final DAVSession.HttpCapabilities capabilities;

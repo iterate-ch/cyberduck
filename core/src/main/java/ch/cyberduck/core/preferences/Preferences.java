@@ -384,21 +384,14 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     private InputStream getLogConfiguration() {
-        final Local folder = SupportDirectoryFinderFactory.get().find();
-        if(folder.exists()) {
+        final Local log4jxml = LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "log4j.xml");
+        if(log4jxml.exists()) {
             try {
-                for(Local log4jxml : folder.list().filter(new NullFilter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return "log4j.xml".equals(file.getName());
-                    }
-                })) {
-                    log.info("Using log4j configuration from {}", log4jxml);
-                    return log4jxml.getInputStream();
-                }
+                log.info("Using log4j configuration from {}", log4jxml);
+                return log4jxml.getInputStream();
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Unable to list %s", folder), e);
+                log.warn("Unable to read {}", log4jxml, e);
             }
         }
         final URL configuration;
@@ -415,7 +408,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 return configuration.openStream();
             }
             catch(IOException e) {
-                log.error(String.format(String.format("Unable to load log4j configuration from %s", configuration)), e);
+                log.error("Unable to load log4j configuration from {}", configuration, e);
             }
         }
         return null;

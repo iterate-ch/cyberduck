@@ -49,6 +49,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
@@ -126,5 +127,41 @@ public class CryptoDriveTransferWorkerTest extends AbstractDriveTest {
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();
+    }
+
+    @Test
+    public void testUploadWithChecksumVerification() throws Exception {
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final byte[] content = RandomUtils.nextBytes(62768);
+        final Path file = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), file.getName());
+        try(OutputStream out = local.getOutputStream(false)) {
+            IOUtils.write(content, out);
+        }
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
+        // Verify checksum of the encrypted content sent with the checksum in the response of the server
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(file, local)), new NullFilter<>())
+                .withOptions(new UploadFilterOptions(session.getHost()).withChecksum(true));
+        Assert.assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
+
+        }.run(session));
+        Assert.assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(file).getSize());
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
+        Assert.assertArrayEquals(content, buffer.toByteArray());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(file, vault), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
     }
 }

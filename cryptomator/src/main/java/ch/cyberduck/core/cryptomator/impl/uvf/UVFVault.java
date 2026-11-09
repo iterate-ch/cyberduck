@@ -114,15 +114,16 @@ public class UVFVault extends AbstractVault {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
+        final Write writer = session._getFeature(Write.class);
+        final Path vault = directory.mkdir(writer, home, status);
 
         final Path dataDir = new Path(vault, "d", EnumSet.of(Path.Type.directory));
         final Path firstLevel = new Path(dataDir, rootDirectoryIdHash.substring(0, 2), EnumSet.of(Path.Type.directory));
         final Path secondLevel = new Path(firstLevel, rootDirectoryIdHash.substring(2), EnumSet.of(Path.Type.directory));
 
-        directory.mkdir(session._getFeature(Write.class), dataDir, status);
-        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
-        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+        directory.mkdir(writer, dataDir, status);
+        directory.mkdir(writer, firstLevel, status);
+        directory.mkdir(writer, secondLevel, status);
 
         // vault.uvf
         new ContentWriter(session).write(this.getConfig(), vaultMetadata.getBytes(StandardCharsets.US_ASCII));

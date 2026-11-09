@@ -26,7 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
@@ -40,7 +40,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
@@ -62,9 +62,10 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testFind() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Multipart uploads not listed with prefix of directory");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path directory = new S3DirectoryFeature(session, acl).mkdir(
+        final Path directory = new S3DirectoryFeature(session).mkdir(
                 new S3WriteFeature(session, acl), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
         assertTrue(service.find(directory).isEmpty());

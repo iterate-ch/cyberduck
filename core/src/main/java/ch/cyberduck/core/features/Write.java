@@ -21,8 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -59,10 +57,6 @@ public interface Write<Reply> {
             return true;
         }
         return false;
-    }
-
-    default ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        return new DisabledChecksumCompute();
     }
 
     final class Append {
@@ -170,10 +164,6 @@ public interface Write<Reply> {
          * Set ACL on upload
          */
         acl,
-        /**
-         * Setting checksum on upload to allow verification on server
-         */
-        checksum,
         /**
          * Set MIME type on upload
          */

@@ -160,9 +160,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, cryptomator.getFeature(session, AttributesFinder.class, new DriveAttributesFinderFeature(session, fileid))).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
-        assertTrue(cache.isCached(vault));
-        assertEquals(test, cache.get(vault).get(0));
-        assertEquals(0L, cache.get(vault).get(0).attributes().getSize());
+        // Lookup by file id lists a single file only and must not cache the directory as completely listed
+        assertFalse(cache.isCached(vault));
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

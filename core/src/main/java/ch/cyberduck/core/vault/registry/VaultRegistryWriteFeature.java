@@ -21,8 +21,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -57,19 +55,6 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
         }
         catch(UnsupportedException e) {
             return EnumSet.noneOf(Flags.class);
-        }
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        try {
-            return registry.find(session, file).getFeature(session, Write.class, proxy).checksum(file, status);
-        }
-        catch(VaultUnlockCancelException e) {
-            return proxy.checksum(file, status);
-        }
-        catch(UnsupportedException e) {
-            return new DisabledChecksumCompute();
         }
     }
 

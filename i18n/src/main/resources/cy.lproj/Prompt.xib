@@ -129,9 +129,9 @@ DQ
                     </customView>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="44j-EJ-V1Q"/>
                     <constraint firstItem="cfF-Iv-FNQ" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="8bB-Fe-itP"/>
                     <constraint firstAttribute="trailing" secondItem="cfF-Iv-FNQ" secondAttribute="trailing" constant="20" symbolic="YES" id="E5r-vt-izh"/>
+                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="KXc-rx-edt"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="LMi-v3-klK"/>
                     <constraint firstItem="15" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="NEP-Ec-4US"/>
                     <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="Spw-Z5-Co6"/>
@@ -218,7 +218,7 @@ DQ
                             </textFieldCell>
                         </textField>
                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="Jve-Jm-UAk">
-                            <rect key="frame" x="16" y="26" width="16" height="16"/>
+                            <rect key="frame" x="16" y="42" width="16" height="16"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="Jm9-T9-maF"/>
                                 <constraint firstAttribute="width" constant="16" id="KRq-UZ-y4b"/>

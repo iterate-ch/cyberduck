@@ -22,7 +22,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,6 +45,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 public class S3CopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(S3CopyFeature.class);
@@ -84,7 +84,7 @@ public class S3CopyFeature implements Copy {
             }
         }
         final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
-        destination.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
+        destination.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
@@ -103,7 +103,9 @@ public class S3CopyFeature implements Copy {
                     containerService.getKey(source),
                     destination.getBucketName(), destination, false);
             listener.sent(status.getLength());
-            final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);
+            // HTTP header names are case-insensitive
+            final Map<String, Object> complete = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+            complete.putAll((Map<String, Object>) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA));
             return new CopyResult(
                     (String) complete.get(Constants.AMZ_VERSION_ID),
                     (String) complete.get(BaseStorageItem.METADATA_HEADER_ETAG)

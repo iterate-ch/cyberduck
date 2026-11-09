@@ -40,7 +40,7 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
     private final DAVSession session;
 
     private final RFC1123DateFormatter rfc1123
-        = new RFC1123DateFormatter();
+            = new RFC1123DateFormatter();
 
     public MicrosoftIISDAVAttributesFinderFeature(DAVSession session) {
         super(session);
@@ -48,7 +48,7 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
     }
 
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0, true);
+        return session.getClient().list(new DAVPathEncoder(session).encode(file), 0, true);
     }
 
     @Override

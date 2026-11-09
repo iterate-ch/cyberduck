@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.Response;
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -57,11 +58,6 @@ public class SwiftReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(log.isWarnEnabled()) {
-                log.warn("Disable checksum verification for {}", file);
-                // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
-                status.setChecksum(Checksum.NONE);
-            }
             final Response response;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
@@ -79,6 +75,12 @@ public class SwiftReadFeature implements Read {
             else {
                 response = session.getClient().getObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
+            }
+            if(response.getResponse().containsHeader(Constants.X_STATIC_LARGE_OBJECT)
+                    || response.getResponse().containsHeader(Constants.MANIFEST_HEADER)) {
+                // ETag of a large object is not the checksum of the content
+                log.warn("Disable checksum verification for large object {}", file);
+                status.getParent().setVerify(HashAlgorithm.none);
             }
             return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }

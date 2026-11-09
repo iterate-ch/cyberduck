@@ -21,11 +21,13 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
 import java.net.SocketException;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -51,5 +53,44 @@ public class DefaultRetryCallableTest {
             // Expected
         }
         assertEquals(2, count.get());
+    }
+
+    @Test
+    public void testRetriableAccessDeniedRetriedUntilSuccess() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        final DefaultRetryCallable<Integer> c = new DefaultRetryCallable<>(new Host(new TestProtocol(Scheme.file)), 3, 0, new BackgroundExceptionCallable<Integer>() {
+            @Override
+            public Integer call() throws BackgroundException {
+                if(count.incrementAndGet() <= 3) {
+                    throw new RetriableAccessDeniedException("d", Duration.ofMillis(1));
+                }
+                return count.get();
+            }
+        }, ProgressListener.noop, new TransferBackgroundActionState(new TransferStatus()));
+        assertEquals(4, c.call().intValue());
+    }
+
+    @Test
+    public void testRetriableAccessDeniedFailsAfterLimit() {
+        final AtomicInteger count = new AtomicInteger();
+        final DefaultRetryCallable<Void> c = new DefaultRetryCallable<>(new Host(new TestProtocol(Scheme.file)), 3, 0, new BackgroundExceptionCallable<Void>() {
+            @Override
+            public Void call() throws BackgroundException {
+                count.incrementAndGet();
+                throw new RetriableAccessDeniedException("d", Duration.ofMillis(1));
+            }
+        }, ProgressListener.noop, new TransferBackgroundActionState(new TransferStatus()));
+        try {
+            c.call();
+            fail();
+        }
+        catch(RetriableAccessDeniedException e) {
+            // Expected
+        }
+        catch(BackgroundException e) {
+            fail(e.toString());
+        }
+        // Initial attempt plus 3 retries
+        assertEquals(4, count.get());
     }
 }

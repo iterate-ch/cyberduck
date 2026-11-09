@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -35,6 +36,11 @@ import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.fail;
 
@@ -75,6 +81,30 @@ public abstract class AbstractSMBTest {
         session.close();
     }
 
+    /**
+     * Fail if lock for share is not available to other threads
+     */
+    protected void assertShareAvailable(final Path file) throws Exception {
+        // Daemon thread as waiting for lock cannot be interrupted
+        final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+            final Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
+        try {
+            executor.submit(() -> {
+                session.releaseShare(session.openShare(file));
+                return null;
+            }).get(10, TimeUnit.SECONDS);
+        }
+        catch(TimeoutException e) {
+            fail(String.format("Lock for share of %s not released", file));
+        }
+        finally {
+            executor.shutdownNow();
+        }
+    }
+
     public static class TestContainer extends GenericContainer<TestContainer> {
         private static TestContainer instance;
         private static final int SMB_PORT = 445;
@@ -82,8 +112,6 @@ public abstract class AbstractSMBTest {
         private static final String SMB_CONF_CLASS_PATH = "smb/smb.conf";
         private static final String DOCKERFILE_PATH = "Dockerfile";
         private static final String DOCKERFILE_CLASS_PATH = "smb/Dockerfile";
-        private static final String SUPERVISORD_CONF_PATH = "supervisord.conf";
-        private static final String SUPERVISORD_CONF_CLASS_PATH = "smb/supervisord.conf";
         private static final String ENTRYPOINT_SH_PATH = "entrypoint.sh";
         private static final String ENTRYPOINT_SH_CLASS_PATH = "smb/entrypoint.sh";
 
@@ -91,7 +119,6 @@ public abstract class AbstractSMBTest {
             super(new ImageFromDockerfile()
                     .withFileFromClasspath(SMB_CONF_PATH, SMB_CONF_CLASS_PATH)
                     .withFileFromClasspath(DOCKERFILE_PATH, DOCKERFILE_CLASS_PATH)
-                    .withFileFromClasspath(SUPERVISORD_CONF_PATH, SUPERVISORD_CONF_CLASS_PATH)
                     .withFileFromClasspath(ENTRYPOINT_SH_PATH, ENTRYPOINT_SH_CLASS_PATH)
             );
 

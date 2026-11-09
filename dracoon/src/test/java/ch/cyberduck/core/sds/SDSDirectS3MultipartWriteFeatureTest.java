@@ -26,7 +26,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -84,7 +83,6 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setCreated(1L);
             status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
@@ -140,7 +138,6 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setModified(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);

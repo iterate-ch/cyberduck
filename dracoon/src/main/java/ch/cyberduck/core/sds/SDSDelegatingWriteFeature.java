@@ -60,14 +60,6 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(SDSAttributesAdapter.isEncrypted(containerService.getContainer(file).attributes())) {
-            return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file, status);
-        }
-        return proxy.checksum(file, status);
-    }
-
-    @Override
     public void preflight(final Path file) throws BackgroundException {
         new SDSTouchFeature(session, nodeid).preflight(file.getParent(), Optional.of(file.getName()));
     }

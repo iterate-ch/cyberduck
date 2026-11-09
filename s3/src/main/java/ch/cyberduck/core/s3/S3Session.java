@@ -50,6 +50,7 @@ import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
+import ch.cyberduck.core.signin.AWSConsoleLoginCredentialsStrategy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -86,6 +87,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.amazonaws.auth.profile.internal.BasicProfile;
@@ -97,7 +100,18 @@ import static com.amazonaws.services.s3.Headers.S3_ALTERNATE_DATE;
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
 
+    private static final String AWS_REGION = "[a-z]{2}(?:-[a-z]+)+-[0-9]+";
+    private static final String AWS_HOSTNAME_PATTERN = "(?:[a-z0-9\\-]+\\.)*s3(?:-fips(?:-" + AWS_REGION + ")?|-external-1|-accesspoint|-" + AWS_REGION + ")?"
+            + "(?:\\.dualstack)?(?:\\.[a-z0-9\\-]+)?(?:\\.vpce)?\\.amazonaws\\.com";
+    private static final Pattern AWS_HOSTNAME = Pattern.compile(AWS_HOSTNAME_PATTERN, Pattern.CASE_INSENSITIVE);
+    private static final Pattern AWS_CN_HOSTNAME = Pattern.compile(AWS_HOSTNAME_PATTERN + "(?:\\.cn)?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern AWS_STANDARD_HOSTNAME = Pattern.compile("(?:([a-z0-9.\\-]+)\\.)?s3(?:-external-1|-" + AWS_REGION + "|(?:\\.dualstack)?\\." + AWS_REGION + ")?\\.amazonaws\\.com",
+            Pattern.CASE_INSENSITIVE);
+    private static final Pattern AWS_VPCE_HOSTNAME = Pattern.compile("(?:[a-z0-9\\-]+\\.)?s3\\.[a-z0-9\\-]+\\.vpce\\.amazonaws\\.com", Pattern.CASE_INSENSITIVE);
+    private static final Pattern AWS_GOVCLOUD_HOSTNAME = Pattern.compile(".*[.\\-]us-gov-[a-z]+-[0-9]+\\.amazonaws\\.com", Pattern.CASE_INSENSITIVE);
+
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
+    private final S3ThresholdUploadService upload = new S3ThresholdUploadService(this, acl);
 
     private final Versioning versioning = preferences.getBoolean("s3.versioning.enable")
             ? new S3VersioningFeature(this, acl) : null;
@@ -273,36 +287,43 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
-            if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
-                log.debug("Configure SSO");
-                final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
-                final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
-                if(!profiles.isEmpty()) {
-                    if(StringUtils.isBlank(host.getCredentials().getUsername())) {
-                        try {
-                            final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
-                                    profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
-                                    LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
-                            log.debug("Configuring credentials from profile {}", profile);
-                            host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+            if(S3Session.isAwsHostname(host.getHostname())) {
+                if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
+                    log.debug("Configure SSO");
+                    final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
+                    final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
+                    if(!profiles.isEmpty()) {
+                        if(StringUtils.isBlank(host.getCredentials().getUsername())) {
+                            try {
+                                final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
+                                        profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
+                                        LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
+                                log.debug("Configuring credentials from profile {}", profile);
+                                host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+                            }
+                            catch(ConnectionCanceledException e) {
+                                // Continue with manual configuration
+                            }
                         }
-                        catch(ConnectionCanceledException e) {
-                            // Continue with manual configuration
+                        else {
+                            // Copy properties from AWS CLI profile
+                            host.setCredentials(configurator.configure(host));
                         }
                     }
-                    else {
-                        // Copy properties from AWS CLI profile
-                        host.setCredentials(configurator.configure(host));
-                    }
+                    final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt, cancel)
+                            .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
+                    log.debug("Add interceptor {}", oauth);
+                    configuration.addInterceptorLast(oauth);
+                    final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
+                            oauth, host, trust, key, prompt, cancel);
+                    log.debug("Return authenticator {}", strategy);
+                    return strategy;
                 }
-                final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt, cancel)
-                        .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
-                log.debug("Add interceptor {}", oauth);
-                configuration.addInterceptorLast(oauth);
-                final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
-                        oauth, host, trust, key, prompt);
-                log.debug("Return authenticator {}", strategy);
-                return strategy;
+                if(AWSConsoleLoginCredentialsStrategy.CLIENT_ID.equals(host.getProtocol().getOAuthClientId())) {
+                    // AWS Console Sign-In
+                    log.debug("Configure AWS Console Sign-In");
+                    return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt, cancel);
+                }
             }
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt, cancel)
                     .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -312,7 +333,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
             final S3CredentialsStrategy strategy
-                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt);
+                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt, cancel);
             log.debug("Return authenticator {}", strategy);
             return strategy;
         }
@@ -362,7 +383,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final Credentials credentials = authentication.get();
         final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
-            if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
+            // Default STS endpoint in commercial partition rejects GovCloud credentials
+            final boolean sts = !S3Session.isAwsGovCloudHostname(host.getHostname())
+                    || !StringUtils.equals(S3Protocol.DEFAULT_STS_ENDPOINT, host.getProtocol().getSTSEndpoint());
+            if(sts && StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
                 if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
@@ -395,9 +419,38 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Matches s3.cn-north-1.amazonaws.com.cn
             // Matches s3.cn-northwest-1.amazonaws.com.cn
             // Matches s3-us-gov-west-1.amazonaws.com
-            return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
+            // Matches s3-fips.dualstack.us-east-1.amazonaws.com
+            // Matches ap-123456789012.s3-accesspoint.us-east-1.amazonaws.com
+            return AWS_CN_HOSTNAME.matcher(hostname).matches();
         }
-        return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
+        return AWS_HOSTNAME.matcher(hostname).matches();
+    }
+
+    /**
+     * @return True for regular service endpoints with optional bucket prefix and VPC interface endpoints that can be
+     * replaced with a region specific endpoint. False for FIPS, access point and China endpoints.
+     */
+    public static boolean isAwsStandardHostname(final String hostname) {
+        return AWS_STANDARD_HOSTNAME.matcher(hostname).matches() || AWS_VPCE_HOSTNAME.matcher(hostname).matches();
+    }
+
+    public static boolean isAwsChinaHostname(final String hostname) {
+        return isAwsHostname(hostname, true) && !isAwsHostname(hostname, false);
+    }
+
+    /**
+     * @return Bucket name prefixed to regular service endpoint or null
+     */
+    public static String findBucketInAwsHostname(final String hostname) {
+        final Matcher matcher = AWS_STANDARD_HOSTNAME.matcher(hostname);
+        if(matcher.matches()) {
+            return StringUtils.lowerCase(matcher.group(1));
+        }
+        return null;
+    }
+
+    public static boolean isAwsGovCloudHostname(final String hostname) {
+        return AWS_GOVCLOUD_HOSTNAME.matcher(hostname).matches();
     }
 
     @Override
@@ -410,19 +463,16 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ReadFeature(this);
         }
         if(type == MultipartWrite.class) {
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3MultipartWriteFeature(this, acl);
-            }
             return (T) new S3MultipartWriteFeature(this, acl);
         }
         if(type == Write.class) {
             return (T) new S3WriteFeature(this, acl);
         }
         if(type == Upload.class) {
-            return (T) new S3ThresholdUploadService(this, acl);
+            return (T) upload;
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, acl);
+            return (T) new S3DirectoryFeature(this);
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, acl);
@@ -449,7 +499,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MetadataFeature(this, acl);
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this, acl);
+            return (T) new S3TouchFeature(this);
         }
         if(type == Location.class) {
             return (T) new S3LocationFeature(this, regions);

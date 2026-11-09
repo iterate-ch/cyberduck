@@ -30,9 +30,9 @@ import ch.cyberduck.core.box.BoxReadFeature;
 import ch.cyberduck.core.box.BoxWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.BufferWriteFeature;
@@ -76,9 +76,9 @@ public class BufferWriteFeatureTest extends AbstractBoxTest {
         final TransferStatus writeStatus = new TransferStatus();
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-        writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
-        writeStatus.setChecksum(feature.checksum(test, new TransferStatus()).compute(new ByteArrayInputStream(content), new TransferStatus()));
         writeStatus.setLength(content.length);
+        // Checksum of the encrypted content calculated with the header and the nonces set in the status used for writing
+        writeStatus.setChecksum(session.getFeature(Upload.class).checksum(test, writeStatus).compute(new ByteArrayInputStream(content), writeStatus));
         final StatusOutputStream out = feature.write(test, writeStatus, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

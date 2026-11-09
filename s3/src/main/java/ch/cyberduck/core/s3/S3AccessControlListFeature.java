@@ -65,7 +65,10 @@ public class S3AccessControlListFeature implements AclPermission {
     private final S3Session session;
     private final PathContainerService containerService;
 
-    private final LRUCache<Path, Acl> cache
+    /**
+     * Cache for buckets with object ownership enforced
+     */
+    private final LRUCache<Path, Boolean> cache
             = LRUCache.build(10);
 
     public S3AccessControlListFeature(final S3Session session) {
@@ -74,15 +77,22 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     private boolean isBucketOwnerEnforced(final Path bucket) throws BackgroundException {
-        final OwnershipControlsConfig controls;
+        if(!cache.contains(bucket)) {
+            cache.put(bucket, this.readBucketOwnerEnforced(bucket));
+        }
+        return cache.get(bucket);
+    }
+
+    private boolean readBucketOwnerEnforced(final Path bucket) throws BackgroundException {
         try {
-            controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            final OwnershipControlsConfig controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             for(OwnershipControlsConfig.Rule rule : controls.getRules()) {
                 if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
                     log.debug("Bucket owner enforced policy set with disabled ACLs for bucket {}", bucket);
                     return true;
                 }
             }
+            return false;
         }
         catch(ServiceException e) {
             try {
@@ -90,26 +100,29 @@ public class S3AccessControlListFeature implements AclPermission {
             }
             catch(NotfoundException n) {
                 // Ignore or buckets with no x-amz-object-ownership set
+                return false;
             }
             catch(AccessDeniedException | InteroperabilityException l) {
                 log.warn("Missing permission to read bucket ownership configuration for {} {}", bucket.getName(), e.getMessage());
+                return false;
             }
         }
-        return false;
     }
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
-        final Path bucket = containerService.getContainer(file);
-        if(cache.contains(bucket)) {
-            return cache.get(bucket);
+        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
+        if(containerService.isContainer(file)) {
+            return preference;
         }
-        if(this.isBucketOwnerEnforced(bucket)) {
-            cache.put(bucket, Acl.EMPTY);
+        if(Acl.EMPTY.equals(preference)) {
+            // Selected "None" in preferences. No need to check if ACLs are disabled for the bucket
             return Acl.EMPTY;
         }
-        final Acl preference = Acl.toAcl(HostPreferencesFactory.get(session.getHost()).getProperty("s3.acl.default"));
-        cache.put(bucket, preference);
+        final Path bucket = containerService.getContainer(file);
+        if(this.isBucketOwnerEnforced(bucket)) {
+            return Acl.EMPTY;
+        }
         return preference;
     }
 
@@ -128,13 +141,17 @@ public class S3AccessControlListFeature implements AclPermission {
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
                 acl = S3AccessControlListFeature.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
+                if(this.isBucketOwnerEnforced(bucket)) {
+                    acl.setEditable(false);
+                }
             }
             else {
+                if(this.isBucketOwnerEnforced(bucket)) {
+                    // ACLs are disabled and cannot be set on objects
+                    return Acl.EMPTY;
+                }
                 acl = S3AccessControlListFeature.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
-            }
-            if(this.isBucketOwnerEnforced(bucket)) {
-                acl.setEditable(false);
             }
             return acl;
         }
@@ -157,14 +174,15 @@ public class S3AccessControlListFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            // Read owner from bucket
-            final AccessControlList list = toAcl(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
+                session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                        toBucketAccessControlList(status.getAcl()));
             }
             else {
-                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
+                // Read owner from bucket
+                session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file),
+                        toObjectAccessControlList(status.getAcl()));
             }
         }
         catch(ServiceException e) {
@@ -179,24 +197,39 @@ public class S3AccessControlListFeature implements AclPermission {
         }
     }
 
+    protected static AccessControlList toBucketAccessControlList(final Acl acl) {
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_PRIVATE;
+        }
+        return toAccessControlList(acl);
+    }
+
+    protected static AccessControlList toObjectAccessControlList(final Acl acl) {
+        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
+        }
+        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
+            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
+        }
+        return toAccessControlList(acl);
+    }
+
     /**
      * Convert ACL for writing to service.
      *
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected static AccessControlList toAcl(final Acl acl) {
+    protected static AccessControlList toAccessControlList(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
+            // Selected "None" in preferences
             return null;
         }
         if(Acl.CANNED_PRIVATE.equals(acl)) {
             return AccessControlList.REST_CANNED_PRIVATE;
-        }
-        if(Acl.CANNED_BUCKET_OWNER_FULLCONTROL.equals(acl)) {
-            return AccessControlList.REST_CANNED_BUCKET_OWNER_FULLCONTROL;
-        }
-        if(Acl.CANNED_BUCKET_OWNER_READ.equals(acl)) {
-            return AccessControlList.REST_CANNED_BUCKET_OWNER_READ;
         }
         if(Acl.CANNED_AUTHENTICATED_READ.equals(acl)) {
             return AccessControlList.REST_CANNED_AUTHENTICATED_READ;

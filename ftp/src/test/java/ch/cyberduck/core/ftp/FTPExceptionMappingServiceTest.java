@@ -1,6 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -34,6 +35,13 @@ public class FTPExceptionMappingServiceTest {
     @Test
     public void testLogin() {
         assertTrue(new FTPExceptionMappingService().map(new FTPException(530, "")) instanceof LoginFailureException);
+    }
+
+    @Test
+    public void testServiceNotAvailable() {
+        final BackgroundException failure = new FTPExceptionMappingService().map(new FTPException(421, "Too many connections (25) from this IP"));
+        assertTrue(failure instanceof ConnectionRefusedException);
+        assertEquals("Too many connections (25) from this IP. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", failure.getDetail());
     }
 
     @Test

@@ -52,9 +52,19 @@ public class FTPMDTMTimestampFeature extends DefaultTimestampFeature implements 
         try {
             if(null != status.getModified()) {
                 final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
-                if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MDTM, String.format("%s %s",
-                        formatter.format(status.getModified(), TimeZone.getTimeZone("UTC")), file.getAbsolute())))) {
-                    throw failure = new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                final String modified = formatter.format(status.getModified(), TimeZone.getTimeZone("UTC"));
+                if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MDTM, String.format("%s %s", modified, file.getAbsolute())))) {
+                    final String reply = session.getClient().getReplyString();
+                    switch(session.getClient().getReplyCode()) {
+                        case FTPReply.UNRECOGNIZED_COMMAND:
+                        case FTPReply.SYNTAX_ERROR_IN_ARGUMENTS:
+                        case FTPReply.FILE_UNAVAILABLE:
+                            // Setting the time with MDTM is a non-standard extension. Servers advertising MDTM only to
+                            // read the time handle the timestamp as part of the path and reply with a generic failure.
+                            log.warn("Server does not support setting modification time with MDTM: {}", reply);
+                            throw failure = new FTPException(FTPReply.COMMAND_NOT_IMPLEMENTED, reply);
+                    }
+                    throw failure = new FTPException(session.getClient().getReplyCode(), reply);
                 }
             }
         }

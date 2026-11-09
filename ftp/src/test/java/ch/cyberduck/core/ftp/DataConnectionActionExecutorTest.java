@@ -19,14 +19,11 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertThrows;
 
-@Category(IntegrationTest.class)
 public class DataConnectionActionExecutorTest extends AbstractFTPTest {
 
     @Test

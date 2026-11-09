@@ -21,12 +21,18 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
+
+import java.util.EnumSet;
 
 public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
 
@@ -41,15 +47,40 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Output upload(final Write<Output> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Output upload(final Write<Output> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return (Output) registry.find(session, file).getFeature(session, Upload.class, proxy).upload(
-                write, file, local, throttle, progress, streamListener, status, callback);
+                write, file, local, throttle, progress, listener, status, callback);
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, status);
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        try {
+            return registry.find(session, file).getFeature(session, Upload.class, proxy).checksum(file, status);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.checksum(file, status);
+        }
+        catch(UnsupportedException e) {
+            return new DisabledChecksumCompute();
+        }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            return registry.find(session, file).getFeature(session, Upload.class, proxy).features(file, status);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.features(file, status);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
+        }
     }
 
     @Override
