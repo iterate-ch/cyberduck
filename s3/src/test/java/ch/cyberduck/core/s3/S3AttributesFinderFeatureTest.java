@@ -45,6 +45,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(attributes.getETag()).hash);
         assertNotEquals(-1L, attributes.getModificationDate());
+        // Response to PUT request has no modification date
+        test.attributes().setModificationDate(attributes.getModificationDate());
         assertEquals(test.attributes(), attributes);
         // Test wrong type
         try {
@@ -109,6 +111,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
         assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
+        // Response to PUT request has no modification date
+        testWithVersionId.attributes().setModificationDate(attr.getModificationDate());
         assertEquals(testWithVersionId.attributes(), attr);
         assertFalse(attr.isDuplicate());
         // Set delete marker
