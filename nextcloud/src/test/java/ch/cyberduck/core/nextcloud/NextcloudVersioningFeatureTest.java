@@ -58,11 +58,14 @@ public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
         assertEquals(1, feature.list(test.withAttributes(new NextcloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()).size());
         final PathAttributes initialAttributes = new NextcloudAttributesFinderFeature(session).find(test);
         final byte[] contentUpdate = RandomUtils.nextBytes(16258);
+        // Versions are named by modification date with a resolution of seconds. Writes within the same second would overwrite a version
+        Thread.sleep(1100L);
         {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentUpdate), writer.write(test, status.setLength(contentUpdate.length).setExists(true), ConnectionCallback.noop));
             final AttributedList<Path> versions = feature.list(test.withAttributes(new NextcloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
             assertEquals(2, versions.size());
         }
+        Thread.sleep(1100L);
         {
             final byte[] contentLatest = RandomUtils.nextBytes(13247);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.setLength(contentLatest.length).setExists(true), ConnectionCallback.noop));
