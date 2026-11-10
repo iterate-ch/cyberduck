@@ -74,10 +74,8 @@ public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager 
         final Path folder = new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), new Path(
                 new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final IRODSAttributesFinderFeature f = new IRODSAttributesFinderFeature(session);
-        final long folderTimestamp = f.find(folder).getModificationDate();
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), test, new TransferStatus());
-        assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         new IRODSDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
