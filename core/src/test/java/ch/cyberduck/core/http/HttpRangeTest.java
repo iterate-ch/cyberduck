@@ -32,6 +32,14 @@ public class HttpRangeTest {
     }
 
     @Test
+    public void testByLengthNegativeUnknown() {
+        final HttpRange range = HttpRange.byLength(13545L, -13546L);
+        assertEquals(13545L, range.getStart(), 0L);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, range.getEnd(), 0L);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, range.getLength(), 0L);
+    }
+
+    @Test
     public void testByLength1() {
         final HttpRange range = HttpRange.byLength(0L, 1L);
         assertEquals(0L, range.getStart(), 0L);
