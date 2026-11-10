@@ -88,12 +88,11 @@ public class DAVReadFeature implements Read {
                         response.getEntity().getContentLength(),
                         response.getStatusLine().getStatusCode());
                 if(status.isAppend()) {
-                    if(stream.getCode() == HttpStatus.SC_OK) {
-                        if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
-                            if(stream.getLength() != status.getLength()) {
-                                log.warn("Range header not supported. Skipping {} bytes in file {}.", status.getOffset(), file);
-                                stream.skip(status.getOffset());
-                            }
+                    // Status 200 in response to a range request means the full representation is returned
+                    if(stream.getCode() == HttpStatus.SC_OK && status.getOffset() > 0) {
+                        if(TransferStatus.UNKNOWN_LENGTH == status.getLength() || stream.getLength() != status.getLength()) {
+                            log.warn("Range header not supported. Skipping {} bytes in file {}.", status.getOffset(), file);
+                            stream.skip(status.getOffset());
                         }
                     }
                 }

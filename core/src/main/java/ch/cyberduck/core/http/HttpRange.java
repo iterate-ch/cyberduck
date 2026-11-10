@@ -39,7 +39,9 @@ public class HttpRange {
     }
 
     public static HttpRange byLength(final long offset, final long length) {
-        return new HttpRange(offset, TransferStatus.UNKNOWN_LENGTH == length ? TransferStatus.UNKNOWN_LENGTH : offset + length - 1);
+        // Open-ended range if length is unknown (negative) or does not yield a valid last byte position
+        final long end = offset + length - 1;
+        return new HttpRange(offset, length < 0 || end < offset ? TransferStatus.UNKNOWN_LENGTH : end);
     }
 
     public HttpRange(final long start, final long end) {
