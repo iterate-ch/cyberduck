@@ -41,7 +41,6 @@ import ch.cyberduck.core.vault.VaultVersion;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -70,8 +69,7 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new SwiftLargeUploadWriteFeature(session, regionService,
                 new SwiftSegmentService(session, ".segments-test/")), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setHeader(cryptomator.createHeader());
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
         final OutputStream out = feature.write(test, writeStatus, ConnectionCallback.noop);

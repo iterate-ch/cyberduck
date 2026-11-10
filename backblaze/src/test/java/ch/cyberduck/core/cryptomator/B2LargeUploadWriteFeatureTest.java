@@ -40,7 +40,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -70,8 +69,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new B2LargeUploadWriteFeature(session, fileid), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setHeader(cryptomator.createHeader());
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

@@ -44,7 +44,7 @@ public class CryptoTransferStatusTest extends AbstractCryptoTests {
         vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
 
-        final int clearLengthPerChunk = vault.getFileContentCryptor().cleartextChunkSize();
+        final int clearLengthPerChunk = vault.getCleartextChunkSize();
         final long clearLength = clearLengthPerChunk + 100L;
         final long cipherLength = vault.toCiphertextSize(0L, clearLength);
 
@@ -95,7 +95,7 @@ public class CryptoTransferStatusTest extends AbstractCryptoTests {
         vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
 
-        final long clearLength = vault.getFileContentCryptor().cleartextChunkSize() + 100L;
+        final long clearLength = vault.getCleartextChunkSize() + 100L;
         final long cipherLength = vault.toCiphertextSize(0L, clearLength);
 
         // Simulate CryptoUploadFeature#upload attaching the whole file ciphertext status

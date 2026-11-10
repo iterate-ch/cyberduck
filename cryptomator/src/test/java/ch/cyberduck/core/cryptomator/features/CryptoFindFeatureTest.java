@@ -38,7 +38,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
-import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.CipherCombo;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -112,7 +112,7 @@ public class CryptoFindFeatureTest {
                             return IOUtils.toInputStream(MASTERKEY, Charset.defaultCharset());
                         }
                         if("vault.cryptomator".equals(file.getName())) {
-                            return IOUtils.toInputStream(CryptomatorVaultTest.createJWT(MASTERKEY, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                            return IOUtils.toInputStream(CryptomatorVaultTest.createJWT(MASTERKEY, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault123"), Charset.defaultCharset());
                         }
                         throw new NotfoundException(file.getName());
                     }

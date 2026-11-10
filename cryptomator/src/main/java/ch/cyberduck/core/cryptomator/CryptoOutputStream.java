@@ -20,20 +20,37 @@ import ch.cyberduck.core.random.NonceGenerator;
 
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.cryptomator.cryptolib.api.CryptoException;
-import org.cryptomator.cryptolib.api.FileContentCryptor;
-import org.cryptomator.cryptolib.api.FileHeader;
+import org.cryptomator.cryptolib.api.VaultFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
+/**
+ * Encrypts cleartext written in chunks of the vault's cleartext chunk size. Does not write the file header.
+ */
 public class CryptoOutputStream extends ProxyOutputStream {
 
-    public CryptoOutputStream(final OutputStream proxy, final FileContentCryptor cryptor, final FileHeader header,
+    /**
+     * @param proxy            Ciphertext output
+     * @param vault            Vault to determine chunk sizes and whether a trailing empty chunk is required
+     * @param file             File opened with the header of this file. Closed when this stream is closed.
+     * @param nonces           Nonce for each chunk
+     * @param chunkIndexOffset Index of first chunk written
+     */
+    public CryptoOutputStream(final OutputStream proxy, final AbstractVault vault, final VaultFile file,
                               final NonceGenerator nonces, final long chunkIndexOffset) {
-        super(new MemorySegementingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces, chunkIndexOffset),
-                cryptor.cleartextChunkSize()));
+        this(proxy, vault, file, nonces, chunkIndexOffset, true);
+    }
+
+    /**
+     * @param last False for a segment followed by other segments of the same file. No trailing empty chunk is written.
+     */
+    public CryptoOutputStream(final OutputStream proxy, final AbstractVault vault, final VaultFile file,
+                              final NonceGenerator nonces, final long chunkIndexOffset, final boolean last) {
+        super(new MemorySegementingOutputStream(new EncryptingOutputStream(proxy, file, nonces, chunkIndexOffset,
+                vault.getCleartextChunkSize(), vault.getCiphertextChunkSize(), last && vault.numberOfChunks(0L) > 0),
+                vault.getCleartextChunkSize()));
     }
 
     @Override
@@ -47,20 +64,30 @@ public class CryptoOutputStream extends ProxyOutputStream {
     }
 
     private static final class EncryptingOutputStream extends ProxyOutputStream {
-        private final FileContentCryptor cryptor;
-        private final FileHeader header;
-        private final int chunksize;
+        private final VaultFile file;
         private final NonceGenerator nonces;
-        private long chunkIndexOffset;
+        private final int cleartextChunkSize;
+        private final int ciphertextChunkSize;
+        /**
+         * Vault format requires a trailing empty chunk when the size is a multiple of the chunk size
+         */
+        private final boolean eofChunk;
 
-        public EncryptingOutputStream(final OutputStream proxy, final FileContentCryptor cryptor, final FileHeader header,
-                                      final NonceGenerator nonces, final long chunkIndexOffset) {
+        private long chunkIndex;
+        /**
+         * True when no chunk was written yet or the last chunk written was a full chunk
+         */
+        private boolean pendingEofChunk = true;
+
+        public EncryptingOutputStream(final OutputStream proxy, final VaultFile file, final NonceGenerator nonces, final long chunkIndexOffset,
+                                      final int cleartextChunkSize, final int ciphertextChunkSize, final boolean eofChunk) {
             super(proxy);
-            this.cryptor = cryptor;
-            this.header = header;
-            this.chunksize = cryptor.cleartextChunkSize();
+            this.file = file;
             this.nonces = nonces;
-            this.chunkIndexOffset = chunkIndexOffset;
+            this.chunkIndex = chunkIndexOffset;
+            this.cleartextChunkSize = cleartextChunkSize;
+            this.ciphertextChunkSize = ciphertextChunkSize;
+            this.eofChunk = eofChunk;
         }
 
         @Override
@@ -70,19 +97,37 @@ public class CryptoOutputStream extends ProxyOutputStream {
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            try {
-                for(int chunkOffset = off; chunkOffset < len; chunkOffset += chunksize) {
-                    int chunkLen = Math.min(chunksize, len - chunkOffset);
-                    final ByteBuffer encryptedChunk = cryptor.encryptChunk(
-                        ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
-                        chunkIndexOffset++, header, nonces.next());
-                    final byte[] encrypted = new byte[encryptedChunk.remaining()];
-                    encryptedChunk.get(encrypted);
-                    super.write(encrypted);
-                }
+            for(int chunkOffset = off; chunkOffset < off + len; chunkOffset += cleartextChunkSize) {
+                final int chunkLen = Math.min(cleartextChunkSize, off + len - chunkOffset);
+                this.encrypt(ByteBuffer.wrap(b, chunkOffset, chunkLen));
+                pendingEofChunk = chunkLen == cleartextChunkSize;
             }
-            catch(CryptoException e) {
+        }
+
+        private void encrypt(final ByteBuffer cleartext) throws IOException {
+            try {
+                final ByteBuffer ciphertext = ByteBuffer.allocate(ciphertextChunkSize);
+                file.encryptChunk(cleartext, ciphertext, chunkIndex++, nonces.next());
+                ciphertext.flip();
+                super.write(ciphertext.array(), ciphertext.arrayOffset(), ciphertext.remaining());
+            }
+            catch(CryptoException | IllegalArgumentException e) {
                 throw new IOException(e.getMessage(), new CryptoAuthenticationException(e.getMessage(), e));
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                if(eofChunk && pendingEofChunk) {
+                    // Authenticates the file size
+                    this.encrypt(ByteBuffer.allocate(0));
+                    pendingEofChunk = false;
+                }
+                super.close();
+            }
+            finally {
+                file.close();
             }
         }
     }

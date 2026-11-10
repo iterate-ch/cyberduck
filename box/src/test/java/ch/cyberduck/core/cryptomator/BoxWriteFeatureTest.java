@@ -43,7 +43,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -74,8 +73,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new BoxWriteFeature(session, fileid), cryptomator);
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final TransferStatus writeStatus = new TransferStatus();
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setHeader(cryptomator.createHeader());
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
         final StatusOutputStream out = feature.write(test, writeStatus, ConnectionCallback.noop);
@@ -108,8 +106,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new BoxWriteFeature(session, fileid), cryptomator);
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final TransferStatus writeStatus = new TransferStatus();
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setHeader(cryptomator.createHeader());
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
         writeStatus.setModified(Instant.now().getEpochSecond());

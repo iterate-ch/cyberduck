@@ -39,10 +39,11 @@ import ch.cyberduck.core.vault.VaultUnlockException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
-import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.PerpetualMasterkey;
+import org.cryptomator.cryptolib.api.CipherCombo;
+import org.cryptomator.cryptolib.api.CvfMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
+import org.cryptomator.cryptolib.api.Cvf8UnlockedVault;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -85,10 +86,10 @@ public class CryptomatorVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             if("dir.c9r".equals(file.getName())) {
-                                return new NullInputStream();
+                                return IOUtils.toInputStream("1d4e1b46-7b31-4a5e-9e3a-6c7d2b8f0a11", StandardCharsets.UTF_8);
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -105,8 +106,7 @@ public class CryptomatorVaultTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
         vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
-        assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
-        assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
+        assertEquals(CipherCombo.SIV_GCM, ((Cvf8UnlockedVault) vault.getUnlockedVault()).cipherCombo());
         assertEquals(Vault.State.open, vault.getState());
         assertNotSame(home, vault.encrypt(session, home));
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
@@ -121,11 +121,11 @@ public class CryptomatorVaultTest {
                 vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))),
                 vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)), true)
         );
-        assertEquals(
+        assertArrayEquals(
                 vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId(),
                 vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId()
         );
-        assertEquals(
+        assertArrayEquals(
                 vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)))).attributes().getDirectoryId(),
                 vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)))).attributes().getDirectoryId()
         );
@@ -162,7 +162,7 @@ public class CryptomatorVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -179,8 +179,7 @@ public class CryptomatorVaultTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
         vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
-        assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
-        assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
+        assertEquals(CipherCombo.SIV_GCM, ((Cvf8UnlockedVault) vault.getUnlockedVault()).cipherCombo());
         assertEquals(Vault.State.open, vault.getState());
         vault.close();
     }
@@ -208,7 +207,7 @@ public class CryptomatorVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -253,7 +252,7 @@ public class CryptomatorVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -325,18 +324,18 @@ public class CryptomatorVaultTest {
         catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize
-        assertEquals(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()));
+        assertEquals(0L, vault.toCleartextSize(0L, vault.getHeaderSize()));
         // ciphertextFileSize == headerSize + 1
         try {
-            vault.toCleartextSize(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()) + 1);
+            vault.toCleartextSize(0L, vault.toCleartextSize(0L, vault.getHeaderSize()) + 1);
             fail();
         }
         catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize + chunkHeaderSize + 1
-        assertEquals(1L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + 28 + 1));
+        assertEquals(1L, vault.toCleartextSize(0L, vault.getHeaderSize() + 28 + 1));
         // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
-        assertEquals(32769L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + (32768 + 28) + (1 + 28)));
+        assertEquals(32769L, vault.toCleartextSize(0L, vault.getHeaderSize() + (32768 + 28) + (1 + 28)));
     }
 
     @Test
@@ -368,20 +367,20 @@ public class CryptomatorVaultTest {
 
     public static String createJWT(final String masterkeyCryptomator,
                                    final int version,
-                                   final CryptorProvider.Scheme cipher,
+                                   final CipherCombo cipher,
                                    final String passphrase) throws BackgroundException {
         try {
             final MasterkeyFile mkFile = MasterkeyFile.read(new StringReader(masterkeyCryptomator));
             final StringWriter writer = new StringWriter();
             mkFile.write(writer);
-            final PerpetualMasterkey masterkey = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8),
+            final CvfMasterkey masterkey = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8),
                     FastSecureRandomProvider.get().provide()).load(new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
-            final Algorithm algorithm = Algorithm.HMAC256(masterkey.getEncoded());
+            final Algorithm algorithm = Algorithm.HMAC256(masterkey.getEncoded().clone());
             return JWT.create()
                     .withJWTId(new UUIDRandomStringService().random())
                     .withKeyId(String.format("masterkeyfile:%s", "masterkey.cryptomator"))
                     .withClaim("format", version)
-                    .withClaim("cipherCombo", cipher.toString())
+                    .withClaim("cipherCombo", cipher.name())
                     .withClaim("shorteningThreshold", CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
                     .sign(algorithm);
         }

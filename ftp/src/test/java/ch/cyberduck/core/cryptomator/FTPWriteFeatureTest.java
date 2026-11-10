@@ -44,7 +44,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -80,8 +79,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new FTPWriteFeature(session), cryptomator);
-        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-        status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        status.setHeader(cryptomator.createHeader());
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
         status.setLength(content.length);
         final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
