@@ -49,7 +49,7 @@ public class CertificateIdentityCallbackFactory extends Factory<CertificateIdent
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
-            return new DisabledCertificateIdentityCallback();
+            return CertificateIdentityCallback.noop;
         }
     }
 

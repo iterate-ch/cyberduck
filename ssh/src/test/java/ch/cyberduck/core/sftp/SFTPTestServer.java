@@ -15,10 +15,20 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.IOUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.MountableFile;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -48,7 +58,7 @@ public enum SFTPTestServer {
             .withCopyToContainer(MountableFile.forClasspathResource("sftpgo/data.json", 0644), "/etc/sftpgo/data.json")
             .withEnv("SFTPGO_LOADDATA_FROM", "/etc/sftpgo/data.json")
             .withEnv("SFTPGO_LOADDATA_MODE", "1")
-            .withExposedPorts(2022)
+            .withExposedPorts(2022, 8080)
             .waitingFor(Wait.forLogMessage(".*server listener registered, address: \\[::\\]:2022.*", 1).withStartupTimeout(Duration.ofMinutes(2))));
 
     public static final String USER = "test";
@@ -80,6 +90,59 @@ public enum SFTPTestServer {
             Runtime.getRuntime().addShutdownHook(new Thread(started::stop));
         }
         return container;
+    }
+
+    /**
+     * Accept public key authentication of the test user with the given key
+     *
+     * @param key Public key in OpenSSH format (authorized_keys line)
+     */
+    public void authorize(final String key) throws Exception {
+        final GenericContainer<?> c = this.container();
+        switch(this) {
+            case OPENSSH:
+                c.copyFileToContainer(Transferable.of(key + "\n", 0600), "/config/.ssh/authorized_keys");
+                c.execInContainer("chown", "-R", "1000:1000", "/config/.ssh");
+                c.execInContainer("chmod", "700", "/config/.ssh");
+                break;
+            case PROFTPD:
+                // mod_sftp expects RFC 4716 format
+                c.execInContainer("mkdir", "-p", "/home/test/.ssh");
+                c.copyFileToContainer(Transferable.of(key + "\n", 0600), "/tmp/authorized_key.pub");
+                c.execInContainer("sh", "-c", "ssh-keygen -e -f /tmp/authorized_key.pub > /home/test/.ssh/authorized_keys");
+                c.execInContainer("chown", "-R", "test:test", "/home/test/.ssh");
+                break;
+            case SFTPGO:
+                final ObjectMapper mapper = new ObjectMapper();
+                final String api = String.format("http://%s:%d/api/v2", this.host(), c.getMappedPort(8080));
+                final String credentials = Base64.getEncoder().encodeToString("admin:password".getBytes(StandardCharsets.UTF_8));
+                final String token = mapper.readTree(request("GET", String.format("%s/token", api), "Basic " + credentials, null))
+                        .get("access_token").asText();
+                final ObjectNode user = (ObjectNode) mapper.readTree(request("GET", String.format("%s/users/%s", api, USER), "Bearer " + token, null));
+                user.putArray("public_keys").add(key);
+                request("PUT", String.format("%s/users/%s", api, USER), "Bearer " + token, mapper.writeValueAsString(user));
+                break;
+        }
+    }
+
+    private static String request(final String method, final String url, final String authorization, final String body) throws IOException {
+        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        try {
+            connection.setRequestMethod(method);
+            connection.setRequestProperty("Authorization", authorization);
+            if(body != null) {
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.getOutputStream().write(body.getBytes(StandardCharsets.UTF_8));
+            }
+            if(connection.getResponseCode() != 200) {
+                throw new IOException(String.format("%d %s", connection.getResponseCode(), connection.getResponseMessage()));
+            }
+            return IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
+        }
+        finally {
+            connection.disconnect();
+        }
     }
 
     public String host() {

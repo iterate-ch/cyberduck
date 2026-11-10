@@ -21,16 +21,14 @@ import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.security.Key;
 import java.security.KeyStore;
@@ -40,68 +38,22 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
+public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = LogManager.getLogger(CertificateStoreX509KeyManager.class);
 
-    private final CertificateIdentityCallback prompt;
-    private final Host bookmark;
-    private final CertificateStore callback;
-    private final LazyInitializer<KeyStore> keystore;
+    protected final CertificateIdentityCallback prompt;
+    protected final Host bookmark;
+    protected final CertificateStore callback;
+    protected final LazyInitializer<KeyStore> keystore;
 
-    public CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback) {
-        this(prompt, bookmark, callback, new LazyInitializer<KeyStore>() {
-            @Override
-            protected KeyStore initialize() throws ConcurrentException {
-                KeyStore store;
-                String type = null;
-                try {
-                    // Get the key manager factory for the default algorithm.
-                    final Preferences preferences = PreferencesFactory.get();
-                    type = preferences.getProperty("connection.ssl.keystore.type");
-                    log.info("Load default store of type {}", type);
-                    if(StringUtils.isBlank(type)) {
-                        type = KeyStore.getDefaultType();
-                    }
-                    final String provider = preferences.getProperty("connection.ssl.keystore.provider");
-                    if(StringUtils.isBlank(provider)) {
-                        store = KeyStore.getInstance(type);
-                    }
-                    else {
-                        store = KeyStore.getInstance(type, provider);
-                    }
-                }
-                catch(Exception e) {
-                    try {
-                        log.error(String.format("Could not load default store of type %s", type), e);
-                        log.info("Load default store of default type");
-                        store = KeyStore.getInstance(KeyStore.getDefaultType());
-                    }
-                    catch(KeyStoreException ex) {
-                        log.error("Initialization of key store failed. {}", e.getMessage());
-                        throw new ConcurrentException(e);
-                    }
-                }
-                try {
-                    store.load(null, null);
-                }
-                catch(IOException | NoSuchAlgorithmException | CertificateException e) {
-                    log.error("Loading of key store failed. {}", e.getMessage());
-                    throw new ConcurrentException(e);
-                }
-                return store;
-            }
-        });
-    }
-
-    public CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback,
-                                          final LazyInitializer<KeyStore> keystore) {
+    protected CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
+                                             final CertificateStore callback, final LazyInitializer<KeyStore> keystore) {
         this.prompt = prompt;
         this.bookmark = bookmark;
         this.callback = callback;
@@ -114,13 +66,15 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     @Override
     public List<String> list() {
-        // List of issuer distinguished name
         final List<String> list = new ArrayList<>();
+        if(keystore == null) {
+            return list;
+        }
         try {
             final Enumeration<String> aliases = keystore.get().aliases();
             while(aliases.hasMoreElements()) {
                 final String alias = aliases.nextElement();
-                log.debug("Alias in Keychain {}", alias);
+                log.debug("Alias in keystore {}", alias);
                 if(keystore.get().isKeyEntry(alias)) {
                     log.info("Found private key for {}", alias);
                     list.add(alias);
@@ -130,48 +84,32 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 }
             }
         }
-        catch(ConcurrentException | KeyStoreException e) {
-            log.error("Keystore not loaded {}", e.getMessage());
+        catch(ConcurrentException e) {
+            log.error("Keystore not loaded: {}", ExceptionUtils.getRootCause(e).getMessage());
+        }
+        catch(KeyStoreException e) {
+            log.error("Keystore not loaded: {}", e.getMessage());
         }
         list.sort(String::compareTo);
         return list;
     }
 
-    @Override
-    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
-        return this.getClientAliases(new String[]{keyType}, issuers);
-    }
-
-    public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
-        // List of issuer distinguished name
-        final List<String> list = new ArrayList<>();
-        for(String alias : this.list()) {
-            // returns the first element of the certificate chain of that key entry
-            final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
-            if(null == cert) {
-                log.warn("Failed to retrieve certificate for alias {}", alias);
-                continue;
-            }
-            log.info("Add X509 certificate entry {} to list", cert);
-            list.add(alias);
-        }
-        if(list.isEmpty()) {
-            // Return null if there were no matches
+    public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
+        if(keystore == null) {
             return null;
         }
-        return list.toArray(new String[list.size()]);
-    }
-
-    public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
         try {
             final Certificate cert = keystore.get().getCertificate(alias);
             if(this.matches(cert, keyTypes, issuers)) {
                 return (X509Certificate) cert;
             }
-            for(Certificate c : keystore.get().getCertificateChain(alias)) {
-                if(c instanceof X509Certificate) {
-                    if(this.matches(c, keyTypes, issuers)) {
-                        return (X509Certificate) cert;
+            final Certificate[] chain = keystore.get().getCertificateChain(alias);
+            if(chain != null) {
+                for(Certificate c : chain) {
+                    if(c instanceof X509Certificate) {
+                        if(this.matches(c, keyTypes, issuers)) {
+                            return (X509Certificate) cert;
+                        }
                     }
                 }
             }
@@ -181,6 +119,90 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         }
         log.info("No matching certificate found for alias {} and issuers {}", alias, Arrays.toString(issuers));
         return null;
+    }
+
+    @Override
+    public X509Certificate[] getCertificateChain(final String alias) {
+        if(keystore == null) {
+            return null;
+        }
+        try {
+            final List<X509Certificate> result = new ArrayList<>();
+            final Certificate[] chain = keystore.get().getCertificateChain(alias);
+            if(null == chain) {
+                log.warn("No certificate chain for alias {}", alias);
+                return null;
+            }
+            for(Certificate cert : chain) {
+                if(cert instanceof X509Certificate) {
+                    result.add((X509Certificate) cert);
+                }
+            }
+            if(result.isEmpty()) {
+                log.warn("No certificate chain for alias {}", alias);
+                final Certificate cert = keystore.get().getCertificate(alias);
+                if(null == cert) {
+                    return null;
+                }
+                if(cert instanceof X509Certificate) {
+                    result.add((X509Certificate) cert);
+                }
+            }
+            return result.toArray(new X509Certificate[0]);
+        }
+        catch(ConcurrentException | KeyStoreException e) {
+            log.error("Keystore not loaded {}", e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public PrivateKey getPrivateKey(final String alias) {
+        if(keystore == null) {
+            return null;
+        }
+        try {
+            if(keystore.get().isKeyEntry(alias)) {
+                final Key key = keystore.get().getKey(alias, null);
+                if(key instanceof PrivateKey) {
+                    return (PrivateKey) key;
+                }
+                else {
+                    log.warn("Key {} for alias {} is not a private key", key, alias);
+                }
+            }
+            else {
+                log.warn("Alias {} is not a key entry", alias);
+            }
+        }
+        catch(ConcurrentException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            log.error("Keystore not loaded {}", e.getMessage());
+        }
+        log.warn("No private key for alias {}", alias);
+        return null;
+    }
+
+    @Override
+    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        return this.getClientAliases(new String[]{keyType}, issuers);
+    }
+
+    public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
+        final Logger log = LogManager.getLogger(getClass());
+        final List<String> list = new ArrayList<>();
+        for(String alias : this.list()) {
+            final X509Certificate cert = this.getCertificate(alias, keyTypes, issuers);
+            if(null == cert) {
+                log.warn("Failed to retrieve certificate for alias {}", alias);
+                continue;
+            }
+            log.info("Add X509 certificate entry {} to list", cert);
+            list.add(alias);
+        }
+        if(list.isEmpty()) {
+            return null;
+        }
+        return list.toArray(new String[0]);
     }
 
     @Override
@@ -222,67 +244,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             log.error("Keystore not loaded {}", e.getMessage());
         }
         // Return null if there are no matches
-        return null;
-    }
-
-    @Override
-    public X509Certificate[] getCertificateChain(final String alias) {
-        try {
-            final List<X509Certificate> result = new ArrayList<>();
-            final Certificate[] chain = keystore.get().getCertificateChain(alias);
-            if(null == chain) {
-                log.warn("No certificate chain for alias {}", alias);
-                // Return null if the alias can't be found
-                return null;
-            }
-            else {
-                for(Certificate cert : chain) {
-                    if(cert instanceof X509Certificate) {
-                        result.add((X509Certificate) cert);
-                    }
-                }
-            }
-            if(result.isEmpty()) {
-                log.warn("No certificate chain for alias {}", alias);
-                final Certificate cert = keystore.get().getCertificate(alias);
-                if(null == cert) {
-                    // Return null if the alias can't be found
-                    return null;
-                }
-                if(cert instanceof X509Certificate) {
-                    final X509Certificate x509 = (X509Certificate) cert;
-                    result.add(x509);
-                }
-            }
-            return result.toArray(new X509Certificate[result.size()]);
-        }
-        catch(ConcurrentException | KeyStoreException e) {
-            log.error("Keystore not loaded {}", e.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public PrivateKey getPrivateKey(final String alias) {
-        try {
-            if(keystore.get().isKeyEntry(alias)) {
-                final Key key = keystore.get().getKey(alias, "null".toCharArray());
-                if(key instanceof PrivateKey) {
-                    return (PrivateKey) key;
-                }
-                else {
-                    log.warn("Key {} for alias {} is not a private key", key, alias);
-                }
-            }
-            else {
-                log.warn("Alias {} is not a key entry", alias);
-            }
-        }
-        catch(ConcurrentException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-            log.error("Keystore not loaded {}", e.getMessage());
-        }
-        log.warn("No private key for alias {}", alias);
-        // Return null if the alias can't be found
         return null;
     }
 }
