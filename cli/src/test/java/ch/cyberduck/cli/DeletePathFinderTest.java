@@ -50,14 +50,4 @@ public class DeletePathFinderTest  {
                 new TransferItem(new Path("/remote", EnumSet.of(Path.Type.file)))
         ));
     }
-
-    @Test
-    public void testFindWildcard() throws Exception {
-        final CommandLineParser parser = new PosixParser();
-        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--delete", "rackspace://cdn.cyberduck.ch/remote/*.txt"});
-
-        assertTrue(new DeletePathFinder().find(input, TerminalAction.delete, new Path("/remote/*.txt", EnumSet.of(Path.Type.file))).contains(
-                new TransferItem(new Path("/remote", EnumSet.of(Path.Type.directory)))
-        ));
-    }
 }

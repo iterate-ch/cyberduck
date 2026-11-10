@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -30,10 +29,6 @@ public class DeletePathFinder implements TransferItemFinder {
 
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
-        if(StringUtils.containsAny(remote.getName(), '*')) {
-            // Treat asterisk as wildcard
-            return Collections.singleton(new TransferItem(remote.getParent()));
-        }
         return Collections.singleton(new TransferItem(remote));
     }
 }
