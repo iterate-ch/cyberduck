@@ -441,16 +441,31 @@ public class Terminal {
 
     protected Exit delete(final SessionPool session, final Path remote) {
         final List<Path> files = new ArrayList<>();
-        for(TransferItem i : new DeletePathFinder().find(input, TerminalAction.delete, remote)) {
-            files.add(i.remote);
-        }
-        final DeleteWorker worker;
         if(StringUtils.containsAny(remote.getName(), '*')) {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
+            // Resolve the files matching the wildcard in the parent folder. Never delete the parent folder itself.
+            final Filter<Path> filter = new DownloadGlobFilter(remote.getName());
+            try {
+                final AttributedList<Path> list = this.execute(new TerminalBackgroundAction<>(controller, session,
+                        new ListWorker(cache, remote.getParent(), new DisabledListProgressListener())));
+                for(Path file : list) {
+                    if(filter.accept(file)) {
+                        files.add(file);
+                    }
+                }
+            }
+            catch(TerminalBackgroundException e) {
+                return Exit.failure;
+            }
+            if(files.isEmpty()) {
+                return Exit.success;
+            }
         }
         else {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new NullFilter<>());
+            for(TransferItem i : new DeletePathFinder().find(input, TerminalAction.delete, remote)) {
+                files.add(i.remote);
+            }
         }
+        final DeleteWorker worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new NullFilter<>());
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<>(controller, session, worker);
         try {
             this.execute(action);
