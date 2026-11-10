@@ -56,11 +56,18 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Name getDefault(final Path file) {
+        if(S3Session.isNeonHostname(session.getHost().getHostname())) {
+            return new S3Region(S3Session.findRegionInNeonHostname(session.getHost().getHostname()));
+        }
         return new S3Region(HostPreferencesFactory.get(session.getHost()).getProperty("s3.location"));
     }
 
     @Override
     public Set<Name> getLocations(final Path file) {
+        if(S3Session.isNeonHostname(session.getHost().getHostname())) {
+            // Buckets are always created in the region of the Neon project
+            return Collections.singleton(this.getDefault(file));
+        }
         if(StringUtils.isNotEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             log.debug("Return empty set for hostname {}", session.getHost());
             // Connected to single bucket
@@ -78,6 +85,10 @@ public class S3LocationFeature implements Location {
     protected Name getLocation(final String bucketname) throws BackgroundException {
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
             return new S3Region(session.getHost().getRegion());
+        }
+        if(S3Session.isNeonHostname(session.getHost().getHostname())) {
+            // Skip lookup as buckets are scoped to the branch in the region of the Neon project
+            return new S3Region(S3Session.findRegionInNeonHostname(session.getHost().getHostname()));
         }
         try {
             if(cache.containsRegionForBucketName(bucketname)) {

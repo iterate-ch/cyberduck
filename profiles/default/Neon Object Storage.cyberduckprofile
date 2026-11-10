@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>neon</string>
+        <key>Bundled</key>
+        <true/>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Description</key>
+        <string>Neon Object Storage</string>
+        <key>Default Nickname</key>
+        <string>Neon Object Storage</string>
+        <!-- Endpoint is specific to a branch. Copy from Connect → Storage in the Neon Console -->
+        <key>Default Hostname</key>
+        <string/>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Hostname Placeholder</key>
+        <string>br-….storage.c-….us-east-2.aws.neon.tech</string>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Anonymous Configurable</key>
+        <false/>
+        <key>Username Placeholder</key>
+        <string>Access Key ID (nak_live_…)</string>
+        <key>Password Placeholder</key>
+        <string>Secret Access Key (nsk_live_…)</string>
+        <key>Authorization</key>
+        <string>AWS4HMACSHA256</string>
+        <key>Help</key>
+        <string>https://neon.com/docs/storage/overview</string>
+        <key>Properties</key>
+        <array>
+            <!-- Only path-style requests are supported -->
+            <string>s3.bucket.virtualhost.disable=true</string>
+            <string>s3.storage.class.options=STANDARD</string>
+            <string>s3.versioning.enable=false</string>
+        </array>
+    </dict>
+</plist>

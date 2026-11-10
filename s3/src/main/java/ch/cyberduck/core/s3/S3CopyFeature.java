@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.StreamListener;
@@ -70,7 +71,7 @@ public class S3CopyFeature implements Copy {
             // Keep encryption setting
             status.setEncryption(new S3EncryptionFeature(session, acl).getEncryption(source));
         }
-        if(Acl.EMPTY == status.getAcl()) {
+        if(Acl.EMPTY == status.getAcl() && null != session.getFeature(AclPermission.class)) {
             // Apply non-standard ACL
             try {
                 // Verify target bucket allows ACLs

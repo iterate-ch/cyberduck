@@ -83,6 +83,7 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.utils.SignatureUtils;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -109,6 +110,22 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             Pattern.CASE_INSENSITIVE);
     private static final Pattern AWS_VPCE_HOSTNAME = Pattern.compile("(?:[a-z0-9\\-]+\\.)?s3\\.[a-z0-9\\-]+\\.vpce\\.amazonaws\\.com", Pattern.CASE_INSENSITIVE);
     private static final Pattern AWS_GOVCLOUD_HOSTNAME = Pattern.compile(".*[.\\-]us-gov-[a-z]+-[0-9]+\\.amazonaws\\.com", Pattern.CASE_INSENSITIVE);
+    /**
+     * Branch scoped endpoint of Neon Object Storage like <code>br-cool-darkness-a1b2c3d4.storage.c-1.us-east-2.aws.neon.tech</code>
+     * with the region captured in the first group.
+     */
+    private static final Pattern NEON_HOSTNAME = Pattern.compile("(?:[a-z0-9\\-]+\\.)?storage\\.(?:c-[0-9]+\\.)?([a-z0-9\\-]+)\\.(?:aws|azure)\\.neon\\.tech",
+            Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Features not available with Neon Object Storage. Writing ACLs, bucket logging, website configuration and
+     * restore from Glacier return <code>501 Not Implemented</code>. Versioning and lifecycle configuration is stored but
+     * not enforced. Access level of a bucket is set in the Neon Console instead of using ACLs.
+     */
+    private static final Set<Class<?>> NEON_UNSUPPORTED_FEATURES = new HashSet<>(Arrays.asList(
+            AclPermission.class, Share.class, Logging.class, Lifecycle.class, Versioning.class, Redundancy.class,
+            DistributionConfiguration.class, Scheduler.class, Restore.class, TransferAcceleration.class
+    ));
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
     private final S3ThresholdUploadService upload = new S3ThresholdUploadService(this, acl);
@@ -209,6 +226,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if(S3Session.isNeonHostname(host.getHostname())) {
+            if(!preferences.getBoolean("s3.bucket.virtualhost.disable")) {
+                // Neon Object Storage only supports path-style requests regardless of the connection profile used
+                log.debug("Disable virtual host style requests for Neon endpoint {}", host.getHostname());
+                preferences.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+            }
+        }
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authentication = this.configureCredentialsStrategy(configuration, prompt, cancel);
         log.debug("Configured authentication strategy {}", authentication);
@@ -395,6 +419,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 }
             }
         }
+        if(S3Session.isNeonHostname(host.getHostname())) {
+            // Buckets are scoped to the branch and always located in the region of the project
+            final String region = S3Session.findRegionInNeonHostname(host.getHostname());
+            log.debug("Set default region to {} determined from Neon endpoint {}", region, host.getHostname());
+            preferences.setProperty("s3.location", region);
+        }
         if(home.isRoot() && StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
             log.debug("Skip querying region for {}", home);
             new S3ListService(this, acl).list(home, new DisabledListProgressListener());
@@ -453,9 +483,39 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return AWS_GOVCLOUD_HOSTNAME.matcher(hostname).matches();
     }
 
+    /**
+     * @return True for a branch endpoint of Neon Object Storage
+     */
+    public static boolean isNeonHostname(final String hostname) {
+        if(StringUtils.isBlank(hostname)) {
+            return false;
+        }
+        return NEON_HOSTNAME.matcher(hostname).matches();
+    }
+
+    /**
+     * @return Region of the project from branch endpoint of Neon Object Storage or null
+     */
+    public static String findRegionInNeonHostname(final String hostname) {
+        if(StringUtils.isBlank(hostname)) {
+            return null;
+        }
+        final Matcher matcher = NEON_HOSTNAME.matcher(hostname);
+        if(matcher.matches()) {
+            return StringUtils.lowerCase(matcher.group(1));
+        }
+        return null;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(S3Session.isNeonHostname(host.getHostname())) {
+            if(NEON_UNSUPPORTED_FEATURES.contains(type)) {
+                log.debug("Feature {} not supported by Neon Object Storage", type);
+                return null;
+            }
+        }
         if(type == ListService.class) {
             return (T) new S3ListService(this, acl);
         }
