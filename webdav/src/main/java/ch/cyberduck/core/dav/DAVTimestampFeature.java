@@ -20,11 +20,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -124,10 +122,6 @@ public class DAVTimestampFeature implements Timestamp {
     }
 
     protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
-        final Map<String, String> headers = new HashMap<>();
-        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-            headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId()));
-        }
-        return headers;
+        return new HashMap<>(DAVLockFeature.toHeaders(session, file, status));
     }
 }
