@@ -727,6 +727,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void reload(final NSTableView browser, final BrowserTableDataSource model, final List<Path> selected, final List<Path> folders) {
         this.setNavigation();
         model.render(browser, folders);
+        // Update scroller range to match the new content size
+        browser.enclosingScrollView().reflectScrolledClipView(browser.superview());
         // Rows may have changed without selection change notification
         this.invalidateSelection();
         this.setStatus();
