@@ -84,6 +84,7 @@ import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.utils.SignatureUtils;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -424,6 +425,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             final String region = S3Session.findRegionInNeonHostname(host.getHostname());
             log.debug("Set default region to {} determined from Neon endpoint {}", region, host.getHostname());
             preferences.setProperty("s3.location", region);
+            // Validate credentials with authenticated request as no bucket location is queried for default path
+            new S3ListService(this, acl).list(new Path(String.valueOf(Path.DELIMITER),
+                    EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+            return;
         }
         if(home.isRoot() && StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
             log.debug("Skip querying region for {}", home);

@@ -62,6 +62,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -98,10 +99,17 @@ public class NeonObjectStorageIntegrationTest {
     }
 
     private S3Session session(final String key, final String secret) throws Exception {
+        return this.session(key, secret, null);
+    }
+
+    private S3Session session(final String key, final String secret, final String defaultPath) throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Neon Object Storage.cyberduckprofile"));
         final Host host = new Host(profile, System.getenv("NEON_S3_ENDPOINT"), new Credentials(key, secret));
+        if(defaultPath != null) {
+            host.setDefaultPath(defaultPath);
+        }
         final S3Session connection = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         // Cancel any prompt for credentials on login failure
         new LoginConnectionService(new DisabledLoginCallback(), HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop).check(connection, CancelCallback.noop);
@@ -111,6 +119,20 @@ public class NeonObjectStorageIntegrationTest {
     @Test(expected = LoginCanceledException.class)
     public void testLoginFailure() throws Exception {
         this.session(System.getenv("NEON_S3_ACCESS_KEY"), "nsk_live_invalid");
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testLoginFailureDefaultPathBucket() throws Exception {
+        // Region is determined locally from the endpoint and must not skip validating credentials
+        this.session(System.getenv("NEON_S3_ACCESS_KEY"), "nsk_live_invalid", String.format("/%s", System.getenv("NEON_S3_BUCKET")));
+    }
+
+    @Test
+    public void testLoginDefaultPathBucket() throws Exception {
+        final S3Session connection = this.session(System.getenv("NEON_S3_ACCESS_KEY"), System.getenv("NEON_S3_SECRET_KEY"),
+                String.format("/%s", System.getenv("NEON_S3_BUCKET")));
+        assertTrue(connection.isConnected());
+        connection.close();
     }
 
     @Test
@@ -158,9 +180,9 @@ public class NeonObjectStorageIntegrationTest {
     @Test
     public void testMultipartUpload() throws Exception {
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        // Larger than threshold and part size of 10MiB
+        // Use multipart upload service directly without fallback to single upload on failure. Three parts of 5MiB
         final byte[] content = this.upload(file, RandomUtils.nextBytes(11 * 1024 * 1024),
-                new S3ThresholdUploadService(session, new S3AccessControlListFeature(session), 5 * 1024 * 1024L));
+                new S3MultipartUploadService(session, new S3AccessControlListFeature(session), 5 * 1024 * 1024L, 2));
         assertEquals(content.length, session.getFeature(AttributesFinder.class).find(file).getSize());
         assertArrayEquals(content, this.download(file, content.length));
         session.getFeature(Delete.class).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
@@ -173,7 +195,9 @@ public class NeonObjectStorageIntegrationTest {
     @SuppressWarnings("unchecked")
     private byte[] upload(final Path file, final byte[] content, final Upload upload) throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        IOUtils.write(content, local.getOutputStream(false));
+        try(OutputStream out = local.getOutputStream(false)) {
+            IOUtils.write(content, out);
+        }
         final TransferStatus status = new TransferStatus().setLength(content.length).setMime("application/octet-stream");
         final BytecountStreamListener count = new BytecountStreamListener();
         upload.upload(session.getFeature(Write.class), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
