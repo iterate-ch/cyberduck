@@ -26,6 +26,11 @@ import java.util.concurrent.TimeUnit;
 public abstract class ExecutorServiceThreadPool implements ThreadPool {
     private static final Logger log = LogManager.getLogger(ExecutorServiceThreadPool.class);
 
+    /**
+     * Maximum time to wait for running tasks to complete on shutdown
+     */
+    private static final int TERMINATION_TIMEOUT_SECONDS = 5;
+
     private final AbstractExecutorService pool;
 
     public ExecutorServiceThreadPool(final AbstractExecutorService pool) {
@@ -43,9 +48,14 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
             pool.shutdownNow();
         }
         try {
-            while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+            // Running tasks may be blocked in uninterruptible calls such as a socket connect. Do not block quit indefinitely.
+            for(int i = 0; i < TERMINATION_TIMEOUT_SECONDS; i++) {
+                if(pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+                    return;
+                }
                 log.warn("Await termination for pool {}", pool);
             }
+            log.error("Giving up awaiting termination of pool {} after {} seconds", pool, TERMINATION_TIMEOUT_SECONDS);
         }
         catch(InterruptedException e) {
             log.error("Failure awaiting pool termination. {}", e.getMessage());
