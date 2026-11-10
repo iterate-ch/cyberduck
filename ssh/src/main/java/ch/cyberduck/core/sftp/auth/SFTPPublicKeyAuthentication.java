@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyFileUtil;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
@@ -55,6 +56,8 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = LogManager.getLogger(SFTPPublicKeyAuthentication.class);
 
+    private static final int MAX_PASSPHRASE_ATTEMPTS = 2;
+
     private final SSHClient client;
 
     public SFTPPublicKeyAuthentication(final SSHClient client) {
@@ -70,6 +73,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             final Local pubKey;
             final FileKeyProvider provider;
             final AtomicBoolean canceled = new AtomicBoolean();
+            final AtomicInteger attempts = new AtomicInteger();
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                         new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8), true);
@@ -140,7 +144,16 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
 
                     @Override
                     public boolean shouldRetry(Resource<?> resource) {
-                        return false;
+                        if(canceled.get()) {
+                            return false;
+                        }
+                        if(attempts.incrementAndGet() >= MAX_PASSPHRASE_ATTEMPTS) {
+                            return false;
+                        }
+                        // Discard passphrase from bookmark or keychain that failed to decrypt the key and prompt again
+                        log.warn("Failure decrypting private key {}. Prompt for passphrase", privKey);
+                        credentials.setIdentityPassphrase(StringUtils.EMPTY);
+                        return true;
                     }
                 });
                 client.auth(credentials.getUsername(), new AuthPublickey(provider));
