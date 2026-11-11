@@ -26,12 +26,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         public event DeleteConfirmationEventHandler OnDeleteConfirmation;
         public event RevertedEventHandler Reverted;
 
+        private readonly SemaphoreSlim busyLock = new(1, 1);
         private readonly Controller controller = controller;
         private readonly Delete delete = session.Feature<Delete>();
         private readonly SessionPool session = session;
         private readonly Versioning versioning = session.Feature<Versioning>();
-        [ObservableProperty]
-        private bool busy;
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(DeleteVersionCommand))]
         [NotifyCanExecuteChangedFor(nameof(RevealVersionCommand))]
@@ -41,6 +40,8 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         private Path selection;
         private ReadOnlyCollection<VersionViewModel> versions;
         private TaskNotifier<ReadOnlyCollection<VersionViewModel>> versionsNotifier;
+
+        public bool Busy => busyLock.CurrentCount == 0;
 
         public ReadOnlyCollection<VersionViewModel> Versions
         {
@@ -59,11 +60,26 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             LoadingTask = LoadVersionsAsync(Selection);
         }
 
-        private bool CanDeleteVersion() => SelectedVersion != null && delete.isSupported(SelectedVersion.Model.Path);
+        private async ValueTask<bool> AcquireLock()
+        {
+            await busyLock.WaitAsync();
+            OnBusyChanged();
+            return true;
+        }
 
-        private bool CanRevealVersion() => SelectedVersion != null && SelectedVersion.Model.Path.attributes().getPermission().isReadable();
+        private bool CanDeleteVersion() => !Busy && SelectedVersion != null && delete.isSupported(SelectedVersion.Model.Path);
 
-        private bool CanRevertVersion() => SelectedVersion != null && versioning.isRevertable(SelectedVersion.Model.Path);
+        private bool CanRevealVersion() => !Busy && SelectedVersion != null && SelectedVersion.Model.Path.attributes().getPermission().isReadable();
+
+        private bool CanRevertVersion() => !Busy && SelectedVersion != null && versioning.isRevertable(SelectedVersion.Model.Path);
+
+        private void OnBusyChanged()
+        {
+            OnPropertyChanged(nameof(Busy));
+            DeleteVersionCommand.NotifyCanExecuteChanged();
+            RevealVersionCommand.NotifyCanExecuteChanged();
+            RevertVersionCommand.NotifyCanExecuteChanged();
+        }
 
         [RelayCommand(CanExecute = nameof(CanDeleteVersion))]
         private async Task OnDeleteVersion()
@@ -82,9 +98,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 return;
             }
 
+            bool lockAcquired = false;
             try
             {
-                Busy = true;
+                lockAcquired = await AcquireLock();
                 AsyncWorkerBackgroundAction action = new(controller, session,
                         new DeleteWorker(
                             LoginCallbackFactory.get(controller), norm,
@@ -94,10 +111,13 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             }
             finally
             {
-                Busy = false;
+                if (lockAcquired)
+                {
+                    ReleaseLock();
+                }
             }
 
-            await (LoadingTask = LoadVersionsAsync(Selection));
+            Load();
         }
 
         private void OnLoadCompleted(Task<ReadOnlyCollection<VersionViewModel>> task)
@@ -120,9 +140,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         [RelayCommand(CanExecute = nameof(CanRevertVersion))]
         private async Task OnRevertVersion()
         {
+            bool lockAcquired = false;
             try
             {
-                Busy = true;
+                lockAcquired = await AcquireLock();
                 var files = Collections.singletonList(SelectedVersion.Model.Path);
                 var native = Utils.ConvertFromJavaList<Path>(files);
                 AsyncWorkerBackgroundAction action = new(controller, session, new RevertWorker(files));
@@ -132,10 +153,13 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             }
             finally
             {
-                Busy = false;
+                if (lockAcquired)
+                {
+                    ReleaseLock();
+                }
             }
 
-            await (LoadingTask = LoadVersionsAsync(Selection));
+            Load();
         }
 
         private async Task<ReadOnlyCollection<VersionViewModel>> LoadVersionsAsync(Path path)
@@ -145,9 +169,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 return null;
             }
 
+            bool lockAcquired = false;
             try
             {
-                Busy = true;
+                lockAcquired = await AcquireLock();
                 VersionsWorkerImpl worker = new(path, new DisabledListProgressListener());
                 controller.background(new WorkerBackgroundAction(controller, session, worker, ProgressListener.noop));
                 var result = await worker.Task;
@@ -161,8 +186,17 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             }
             finally
             {
-                Busy = false;
+                if (lockAcquired)
+                {
+                    ReleaseLock();
+                }
             }
+        }
+
+        private void ReleaseLock()
+        {
+            busyLock.Release();
+            OnBusyChanged();
         }
 
         partial void OnSelectionChanging(Path value)

@@ -58,12 +58,12 @@
                 </DataGrid>
             </Border>
 
-            <Menu Style="{StaticResource DialogMenuStyle}"
+            <Menu Style="{DynamicResource DialogMenuStyle}"
                   Margin="{DynamicResource UIItemSpacing}"
                   Grid.Row="1">
                 <MenuItem x:Name="RevertButton"
                           Command="{Binding RevertVersionCommand}"
-                          Style="{DynamicResource DialogMenuItemButton}"
+                          Style="{DynamicResource DialogMenuItemStyle}"
                           AutomationProperties.Name="{xaml:Text Revert,Table=Info}">
                     <MenuItem.Header>
                         <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -83,7 +83,7 @@
 
                 <MenuItem x:Name="OpenButton"
                           Command="{Binding RevealVersionCommand}"
-                          Style="{DynamicResource DialogMenuItemButton}"
+                          Style="{DynamicResource DialogMenuItemStyle}"
                           AutomationProperties.Name="{xaml:Text Open,Table=Localizable}">
                     <MenuItem.Header>
                         <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
