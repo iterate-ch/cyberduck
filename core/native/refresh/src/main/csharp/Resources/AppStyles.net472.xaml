@@ -104,15 +104,24 @@
     </Style>
     <Style x:Key="DialogMenuItemStyle"
            TargetType="MenuItem"
-           BasedOn="{StaticResource {x:Type MenuItem}}" >
+           BasedOn="{StaticResource {x:Type MenuItem}}">
         <Setter Property="Background"
                 Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
         <Style.Triggers>
-            <Trigger Property="Role" Value="TopLevelHeader">
-                <Setter Property="Padding" Value="{DynamicResource ButtonPadding}" />
+            <Trigger Property="Role"
+                     Value="TopLevelHeader">
+                <Setter Property="Padding"
+                        Value="{DynamicResource ButtonPadding}" />
             </Trigger>
-            <Trigger Property="Role" Value="TopLevelItem">
-                <Setter Property="Padding" Value="{DynamicResource ButtonPadding}" />
+            <Trigger Property="Role"
+                     Value="TopLevelItem">
+                <Setter Property="Padding"
+                        Value="{DynamicResource ButtonPadding}" />
+            </Trigger>
+            <Trigger Property="IsEnabled"
+                     Value="False">
+                <Setter Property="Foreground"
+                        Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
             </Trigger>
         </Style.Triggers>
     </Style>
