@@ -32,6 +32,7 @@ import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3MoveFeature;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -40,7 +41,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -53,12 +54,18 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class S3MoveFeatureTest extends AbstractS3Test {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     public void testMove() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of objects differs");
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

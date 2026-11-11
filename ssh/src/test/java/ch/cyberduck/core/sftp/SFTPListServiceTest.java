@@ -44,6 +44,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
 
     @Test
     public void testList() throws Exception {
+        this.assumeSymlink();
         final Path home = new SFTPHomeDirectoryService(session).find();
         final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
         final Path file = new Path(home, filename, EnumSet.of(Path.Type.file));
@@ -69,6 +70,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
 
     @Test
     public void testInvalidSymlinkTarget() throws Exception {
+        this.assumeSymlink();
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         final String target = new AlphanumericRandomStringService().random();

@@ -52,12 +52,7 @@ public class QuicklookTransferBackgroundAction extends BrowserTransferBackground
 
     public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session,
                                              final TransferQueue queue, final List<TransferItem> items) {
-        super(controller, session, queue, toDownload(session, items), new TransferCallback() {
-            @Override
-            public void complete(final Transfer transfer) {
-                //
-            }
-        }, new TransferPrompt() {
+        super(controller, session, queue, toDownload(session, items), TransferCallback.disabled, new TransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem item) {
                 return TransferAction.comparison;

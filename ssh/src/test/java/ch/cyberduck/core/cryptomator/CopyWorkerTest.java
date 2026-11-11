@@ -70,6 +70,11 @@ import static org.junit.Assert.*;
 @RunWith(value = Parameterized.class)
 public class CopyWorkerTest extends AbstractSFTPTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     public void testCopyFile() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();

@@ -12,7 +12,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -23,16 +23,20 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFile() {
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertFalse(new S3TouchFeature(session).isSupported(Home.root(), Optional.empty()));
         assertTrue(new S3TouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
-        assertTrue(new S3TouchFeature(virtualhost).isSupported(Home.root(), Optional.empty()));
-        assertTrue(new S3TouchFeature(virtualhost).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
+    }
+
+    @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
+    public void testFileVirtualHost() {
+        assertTrue(new S3TouchFeature(session).isSupported(Home.root(), Optional.empty()));
+        assertTrue(new S3TouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
     }
 
     @Test
@@ -46,13 +50,24 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final Path test = feature.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
+        {
+            final PathAttributes lookup = new S3AttributesFinderFeature(session, acl).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
+        {
+            final PathAttributes lookup = new DefaultAttributesFinderFeature(session).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testTouchObjectLockBucket() throws Exception {
         final Path container = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -72,30 +87,53 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testTouchVirtualHost() throws Exception {
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final S3TouchFeature feature = new S3TouchFeature(virtualhost);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3TouchFeature feature = new S3TouchFeature(session);
         final String filename = new AsciiRandomStringService().random();
         assertTrue(feature.isSupported(Home.root(), Optional.of(filename)));
-        final Path test = feature.touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = feature.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(virtualhost, acl).find(test));
-        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(virtualhost).find(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        {
+            final PathAttributes lookup = new S3AttributesFinderFeature(session, acl).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
+        {
+            final PathAttributes lookup = new DefaultAttributesFinderFeature(session).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
     @Test
     public void testTouchCarriageReturnKey() throws Exception {
+        this.assumeNot(S3TestServer.CLOUDSERVER, "Object keys with control characters are rejected");
+        this.assumeNot(S3TestServer.RUSTFS, "Object keys with control characters are rejected");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s\n-\r", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        {
+            final PathAttributes lookup = new DefaultAttributesFinderFeature(session).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
+        {
+            final PathAttributes lookup = new S3AttributesFinderFeature(session, acl).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
@@ -108,7 +146,12 @@ public class S3TouchFeatureTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s-+*~@([", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
+        {
+            final PathAttributes lookup = new S3AttributesFinderFeature(session, acl).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
@@ -147,6 +190,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test(expected = AccessDeniedException.class)
+    @RunOn(S3TestServer.AWS)
     public void testFailureWithServerSideEncryptionBucketPolicy() throws Exception {
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -157,6 +201,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));

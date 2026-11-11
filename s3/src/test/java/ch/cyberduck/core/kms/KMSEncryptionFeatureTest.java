@@ -23,6 +23,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.RunOn;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -33,7 +35,7 @@ import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -44,7 +46,8 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class KMSEncryptionFeatureTest extends AbstractS3Test {
 
     @Test

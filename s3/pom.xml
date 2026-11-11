@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>9.6.0-SNAPSHOT</version>
+        <version>9.6.1-SNAPSHOT</version>
     </parent>
     <artifactId>s3</artifactId>
     <packaging>jar</packaging>
@@ -94,5 +94,35 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <LOCALSTACK />
+                        <MINIO />
+                        <CEPH />
+                        <RUSTFS />
+                        <SEAWEEDFS />
+                        <CLOUDSERVER />
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <groups>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest</groups>
+                    <environmentVariables>
+                        <AWS />
+                        <AWS_VIRTUALHOST />
+                        <AWS_CLOUDFRONT />
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 

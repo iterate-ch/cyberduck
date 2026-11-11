@@ -11,7 +11,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3UrlProviderTest extends AbstractS3Test {
 
     @Test
@@ -49,6 +49,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testWebURL() throws Exception {
         // Region is read from cache only
         new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation("test-eu-west-1-cyberduck");
@@ -73,6 +74,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testProviderUriWithKey() {
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.provider)).iterator();
@@ -80,6 +82,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testProviderUriRoot() {
         final Iterator<DescriptiveUrl> provider = new S3UrlProvider(session, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck",
                 EnumSet.of(Path.Type.directory)), EnumSet.of(DescriptiveUrl.Type.provider)).iterator();
@@ -87,6 +90,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testHttpURL() throws Exception {
         // Region is read from cache only
         new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation("test-eu-west-1-cyberduck");
@@ -116,6 +120,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testHttpUriCustomPort() {
         session.getHost().setPort(8443);
         // Bucket location lookup is not possible with custom port
@@ -168,6 +173,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testToSignedUrl() throws Exception {
         final S3UrlProvider provider = new S3UrlProvider(session, Collections.emptyMap());
         final Path bucket = new Path("/test-eu-west-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -177,10 +183,11 @@ public class S3UrlProviderTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testToSignedUrlVirtualHost() throws Exception {
-        final S3UrlProvider provider = new S3UrlProvider(virtualhost, Collections.emptyMap());
+        final S3UrlProvider provider = new S3UrlProvider(session, Collections.emptyMap());
         final Path bucket = Home.root();
-        new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(bucket);
+        new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(bucket);
         final String url = provider.toSignedUrl(new Path(bucket, "t", EnumSet.of(Path.Type.file)), 30).getUrl();
         assertTrue(url, url.startsWith(
                 "https://test-eu-central-1-cyberduck.s3.dualstack.eu-central-1.amazonaws.com/t?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date="));

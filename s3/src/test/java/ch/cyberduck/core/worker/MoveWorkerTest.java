@@ -29,6 +29,8 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
@@ -38,7 +40,7 @@ import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3VersionedObjectListService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -49,10 +51,11 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testMoveFile() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -103,6 +106,9 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveVersionedDirectory() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Common prefix is listed for a directory containing delete markers only");
+        this.assumeNot(S3TestServer.CEPH, "Delete marker versions are not found with 404 instead of 405 response");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path sourceDirectory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,

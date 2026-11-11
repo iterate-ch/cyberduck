@@ -66,6 +66,7 @@ import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -78,7 +79,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -107,7 +107,7 @@ public class FTPTLSSessionReuseTest {
     @Parameterized.Parameter
     public String protocol;
 
-    private final int port = ThreadLocalRandom.current().nextInt(2000, 3000);
+    private int port;
 
     /**
      * Number of certificate validations in the client, one per full handshake
@@ -126,6 +126,9 @@ public class FTPTLSSessionReuseTest {
 
     @Before
     public void start() throws Exception {
+        try(ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
         final SslConfiguration ssl = new RecordingSslConfiguration(this.context(), protocol);
         final FtpServerFactory serverFactory = new FtpServerFactory();
         final UserManager users = new PropertiesUserManagerFactory().createUserManager();

@@ -34,6 +34,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3ListService;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,7 +42,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,12 +56,19 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class S3DirectoryFeatureTest extends AbstractS3Test {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     public void testMakeDirectoryEncrypted() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);

@@ -36,6 +36,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testSetMetadataFile() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
         final TransferStatus status = new TransferStatus();
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final String v = new AlphanumericRandomStringService().random();
@@ -53,6 +54,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testSetMetadataFolder() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
         final TransferStatus status = new TransferStatus();
         final Path test = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         final String v = new AlphanumericRandomStringService().random();

@@ -50,7 +50,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
@@ -66,9 +66,14 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class S3VersioningFeatureTest extends AbstractS3Test {
+
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
 
     @Test
     public void testRevert() throws Exception {

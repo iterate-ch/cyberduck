@@ -31,7 +31,6 @@ jobs:
       artifact-metadata: write
     uses: ./.github/workflows/deploy.yml
     with:
-      MAVEN_PROFILES: 'appstore'
       # App Store artifacts are already published by the release/snapshot macOS leg;
       # this run only needs to build the sandboxed .pkg for upload.
       MAVEN_GOAL: install
@@ -66,4 +65,4 @@ jobs:
         env:
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
-        run: xcrun altool --verbose --upload-app -f release/Cyberduck-*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"
+        run: xcrun altool --verbose --upload-app -f release/Cyberduck-*.pkg -t osx -u "$NOTARIZATION_USER" -p @env:NOTARIZATION_PW

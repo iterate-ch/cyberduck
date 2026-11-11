@@ -29,7 +29,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
@@ -43,11 +43,12 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMove() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Copy of objects differs");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -66,27 +67,29 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testMoveVirtualHost() throws Exception {
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
-        assertTrue(new S3FindFeature(virtualhost, acl).find(renamed));
-        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertFalse(new S3FindFeature(session, acl).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testMovePlaceholderVirtualHost() throws Exception {
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3DirectoryFeature(virtualhost).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        assertFalse(new DefaultFindFeature(virtualhost).find(test));
-        assertTrue(new S3FindFeature(virtualhost, acl).find(renamed));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
+        new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -111,6 +114,8 @@ public class S3MoveFeatureTest extends AbstractS3Test {
 
     @Test
     public void testMoveVersioned() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Delete marker versions are not found with 404 instead of 405 response");
+        this.assumeNot(S3TestServer.CEPH, "Delete marker versions are not found with 404 instead of 405 response");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -161,6 +166,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testMoveWithServerSideEncryptionBucketPolicy() throws Exception {
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));

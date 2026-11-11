@@ -29,9 +29,9 @@
                         <rect key="frame" x="20" y="316" width="64" height="64"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="64" id="298-VT-E2e"/>
-                            <constraint firstAttribute="height" constant="64" id="YYA-kH-i5x"/>
-                            <constraint firstAttribute="width" constant="64" id="dni-Yj-2lq"/>
+                            <constraint firstAttribute="width" constant="64" id="f1c-UN-1OP"/>
                             <constraint firstAttribute="width" constant="64" id="lBt-6K-k8o"/>
+                            <constraint firstAttribute="height" constant="64" id="mnB-i3-TJq"/>
                         </constraints>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="8"/>
                     </imageView>
@@ -90,8 +90,8 @@ DQ
                             </subviews>
                         </clipView>
                         <constraints>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="aCN-jI-yX5"/>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="hpn-wC-GK4"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="vxH-cn-rcp"/>
                         </constraints>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="20">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
@@ -106,9 +106,9 @@ DQ
                         <rect key="frame" x="92" y="20" width="16" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="1g9-3b-6Ur"/>
-                            <constraint firstAttribute="width" constant="16" id="Nca-iE-A0w"/>
+                            <constraint firstAttribute="width" constant="16" id="EZr-WE-f0x"/>
                             <constraint firstAttribute="width" constant="16" id="hZB-SJ-WoT"/>
-                            <constraint firstAttribute="height" constant="16" id="y4G-fs-N5Y"/>
+                            <constraint firstAttribute="height" constant="16" id="qhf-VQ-T6w"/>
                         </constraints>
                     </progressIndicator>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="11">
@@ -127,51 +127,51 @@ Gw
                 </subviews>
                 <constraints>
                     <constraint firstItem="13" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="1Gt-BL-cLA"/>
-                    <constraint firstItem="17" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="1eO-wj-LaC"/>
+                    <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="1R5-fo-DSo"/>
                     <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="1gd-PG-Gfg"/>
-                    <constraint firstItem="9" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="3fw-4g-9Xx"/>
-                    <constraint firstItem="11" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="20" symbolic="YES" id="3t9-Qn-aEu"/>
+                    <constraint firstItem="15" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="4cl-hg-cTL"/>
                     <constraint firstItem="7" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="6BJ-QH-Jud"/>
-                    <constraint firstAttribute="trailing" secondItem="11" secondAttribute="trailing" constant="20" symbolic="YES" id="6ND-am-tJN"/>
-                    <constraint firstItem="22" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="9e1-t2-Wqn"/>
                     <constraint firstAttribute="trailing" secondItem="11" secondAttribute="trailing" constant="20" symbolic="YES" id="9xF-yE-Y5R"/>
-                    <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="20" symbolic="YES" id="Bg9-WA-cxz"/>
-                    <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="CRv-FX-7bM"/>
-                    <constraint firstItem="17" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="20" symbolic="YES" id="Gaa-WS-a5b"/>
+                    <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="DRt-l7-ddL"/>
+                    <constraint firstItem="11" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="20" symbolic="YES" id="GOi-Jy-sWZ"/>
+                    <constraint firstAttribute="bottom" secondItem="11" secondAttribute="bottom" constant="20" symbolic="YES" id="GgW-AC-Cjs"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="I7R-OP-QyN"/>
-                    <constraint firstItem="7" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="Jjy-5A-UOG"/>
+                    <constraint firstItem="17" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="JSz-Iu-vK2"/>
                     <constraint firstItem="15" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="K2y-YG-cO7"/>
+                    <constraint firstItem="9" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="KTu-43-XdN"/>
                     <constraint firstItem="22" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="8" symbolic="YES" id="KTz-Q7-HO5"/>
                     <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" constant="20" symbolic="YES" id="Mb1-LJ-Hcw"/>
-                    <constraint firstItem="11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="22" secondAttribute="trailing" constant="8" symbolic="YES" id="O4V-zH-BWW"/>
+                    <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" constant="20" symbolic="YES" id="MtA-5F-eYk"/>
+                    <constraint firstAttribute="trailing" secondItem="11" secondAttribute="trailing" constant="20" symbolic="YES" id="MxC-UJ-t67"/>
+                    <constraint firstItem="7" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="O4W-u0-MWs"/>
+                    <constraint firstItem="22" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="8" symbolic="YES" id="OQX-0X-uCP"/>
+                    <constraint firstItem="22" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="OhK-Ri-HP2"/>
                     <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="PVy-cO-rDI"/>
-                    <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" constant="20" symbolic="YES" id="Qyp-ap-7IU"/>
-                    <constraint firstItem="15" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="VEd-MX-M82"/>
                     <constraint firstItem="11" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="20" symbolic="YES" id="VkW-8w-KHe"/>
                     <constraint firstItem="13" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="WHj-WU-jtg"/>
                     <constraint firstAttribute="bottom" secondItem="11" secondAttribute="bottom" constant="20" symbolic="YES" id="WZ8-7J-yfC"/>
-                    <constraint firstItem="9" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="X02-y2-cDt"/>
+                    <constraint firstItem="5" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="XZK-sC-CIu"/>
                     <constraint firstItem="9" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="XqT-oN-Vwn"/>
-                    <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="Yul-7B-W0b"/>
-                    <constraint firstItem="15" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="Z3l-Dz-Dyo"/>
-                    <constraint firstAttribute="bottom" secondItem="11" secondAttribute="bottom" constant="20" symbolic="YES" id="ZXI-FH-Hlk"/>
                     <constraint firstAttribute="trailing" secondItem="17" secondAttribute="trailing" constant="20" symbolic="YES" id="ZkW-dC-f2V"/>
                     <constraint firstItem="9" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="aKx-7c-HJV"/>
-                    <constraint firstItem="7" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="fQP-Xv-I8x"/>
+                    <constraint firstItem="9" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="dBc-Fq-75o"/>
+                    <constraint firstItem="17" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="20" symbolic="YES" id="eLY-65-frJ"/>
+                    <constraint firstItem="13" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="f6t-w7-gYS"/>
                     <constraint firstItem="22" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="gA8-Q2-VDB"/>
-                    <constraint firstItem="5" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="hvd-AD-FzV"/>
+                    <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" constant="20" symbolic="YES" id="iTV-5P-Jwu"/>
                     <constraint firstItem="7" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="jA8-sD-XoK"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="jUM-gq-gYF"/>
-                    <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" constant="20" symbolic="YES" id="jV6-tA-shh"/>
-                    <constraint firstItem="22" firstAttribute="top" secondItem="17" secondAttribute="bottom" constant="8" symbolic="YES" id="l1e-aO-bJj"/>
+                    <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="20" symbolic="YES" id="no8-rQ-pvU"/>
+                    <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="nqb-CA-3sf"/>
+                    <constraint firstItem="13" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="o7L-Fo-NA8"/>
                     <constraint firstItem="17" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="phw-G1-QHl"/>
                     <constraint firstItem="11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="22" secondAttribute="trailing" constant="8" symbolic="YES" id="rD9-ku-b84"/>
-                    <constraint firstItem="13" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="rKg-Iz-ifS"/>
+                    <constraint firstItem="11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="22" secondAttribute="trailing" constant="8" symbolic="YES" id="uHO-lA-hNW"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="vBK-C8-fRZ"/>
+                    <constraint firstItem="15" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="vJK-aa-v6A"/>
+                    <constraint firstItem="7" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="vmo-RS-1EX"/>
                     <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="20" symbolic="YES" id="xGG-Rf-va6"/>
-                    <constraint firstItem="13" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="8" symbolic="YES" id="zAU-Db-euo"/>
                     <constraint firstItem="17" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="20" symbolic="YES" id="zjr-1c-xzx"/>
-                    <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="zy8-aX-Yvp"/>
                 </constraints>
             </view>
             <point key="canvasLocation" x="-51.5" y="260"/>

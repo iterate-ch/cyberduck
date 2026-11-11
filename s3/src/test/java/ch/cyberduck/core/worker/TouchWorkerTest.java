@@ -24,12 +24,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -38,10 +40,11 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class TouchWorkerTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")

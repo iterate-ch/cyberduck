@@ -172,7 +172,7 @@ jobs:
       - name: Download App
         uses: actions/download-artifact@v8
         with:
-          pattern: Cyberduck-*
+          pattern: '{Cyberduck-*,Cyberduck_*}'
           path: release
           merge-multiple: true
           # Keep the app ZIP as is instead of extracting Cyberduck.app
@@ -198,7 +198,7 @@ jobs:
             release/Cyberduck-*.pkg
             release/Cyberduck-*.exe
             release/Cyberduck-*.msi
-            release/Cyberduck-*.appx
+            release/Cyberduck_*.appx
             release/duck-*.pkg
             release/duck-*.exe
             release/duck-*.msi
@@ -241,3 +241,62 @@ jobs:
           Get-ChildItem "release\duck.*.nupkg" | ForEach-Object {
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
+
+  # Submit the APPX to the Microsoft Store. Release only. Creates a new submission
+  # from the built package and commits it for certification.
+  store:
+    needs: [ check, deploy ]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ self-hosted, windows, x64 ]
+    steps:
+      - name: Clean
+        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
+
+      - name: Download APPX
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck_*.appx
+          path: release
+          merge-multiple: true
+          skip-decompress: true
+
+      - name: Setup Microsoft Store Developer CLI
+        uses: microsoft/microsoft-store-apppublisher@v1.4
+
+      - name: Configure Microsoft Store credentials
+        env:
+          MSSTORE_SELLER_ID: ${{ vars.MSSTORE_SELLER_ID }}
+          MSSTORE_TENANT_ID: ${{ vars.MSSTORE_TENANT_ID }}
+          MSSTORE_CLIENT_ID: ${{ vars.MSSTORE_CLIENT_ID }}
+          MSSTORE_CLIENT_SECRET: ${{ secrets.MSSTORE_CLIENT_SECRET }}
+        run: msstore reconfigure --tenantId $env:MSSTORE_TENANT_ID --sellerId $env:MSSTORE_SELLER_ID --clientId $env:MSSTORE_CLIENT_ID --clientSecret $env:MSSTORE_CLIENT_SECRET
+
+      # msstore publish only recognizes .msix, .msixbundle and .msixupload. An
+      # .msixupload is a zip containing the package, which the Store accepts for APPX.
+      - name: Publish to Microsoft Store
+        env:
+          MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
+        run: |
+          Get-ChildItem "release\Cyberduck_*.appx" | ForEach-Object {
+            $upload = Join-Path $_.DirectoryName ($_.BaseName + ".zip")
+            Compress-Archive -Path $_.FullName -DestinationPath $upload -Force
+            $msixupload = [System.IO.Path]::ChangeExtension($upload, ".msixupload")
+            Move-Item $upload $msixupload -Force
+            msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID --noCommit
+          }
+
+      # The self-hosted runner account persists the CLI configuration and token cache
+      # beyond the job. Remove them unconditionally, including on failure.
+      - name: Remove Microsoft Store credentials
+        if: ${{ always() }}
+        run: |
+          msstore reconfigure --reset 2>$null
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Microsoft\msstore" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\.IdentityService" -ErrorAction SilentlyContinue
+          cmdkey /list | Select-String -Pattern 'msstore' | ForEach-Object {
+            if ($_ -match 'Target:\s*(\S+)') { cmdkey /delete:$Matches[1] }
+          }
+          exit 0

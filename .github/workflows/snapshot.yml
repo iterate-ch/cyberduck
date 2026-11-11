@@ -42,7 +42,7 @@ jobs:
     secrets: inherit
 
   publish:
-    needs: [ deploy, sftp ]
+    needs: deploy
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/publish.yml
     with:

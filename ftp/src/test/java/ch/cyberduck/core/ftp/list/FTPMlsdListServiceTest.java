@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
+import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
@@ -55,7 +56,11 @@ public class FTPMlsdListServiceTest extends AbstractFTPTest {
     public void testListEmpty() throws Exception {
         this.assumeFeature("MLST");
         final ListService list = new FTPMlsdListService(session);
-        final Path directory = new FTPWorkdirService(session).find();
+        final Path home = new FTPWorkdirService(session).find();
+        // Containers are shared between test classes, so home directory is not guaranteed to be empty
+        final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), directory, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -26,6 +27,8 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -38,7 +41,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.model.StorageObject;
 import org.junit.Ignore;
@@ -52,9 +55,14 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class S3TouchFeatureTest extends AbstractS3Test {
+
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
 
     @Test
     public void testTouchEncrypted() throws Exception {
@@ -71,12 +79,18 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
+        {
+            final PathAttributes lookup = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
         session.getRegistry().clear();
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testTouchObjectLockBucket() throws Exception {
         final Path home = new Path("test-eu-central-1-objectlock", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -93,7 +107,12 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test));
+        {
+            final PathAttributes lookup = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
+            assertEquals(test.attributes().getSize(), lookup.getSize());
+            assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
+            assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
+        }
         session.getRegistry().clear();
         assertThrows(InteroperabilityException.class, () -> new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session));
     }

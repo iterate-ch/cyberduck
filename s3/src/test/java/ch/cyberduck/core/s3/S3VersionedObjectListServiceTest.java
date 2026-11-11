@@ -38,7 +38,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
@@ -54,11 +54,12 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testList() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Empty ETag listed for objects in a bucket without versioning");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         file.attributes().setVersionId("null");
@@ -73,9 +74,10 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testListVirtualHostStyle() throws Exception {
         final Path bucket = Home.root();
-        assertNotSame(AttributedList.EMPTY, new S3VersionedObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
+        assertNotSame(AttributedList.EMPTY, new S3VersionedObjectListService(session, new S3AccessControlListFeature(session)).list(
                 bucket, new DisabledListProgressListener()));
     }
 
@@ -140,7 +142,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     public void testEnableVersioningExistingFiles() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path bucket = new S3DirectoryFeature(session)
-                .mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                .mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(bucket));
         final Path file = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3WriteFeature feature = new S3WriteFeature(session, acl);
@@ -195,6 +197,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListEncodedCharacter() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -206,6 +209,8 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListInvisibleCharacter() throws Exception {
+        this.assumeNot(S3TestServer.CLOUDSERVER, "Object keys with control characters are rejected");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -217,6 +222,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListFilePlusCharacter() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -228,6 +234,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListPlaceholderPlusCharacter() throws Exception {
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Listing of versions ignores URL encoding of keys");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         bucket.attributes().setRegion("us-east-1");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -250,6 +257,9 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
      */
     @Test
     public void testDirectoyPlaceholderNoChildren() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.RUSTFS, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -265,6 +275,9 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
      */
     @Test
     public void testDirectoyPlaceholderWithChildren() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.RUSTFS, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session, acl), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -336,6 +349,10 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListFileDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.CEPH, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.RUSTFS, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session).touch(
@@ -350,6 +367,10 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListPlaceholderDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.CEPH, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.RUSTFS, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Dot object keys not supported");
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session).mkdir(

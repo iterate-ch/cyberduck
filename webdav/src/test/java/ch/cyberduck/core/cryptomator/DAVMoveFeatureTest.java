@@ -55,6 +55,11 @@ import static org.junit.Assert.*;
 @RunWith(value = Parameterized.class)
 public class DAVMoveFeatureTest extends AbstractDAVTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     public void testMove() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();

@@ -44,6 +44,11 @@ import static org.mockito.Mockito.when;
 @RunWith(Parameterized.class)
 public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -81,6 +86,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindDirectory() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No ETag for collections");
         final Path test = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);

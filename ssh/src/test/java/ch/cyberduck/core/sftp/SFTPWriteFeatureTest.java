@@ -136,6 +136,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testWriteSymlink() throws Exception {
+        this.assumeSymlink();
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), target, new TransferStatus());

@@ -23,6 +23,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -32,100 +33,60 @@ import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
+@RunWith(Parameterized.class)
 public abstract class AbstractFTPTest {
 
-    private static final String USER = "test";
-    private static final String PASSWORD = "test";
-    private static final int FTP_PORT = 21;
-    /**
-     * Home directory of user in container
-     */
-    protected static final String HOME = "/ftp/test";
-    /**
-     * Passive data connections are made to the port announced by the server and must be mapped one to one
-     */
-    private static final int PASV_MIN_PORT = 21000;
-    private static final int PASV_MAX_PORT = 21010;
-
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("delfer/alpine-ftp-server:latest"))
-            .withEnv("USERS", String.format("%s|%s", USER, PASSWORD))
-            // Run vsftpd in foreground. The default startup script monitors the newest process matching vsftpd which is a
-            // connection handler when a client connects early and stops the container once that connection is closed.
-            // Configuration file must be first as it would otherwise override options on the command line
-            .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
-                    String.format("-opasv_min_port=%d", PASV_MIN_PORT),
-                    String.format("-opasv_max_port=%d", PASV_MAX_PORT),
-                    "-opasv_address=127.0.0.1")
-            .withExposedPorts(FTP_PORT)
-            .withLogConsumer(f -> System.out.print("FTPD " + f.getUtf8String()))
-            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
-
-    @BeforeClass
-    public static void start() throws Exception {
-        container.setPortBindings(IntStream.rangeClosed(PASV_MIN_PORT, PASV_MAX_PORT)
-                .mapToObj(port -> String.format("%d:%d", port, port)).collect(Collectors.toList()));
-        container.start();
-        awaitGreeting();
-    }
-
-    /**
-     * Port forwarded to host accepts connections before server is ready to reply
-     */
-    private static void awaitGreeting() throws Exception {
-        final long timeout = System.nanoTime() + Duration.ofSeconds(30).toNanos();
-        while(true) {
-            try(Socket socket = new Socket(container.getHost(), container.getMappedPort(FTP_PORT))) {
-                socket.setSoTimeout(2000);
-                final String greeting = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)).readLine();
-                if(null != greeting && greeting.startsWith("220")) {
-                    return;
-                }
+    static {
+        // Servers advertising AUTH TLS prompt to switch to secure connection
+        ProtocolFactory.get().register(new FTPTLSProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
             }
-            catch(IOException e) {
-                // Retry
-            }
-            if(System.nanoTime() > timeout) {
-                throw new IOException("Timeout waiting for FTP server");
-            }
-            Thread.sleep(500L);
-        }
-    }
-
-    @AfterClass
-    public static void stop() {
-        container.stop();
+        });
     }
 
     protected FTPSession session;
 
-    @Parameterized.Parameters(name = "vaultVersion = {0}")
-    public static Object[] data() {
-        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
+    /**
+     * Run against every server implementation
+     */
+    @Parameterized.Parameters(name = "server = {0}")
+    public static Object[][] configurations() {
+        final Object[][] data = new Object[FTPTestServer.values().length][];
+        for(int i = 0; i < data.length; i++) {
+            data[i] = new Object[]{FTPTestServer.values()[i], null};
+        }
+        return data;
     }
 
-    @Parameterized.Parameter
+    /**
+     * Run against every server implementation with all vault versions
+     */
+    protected static Object[][] parameterMatrix() {
+        final Object[][] data = new Object[FTPTestServer.values().length * 2][];
+        int i = 0;
+        for(FTPTestServer server : FTPTestServer.values()) {
+            for(VaultVersion.Type type : new VaultVersion.Type[]{VaultVersion.Type.V8, VaultVersion.Type.UVF}) {
+                data[i++] = new Object[]{server, type};
+            }
+        }
+        return data;
+    }
+
+    @Parameterized.Parameter(0)
+    public FTPTestServer server;
+
+    @Parameterized.Parameter(1)
     public VaultVersion.Type vaultVersion;
 
     @After
@@ -140,7 +101,7 @@ public abstract class AbstractFTPTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new FTPProtocol(), container.getHost(), container.getMappedPort(FTP_PORT), new Credentials(USER, PASSWORD)) {
+        final Host host = new Host(new FTPProtocol(), server.host(), server.port(), new Credentials(FTPTestServer.USER, FTPTestServer.PASSWORD)) {
             @Override
             public String getProperty(final String key) {
                 if(key.equals("ftp.datachannel.epsv")) {

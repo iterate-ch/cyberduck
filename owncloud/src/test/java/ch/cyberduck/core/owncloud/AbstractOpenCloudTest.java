@@ -42,7 +42,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -71,7 +71,8 @@ public abstract class AbstractOpenCloudTest {
         try(ServerSocket socket = new ServerSocket(0)) {
             port = socket.getLocalPort();
         }
-        container = new GenericContainer<>(DockerImageName.parse("opencloudeu/opencloud-rolling:latest"))
+        container = new GenericContainer<>(new ImageFromDockerfile("cyberduck-opencloud", false)
+            .withFileFromClasspath("Dockerfile", "opencloud/Dockerfile"))
                 .withCommand("-c", "opencloud init --insecure yes --admin-password " + PASSWORD + " || true; opencloud server")
                 .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("/bin/sh"))
                 .withEnv("OC_URL", String.format("http://localhost:%d", port))

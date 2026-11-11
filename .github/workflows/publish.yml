@@ -95,6 +95,17 @@ jobs:
           pattern: changelog-*
           path: update
 
+      - name: Detect Feeds
+        id: feeds
+        shell: bash
+        run: |
+          # A platform build may have failed or been cancelled; publish only the feeds that exist
+          for os in macOS Windows; do
+            if compgen -G "update/changelog-$os/changelog.*" > /dev/null; then
+              echo "$os=true" >> "$GITHUB_OUTPUT"
+            fi
+          done
+
       - name: Credentials
         id: identity
         env:
@@ -106,6 +117,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: Upload Feed (macOS)
+        if: steps.feeds.outputs.macOS == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ vars.SFTP_USER }}'
@@ -117,6 +129,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed (Windows)
+        if: steps.feeds.outputs.Windows == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ vars.SFTP_USER }}'
