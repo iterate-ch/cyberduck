@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 import ch.iterate.openstack.swift.Client;
+import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
@@ -60,6 +61,8 @@ public class SwiftContainerQuotaFeature implements Quota {
         try {
             final Region region = regionService.lookup(container);
             final Client client = session.getClient();
+            // Renews an expired token, which the direct request below does not do
+            client.getContainerInfo(region, container.getName());
             final HttpHead request = new HttpHead(region.getStorageUrl(container.getName()));
             request.setHeader("X-Auth-Token", client.getAuthentication().getAuthToken());
             try(CloseableHttpResponse response = client.getClient().execute(request)) {
@@ -70,6 +73,9 @@ public class SwiftContainerQuotaFeature implements Quota {
                 }
                 return toSpace(response);
             }
+        }
+        catch(GenericException e) {
+            throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, container);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, container);
