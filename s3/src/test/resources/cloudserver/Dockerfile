@@ -1,1 +1,1 @@
-FROM ghcr.io/scality/cloudserver:9.5.2
+FROM ghcr.io/scality/cloudserver:9.5.4
