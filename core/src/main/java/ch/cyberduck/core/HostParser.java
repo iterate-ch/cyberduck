@@ -329,9 +329,6 @@ public final class HostParser {
         if(host.getProtocol().isAnonymousConfigurable()) {
             host.getCredentials().setUsername(preferences.getProperty("connection.login.anon.name"));
         }
-        else if(host.getProtocol().getType() == Protocol.Type.brick) {
-            host.getCredentials().setUsername(StringUtils.EMPTY);
-        }
         else {
             host.getCredentials().setUsername(preferences.getProperty("connection.login.name"));
         }

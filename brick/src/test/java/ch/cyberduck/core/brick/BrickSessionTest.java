@@ -16,125 +16,75 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.jersey.HttpComponentsProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
 
-import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpVersion;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.message.BasicStatusLine;
 import org.apache.http.protocol.HttpCoreContext;
-import org.apache.http.protocol.HttpContext;
-import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Test;
 
-import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.GenericType;
+import java.io.ByteArrayOutputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.auth.oauth2.BearerToken;
-import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.testing.http.MockHttpTransport;
-import com.google.api.client.testing.http.MockLowLevelHttpResponse;
+import com.sun.net.httpserver.HttpServer;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class BrickSessionTest {
     @Test
-    public void testDisabledKeychainDoesNotLoadSavedApiKey() throws Exception {
-        final String previous = PreferencesFactory.get().getProperty("connection.login.keychain");
-        final String previousStore = PreferencesFactory.get().getProperty("factory.passwordstore.class");
-        PreferencesFactory.get().setProperty("connection.login.keychain", true);
-        PreferencesFactory.get().setProperty("factory.passwordstore.class", SavedApiKeyStore.class.getName());
-        SavedApiKeyStore.lookups.set(0);
-        try {
-            for(String password : new String[]{"", "manual-api-key"}) {
-                final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", password));
-                final AtomicInteger authorizations = new AtomicInteger();
-                final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-                    @Override
-                    public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) {
-                        authorizations.incrementAndGet();
-                        return host.getCredentials().setPassword("new-api-key").setSaved(false);
-                    }
-                };
-                final CloseableHttpClient http = mock(CloseableHttpClient.class);
-                when(http.execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class))).thenAnswer(invocation -> this.response(200));
-                try {
-                    new KeychainLoginService(PasswordStoreFactory.get()).validate(host, new DefaultX509KeyManager(), LoginCallback.noop,
-                            new LoginOptions(host.getProtocol()).keychain(false));
-                    this.open(session, http);
-                    session.login(LoginCallback.noop, CancelCallback.noop);
-                    assertEquals(password.isEmpty() ? 1 : 0, authorizations.get());
-                    assertEquals(password.isEmpty() ? "new-api-key" : password, host.getCredentials().getPassword());
-                    assertEquals(0, SavedApiKeyStore.lookups.get());
-                }
-                finally {
-                    session.close();
-                }
-            }
-        }
-        finally {
-            PreferencesFactory.get().setProperty("connection.login.keychain", previous);
-            PreferencesFactory.get().setProperty("factory.passwordstore.class", previousStore);
-        }
-    }
-
-    @Test
-    public void testSavedApiKeyIsLoadedWithoutPasswordInput() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane"));
+    public void testUpgradeRestoresSavedKeyWithoutOAuth() throws Exception {
+        final Host host = this.host("", "jane");
         final HostPasswordStore store = mock(HostPasswordStore.class);
-        when(store.findLoginPassword(host)).thenReturn("saved-api-key");
-        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == AttributesFinder.class) {
-                    return (T) (AttributesFinder) (file, listener) -> PathAttributes.EMPTY;
-                }
-                return super._getFeature(type);
-            }
-
-            @Override
-            public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) {
-                fail("A saved API key should not open browser authentication");
-                return null;
-            }
-        };
+        when(store.findLoginPassword(host)).thenReturn("legacy-api-key");
+        final AtomicInteger authorizations = new AtomicInteger();
+        final BrickSession session = this.session(host, store, authorizations);
         try {
-            new KeychainLoginService(store).validate(host, new DefaultX509KeyManager(), LoginCallback.noop, new LoginOptions(host.getProtocol()));
-            session.open(target -> Proxy.DIRECT, HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+            this.open(session);
             session.login(LoginCallback.noop, CancelCallback.noop);
-            assertEquals("saved-api-key", host.getCredentials().getPassword());
+            session.login(LoginCallback.noop, CancelCallback.noop);
+            assertEquals("legacy-api-key", host.getCredentials().getPassword());
+            assertEquals("jane", host.getCredentials().getProperty(BrickOAuth2AuthorizationService.ACCOUNT));
+            assertFalse(host.getCredentials().isOAuthAuthentication());
             assertFalse(host.getCredentials().isSaved());
+            assertEquals(0, authorizations.get());
             verify(store).findLoginPassword(host);
         }
         finally {
@@ -143,18 +93,20 @@ public class BrickSessionTest {
     }
 
     @Test
-    public void testApiKeyWithoutUsernameDoesNotOpenBrowser() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", "manual-api-key"));
+    public void testExistingKeyIgnoresOAuthExpiry() throws Exception {
+        final Host host = this.host("manual-api-key", "os-user");
+        host.getCredentials().setOauth(new OAuthTokens("unused", "unused", 1L));
+        final HostPasswordStore store = mock(HostPasswordStore.class);
         final AtomicInteger authorizations = new AtomicInteger();
-        final BrickSession session = this.session(host, authorizations);
-        final CloseableHttpClient http = mock(CloseableHttpClient.class);
-        when(http.execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class))).thenAnswer(invocation -> this.response(200));
+        final BrickSession session = this.session(host, store, authorizations);
         try {
-            this.open(session, http);
+            this.open(session);
             session.login(LoginCallback.noop, CancelCallback.noop);
-            assertEquals(0, authorizations.get());
             assertEquals("manual-api-key", host.getCredentials().getPassword());
-            verify(http).execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class));
+            assertFalse(host.getCredentials().isOAuthAuthentication());
+            assertNull(host.getCredentials().getProperty(BrickOAuth2AuthorizationService.ACCOUNT));
+            assertEquals(0, authorizations.get());
+            verifyNoInteractions(store);
         }
         finally {
             session.close();
@@ -162,145 +114,94 @@ public class BrickSessionTest {
     }
 
     @Test
-    public void testMissingApiKeyAuthorizes() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com");
+    public void testRecoveryUsesNewerSavedKey() throws Exception {
+        final Host host = this.host("old-api-key", "jane");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        when(store.findLoginPassword(host)).thenReturn("another-session-key");
         final AtomicInteger authorizations = new AtomicInteger();
-        final BrickSession session = this.session(host, authorizations);
-        try {
-            session.open(target -> Proxy.DIRECT, HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-            session.login(LoginCallback.noop, CancelCallback.noop);
-            assertEquals(1, authorizations.get());
-            assertEquals("new-api-key", host.getCredentials().getPassword());
-        }
-        finally {
-            session.close();
-        }
+        assertTrue(this.recovery(this.session(host, store, authorizations), store)
+                .retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0));
+        assertEquals("another-session-key", host.getCredentials().getPassword());
+        assertEquals(0, authorizations.get());
+        verify(store).findLoginPassword(host);
+        verify(store, never()).save(any());
     }
 
     @Test
-    public void testUnauthorizedUsesOAuthOnce() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com");
+    public void testUnrelatedFailuresKeepKey() throws Exception {
+        final Host host = this.host("old-api-key", "jane");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
         final AtomicInteger authorizations = new AtomicInteger();
-        final BrickUnauthorizedRetryStrategy strategy = new BrickUnauthorizedRetryStrategy(
-                this.session(host, authorizations), LoginCallback.noop, CancelCallback.noop);
-        strategy.setApiKey("old-api-key");
-        final ApiException response = new ApiException(401, "Unauthorized");
-        final HttpCoreContext context = HttpCoreContext.create();
-        assertTrue(strategy.retryRequest(response, 1));
-        assertFalse(strategy.retryRequest(response, 2));
-        assertFalse(strategy.retryRequest(new ApiException(403, "Forbidden"), 1));
-        assertEquals(1, authorizations.get());
-        final BasicHttpRequest request = new BasicHttpRequest("GET", "/api/rest/v1/folders");
-        strategy.process(request, context);
-        assertEquals("new-api-key", request.getFirstHeader("X-FilesAPI-Key").getValue());
+        final BrickUnauthorizedRetryStrategy recovery = this.recovery(this.session(host, store, authorizations), store);
+        for(int status : new int[]{0, 403, 500}) {
+            assertFalse(recovery.retryRequest(new ApiException(status, "Failure"), 1, "old-api-key", 0));
+            assertEquals("old-api-key", host.getCredentials().getPassword());
+        }
+        assertEquals(0, authorizations.get());
+        verifyNoInteractions(store);
     }
 
     @Test
-    public void testApiKeyIsNotSentToDownloadHost() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com");
-        final BrickUnauthorizedRetryStrategy strategy = new BrickUnauthorizedRetryStrategy(
-                this.session(host, new AtomicInteger()), LoginCallback.noop, CancelCallback.noop);
-        strategy.setApiKey("api-key");
-        final HttpCoreContext context = HttpCoreContext.create();
-        context.setTargetHost(new HttpHost("download.example.com", 443, "https"));
-        final BasicHttpRequest request = new BasicHttpRequest("GET", "/download");
-        request.addHeader("X-FilesAPI-Key", "copied-by-redirect");
-        strategy.process(request, context);
-        assertNull(request.getFirstHeader("X-FilesAPI-Key"));
-        context.setTargetHost(new HttpHost("customer.files.com", 443, "https"));
-        strategy.process(request, context);
-        assertEquals("api-key", request.getFirstHeader("X-FilesAPI-Key").getValue());
-        context.setTargetHost(new HttpHost("customer.files.com", 80, "http"));
-        strategy.process(request, context);
-        assertNull(request.getFirstHeader("X-FilesAPI-Key"));
-    }
-
-    @Test
-    public void testSavedBookmarkPreservesAuthorizationFailureAndCancellation() throws Exception {
-        for(BackgroundException failure : new BackgroundException[]{
-                new LoginFailureException("Sign out of Files.com in your browser, then sign in as jane."), new LoginCanceledException()}) {
-            final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane", "old-api-key"));
-            final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+    public void testRecoveryFailureOnlyClearsKeyForDefinitiveAuthenticationFailure() throws Exception {
+        for(BackgroundException failure : new BackgroundException[]{new ConnectionTimeoutException("Timed out"),
+                new BackgroundException("Connection failed", "Service unavailable"), new LoginFailureException("Wrong account")}) {
+            final Host host = this.host("old-api-key", "jane");
+            host.getCredentials().setSaved(true);
+            final HostPasswordStore store = mock(HostPasswordStore.class);
+            final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), store) {
                 @Override
                 public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
                     throw failure;
                 }
             };
-            final CloseableHttpClient http = mock(CloseableHttpClient.class);
-            when(http.execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class))).thenAnswer(invocation -> this.response(401));
-            try {
-                this.open(session, http);
-                assertSame(failure, assertThrows(BackgroundException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop)));
-                verify(http).execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class));
-            }
-            finally {
-                session.close();
-            }
+            assertSame(failure, assertThrows(BackgroundException.class, () -> this.recovery(session, store)
+                    .retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0)));
+            final boolean definitive = failure instanceof LoginFailureException;
+            assertEquals(definitive ? "" : "old-api-key", host.getCredentials().getPassword());
+            assertEquals(!definitive, host.getCredentials().isSaved());
+            verify(store, never()).save(any());
         }
     }
 
     @Test
-    public void testApiKeyReauthorizationForDifferentSiteDoesNotRetryOperation() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", "old-api-key"));
-        final MockHttpTransport transport = new MockHttpTransport.Builder().setLowLevelHttpResponse(new MockLowLevelHttpResponse()
-                .setContentType("application/json").setContent("{\"access_token\":\"oauth-token\",\"token_type\":\"Bearer\",\"files_api_key\":{"
-                        + "\"password\":\"replacement-key\",\"user_username\":\"jane\",\"nickname\":\"Other site\",\"server\":\"https://other-site.files.com\"}}"))
-                .build();
-        final BrickOAuth2AuthorizationService service = new BrickOAuth2AuthorizationService(transport, host, "test-client", LoginCallback.noop);
-        final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(BearerToken.authorizationHeaderAccessMethod(),
-                transport, new GsonFactory(), new GenericUrl("https://customer.files.com/auth/oauth/token"),
-                new ClientParametersAuthentication("test-client", null), "test-client", "https://customer.files.com/auth/oauth/authorize").build();
-        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+    public void testCancellationClearsRejectedKeyWithoutRestoringOrSavingIt() throws Exception {
+        final Host host = this.host("", "jane");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        when(store.findLoginPassword(host)).thenReturn("old-api-key");
+        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), store) {
             @Override
             public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-                service.exchangeToken(flow, "authorization-code", "http://127.0.0.1:8765/oauth/callback");
-                return host.getCredentials().setSaved(false);
-            }
-        };
-        final CloseableHttpClient http = mock(CloseableHttpClient.class);
-        when(http.execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class))).thenAnswer(invocation -> this.response(401));
-        try {
-            this.open(session, http);
-            final LoginFailureException failure = assertThrows(LoginFailureException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
-            assertTrue(failure.getDetail().contains("customer.files.com"));
-            assertEquals("customer.files.com", host.getHostname());
-            assertEquals("old-api-key", host.getCredentials().getPassword());
-            verify(http).execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class));
-        }
-        finally {
-            session.close();
-        }
-    }
-
-    @Test
-    public void testLegacyBookmarkRetriesAtAuthorizedSite() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "app.files.com", new Credentials("jane", "old-api-key"));
-        final AtomicInteger authorizations = new AtomicInteger();
-        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-            @Override
-            public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) {
-                authorizations.incrementAndGet();
-                host.setHostname("customer.files.com");
+                if(failure.get() != null) {
+                    throw failure.get();
+                }
                 return host.getCredentials().setPassword("new-api-key").setSaved(false);
             }
-        };
-        final CloseableHttpClient http = mock(CloseableHttpClient.class);
-        final AtomicInteger requests = new AtomicInteger();
-        when(http.execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class))).thenAnswer(invocation -> {
-            final HttpHost target = invocation.getArgument(0);
-            if(requests.getAndIncrement() == 0) {
-                assertEquals("app.files.com", target.getHostName());
-                return this.response(401);
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == AttributesFinder.class) {
+                    return (T) (AttributesFinder) (file, listener) -> PathAttributes.EMPTY;
+                }
+                return super._getFeature(type);
             }
-            assertEquals("customer.files.com", target.getHostName());
-            return this.response(200);
-        });
+        };
         try {
-            this.open(session, http);
+            this.open(session);
             session.login(LoginCallback.noop, CancelCallback.noop);
-            assertEquals(1, authorizations.get());
-            assertEquals(2, requests.get());
+            final LoginCanceledException cancelled = new LoginCanceledException();
+            failure.set(cancelled);
+            assertSame(cancelled, assertThrows(LoginCanceledException.class, () -> this.recovery(session, store)
+                    .retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0)));
+            assertEquals("", host.getCredentials().getPassword());
+            assertFalse(host.getCredentials().isSaved());
+            failure.set(null);
+            session.login(LoginCallback.noop, CancelCallback.noop);
             assertEquals("new-api-key", host.getCredentials().getPassword());
+            verify(store, times(2)).findLoginPassword(host);
+            verify(store, never()).save(any());
+            verify(store, never()).deleteLoginPassword(any());
         }
         finally {
             session.close();
@@ -308,55 +209,392 @@ public class BrickSessionTest {
     }
 
     @Test
-    public void testRejectedReplacementKeyDoesNotAuthorizeAgain() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane", "old-api-key"));
-        final AtomicInteger authorizations = new AtomicInteger();
-        final BrickSession session = this.session(host, authorizations);
-        final CloseableHttpClient http = mock(CloseableHttpClient.class);
-        when(http.execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class))).thenAnswer(invocation -> this.response(401));
+    public void testConcurrentRecoverySharesFailuresEvenWithoutAKey() throws Exception {
+        for(BackgroundException failure : new BackgroundException[]{new LoginCanceledException(), new LoginFailureException("Wrong account")}) {
+            final Host host = this.host("old-api-key", "jane");
+            final HostPasswordStore store = mock(HostPasswordStore.class);
+            when(store.findLoginPassword(host)).thenReturn("old-api-key");
+            final AtomicInteger authorizations = new AtomicInteger();
+            final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), store) {
+                @Override
+                public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+                    if(authorizations.incrementAndGet() <= 2) {
+                        throw failure;
+                    }
+                    return host.getCredentials().setPassword("new-api-key").setSaved(false);
+                }
+            };
+            final BrickUnauthorizedRetryStrategy recovery = this.recovery(session, store);
+            final ExecutorService workers = Executors.newFixedThreadPool(3);
+            try {
+                for(int round = 0; round < 2; round++) {
+                    final CountDownLatch sent = new CountDownLatch(3);
+                    final List<Future<BackgroundException>> results = new ArrayList<>();
+                    for(int i = 0; i < 3; i++) {
+                        results.add(workers.submit(() -> {
+                            final long count = recovery.getRecoveryCount();
+                            final String key = host.getCredentials().getPassword();
+                            sent.countDown();
+                            assertTrue(sent.await(5, TimeUnit.SECONDS));
+                            return assertThrows(BackgroundException.class, () -> recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, key, count));
+                        }));
+                    }
+                    for(Future<BackgroundException> result : results) {
+                        assertSame(failure, result.get(5, TimeUnit.SECONDS));
+                    }
+                    assertEquals(round + 1, authorizations.get());
+                    assertEquals(round + 1, recovery.getRecoveryCount());
+                    assertEquals("", host.getCredentials().getPassword());
+                }
+                final long count = recovery.getRecoveryCount();
+                assertTrue(recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, "", count));
+                assertTrue(recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, "", count));
+                assertEquals(3, authorizations.get());
+                assertEquals(3, recovery.getRecoveryCount());
+                assertEquals("new-api-key", host.getCredentials().getPassword());
+                verify(store, never()).save(any());
+            }
+            finally {
+                workers.shutdownNow();
+            }
+        }
+    }
+
+    @Test
+    public void testWaitingRequestCanCancelBeforeSignInCompletes() throws Exception {
+        final Host host = this.host("old-api-key", "jane");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        final BrickSession session = mock(BrickSession.class);
+        when(session.getHost()).thenReturn(host);
+        final CountDownLatch authorizing = new CountDownLatch(1);
+        final CountDownLatch release = new CountDownLatch(1);
+        when(session.authorize(any(), any())).thenAnswer(invocation -> {
+            authorizing.countDown();
+            assertTrue(release.await(5, TimeUnit.SECONDS));
+            return host.getCredentials().setPassword("new-api-key");
+        });
+        final BrickUnauthorizedRetryStrategy recovery = this.recovery(session, store);
+        final CountDownLatch waiting = new CountDownLatch(1);
+        final AbstractBackgroundAction<ConnectionCanceledException> action = new AbstractBackgroundAction<ConnectionCanceledException>() {
+            @Override
+            public ConnectionCanceledException run() {
+                waiting.countDown();
+                return assertThrows(ConnectionCanceledException.class, () -> recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0));
+            }
+        };
+        final BackgroundActionRegistry registry = BackgroundActionRegistry.global();
+        registry.add(action);
+        final ExecutorService workers = Executors.newFixedThreadPool(2);
         try {
-            this.open(session, http);
-            assertThrows(LoginFailureException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
-            assertEquals(1, authorizations.get());
-            verify(http, times(2)).execute(any(HttpHost.class), any(HttpRequest.class), any(HttpContext.class));
+            final Future<Boolean> first = workers.submit(() -> recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0));
+            assertTrue(authorizing.await(5, TimeUnit.SECONDS));
+            final Future<ConnectionCanceledException> second = workers.submit(() -> {
+                action.prepare();
+                return action.call();
+            });
+            assertTrue(waiting.await(5, TimeUnit.SECONDS));
+            action.cancel();
+            assertNotNull(second.get(2, TimeUnit.SECONDS));
+            assertEquals(1, release.getCount());
+            action.finish();
+            release.countDown();
+            assertTrue(first.get(5, TimeUnit.SECONDS));
+            assertEquals("new-api-key", host.getCredentials().getPassword());
+            assertEquals(1, recovery.getRecoveryCount());
+            verify(session).authorize(any(), any());
         }
         finally {
-            session.close();
+            action.finish();
+            release.countDown();
+            workers.shutdownNow();
         }
     }
 
-    private void open(final BrickSession session, final CloseableHttpClient http) throws Exception {
+    @Test
+    public void testCallerAuthorizationHeaderIsPreserved() throws Exception {
+        final Host host = this.host("api-key", "jane");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        final BrickUnauthorizedRetryStrategy handler = this.recovery(this.session(host, store, new AtomicInteger()), store);
+        final HttpCoreContext context = HttpCoreContext.create();
+        context.setTargetHost(new HttpHost("storage.example.com", 443, "https"));
+        final BasicHttpRequest request = new BasicHttpRequest("GET", "/download");
+        request.addHeader("Authorization", "caller-credential");
+        handler.process(request, context);
+        assertEquals("caller-credential", request.getFirstHeader("Authorization").getValue());
+        assertNull(request.getFirstHeader("X-FilesAPI-Key"));
+    }
+
+    @Test
+    public void testHeaderIsolationIncludesRedirectsAndSameHostTransferPaths() throws Exception {
+        final Host host = this.host("api-key", "jane");
+        final BrickUnauthorizedRetryStrategy handler = this.recovery(this.session(host, mock(HostPasswordStore.class), new AtomicInteger()),
+                mock(HostPasswordStore.class));
+        final HttpCoreContext context = HttpCoreContext.create();
+        for(String destination : new String[]{"https://customer.files.com/api/rest/v1/folders", "https://storage.example.com/api/rest/v1/folders",
+                "https://customer.files.com/download", "http://customer.files.com/api/rest/v1/folders"}) {
+            final java.net.URI uri = java.net.URI.create(destination);
+            context.setTargetHost(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()));
+            final BasicHttpRequest request = new BasicHttpRequest("GET", uri.getRawPath());
+            request.addHeader("X-FilesAPI-Key", "copied-key");
+            handler.process(request, context);
+            assertNull(request.getFirstHeader("Authorization"));
+            if(destination.equals("https://customer.files.com/api/rest/v1/folders")) {
+                assertEquals("api-key", request.getFirstHeader("X-FilesAPI-Key").getValue());
+            }
+            else {
+                assertNull(request.getFirstHeader("X-FilesAPI-Key"));
+            }
+        }
+    }
+
+    @Test
+    public void testUnauthorizedPostAndPatchRebuildBody() throws Exception {
+        for(String method : new String[]{"POST", "PATCH"}) {
+            this.requestWithBody(method, false);
+        }
+    }
+
+    @Test
+    public void testPermanentUnauthorizedHasOneRecoveryAndClearsReplacement() throws Exception {
+        this.requestWithBody("POST", true);
+    }
+
+    @Test
+    public void testRejectedReplacementIsNotRestoredForNextUserRequest() throws Exception {
+        final Host host = this.host("rejected-replacement", "jane");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        when(store.findLoginPassword(host)).thenReturn("rejected-replacement");
+        final AtomicInteger authorizations = new AtomicInteger();
+        final BrickUnauthorizedRetryStrategy recovery = this.recovery(this.session(host, store, authorizations), store);
+        assertFalse(recovery.retryRequest(new ApiException(401, "Unauthorized"), 2, "rejected-replacement", 0));
+        assertEquals("", host.getCredentials().getPassword());
+        assertTrue(recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, "", recovery.getRecoveryCount()));
+        assertEquals(1, authorizations.get());
+        assertEquals("new-api-key", host.getCredentials().getPassword());
+    }
+
+    @Test
+    public void testLaterConnectionsReuseStoredRecovery() throws Exception {
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        when(store.findLoginPassword(any())).thenReturn("old-api-key", "new-api-key", "new-api-key");
+        final AtomicInteger authorizations = new AtomicInteger();
+        final Host first = this.host("old-api-key", "jane");
+        assertTrue(this.recovery(this.session(first, store, authorizations), store)
+                .retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0));
+        final ExecutorService workers = Executors.newFixedThreadPool(2);
+        try {
+            final List<Future<Boolean>> results = new ArrayList<>();
+            for(int i = 0; i < 2; i++) {
+                final Host next = this.host("old-api-key", "jane");
+                final BrickUnauthorizedRetryStrategy recovery = this.recovery(this.session(next, store, authorizations), store);
+                results.add(workers.submit(() -> recovery.retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0)));
+            }
+            for(Future<Boolean> result : results) {
+                assertTrue(result.get(5, TimeUnit.SECONDS));
+            }
+            assertEquals(1, authorizations.get());
+        }
+        finally {
+            workers.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testSimultaneousRecoveryRemainsPerSessionLikePairing() throws Exception {
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        when(store.findLoginPassword(any())).thenReturn("old-api-key");
+        final CountDownLatch authorizing = new CountDownLatch(2);
+        final AtomicInteger authorizations = new AtomicInteger();
+        final ExecutorService workers = Executors.newFixedThreadPool(2);
+        try {
+            final List<Future<Boolean>> results = new ArrayList<>();
+            for(int i = 0; i < 2; i++) {
+                final Host host = this.host("old-api-key", "jane");
+                final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), store) {
+                    @Override
+                    public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+                        authorizations.incrementAndGet();
+                        authorizing.countDown();
+                        try {
+                            assertTrue(authorizing.await(5, TimeUnit.SECONDS));
+                        }
+                        catch(InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new LoginCanceledException(e);
+                        }
+                        return host.getCredentials().setPassword("new-api-key").setSaved(false);
+                    }
+                };
+                results.add(workers.submit(() -> this.recovery(session, store)
+                        .retryRequest(new ApiException(401, "Unauthorized"), 1, "old-api-key", 0)));
+            }
+            for(Future<Boolean> result : results) {
+                assertTrue(result.get(10, TimeUnit.SECONDS));
+            }
+            assertEquals(2, authorizations.get());
+        }
+        finally {
+            workers.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testRedirectedStorageUnauthorizedDoesNotRecover() throws Exception {
+        final HttpServer api = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        final HttpServer storage = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        final AtomicInteger storageRequests = new AtomicInteger();
+        final AtomicReference<String> leakedKey = new AtomicReference<>();
+        final AtomicReference<String> leakedBearer = new AtomicReference<>();
+        storage.createContext("/download", exchange -> {
+            storageRequests.incrementAndGet();
+            leakedKey.set(exchange.getRequestHeaders().getFirst("X-FilesAPI-Key"));
+            leakedBearer.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            exchange.sendResponseHeaders(401, -1);
+            exchange.close();
+        });
+        api.createContext("/api/rest/v1/folders", exchange -> {
+            exchange.getResponseHeaders().set("Location", "http://127.0.0.1:" + storage.getAddress().getPort() + "/download");
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+        });
+        api.createContext("/transfer", exchange -> {
+            exchange.getResponseHeaders().set("Location", "http://127.0.0.1:" + storage.getAddress().getPort() + "/download");
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+        });
+        api.start();
+        storage.start();
+        final Host host = new Host(new BrickProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, "127.0.0.1", api.getAddress().getPort(), new Credentials("jane", "api-key"));
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        final AtomicInteger authorizations = new AtomicInteger();
+        final BrickUnauthorizedRetryStrategy handler = this.recovery(this.session(host, store, authorizations), store);
+        try(CloseableHttpClient http = HttpClients.custom().disableAutomaticRetries()
+                .addInterceptorLast((HttpRequestInterceptor) handler).addInterceptorLast((HttpResponseInterceptor) handler).build()) {
+            final BrickApiClient client = new BrickApiClient(host, http, handler);
+            try {
+                assertThrows(ApiException.class, () -> this.invoke(client, "GET"));
+                assertEquals(1, storageRequests.get());
+                assertNull(leakedKey.get());
+                assertNull(leakedBearer.get());
+                assertEquals(0, authorizations.get());
+                assertEquals("api-key", host.getCredentials().getPassword());
+                verifyNoInteractions(store);
+                try(CloseableHttpResponse response = http.execute(new HttpGet("http://127.0.0.1:" + storage.getAddress().getPort() + "/download"))) {
+                    assertEquals(401, response.getStatusLine().getStatusCode());
+                }
+                try(CloseableHttpResponse response = http.execute(new HttpGet("http://127.0.0.1:" + api.getAddress().getPort() + "/transfer"))) {
+                    assertEquals(401, response.getStatusLine().getStatusCode());
+                }
+                assertEquals(3, storageRequests.get());
+                assertEquals(0, authorizations.get());
+            }
+            finally {
+                client.getHttpClient().close();
+            }
+        }
+        finally {
+            api.stop(0);
+            storage.stop(0);
+        }
+    }
+
+    private void requestWithBody(final String method, final boolean permanentlyUnauthorized) throws Exception {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        final List<String> bodies = new ArrayList<>();
+        final List<String> keys = new ArrayList<>();
+        server.createContext("/api/rest/v1/folders", exchange -> {
+            final ByteArrayOutputStream body = new ByteArrayOutputStream();
+            final byte[] buffer = new byte[1024];
+            for(int read; (read = exchange.getRequestBody().read(buffer)) != -1;) {
+                body.write(buffer, 0, read);
+            }
+            bodies.add(body.toString(StandardCharsets.UTF_8.name()));
+            keys.add(exchange.getRequestHeaders().getFirst("X-FilesAPI-Key"));
+            final int status = bodies.size() == 1 || permanentlyUnauthorized ? 401 : 200;
+            final byte[] response = (status == 200 ? "{}" : "{\"error\":\"Unauthorized\"}").getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(status, response.length);
+            exchange.getResponseBody().write(response);
+            exchange.close();
+        });
+        server.start();
+        final Host host = new Host(new BrickProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, "127.0.0.1", server.getAddress().getPort(), new Credentials("jane", "old-api-key"));
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        final AtomicInteger authorizations = new AtomicInteger();
+        final BrickSession session = this.session(host, store, authorizations);
+        final BrickUnauthorizedRetryStrategy handler = this.recovery(session, store);
+        try(CloseableHttpClient http = HttpClients.custom().disableAutomaticRetries()
+                .addInterceptorLast((HttpRequestInterceptor) handler).addInterceptorLast((HttpResponseInterceptor) handler).build()) {
+            final BrickApiClient client = new BrickApiClient(host, http, handler);
+            try {
+                if(permanentlyUnauthorized) {
+                    assertEquals(401, assertThrows(ApiException.class, () -> this.invoke(client, method)).getCode());
+                    assertEquals("", host.getCredentials().getPassword());
+                    assertFalse(host.getCredentials().isSaved());
+                }
+                else {
+                    this.invoke(client, method);
+                    assertEquals("new-api-key", host.getCredentials().getPassword());
+                }
+                assertEquals(2, bodies.size());
+                assertTrue(bodies.get(0).contains("a path"));
+                assertEquals(bodies.get(0), bodies.get(1));
+                assertEquals(java.util.Arrays.asList("old-api-key", "new-api-key"), keys);
+                assertEquals(1, authorizations.get());
+            }
+            finally {
+                client.getHttpClient().close();
+            }
+        }
+        finally {
+            server.stop(0);
+        }
+    }
+
+    private void invoke(final BrickApiClient client, final String method) throws ApiException {
+        client.invokeAPI("/folders", method, Collections.emptyList(), Collections.singletonMap("path", "a path"),
+                Collections.emptyMap(), Collections.emptyMap(), "application/json", "application/json", new String[0], new GenericType<String>() { });
+    }
+
+    private Host host(final String password, final String username) {
+        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials(username, password));
+        return host;
+    }
+
+    private void open(final BrickSession session) throws Exception {
         session.open(target -> Proxy.DIRECT, HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-        final ClientConfig configuration = new ClientConfig(session.getClient().getHttpClient().getConfiguration());
-        session.getClient().getHttpClient().close();
-        session.getClient().setHttpClient(ClientBuilder.newClient(configuration.connectorProvider(new HttpComponentsProvider(http))));
     }
 
-    private CloseableHttpResponse response(final int status) {
-        final CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-        when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, status, ""));
-        when(response.getAllHeaders()).thenReturn(new Header[]{new BasicHeader("Content-Type", "application/json")});
-        when(response.getEntity()).thenReturn(new StringEntity(status == 200 ? "{\"path\":\"\",\"type\":\"directory\"}" : "{\"error\":\"Unauthorized\"}", ContentType.APPLICATION_JSON));
-        return response;
+    private BrickUnauthorizedRetryStrategy recovery(final BrickSession session, final HostPasswordStore store) {
+        return new BrickUnauthorizedRetryStrategy(session, store, LoginCallback.noop, CancelCallback.noop);
     }
 
-    private BrickSession session(final Host host, final AtomicInteger authorizations) {
-        return new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+    private BrickSession session(final Host host, final HostPasswordStore store, final AtomicInteger authorizations) {
+        return new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager(), store) {
             @Override
             public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) {
                 authorizations.incrementAndGet();
-                return host.getCredentials().setUsername("jane").setPassword("new-api-key").setSaved(false);
+                return host.getCredentials().setPassword("new-api-key").setSaved(false);
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == AttributesFinder.class) {
+                    return (T) (AttributesFinder) (file, listener) -> PathAttributes.EMPTY;
+                }
+                return super._getFeature(type);
             }
         };
-    }
-
-    public static class SavedApiKeyStore extends DisabledPasswordStore {
-        private static final AtomicInteger lookups = new AtomicInteger();
-
-        @Override
-        public String findLoginPassword(final Host bookmark) {
-            lookups.incrementAndGet();
-            return "saved-api-key";
-        }
     }
 }

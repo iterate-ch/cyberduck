@@ -32,12 +32,9 @@ namespace Ch.Cyberduck.Ui.Winforms
     {
         private bool _expanded = true;
 
-        private readonly ToolTip _passwordToolTip;
-
         public ConnectionForm()
         {
             InitializeComponent();
-            _passwordToolTip = new ToolTip(components);
 
             //focus nickname
             Load += (sender, args) => textBoxServer.Focus();
@@ -239,11 +236,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string PasswordLabel
         {
             set { labelPassword.Text = value; }
-        }
-
-        public string PasswordToolTip
-        {
-            set { _passwordToolTip.SetToolTip(textBoxPassword, value); }
         }
 
         public bool HostFieldEnabled

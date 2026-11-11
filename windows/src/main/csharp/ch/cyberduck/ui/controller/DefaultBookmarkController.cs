@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
-                if (_options.user() && string.IsNullOrWhiteSpace(_host.getCredentials().getUsername()))
+                if (string.IsNullOrWhiteSpace(_host.getCredentials().getUsername()))
                 {
                     return;
                 }

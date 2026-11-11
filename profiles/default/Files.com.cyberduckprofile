@@ -36,11 +36,27 @@
         <key>Username Configurable</key>
         <false/>
         <key>Password Configurable</key>
-        <true/>
+        <false/>
         <key>Token Configurable</key>
         <false/>
         <key>OAuth Configurable</key>
-        <false/>
+        <true/>
+        <key>OAuth Client ID</key>
+        <string>cyberduck</string>
+        <key>OAuth Client Secret</key>
+        <string></string>
+        <key>OAuth Authorization Url</key>
+        <string>/auth/oauth/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>/auth/oauth/token</string>
+        <key>OAuth Redirect Url</key>
+        <string>http://127.0.0.1/oauth/callback</string>
+        <key>OAuth Success Url</key>
+        <string>/desktopSetup?client_id=cyberduck</string>
+        <key>Scopes</key>
+        <array>
+            <string>desktop</string>
+        </array>
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>

@@ -17,16 +17,13 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Pairing;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.auto.service.AutoService;
 
@@ -79,17 +76,18 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
-    public Map<String, String> getProperties() {
-        final Map<String, String> properties = new HashMap<>();
-        properties.put("oauth.browser.success.url", "/desktopSetup?client_id=cyberduck");
-        properties.put("bookmark.password.label", LocaleFactory.localizedString("API Key (optional)", "Credentials"));
-        properties.put("bookmark.password.placeholder", LocaleFactory.localizedString("Leave blank to sign in using your browser", "Brick"));
-        return properties;
+    public String getOAuthSuccessUrl() {
+        return "/desktopSetup?client_id=cyberduck";
+    }
+
+    @Override
+    public String getDefaultHostname() {
+        return "app.files.com";
     }
 
     @Override
     public boolean isPasswordConfigurable() {
-        return true;
+        return false;
     }
 
     @Override
@@ -99,7 +97,7 @@ public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public boolean isOAuthConfigurable() {
-        return false;
+        return true;
     }
 
     @Override

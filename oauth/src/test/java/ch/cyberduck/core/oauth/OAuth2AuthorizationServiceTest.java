@@ -17,12 +17,10 @@ package ch.cyberduck.core.oauth;
 
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -41,6 +39,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.testing.http.MockHttpTransport;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class OAuth2AuthorizationServiceTest {
 
@@ -86,33 +85,27 @@ public class OAuth2AuthorizationServiceTest {
 
     @Test
     public void testAuthorizeLoopbackRedirectUriWithoutPort() throws Exception {
-        final String property = "factory.authorizationcodeprovider.class";
-        final String previous = PreferencesFactory.get().getProperty(property);
-        PreferencesFactory.get().setProperty(property, CapturingAuthorizationCodeProvider.class.getName());
-        try {
-            final AtomicReference<String> tokenRequestRedirectUri = new AtomicReference<>();
-            final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), new Host(new TestProtocol()),
-                    "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
-                    new DisabledLoginCallback()) {
-                @Override
-                protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode, final String redirectUri) {
-                    tokenRequestRedirectUri.set(redirectUri);
-                    return new IdTokenResponse().setAccessToken("a").setRefreshToken("r").setExpiresInSeconds(3600L);
-                }
-            }.setRedirectUri("http://localhost/");
-            final OAuthTokens tokens = service.authorize(CancelCallback.noop);
-            assertEquals("a", tokens.getAccessToken());
-            final String redirectUri = CapturingAuthorizationCodeProvider.redirectUri.get();
-            assertNotNull(redirectUri);
-            assertTrue(URI.create(redirectUri).getPort() > 0);
-            assertEquals(redirectUri, new GenericUrl(CapturingAuthorizationCodeProvider.authorizationCodeUrl.get()).getFirst("redirect_uri"));
-            assertEquals(redirectUri, tokenRequestRedirectUri.get());
-            // Configuration is not modified
-            assertEquals("http://localhost/", service.getRedirectUri());
-        }
-        finally {
-            PreferencesFactory.get().setProperty(property, previous);
-        }
+        final AtomicReference<String> tokenRequestRedirectUri = new AtomicReference<>();
+        final AtomicReference<String> promptedRedirectUri = new AtomicReference<>();
+        final OAuth2AuthorizationService service = spy(new OAuth2AuthorizationService(new MockHttpTransport(), new Host(new TestProtocol()),
+                "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
+                new DisabledLoginCallback()) {
+            @Override
+            protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String code, final String redirectUri) {
+                tokenRequestRedirectUri.set(redirectUri);
+                return new IdTokenResponse().setAccessToken("a").setRefreshToken("r").setExpiresInSeconds(3600L);
+            }
+        }.setRedirectUri("http://localhost/"));
+        doAnswer(invocation -> {
+            final String redirectUri = invocation.getArgument(1);
+            promptedRedirectUri.set(redirectUri);
+            assertEquals(redirectUri, new GenericUrl(invocation.<String>getArgument(0)).getFirst("redirect_uri"));
+            return "code";
+        }).when(service).promptForCode(anyString(), anyString(), anyString());
+        assertEquals("a", service.authorize(CancelCallback.noop).getAccessToken());
+        assertTrue(URI.create(promptedRedirectUri.get()).getPort() > 0);
+        assertEquals(promptedRedirectUri.get(), tokenRequestRedirectUri.get());
+        assertEquals("http://localhost/", service.getRedirectUri());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -198,15 +191,4 @@ public class OAuth2AuthorizationServiceTest {
                 encoder.encodeToString(payload.getBytes(StandardCharsets.UTF_8)));
     }
 
-    public static final class CapturingAuthorizationCodeProvider implements OAuth2AuthorizationCodeProvider {
-        private static final AtomicReference<String> authorizationCodeUrl = new AtomicReference<>();
-        private static final AtomicReference<String> redirectUri = new AtomicReference<>();
-
-        @Override
-        public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeRequestUrl, final String redirectUri, final String state) throws BackgroundException {
-            CapturingAuthorizationCodeProvider.authorizationCodeUrl.set(authorizationCodeRequestUrl);
-            CapturingAuthorizationCodeProvider.redirectUri.set(redirectUri);
-            return "code";
-        }
-    }
 }

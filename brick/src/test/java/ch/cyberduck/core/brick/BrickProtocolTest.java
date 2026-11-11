@@ -25,8 +25,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.UnsecureHostPasswordStore;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -91,6 +89,29 @@ public class BrickProtocolTest {
     }
 
     @Test
+    public void testKeyUsesExistingPasswordSlot() throws Exception {
+        final Properties passwords = new Properties();
+        final UnsecureHostPasswordStore store = new UnsecureHostPasswordStore(null) {
+            @Override
+            protected Properties load() {
+                return passwords;
+            }
+
+            @Override
+            protected void save(final Properties properties) {
+            }
+        };
+        final Host legacy = new Host(new TestProtocol(Scheme.https), "customer.files.com", new Credentials("jane", "legacy-key"));
+        store.save(legacy);
+        final Host current = new Host(new BrickProtocol(), legacy.getHostname(), new Credentials("jane"));
+        assertEquals("legacy-key", store.findLoginPassword(current));
+        current.getCredentials().setPassword("oauth-issued-key");
+        store.save(current);
+        assertEquals("oauth-issued-key", store.findLoginPassword(legacy));
+        assertEquals(1, passwords.size());
+    }
+
+    @Test
     public void testOAuthConfiguration() {
         final BrickProtocol protocol = new BrickProtocol();
         assertEquals("cyberduck", protocol.getOAuthClientId());
@@ -101,64 +122,30 @@ public class BrickProtocolTest {
         assertEquals(Collections.singletonList("desktop"), protocol.getOAuthScopes());
         assertTrue(protocol.isOAuthPKCE());
         assertFalse(protocol.isUsernameConfigurable());
-        assertTrue(protocol.isPasswordConfigurable());
+        assertFalse(protocol.isPasswordConfigurable());
+        assertTrue(protocol.isOAuthConfigurable());
         assertEquals(LocaleFactory.localizedString("Password", "Credentials"), protocol.getPasswordPlaceholder());
     }
 
     @Test
-    public void testLegacySavedApiKeysRemainAccessible() throws Exception {
-        final UnsecureHostPasswordStore store = new UnsecureHostPasswordStore(null) {
-            private final Properties properties = new Properties();
-
-            @Override
-            protected Properties load() {
-                return properties;
-            }
-
-            @Override
-            protected void save(final Properties properties) {
-                // Keep credentials in memory for this test.
-            }
-        };
-        for(String username : new String[]{"", "jane"}) {
-            final Host legacy = new Host(new TestProtocol(Scheme.https), "app.files.com", new Credentials(username, "old-api-key"));
-            final Host current = new Host(new BrickProtocol(), "app.files.com", new Credentials(username));
-            store.save(legacy);
-            assertEquals("old-api-key", store.findLoginPassword(current));
-            store.deleteLoginPassword(current);
-            assertNull(store.findLoginPassword(legacy));
-            store.save(legacy);
-            store.delete(current);
-            assertNull(store.findLoginPassword(legacy));
-            store.addLoginPassword(current, "new-api-key");
-            assertEquals("new-api-key", store.findLoginPassword(legacy));
-            store.delete(current);
-        }
-    }
-
-    @Test
-    public void testOptionalApiKeyInBundledProfile() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new BrickProtocol())));
+    public void testBundledOAuthProfile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new BrickProtocol()));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Files.com.cyberduckprofile"));
-        final Protocol original = new TestProtocol();
-        final Host host = new Host(original);
-        final HostPreferences preferences = HostPreferencesFactory.get(host);
-        assertTrue(preferences.getBoolean("bookmark.weburl.configurable"));
-        assertEquals("", preferences.getProperty("bookmark.password.label"));
-        assertEquals("", preferences.getProperty("bookmark.password.placeholder"));
-        host.setProtocol(profile);
         final LoginOptions options = new LoginOptions(profile);
+        assertTrue(options.oauth);
+        assertFalse(options.password);
         assertFalse(options.user);
-        assertTrue(options.password);
-        assertTrue(host.getCredentials().validate(profile, options));
-        assertEquals(LocaleFactory.localizedString("Password", "Credentials"), options.getPasswordPlaceholder());
-        assertTrue(HostPreferencesFactory.get(host).getBoolean("bookmark.weburl.configurable"));
-        assertEquals("API Key (optional)", HostPreferencesFactory.get(host).getProperty("bookmark.password.label"));
-        assertEquals("Leave blank to sign in using your browser", HostPreferencesFactory.get(host).getProperty("bookmark.password.placeholder"));
-        host.setProtocol(original);
-        assertTrue(preferences.getBoolean("bookmark.weburl.configurable"));
-        assertEquals("", preferences.getProperty("bookmark.password.label"));
-        assertEquals("", preferences.getProperty("bookmark.password.placeholder"));
+        assertFalse(options.token);
+        assertTrue(new Credentials().validate(profile, options));
+        assertEquals("cyberduck", profile.getOAuthClientId());
+        assertEquals("/auth/oauth/authorize", profile.getOAuthAuthorizationUrl());
+        assertEquals("/auth/oauth/token", profile.getOAuthTokenUrl());
+        assertEquals("http://127.0.0.1/oauth/callback", profile.getOAuthRedirectUrl());
+        assertEquals("/desktopSetup?client_id=cyberduck", profile.getOAuthSuccessUrl());
+        assertEquals(Collections.singletonList("desktop"), profile.getOAuthScopes());
+        final PlistSerializer serialized = new PlistSerializer();
+        profile.serialize(serialized);
+        assertEquals(profile.getOAuthSuccessUrl(), serialized.getSerialized().objectForKey(Profile.OAUTH_SUCCESS_URL_KEY).toString());
     }
 }

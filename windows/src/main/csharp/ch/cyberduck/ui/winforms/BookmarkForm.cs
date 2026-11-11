@@ -208,11 +208,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { numericUpDownPort.Enabled = value; }
         }
 
-        public string PasswordToolTip
-        {
-            set { toolTip.SetToolTip(textBoxPassword, value); }
-        }
-
         public bool PathFieldEnabled
         {
             set { textBoxPath.Enabled = value; }

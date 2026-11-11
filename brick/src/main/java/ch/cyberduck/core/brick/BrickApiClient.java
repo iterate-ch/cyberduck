@@ -82,13 +82,15 @@ public class BrickApiClient extends ApiClient {
     public <T> T invokeAPI(final String path, final String method, final List<Pair> queryParams, final Object body, final Map<String, String> headerParams, final Map<String, Object> formParams, final String accept, final String contentType, final String[] authNames, final GenericType<T> returnType) throws ApiException {
         try {
             for(int executionCount = 1; ; executionCount++) {
+                final long recoveryCount = retryHandler.getRecoveryCount();
+                final String apiKey = host.getCredentials().getPassword();
                 // Rebuild the request if authorization changes the bookmark's hostname.
                 this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).get(host)));
                 try {
                     return super.invokeAPI(path, method, queryParams, body, headerParams, formParams, accept, contentType, authNames, returnType);
                 }
                 catch(ApiException e) {
-                    if(!retryHandler.retryRequest(e, executionCount)) {
+                    if(!retryHandler.retryRequest(e, executionCount, apiKey, recoveryCount)) {
                         throw e;
                     }
                 }

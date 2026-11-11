@@ -70,7 +70,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string Password { get; set; }
         bool PasswordEnabled { set; }
         string PasswordLabel { set; }
-        string PasswordToolTip { set; }
         event VoidHandler ToggleOptions;
 
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);

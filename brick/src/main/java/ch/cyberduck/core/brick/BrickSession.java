@@ -19,9 +19,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,6 +51,9 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -60,18 +66,25 @@ public class BrickSession extends HttpSession<BrickApiClient> {
     private static final Logger log = LogManager.getLogger(BrickSession.class);
 
     private BrickUnauthorizedRetryStrategy retryHandler;
-    private ProxyFinder proxy = ProxyFactory.get();
+    private final HostPasswordStore store;
+    private boolean credentialsRestored;
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        this(host, trust, key, PasswordStoreFactory.get());
+    }
+
+    BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final HostPasswordStore store) {
         super(host, trust, key);
+        this.store = store;
     }
 
     @Override
     protected BrickApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
-        this.proxy = proxy;
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host));
-        configuration.addInterceptorLast(retryHandler = new BrickUnauthorizedRetryStrategy(this, prompt, cancel));
+        retryHandler = new BrickUnauthorizedRetryStrategy(this, store, prompt, cancel);
+        configuration.addInterceptorLast((HttpRequestInterceptor) retryHandler);
+        configuration.addInterceptorLast((HttpResponseInterceptor) retryHandler);
         configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
         return new BrickApiClient(host, configuration.build(), retryHandler);
     }
@@ -79,15 +92,24 @@ public class BrickSession extends HttpSession<BrickApiClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
+        credentials.setOauth(OAuthTokens.EMPTY);
+        if(!credentialsRestored) {
+            credentialsRestored = true;
+            if(!credentials.isPasswordAuthentication() && BrickOAuth2AuthorizationService.isKeychainEnabled()) {
+                final String password = store.findLoginPassword(host);
+                if(StringUtils.isNotBlank(password)) {
+                    credentials.setPassword(password).setSaved(false);
+                    credentials.setProperty(BrickOAuth2AuthorizationService.ACCOUNT, credentials.getUsername());
+                }
+            }
+        }
         if(credentials.isPasswordAuthentication()) {
-            retryHandler.setApiKey(credentials.getPassword());
             // Test credentials
             final Path home = new DefaultHomeFinderService(this).find();
             log.debug("Retrieved {}", home);
         }
         else {
             this.authorize(prompt, cancel);
-            retryHandler.setApiKey(credentials.getPassword());
         }
     }
 
@@ -105,7 +127,7 @@ public class BrickSession extends HttpSession<BrickApiClient> {
 
     public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         cancel.verify();
-        try(CloseableHttpClient oauth = builder.build(proxy, this, prompt).build()) {
+        try(CloseableHttpClient oauth = builder.build(ProxyFactory.get(), this, prompt).build()) {
             final BrickOAuth2AuthorizationService service = new BrickOAuth2AuthorizationService(oauth, host,
                     host.getProtocol().getOAuthClientId(), prompt);
             service.setParameter("computer", InetAddress.getLocalHost().getHostName());

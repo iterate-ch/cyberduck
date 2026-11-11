@@ -23,7 +23,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -87,8 +86,8 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                         }
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                    final boolean recognized = StringUtils.equals(state, callbackState) && oauth.notify(callbackState, code);
-                    final String successUrl = HostPreferencesFactory.get(bookmark).getProperty("oauth.browser.success.url");
+                    final boolean recognized = oauth.notify(callbackState, code);
+                    final String successUrl = bookmark.getProtocol().getOAuthSuccessUrl();
                     exchange.getResponseHeaders().set(HttpHeaders.CACHE_CONTROL, "no-store");
                     exchange.getResponseHeaders().set("Referrer-Policy", "no-referrer");
                     if(recognized) {

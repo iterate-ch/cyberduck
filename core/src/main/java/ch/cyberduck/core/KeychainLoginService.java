@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -143,8 +142,6 @@ public class KeychainLoginService implements LoginService {
     public boolean prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
-            options.passwordPlaceholder(StringUtils.defaultIfBlank(
-                    HostPreferencesFactory.get(bookmark).getProperty("bookmark.password.label"), options.getPasswordPlaceholder()));
             final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                     message,

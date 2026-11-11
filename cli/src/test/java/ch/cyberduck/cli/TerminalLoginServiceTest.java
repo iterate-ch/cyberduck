@@ -15,24 +15,15 @@ package ch.cyberduck.cli;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.UnsecureHostPasswordStore;
-import ch.cyberduck.core.brick.BrickOAuth2AuthorizationService;
 import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.brick.BrickSession;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -40,106 +31,60 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
-import java.util.Collections;
-import java.util.Properties;
-
-import com.google.api.client.testing.http.MockHttpTransport;
-import com.google.api.client.testing.http.MockLowLevelHttpResponse;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.Mockito.*;
 
 public class TerminalLoginServiceTest {
     @Test
-    public void testFilesComOAuthKeyReusedWithExplicitUsername() throws Exception {
-        final String previousStore = PreferencesFactory.get().getProperty("factory.passwordstore.class");
-        final String previousProvider = PreferencesFactory.get().getProperty("factory.authorizationcodeprovider.class");
-        final String previousKeychain = PreferencesFactory.get().getProperty("connection.login.keychain");
-        final String previousUsername = PreferencesFactory.get().getProperty("connection.login.name");
-        PreferencesFactory.get().setProperty("factory.passwordstore.class", MemoryPasswordStore.class.getName());
-        PreferencesFactory.get().setProperty("factory.authorizationcodeprovider.class", CodeProvider.class.getName());
-        PreferencesFactory.get().setProperty("connection.login.keychain", "true");
-        PreferencesFactory.get().setProperty("connection.login.name", "os-user");
-        MemoryPasswordStore.properties.clear();
-        CodeProvider.prompts = 0;
-        try {
-            final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new BrickProtocol()));
-            factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Files.com.cyberduckprofile")));
-            for(int invocation = 0; invocation < 2; invocation++) {
-                final CommandLine input = new DefaultParser().parse(TerminalOptionsBuilder.options(),
-                        new String[]{"--username", "jane", "--list", "brick://customer.files.com/"});
-                final Host host = new CommandLineUriParser(input, factory).parse("brick://customer.files.com/");
-                final TerminalLoginService login = new TerminalLoginService(input);
-                login.validate(host, new DefaultX509KeyManager(), LoginCallback.noop, new LoginOptions(host.getProtocol()));
-                assertEquals("jane", host.getCredentials().getUsername());
-                assertEquals(invocation == 0 ? null : "api-key", host.getCredentials().getPassword());
-                final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-                    @Override
-                    public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-                        final MockHttpTransport transport = new MockHttpTransport.Builder().setLowLevelHttpResponse(new MockLowLevelHttpResponse()
-                                .setContentType("application/json")
-                                .setContent("{\"access_token\":\"oauth-token\",\"token_type\":\"Bearer\",\"expires_in\":300,"
-                                        + "\"files_api_key\":{\"password\":\"api-key\",\"user_username\":\"jane\","
-                                        + "\"server\":\"https://customer.files.com\",\"nickname\":\"jane @ customer.files.com\"}}"))
-                                .build();
-                        new BrickOAuth2AuthorizationService(transport, host, host.getProtocol().getOAuthClientId(), prompt).authorize(cancel);
-                        return host.getCredentials();
-                    }
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public <T> T _getFeature(final Class<T> type) {
-                        if(type == AttributesFinder.class) {
-                            return (T) (AttributesFinder) (file, listener) -> PathAttributes.EMPTY;
-                        }
-                        return super._getFeature(type);
-                    }
-                };
-                try {
-                    session.open(target -> Proxy.DIRECT, HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-                    assertTrue(login.authenticate(session, ProgressListener.noop, LoginCallback.noop, CancelCallback.noop));
-                    assertEquals("api-key", host.getCredentials().getPassword());
-                    assertEquals(1, CodeProvider.prompts);
-                }
-                finally {
-                    session.close();
-                }
-            }
-        }
-        finally {
-            PreferencesFactory.get().setProperty("factory.passwordstore.class", previousStore);
-            PreferencesFactory.get().setProperty("factory.authorizationcodeprovider.class", previousProvider);
-            PreferencesFactory.get().setProperty("connection.login.keychain", previousKeychain);
-            PreferencesFactory.get().setProperty("connection.login.name", previousUsername);
-            MemoryPasswordStore.properties.clear();
-        }
+    public void testManualApiKeyDoesNotRequirePasswordField() throws Exception {
+        final CommandLine input = new DefaultParser().parse(TerminalOptionsBuilder.options(),
+                new String[]{"--username", "jane", "--password", "manual-api-key", "--list", "brick://customer.files.com/"});
+        final Host host = new Host(new BrickProtocol(), "customer.files.com");
+        final LoginOptions options = new LoginOptions(host.getProtocol());
+        assertFalse(options.password);
+        new TerminalLoginService(input).validate(host, new DefaultX509KeyManager(), LoginCallback.noop, options);
+        assertEquals("manual-api-key", host.getCredentials().getPassword());
+        assertEquals("jane", host.getCredentials().getUsername());
     }
 
-    public static class MemoryPasswordStore extends UnsecureHostPasswordStore {
-        private static final Properties properties = new Properties();
-
-        public MemoryPasswordStore() {
-            super(null);
-        }
-
-        @Override
-        protected Properties load() {
-            return properties;
-        }
-
-        @Override
-        protected void save(final Properties properties) {
-            // Keep credentials in memory across fresh login services.
-        }
-    }
-
-    public static class CodeProvider implements OAuth2AuthorizationCodeProvider {
-        private static int prompts;
-
-        @Override
-        public String prompt(final Host host, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) {
-            prompts++;
-            return "authorization-code";
+    @Test
+    public void testNoKeychainSkipsSavedKeyAndAuthorizesInBrowser() throws Exception {
+        final CommandLine input = new DefaultParser().parse(TerminalOptionsBuilder.options(),
+                new String[]{"--nokeychain", "--list", "brick://customer.files.com/"});
+        final TerminalPreferences preferences = mock(TerminalPreferences.class, delegatesTo(new TerminalPreferences(PreferencesFactory.get())));
+        doReturn(preferences).when(preferences).withDefaults(input);
+        doNothing().when(preferences).setDefault(anyString(), anyString());
+        doAnswer(invocation -> {
+            doReturn(Boolean.parseBoolean(invocation.getArgument(1))).when(preferences).getBoolean("connection.login.keychain");
+            return null;
+        }).when(preferences).setDefault(eq("connection.login.keychain"), anyString());
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        try(MockedStatic<PreferencesFactory> factory = mockStatic(PreferencesFactory.class, withSettings().mockMaker("mock-maker-inline"));
+            MockedStatic<PasswordStoreFactory> passwords = mockStatic(PasswordStoreFactory.class, withSettings().mockMaker("mock-maker-inline"))) {
+            factory.when(PreferencesFactory::get).thenReturn(preferences);
+            passwords.when(PasswordStoreFactory::get).thenReturn(store);
+            new Terminal(preferences, TerminalOptionsBuilder.options(), input).configure(input);
+            final Host host = new Host(new BrickProtocol(), "customer.files.com");
+            final LoginOptions options = new LoginOptions(host.getProtocol());
+            assertFalse(options.keychain);
+            new TerminalLoginService(input).validate(host, new DefaultX509KeyManager(), LoginCallback.noop, options);
+            final AtomicInteger authorizations = new AtomicInteger();
+            final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+                @Override
+                public Credentials authorize(final LoginCallback prompt, final CancelCallback cancel) {
+                    authorizations.incrementAndGet();
+                    return host.getCredentials().setPassword("browser-issued-key");
+                }
+            };
+            session.login(LoginCallback.noop, CancelCallback.noop);
+            assertEquals(1, authorizations.get());
+            assertEquals("browser-issued-key", host.getCredentials().getPassword());
+            verifyNoInteractions(store);
         }
     }
 }

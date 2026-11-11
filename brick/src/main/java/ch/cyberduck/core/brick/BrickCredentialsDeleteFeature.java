@@ -54,7 +54,15 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 public class BrickCredentialsDeleteFeature implements Pairing {
     private static final Logger log = LogManager.getLogger(BrickCredentialsDeleteFeature.class);
 
-    private final HostPasswordStore store = PasswordStoreFactory.get();
+    private final HostPasswordStore store;
+
+    public BrickCredentialsDeleteFeature() {
+        this(PasswordStoreFactory.get());
+    }
+
+    BrickCredentialsDeleteFeature(final HostPasswordStore store) {
+        this.store = store;
+    }
 
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
@@ -84,6 +92,10 @@ public class BrickCredentialsDeleteFeature implements Pairing {
         }
         finally {
             store.deleteLoginPassword(bookmark);
+            if(StringUtils.isEmpty(bookmark.getCredentials().getUsername())) {
+                store.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
+                        bookmark.getProtocol().getPasswordPlaceholder());
+            }
             store.delete(bookmark);
         }
     }

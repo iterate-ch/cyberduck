@@ -266,12 +266,15 @@ public class OAuth2AuthorizationService {
         // Direct the user to an authorization page to grant access to their protected data.
         final String authorizationCodeUrl = authorizationCodeUrlBuilder.build();
         log.debug("Open browser with URL {}", authorizationCodeUrl);
-        final String authorizationCode = OAuth2AuthorizationCodeProviderFactory.get().prompt(
-                host, prompt, authorizationCodeUrl, redirectUri, state);
+        final String authorizationCode = this.promptForCode(authorizationCodeUrl, redirectUri, state);
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
         return this.exchangeToken(flow, authorizationCode, redirectUri);
+    }
+
+    protected String promptForCode(final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
+        return OAuth2AuthorizationCodeProviderFactory.get().prompt(host, prompt, authorizationCodeUrl, redirectUri, state);
     }
 
     /**

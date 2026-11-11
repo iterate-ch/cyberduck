@@ -19,17 +19,18 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
@@ -40,59 +41,61 @@ import java.util.Map;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
+import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.testing.http.MockHttpTransport;
 import com.google.api.client.testing.http.MockLowLevelHttpResponse;
-import com.google.api.client.testing.http.MockLowLevelHttpRequest;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.AdditionalAnswers.delegatesTo;
 
 public class BrickOAuth2AuthorizationServiceTest {
     @Test
     public void testAuthorizationWithDedicatedClientAndPKCE() throws Exception {
-        final String property = "factory.authorizationcodeprovider.class";
-        final String previous = PreferencesFactory.get().getProperty(property);
-        PreferencesFactory.get().setProperty(property, CapturingCodeProvider.class.getName());
-        try {
-            final Host host = new Host(new BrickProtocol(), "customer.files.com");
-            final MockHttpTransport transport = this.transport(this.key());
-            final BrickOAuth2AuthorizationService service = new BrickOAuth2AuthorizationService(
-                    transport, host, host.getProtocol().getOAuthClientId(), LoginCallback.noop);
-            service.setParameter("computer", "test-mac").setParameter("platform", "Cyberduck");
-            service.authorize(CancelCallback.noop);
-            final GenericUrl authorize = new GenericUrl(CapturingCodeProvider.url);
-            assertEquals("cyberduck", authorize.getFirst("client_id"));
-            assertEquals("desktop", authorize.getFirst("scope"));
-            assertEquals("S256", authorize.getFirst("code_challenge_method"));
-            assertEquals("test-mac", authorize.getFirst("computer"));
-            assertEquals("Cyberduck", authorize.getFirst("platform"));
-            assertNotNull(authorize.getFirst("state"));
-            final GenericUrl token = new GenericUrl("http://localhost/?" + transport.getLowLevelHttpRequest().getContentAsString());
-            assertEquals("cyberduck", token.getFirst("client_id"));
-            assertNull(token.getFirst("client_secret"));
-            assertEquals(authorize.getFirst("redirect_uri"), token.getFirst("redirect_uri"));
-            final String verifier = (String) token.getFirst("code_verifier");
-            assertEquals(authorize.getFirst("code_challenge"), Base64.getUrlEncoder().withoutPadding().encodeToString(
-                    MessageDigest.getInstance("SHA-256").digest(verifier.getBytes(StandardCharsets.US_ASCII))));
-            assertEquals("api-key", host.getCredentials().getPassword());
-        }
-        finally {
-            PreferencesFactory.get().setProperty(property, previous);
-        }
+        final Host host = this.establishedHost();
+        final MockHttpTransport transport = this.transport(this.key());
+        final OAuth2AuthorizationCodeProvider provider = mock(OAuth2AuthorizationCodeProvider.class);
+        when(provider.prompt(eq(host), any(), anyString(), anyString(), anyString())).thenReturn("authorization-code");
+        final BrickOAuth2AuthorizationService service = new BrickOAuth2AuthorizationService(
+                transport, host, host.getProtocol().getOAuthClientId(), LoginCallback.noop) {
+            @Override
+            protected String promptForCode(final String url, final String redirect, final String state) throws BackgroundException {
+                return provider.prompt(host, LoginCallback.noop, url, redirect, state);
+            }
+        };
+        service.setParameter("computer", "test-mac").setParameter("platform", "Cyberduck");
+        service.authorize(CancelCallback.noop);
+        final ArgumentCaptor<String> url = ArgumentCaptor.forClass(String.class);
+        verify(provider).prompt(eq(host), any(), url.capture(), anyString(), anyString());
+        final GenericUrl authorize = new GenericUrl(url.getValue());
+        assertEquals("cyberduck", authorize.getFirst("client_id"));
+        assertEquals("desktop", authorize.getFirst("scope"));
+        assertEquals("S256", authorize.getFirst("code_challenge_method"));
+        assertEquals("jane", authorize.getFirst("login_hint"));
+        assertEquals("test-mac", authorize.getFirst("computer"));
+        assertEquals("Cyberduck", authorize.getFirst("platform"));
+        assertNotNull(authorize.getFirst("state"));
+        final GenericUrl token = new GenericUrl("http://localhost/?" + transport.getLowLevelHttpRequest().getContentAsString());
+        assertEquals("cyberduck", token.getFirst("client_id"));
+        assertNull(token.getFirst("client_secret"));
+        assertEquals(authorize.getFirst("redirect_uri"), token.getFirst("redirect_uri"));
+        final String verifier = (String) token.getFirst("code_verifier");
+        assertEquals(authorize.getFirst("code_challenge"), Base64.getUrlEncoder().withoutPadding().encodeToString(
+                MessageDigest.getInstance("SHA-256").digest(verifier.getBytes(StandardCharsets.US_ASCII))));
+        assertEquals("api-key", host.getCredentials().getPassword());
+        assertFalse(host.getCredentials().isOAuthAuthentication());
     }
 
     @Test
-    public void testExchangeApiKey() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "app.files.com");
+    public void testInitialAuthorizationIgnoresImplicitCliUsername() throws Exception {
+        final BrickProtocol protocol = new BrickProtocol();
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(protocol)), protocol).get("brick://customer.files.com");
         this.exchange(host, this.key());
-        assertEquals("customer.files.com", host.getHostname());
-        assertEquals(443, host.getPort());
         assertEquals("jane", host.getCredentials().getUsername());
         assertEquals("api-key", host.getCredentials().getPassword());
-        assertFalse(host.getCredentials().isOAuthAuthentication());
     }
 
     @Test
@@ -104,245 +107,101 @@ public class BrickOAuth2AuthorizationServiceTest {
     }
 
     @Test
-    public void testParsedConnectionDoesNotRequireDefaultUsername() throws Exception {
-        final String previous = PreferencesFactory.get().getProperty("connection.login.name");
-        PreferencesFactory.get().setProperty("connection.login.name", "os-user");
-        try {
-            final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new BrickProtocol()));
-            final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Files.com.cyberduckprofile"));
-            factory.register(profile);
-            final HostParser parser = new HostParser(factory, profile);
-            final Host host = parser.get("brick://customer.files.com");
-            this.exchange(host, this.key());
-            assertEquals("jane", host.getCredentials().getUsername());
-            final Host explicit = parser.get("brick://other-user@customer.files.com");
-            assertThrows(LoginFailureException.class, () -> this.exchange(explicit, this.key()));
-            assertEquals("other-user", explicit.getCredentials().getUsername());
-        }
-        finally {
-            PreferencesFactory.get().setProperty("connection.login.name", previous);
-        }
-    }
-
-    @Test
-    public void testReauthorizationPreservesAccount() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane", "old-api-key"));
-        final Map<String, Object> key = this.key();
-        key.put("server", "https://CUSTOMER.files.com:443");
-        this.exchange(host, key);
-        assertEquals("jane", host.getCredentials().getUsername());
-        assertEquals("api-key", host.getCredentials().getPassword());
-        assertEquals(443, host.getPort());
-    }
-
-    @Test
-    public void testApiKeyReauthorizationWithoutUsernamePreservesOrigin() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", "old-api-key"));
-        this.exchange(host, this.key());
-        assertEquals("customer.files.com", host.getHostname());
-        assertEquals("jane", host.getCredentials().getUsername());
-        assertEquals("api-key", host.getCredentials().getPassword());
-    }
-
-    @Test
-    public void testApiKeyReauthorizationWithoutUsernameRejectsDifferentOrigin() throws Exception {
-        for(String server : new String[]{"https://other-site.files.com", "https://customer.files.com:444"}) {
-            final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("", "old-api-key"));
-            host.setNickname("Saved account");
-            host.getCredentials().setSaved(false);
+    public void testEstablishedAccountRejectsDifferentUserOrOriginWithoutRevocation() throws Exception {
+        for(String field : new String[]{"user_username", "server"}) {
+            final Host host = this.establishedHost();
             final Map<String, Object> key = this.key();
-            key.put("server", server);
-            final MockHttpTransport tokenTransport = this.transport(key);
-            final MockLowLevelHttpRequest deletion = new MockLowLevelHttpRequest().setResponse(new MockLowLevelHttpResponse().setStatusCode(204));
-            final MockHttpTransport transport = new MockHttpTransport() {
-                @Override
-                public LowLevelHttpRequest buildRequest(final String method, final String url) throws IOException {
-                    if("DELETE".equals(method)) {
-                        assertEquals("https://app.files.com/api/rest/v1/api_key", url);
-                        return deletion;
-                    }
-                    return tokenTransport.buildRequest(method, url);
-                }
-            };
-            final LoginFailureException failure = assertThrows(LoginFailureException.class, () -> this.exchangeWithTransport(host, transport));
-            assertTrue(failure.getDetail().contains("customer.files.com"));
-            assertEquals("customer.files.com", host.getHostname());
-            assertEquals(443, host.getPort());
-            assertEquals("", host.getCredentials().getUsername());
-            assertEquals("old-api-key", host.getCredentials().getPassword());
-            assertEquals("Saved account", host.getNickname());
-            assertFalse(host.getCredentials().isSaved());
-            assertEquals("api-key", deletion.getFirstHeaderValue("X-FilesAPI-Key"));
-        }
-    }
-
-    @Test
-    public void testLegacyDefaultHostnameAdoptsAuthorizedSiteForSameUser() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "APP.files.com", new Credentials("jane", "old-api-key"));
-        this.exchange(host, this.key());
-        assertEquals("customer.files.com", host.getHostname());
-        assertEquals(443, host.getPort());
-        assertEquals("jane", host.getCredentials().getUsername());
-        assertEquals("api-key", host.getCredentials().getPassword());
-    }
-
-    @Test
-    public void testLegacyDefaultHostnameAdoptsAuthorizedSiteWithoutUsername() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "app.files.com", new Credentials("", "old-api-key"));
-        this.exchange(host, this.key());
-        assertEquals("customer.files.com", host.getHostname());
-        assertEquals("api-key", host.getCredentials().getPassword());
-        final Host nonstandardPort = new Host(new BrickProtocol(), "app.files.com", 444, new Credentials("", "old-api-key"));
-        assertThrows(LoginFailureException.class, () -> this.exchange(nonstandardPort, this.key()));
-        assertEquals("app.files.com", nonstandardPort.getHostname());
-        assertEquals(444, nonstandardPort.getPort());
-        assertEquals("old-api-key", nonstandardPort.getCredentials().getPassword());
-    }
-
-    @Test
-    public void testLegacyDefaultHostnameStillRejectsDifferentUserOrNonstandardPort() {
-        for(Host host : new Host[]{
-                new Host(new BrickProtocol(), "app.files.com", new Credentials("other-user", "old-api-key")),
-                new Host(new BrickProtocol(), "app.files.com", 444, new Credentials("jane", "old-api-key"))}) {
-            assertThrows(LoginFailureException.class, () -> this.exchange(host, this.key()));
-            assertEquals("app.files.com", host.getHostname());
-            assertEquals("old-api-key", host.getCredentials().getPassword());
-        }
-    }
-
-    @Test
-    public void testReauthorizationRejectsDifferentAccount() {
-        for(String[] account : new String[][]{
-                {"other-user", "https://customer.files.com"},
-                {"jane", "https://other-site.files.com"},
-                {"jane", "https://customer.files.com:444"}}) {
-            final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane", "old-api-key"));
-            host.setNickname("Saved account");
-            host.getCredentials().setSaved(false);
-            final Map<String, Object> key = this.key();
-            key.put("user_username", account[0]);
-            key.put("server", account[1]);
+            key.put(field, field.equals("server") ? "https://other.files.com" : "other-user");
             assertThrows(LoginFailureException.class, () -> this.exchange(host, key));
             assertEquals("customer.files.com", host.getHostname());
-            assertEquals(443, host.getPort());
             assertEquals("jane", host.getCredentials().getUsername());
             assertEquals("old-api-key", host.getCredentials().getPassword());
-            assertEquals("Saved account", host.getNickname());
-            assertFalse(host.getCredentials().isSaved());
         }
     }
 
     @Test
-    public void testRejectedCredentialsAreRevokedAtTokenServer() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("original-user", "old-api-key"));
-        final MockHttpTransport tokenTransport = this.transport(this.key());
-        final MockLowLevelHttpRequest deletion = new MockLowLevelHttpRequest().setResponse(new MockLowLevelHttpResponse().setStatusCode(204));
-        final MockHttpTransport transport = new MockHttpTransport() {
+    public void testExistingKeyWithoutKnownAccountStillBindsOrigin() {
+        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("os-user", "manual-key"));
+        final Map<String, Object> key = this.key();
+        key.put("server", "https://other.files.com");
+        assertThrows(LoginFailureException.class, () -> this.exchange(host, key));
+    }
+
+    @Test
+    public void testDefaultHostnameComesFromProtocol() throws Exception {
+        final Host host = new Host(new BrickProtocol() {
             @Override
-            public LowLevelHttpRequest buildRequest(final String method, final String url) throws IOException {
-                if("DELETE".equals(method)) {
-                    assertEquals("https://app.files.com/api/rest/v1/api_key", url);
-                    return deletion;
-                }
-                return tokenTransport.buildRequest(method, url);
+            public String getDefaultHostname() {
+                return "bootstrap.example.com";
             }
-        };
-        assertThrows(LoginFailureException.class, () -> this.exchangeWithTransport(host, transport));
-        assertEquals("api-key", deletion.getFirstHeaderValue("X-FilesAPI-Key"));
-        assertEquals("old-api-key", host.getCredentials().getPassword());
+        }, "BOOTSTRAP.example.com", new Credentials("jane", "old-api-key"));
+        host.getCredentials().setProperty(BrickOAuth2AuthorizationService.ACCOUNT, "jane");
+        this.exchange(host, this.key());
+        assertEquals("customer.files.com", host.getHostname());
     }
 
     @Test
-    public void testRevocationFailurePreservesAccountMismatch() throws Exception {
-        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("original-user", "old-api-key"));
-        final MockHttpTransport tokenTransport = this.transport(this.key());
-        final MockHttpTransport transport = new MockHttpTransport() {
-            @Override
-            public LowLevelHttpRequest buildRequest(final String method, final String url) throws IOException {
-                if("DELETE".equals(method)) {
-                    throw new IOException("Revocation unavailable");
-                }
-                return tokenTransport.buildRequest(method, url);
-            }
-        };
-        final LoginFailureException failure = assertThrows(LoginFailureException.class, () -> this.exchangeWithTransport(host, transport));
-        assertTrue(failure.getDetail().contains("original-user"));
-        assertEquals("original-user", host.getCredentials().getUsername());
-        assertEquals("old-api-key", host.getCredentials().getPassword());
-    }
-
-    @Test
-    public void testMissingApiKey() {
-        final Host host = new Host(new BrickProtocol(), "app.files.com");
-        assertThrows(LoginFailureException.class, () -> this.exchange(host, null));
-        assertEquals("app.files.com", host.getHostname());
-    }
-
-    @Test
-    public void testIncompleteApiKey() {
+    public void testMissingOrInvalidRequiredFields() {
         for(String field : new String[]{"password", "user_username", "server"}) {
-            final Host host = new Host(new BrickProtocol(), "app.files.com");
             final Map<String, Object> key = this.key();
             key.remove(field);
-            assertThrows(field, LoginFailureException.class, () -> this.exchange(host, key));
-            assertEquals("app.files.com", host.getHostname());
-            assertFalse(host.getCredentials().isPasswordAuthentication());
+            assertThrows(LoginFailureException.class, () -> this.exchange(new Host(new BrickProtocol()), key));
         }
+        for(String server : new String[]{"http://customer.files.com", "not a URI", "https:///missing-host"}) {
+            final Map<String, Object> key = this.key();
+            key.put("server", server);
+            assertThrows(LoginFailureException.class, () -> this.exchange(new Host(new BrickProtocol()), key));
+        }
+        assertThrows(LoginFailureException.class, () -> this.exchange(new Host(new BrickProtocol()), null));
     }
 
     @Test
-    public void testInvalidServer() {
-        for(String server : new String[]{"http://customer.files.com", "https://user@customer.files.com",
-                "https://customer.files.com/path", "https://customer.files.com?query", "https://customer.files.com#fragment", "[invalid"}) {
-            final Host host = new Host(new BrickProtocol(), "app.files.com");
-            final Map<String, Object> key = this.key();
-            key.put("server", server);
-            assertThrows(server, LoginFailureException.class, () -> this.exchange(host, key));
-            assertEquals("app.files.com", host.getHostname());
-            assertFalse(host.getCredentials().isPasswordAuthentication());
+    public void testOptOutDoesNotMarkIssuedKeyForSaving() throws Exception {
+        final Host host = new Host(new BrickProtocol(), "app.files.com");
+        final Preferences preferences = mock(Preferences.class, delegatesTo(PreferencesFactory.get()));
+        doReturn(false).when(preferences).getBoolean("connection.login.keychain");
+        try(MockedStatic<PreferencesFactory> factory = mockStatic(PreferencesFactory.class, withSettings().mockMaker("mock-maker-inline"))) {
+            factory.when(PreferencesFactory::get).thenReturn(preferences);
+            this.exchange(host, this.key());
+            assertFalse(host.getCredentials().isSaved());
+            assertFalse(host.getCredentials().isOAuthAuthentication());
         }
+    }
+
+    private Host establishedHost() {
+        final Host host = new Host(new BrickProtocol(), "customer.files.com", new Credentials("jane", "old-api-key"));
+        host.getCredentials().setProperty(BrickOAuth2AuthorizationService.ACCOUNT, "jane");
+        return host;
+    }
+
+    private void exchange(final Host host, final Object key) throws Exception {
+        final MockHttpTransport transport = this.transport(key);
+        final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(BearerToken.authorizationHeaderAccessMethod(),
+                transport, new GsonFactory(), new GenericUrl("https://customer.files.com/auth/oauth/token"),
+                new ClientParametersAuthentication("cyberduck", null), "cyberduck", "https://customer.files.com/auth/oauth/authorize").build();
+        new BrickOAuth2AuthorizationService(transport, host, "cyberduck", LoginCallback.noop) {
+            void exchange() throws BackgroundException {
+                this.exchangeToken(flow, "code", "http://127.0.0.1:1234/oauth/callback");
+            }
+        }.exchange();
     }
 
     private Map<String, Object> key() {
         final Map<String, Object> key = new LinkedHashMap<>();
         key.put("password", "api-key");
         key.put("user_username", "jane");
-        key.put("nickname", "jane @ customer.files.com");
         key.put("server", "https://customer.files.com");
+        key.put("nickname", "Customer");
         return key;
     }
 
-    private void exchange(final Host host, final Object key) throws Exception {
-        this.exchangeWithTransport(host, this.transport(key));
-    }
-
-    private void exchangeWithTransport(final Host host, final MockHttpTransport transport) throws Exception {
-        final GsonFactory json = new GsonFactory();
-        final BrickOAuth2AuthorizationService service = new BrickOAuth2AuthorizationService(transport, host, "test-client", LoginCallback.noop);
-        final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(BearerToken.authorizationHeaderAccessMethod(),
-                transport, json, new GenericUrl("https://app.files.com/auth/oauth/token"),
-                new ClientParametersAuthentication("test-client", null), "test-client", "https://app.files.com/auth/oauth/authorize")
-                .setScopes(Collections.emptyList()).build();
-        service.exchangeToken(flow, "authorization-code", "http://127.0.0.1:8765/oauth/callback");
-    }
-
     private MockHttpTransport transport(final Object key) throws Exception {
-        final GenericJson response = new GenericJson().set("access_token", "oauth-token").set("token_type", "Bearer").set("expires_in", 300);
+        final GenericJson response = new GenericJson().set("access_token", "oauth-token").set("refresh_token", "refresh-token")
+                .set("token_type", "Bearer").set("expires_in", 300);
         if(key != null) {
             response.set("files_api_key", key);
         }
-        final GsonFactory json = new GsonFactory();
-        return new MockHttpTransport.Builder().setLowLevelHttpResponse(
-                new MockLowLevelHttpResponse().setContentType("application/json").setContent(json.toString(response))).build();
-    }
-
-    public static class CapturingCodeProvider implements OAuth2AuthorizationCodeProvider {
-        private static String url;
-
-        @Override
-        public String prompt(final Host host, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) {
-            url = authorizationCodeUrl;
-            return "authorization-code";
-        }
+        return new MockHttpTransport.Builder().setLowLevelHttpResponse(new MockLowLevelHttpResponse()
+                .setContentType("application/json").setContent(new GsonFactory().toString(response))).build();
     }
 }
