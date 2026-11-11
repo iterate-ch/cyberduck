@@ -165,7 +165,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             }
         }
 
-        partial void OnSelectionChanged(Path value)
+        partial void OnSelectionChanging(Path value)
         {
             SelectedVersion = null;
         }
