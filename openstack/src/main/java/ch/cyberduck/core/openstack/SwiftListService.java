@@ -48,7 +48,7 @@ public class SwiftListService implements ListService {
             catch(AccessDeniedException e) {
                 // Listing the account is not permitted when every user owns a single container in a shared account
                 final Path home = new SwiftHomeFeature(session.getHost()).find();
-                if(null == home) {
+                if(null == home || !SwiftExceptionMappingService.isForbidden(e)) {
                     throw e;
                 }
                 log.warn("Listing account denied with {}. Return home container {}", e, home);

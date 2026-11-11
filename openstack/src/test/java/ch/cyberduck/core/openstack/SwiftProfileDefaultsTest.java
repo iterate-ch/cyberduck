@@ -16,25 +16,46 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
+import org.apache.http.Header;
 import org.apache.http.HttpVersion;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ch.iterate.openstack.swift.Client;
+import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
 import ch.iterate.openstack.swift.method.Authentication3UsernamePasswordProjectRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
+import ch.iterate.openstack.swift.model.Container;
+import ch.iterate.openstack.swift.model.Region;
 
 import static org.junit.Assert.*;
 
@@ -163,5 +184,100 @@ public class SwiftProfileDefaultsTest {
         response.addHeader("X-Container-Bytes-Used", "2048");
         response.addHeader("X-Container-Meta-Quota-Bytes", "1024");
         assertEquals(Long.valueOf(0L), SwiftContainerQuotaFeature.toSpace(response).available);
+    }
+
+    private static LoginCallback prompted(final AtomicInteger count) {
+        return new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                count.incrementAndGet();
+                return new Credentials("prompted");
+            }
+        };
+    }
+
+    @Test
+    public void testKeystone3DefaultProjectPromptsForDomainOnly() throws Exception {
+        final Host host = new Host(protocol("/v3/auth/tokens", properties("openstack.authentication.tenant", "storage")),
+                "auth.example.net", new Credentials("user@example.net", "p"));
+        final AtomicInteger count = new AtomicInteger();
+        new SwiftAuthenticationService().getRequest(host, prompted(count));
+        assertEquals(1, count.get());
+        assertEquals("storage:prompted:user@example.net", host.getCredentials().getUsername());
+    }
+
+    @Test
+    public void testKeystone3DefaultDomainPromptsForProjectOnly() throws Exception {
+        final Host host = new Host(protocol("/v3/auth/tokens", properties("openstack.authentication.domain", "Default")),
+                "auth.example.net", new Credentials("user@example.net", "p"));
+        final AtomicInteger count = new AtomicInteger();
+        new SwiftAuthenticationService().getRequest(host, prompted(count));
+        assertEquals(1, count.get());
+        assertEquals("prompted:Default:user@example.net", host.getCredentials().getUsername());
+    }
+
+    /**
+     * @param status Status code in reply to listing containers
+     */
+    private static SwiftSession session(final Map<String, String> properties, final int status) {
+        final Client stub = new Client((CloseableHttpClient) null) {
+            @Override
+            public Set<Region> getRegions() {
+                return Collections.singleton(new Region("r", URI.create("https://storage.example.net/v1/AUTH_a"), null));
+            }
+
+            @Override
+            public List<Container> listContainers(final Region region, final int limit, final String marker) throws IOException {
+                throw new GenericException("failure", new Header[0], new BasicStatusLine(HttpVersion.HTTP_1_1, status, "failure"));
+            }
+        };
+        final Host host = new Host(protocol("/v2.0/tokens", properties), "auth.example.net", new Credentials("alice", "p"));
+        return new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            @Override
+            public Client getClient() {
+                return stub;
+            }
+        };
+    }
+
+    private static AttributedList<Path> listRoot(final SwiftSession session) throws Exception {
+        return new SwiftListService(session, new SwiftRegionService(session)).list(Home.root(), new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testListRootForbiddenReturnsHomeContainer() throws Exception {
+        final AttributedList<Path> list = listRoot(session(properties("openstack.container.home", "{0}", "openstack.list.container.limit", "100"), 403));
+        assertEquals(1, list.size());
+        assertEquals("/alice", list.get(0).getAbsolute());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testListRootForbiddenWithoutHomeContainer() throws Exception {
+        listRoot(session(properties("openstack.list.container.limit", "100"), 403));
+    }
+
+    @Test
+    public void testListRootTransientFailureNotReplacedByHomeContainer() throws Exception {
+        for(int status : new int[]{429, 500, 406}) {
+            try {
+                listRoot(session(properties("openstack.container.home", "{0}", "openstack.list.container.limit", "100"), status));
+                fail("Expected failure for status " + status);
+            }
+            catch(AccessDeniedException e) {
+                assertFalse(SwiftExceptionMappingService.isForbidden(e));
+            }
+        }
+    }
+
+    @Test
+    public void testDistributionLoaderSkipsForbidden() throws Exception {
+        assertTrue(new SwiftDistributionConfigurationLoader(session(properties("openstack.list.container.limit", "100"), 403))
+                .operate(new DisabledPasswordCallback()).isEmpty());
+    }
+
+    @Test(expected = RetriableAccessDeniedException.class)
+    public void testDistributionLoaderPropagatesTransientFailure() throws Exception {
+        new SwiftDistributionConfigurationLoader(session(properties("openstack.list.container.limit", "100"), 429))
+                .operate(new DisabledPasswordCallback());
     }
 }

@@ -55,4 +55,13 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
         }
         return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getHttpStatusCode(), buffer.toString()));
     }
+
+    /**
+     * @param failure Mapped failure
+     * @return True if the server replied with 403 Forbidden, false for other failures including transient errors
+     */
+    static boolean isForbidden(final BackgroundException failure) {
+        return failure.getCause() instanceof HttpResponseException
+                && ((HttpResponseException) failure.getCause()).getStatusCode() == HttpStatus.SC_FORBIDDEN;
+    }
 }

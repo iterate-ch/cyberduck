@@ -60,6 +60,9 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
                     new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.root(), new DisabledListProgressListener());
         }
         catch(AccessDeniedException e) {
+            if(!SwiftExceptionMappingService.isForbidden(e)) {
+                throw e;
+            }
             // No permission to list containers in account
             log.warn("Skip loading distributions after failure {} listing containers", e.getMessage());
             return Collections.emptyMap();
