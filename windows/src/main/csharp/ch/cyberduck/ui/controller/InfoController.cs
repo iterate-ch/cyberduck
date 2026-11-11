@@ -285,7 +285,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             viewModel.Paths = Files;
-            viewModel.Load.ExecuteIfPossible().Subscribe();
+            viewModel.Load.Execute().Subscribe();
         }
 
         private void AddAclEntry(Acl.User user, Acl.Role role)

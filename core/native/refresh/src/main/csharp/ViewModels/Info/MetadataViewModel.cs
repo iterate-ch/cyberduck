@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using ch.cyberduck.core;
@@ -32,6 +33,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
     {
         private readonly ObservableAsPropertyHelper<bool> busy;
         private readonly Controller controller;
+        private readonly SemaphoreSlim loadLock = new(1, 1);
         private readonly ObservableCollectionExtended<Entry> metadata = new();
         private readonly SessionPool session;
         private bool adding;
@@ -181,16 +183,29 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             Observable.RunAsync(Save.Execute(), default);
         }
 
-        private Task<Map> OnLoadAsync()
+        private async Task<Map> OnLoadAsync()
         {
-            ReadMetadataWorkerImpl worker = new(pathsJava);
-            var result = controller.background(new WorkerBackgroundAction(controller, session, worker));
-            if (result.isDone() && !worker.Result.IsCompleted)
+            bool lockAcquired = false;
+            try
             {
-                return Task.FromResult(Collections.emptyMap());
-            }
+                await loadLock.WaitAsync();
+                lockAcquired = true;
+                ReadMetadataWorkerImpl worker = new(pathsJava);
+                var result = controller.background(new WorkerBackgroundAction(controller, session, worker));
+                if (result.isDone() && !worker.Result.IsCompleted)
+                {
+                    return Collections.emptyMap();
+                }
 
-            return worker.Result;
+                return await worker.Result;
+            }
+            finally
+            {
+                if (lockAcquired)
+                {
+                    loadLock.Release();
+                }
+            }
         }
 
         private Task OnSaveAsync()
