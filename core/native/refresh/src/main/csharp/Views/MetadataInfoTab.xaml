@@ -28,6 +28,7 @@
                     Grid.Row="0">
                 <DataGrid x:Name="HeadersGrid"
                           ItemsSource="{Binding Metadata}"
+                          IsReadOnly="{Binding Busy}"
                           AutoGenerateColumns="False"
                           CanUserResizeRows="False"
                           SelectionMode="Single"
