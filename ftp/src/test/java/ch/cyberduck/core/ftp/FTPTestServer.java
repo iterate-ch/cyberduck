@@ -37,10 +37,12 @@ import java.util.stream.IntStream;
  */
 public enum FTPTestServer {
     VSFTPD("/ftp/test", 21000, 21010, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-vsftpd", false)
-            .withFileFromClasspath("Dockerfile", "vsftpd/Dockerfile"))
-            .withEnv("USERS", String.format("%s|%s", FTPTestServer.USER, FTPTestServer.PASSWORD))
-            // Run vsftpd in foreground. The default startup script monitors the newest process matching vsftpd which is a
-            // connection handler when a client connects early and stops the container once that connection is closed.
+            .withFileFromClasspath("Dockerfile", "vsftpd/Dockerfile")
+            .withFileFromClasspath("vsftpd.conf", "vsftpd/vsftpd.conf")
+            .withFileFromClasspath("pam", "vsftpd/pam")
+            .withBuildArg("FTP_USER", FTPTestServer.USER)
+            .withBuildArg("FTP_PASSWORD", FTPTestServer.PASSWORD)
+            .withBuildArg("FTP_HOME", "/ftp/test"))
             // Configuration file must be first as it would otherwise override options on the command line
             .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
                     "-opasv_min_port=21000",

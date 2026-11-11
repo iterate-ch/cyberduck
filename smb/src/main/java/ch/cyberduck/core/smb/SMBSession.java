@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -409,6 +410,9 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         }
         if(type == Read.class) {
             return (T) new SMBReadFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new SMBUploadFeature();
         }
         if(type == Write.class) {
             return (T) new SMBWriteFeature(this);

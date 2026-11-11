@@ -301,7 +301,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     EnumSet.of(Read.Flags.offset) : EnumSet.noneOf(Read.Flags.class));
         }
         if(type == Upload.class) {
-            return (T) new FTPUploadFeature(this);
+            return (T) new FTPUploadFeature();
         }
         if(type == Write.class) {
             return (T) new FTPWriteFeature(this);

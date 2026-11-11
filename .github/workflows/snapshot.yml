@@ -1,15 +1,49 @@
 name: Publish Snapshot
 on:
+  # Nightly, built only when master changed since the last successful run (see the check job)
+  schedule:
+    - cron: '0 1 * * *'
+  # Always builds
   workflow_dispatch:
-  push:
-    branches:
-      - master
 # Queue instead of running in parallel
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 jobs:
+  # A scheduled run builds only if master moved since the last successful run of this workflow. A failed run is
+  # therefore retried the next night.
+  check:
+    permissions:
+      actions: read
+    runs-on: [ linux, x64 ]
+    outputs:
+      changed: ${{ steps.changed.outputs.changed }}
+    steps:
+      - name: Compare with last successful run
+        id: changed
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          changed=true
+          if [ "$EVENT" = "schedule" ]; then
+            if last=$(gh run list --workflow snapshot.yml --branch master --status success --limit 1 \
+              --json headSha --jq '.[0].headSha // ""'); then
+              if [ "$last" = "$GITHUB_SHA" ]; then
+                changed=false
+                echo "No change on master since the last successful run ($GITHUB_SHA)"
+              fi
+            else
+              echo "::warning::Could not read the last successful run, building"
+            fi
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
   deploy:
+    needs: check
+    if: ${{ needs.check.outputs.changed == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -42,8 +76,8 @@ jobs:
     secrets: inherit
 
   publish:
-    needs: deploy
-    if: ${{ !cancelled() }}
+    needs: [ check, deploy ]
+    if: ${{ !cancelled() && needs.check.outputs.changed == 'true' }}
     uses: ./.github/workflows/publish.yml
     with:
       SPARKLE_FEED: nightly
@@ -52,8 +86,8 @@ jobs:
   # Update the Homebrew tap at github.com/iterate-ch/homebrew-cyberduck. Nightly
   # only, so it lives here rather than in the shared publish.yml.
   brew:
-    needs: [ publish ]
-    if: ${{ !cancelled() }}
+    needs: [ check, publish ]
+    if: ${{ !cancelled() && needs.check.outputs.changed == 'true' }}
     permissions:
       actions: read
       contents: read

@@ -22,12 +22,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
@@ -100,14 +98,8 @@ public class DAVMetadataFeature implements Headers {
                     removeProps.add(SardineUtil.createQNameWithCustomNamespace(key));
                 }
             }
-            final Map<String, String> headers;
-            if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-                headers = Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId()));
-            }
-            else {
-                headers = Collections.emptyMap();
-            }
-            session.getClient().patch(new DAVPathEncoder(session).encode(file), setProps, removeProps, headers);
+            session.getClient().patch(new DAVPathEncoder(session).encode(file), setProps, removeProps,
+                    DAVLockFeature.toHeaders(session, file, status));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);

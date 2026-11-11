@@ -59,4 +59,34 @@ public class OcsCapabilitiesResponseHandlerTest {
         assertFalse(capabilities.projects);
         assertFalse(capabilities.sharejail);
     }
+
+    @Test
+    public void testHandleEntityLockingSupport() throws Exception {
+        final String xml = "<?xml version=\"1.0\"?>\n" +
+                "<ocs>\n" +
+                " <meta><status>ok</status><statuscode>100</statuscode><message>OK</message></meta>\n" +
+                " <data>\n" +
+                "  <capabilities>\n" +
+                "   <files><file_locking_support>1</file_locking_support><file_locking_enable_file_action></file_locking_enable_file_action></files>\n" +
+                "  </capabilities>\n" +
+                " </data>\n" +
+                "</ocs>";
+        final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+        assertTrue(capabilities.locking);
+    }
+
+    @Test
+    public void testHandleEntityNoLocking() throws Exception {
+        final String xml = "<?xml version=\"1.0\"?>\n" +
+                "<ocs>\n" +
+                " <meta><status>ok</status><statuscode>100</statuscode><message>OK</message></meta>\n" +
+                " <data>\n" +
+                "  <capabilities>\n" +
+                "   <files><versioning>true</versioning></files>\n" +
+                "  </capabilities>\n" +
+                " </data>\n" +
+                "</ocs>";
+        final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+        assertFalse(capabilities.locking);
+    }
 }

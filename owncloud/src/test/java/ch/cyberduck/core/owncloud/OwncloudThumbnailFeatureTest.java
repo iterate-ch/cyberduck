@@ -1,7 +1,7 @@
 package ch.cyberduck.core.owncloud;
 
 /*
- * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,19 +15,16 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-
-import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-@Ignore
-public class OwncloudSessionTest extends AbstractOwncloudTest {
+public class OwncloudThumbnailFeatureTest {
 
     @Test
-    public void testCapabilities() {
-        assertNotNull(session.ocs.webdav);
-        assertTrue(session.ocs.versioning);
-        assertFalse(session.ocs.locking);
+    public void testDimension() {
+        assertEquals(1, OwncloudThumbnailFeature.toDimension(0));
+        assertEquals(128, OwncloudThumbnailFeature.toDimension(128));
+        assertEquals(2048, OwncloudThumbnailFeature.toDimension(4096));
     }
 }
