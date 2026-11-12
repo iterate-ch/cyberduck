@@ -55,10 +55,11 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Future;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.VoidResponseHandler;
+import com.github.sardine.impl.methods.HttpMkCol;
 
 /**
  * Chunked upload using the Nextcloud chunking v2 protocol. Chunks are uploaded to a temporary collection below
@@ -79,10 +80,17 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
     private final int concurrency;
 
     public NextcloudChunkedUploadFeature(final DAVSession session, final OcsCapabilities capabilities) {
+        this(session, capabilities, HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.size"));
+    }
+
+    /**
+     * @param chunksize Configured size of chunks limited to value advertised by the server
+     */
+    public NextcloudChunkedUploadFeature(final DAVSession session, final OcsCapabilities capabilities, final long chunksize) {
         super(EnumSet.of(Flags.checksumOptional), HashAlgorithm.sha1);
         this.session = session;
         // Limit to values advertised by the server
-        this.chunksize = limit(HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.size"), capabilities.chunksize);
+        this.chunksize = limit(chunksize, capabilities.chunksize);
         this.concurrency = (int) limit(HostPreferencesFactory.get(session.getHost()).getInteger("nextcloud.upload.multipart.concurrency"), capabilities.chunkconcurrency);
     }
 
@@ -106,20 +114,26 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
         try {
             try {
                 log.debug("Create upload collection {} for {}", collection, file);
-                session.getClient().createDirectory(new DAVPathEncoder(session).encode(collection));
+                // Destination header is required on all requests of a chunking v2 upload
+                final String destination = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
+                        new DAVPathEncoder(session).encode(file));
+                final HttpMkCol mkcol = new HttpMkCol(new DAVPathEncoder(session).encode(collection));
+                mkcol.setHeader(HttpHeaders.DESTINATION, destination);
+                mkcol.setHeader(NextcloudWriteFeature.HEADER_TOTAL_LENGTH, String.valueOf(status.getLength()));
+                session.getClient().execute(mkcol, new VoidResponseHandler());
                 final long size = Math.max(chunksize, (status.getLength() + MAX_CHUNKS - 1) / MAX_CHUNKS);
                 final List<Future<Void>> chunks = new ArrayList<>();
                 long offset = 0;
                 long remaining = status.getLength();
                 for(int number = 1; remaining > 0; number++) {
                     final long length = Math.min(size, remaining);
-                    chunks.add(this.submit(pool, write, file, collection, local, throttle, listener, status, number, offset, length, callback));
+                    chunks.add(this.submit(pool, write, file, collection, destination, local, throttle, listener, status, number, offset, length, callback));
                     remaining -= length;
                     offset += length;
                 }
                 Interruptibles.awaitAll(chunks);
                 progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"), file.getName()));
-                this.assemble(file, collection, status);
+                this.assemble(file, destination, collection, status);
                 // Collection is removed by the server when assembled
                 status.setComplete();
                 return null;
@@ -140,7 +154,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
         }
     }
 
-    private Future<Void> submit(final ThreadPool pool, final Write<Void> write, final Path file, final Path collection, final Local local,
+    private Future<Void> submit(final ThreadPool pool, final Write<Void> write, final Path file, final Path collection, final String destination, final Local local,
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final int number, final long offset, final long length,
                                 final ConnectionCallback callback) {
@@ -150,11 +164,15 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             @Override
             public Void call() throws BackgroundException {
                 overall.validate();
+                final Map<String, String> metadata = new HashMap<>();
+                metadata.put(HttpHeaders.DESTINATION, destination);
+                metadata.put(NextcloudWriteFeature.HEADER_TOTAL_LENGTH, String.valueOf(overall.getLength()));
                 final TransferStatus status = new TransferStatus()
                         .setSegment(true)
                         .setParent(overall)
                         .setOffset(offset)
-                        .setLength(length);
+                        .setLength(length)
+                        .setMetadata(metadata);
                 status.setPart(number);
                 // Chunks are sorted by name when assembled
                 final Path chunk = new Path(collection, String.format("%05d", number), EnumSet.of(Path.Type.file));
@@ -165,9 +183,9 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
         }, overall, counter));
     }
 
-    private void assemble(final Path file, final Path collection, final TransferStatus status) throws IOException {
+    private void assemble(final Path file, final String destination, final Path collection, final TransferStatus status) throws IOException {
         final Map<String, String> headers = new HashMap<>();
-        headers.put("OC-Total-Length", String.valueOf(status.getLength()));
+        headers.put(NextcloudWriteFeature.HEADER_TOTAL_LENGTH, String.valueOf(status.getLength()));
         if(null != status.getModified()) {
             headers.put("X-OC-Mtime", String.valueOf(status.getModified() / 1000));
         }
@@ -188,10 +206,9 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             // Indicate that the client has knowledge of that state token of the destination
             headers.put(HttpHeaders.IF, String.format("<%s> (<%s>)", path, status.getLockId()));
         }
-        final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()), path);
         final String source = String.format("%s.file", new DAVPathEncoder(session).encode(collection));
-        log.debug("Assemble {} to {} with headers {}", source, target, headers);
-        session.getClient().move(source, target, true, headers);
+        log.debug("Assemble {} to {} with headers {}", source, destination, headers);
+        session.getClient().move(source, destination, true, headers);
     }
 
     private void cleanup(final Path collection) {
