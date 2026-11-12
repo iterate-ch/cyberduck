@@ -36,6 +36,7 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -213,6 +214,108 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             }, CancelCallback.noop));
             assertTrue(b.get());
 
+        }
+        finally {
+            key.delete();
+        }
+    }
+
+    /**
+     * Encrypted OpenSSH v1 private key with passphrase {@link #PASSPHRASE}
+     */
+    private static final String ENCRYPTED_OPENSSH_V1_KEY =             "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+            "b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABDmEKGhGe\n" +
+            "obhgMMa02IfXl1AAAAAQAAAAEAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIK8oBWaGBQRvJdxt\n" +
+            "74jPFyBXGL6OEKSs6vj0TViYqwbnAAAAkOgwjiRHo430/f6dyZ4WYY7xXWeIyqIoVUZ7fW\n" +
+            "4YFmCUn1YcZT6TPh5KWpRNB0xedggoR0PO47n9gGWc8GNgDzKQnzOzqnW6Hi2uPgq5MO6l\n" +
+            "5mpISqDhpgk6NPQhndAZzP3g43oeMRTDl4YOk4+9TkHthn7kN8/J4QoP3P+VoBru6Y6tQs\n" +
+            "QXDMace6oidT+AHQ==\n" +
+            "-----END OPENSSH PRIVATE KEY-----\n";
+
+    private static final String PASSPHRASE = "correct";
+
+    private Local encryptedKey() throws Exception {
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        new DefaultLocalTouchFeature().touch(key);
+        IOUtils.copy(new StringReader(ENCRYPTED_OPENSSH_V1_KEY), key.getOutputStream(false), StandardCharsets.UTF_8);
+        session.disconnect();
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.getHost().getCredentials().setIdentity(key);
+        return key;
+    }
+
+    @Test
+    public void testStalePassphraseIsDiscardedAndPromptedOnce() throws Exception {
+        final Local key = this.encryptedKey();
+        try {
+            final Credentials credentials = session.getHost().getCredentials();
+            credentials.setIdentityPassphrase("stale");
+            final AtomicInteger prompts = new AtomicInteger();
+            try {
+                new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, String title, String reason, LoginOptions options) {
+                        prompts.incrementAndGet();
+                        return new Credentials().setPassword(PASSPHRASE);
+                    }
+                }, CancelCallback.noop);
+            }
+            catch(LoginFailureException e) {
+                // Key decrypted but not authorized on server
+            }
+            assertEquals(1, prompts.get());
+            assertEquals(PASSPHRASE, credentials.getIdentityPassphrase());
+        }
+        finally {
+            key.delete();
+        }
+    }
+
+    @Test
+    public void testWrongPassphraseRetriesAreBounded() throws Exception {
+        final Local key = this.encryptedKey();
+        try {
+            final AtomicInteger prompts = new AtomicInteger();
+            try {
+                new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, String title, String reason, LoginOptions options) {
+                        prompts.incrementAndGet();
+                        return new Credentials().setPassword("wrong");
+                    }
+                }, CancelCallback.noop);
+                fail();
+            }
+            catch(LoginFailureException e) {
+                // Expected decryption failure after retry limit
+            }
+            assertEquals(2, prompts.get());
+        }
+        finally {
+            key.delete();
+        }
+    }
+
+    @Test
+    public void testStalePassphraseThenCancelRetryPrompt() throws Exception {
+        final Local key = this.encryptedKey();
+        try {
+            session.getHost().getCredentials().setIdentityPassphrase("stale");
+            final AtomicInteger prompts = new AtomicInteger();
+            try {
+                new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                        prompts.incrementAndGet();
+                        throw new LoginCanceledException();
+                    }
+                }, CancelCallback.noop);
+                fail();
+            }
+            catch(LoginCanceledException e) {
+                // Expected
+            }
+            assertEquals(1, prompts.get());
         }
         finally {
             key.delete();
