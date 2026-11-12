@@ -353,12 +353,18 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 Foundation.selector("commentInputDidChange:"),
                 NSText.TextDidChangeNotification,
                 field.id());
-        this.addObserver(bookmark -> updateField(commentField, bookmark.getComment()));
+        this.addObserver(bookmark -> {
+            // Do not replace unchanged text to preserve the selection while typing
+            if(!StringUtils.defaultString(bookmark.getComment()).equals(commentField.string())) {
+                updateField(commentField, bookmark.getComment());
+            }
+        });
     }
 
     @Action
     public void commentInputDidChange(final NSNotification sender) {
         bookmark.setComment(commentField.textStorage().string());
+        this.update();
     }
 
     @Outlet
