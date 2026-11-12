@@ -119,6 +119,8 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Outlet
     private NSTokenField labelsField;
     @Outlet
+    private NSTextView commentField;
+    @Outlet
     private NSPopUpButton certificatePopup;
     @Outlet
     private NSPopUpButton timezonePopup;
@@ -341,6 +343,22 @@ public abstract class BookmarkController extends SheetController implements NSTa
         }
         bookmark.setLabels(labels);
         this.update();
+    }
+
+    @Outlet
+    public void setCommentField(final NSTextView field) {
+        this.commentField = field;
+        this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
+        this.notificationCenter.addObserver(this.id(),
+                Foundation.selector("commentInputDidChange:"),
+                NSText.TextDidChangeNotification,
+                field.id());
+        this.addObserver(bookmark -> updateField(commentField, bookmark.getComment()));
+    }
+
+    @Action
+    public void commentInputDidChange(final NSNotification sender) {
+        bookmark.setComment(commentField.textStorage().string());
     }
 
     @Outlet
