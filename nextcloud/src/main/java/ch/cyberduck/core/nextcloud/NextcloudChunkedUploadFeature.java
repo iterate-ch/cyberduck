@@ -104,23 +104,30 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
                 new UUIDRandomStringService().random()), EnumSet.of(Path.Type.directory));
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
-            log.debug("Create upload collection {} for {}", collection, file);
-            session.getClient().createDirectory(new DAVPathEncoder(session).encode(collection));
-            final long size = Math.max(chunksize, (status.getLength() + MAX_CHUNKS - 1) / MAX_CHUNKS);
-            final List<Future<Void>> chunks = new ArrayList<>();
-            long offset = 0;
-            long remaining = status.getLength();
-            for(int number = 1; remaining > 0; number++) {
-                final long length = Math.min(size, remaining);
-                chunks.add(this.submit(pool, write, file, collection, local, throttle, listener, status, number, offset, length, callback));
-                remaining -= length;
-                offset += length;
+            try {
+                log.debug("Create upload collection {} for {}", collection, file);
+                session.getClient().createDirectory(new DAVPathEncoder(session).encode(collection));
+                final long size = Math.max(chunksize, (status.getLength() + MAX_CHUNKS - 1) / MAX_CHUNKS);
+                final List<Future<Void>> chunks = new ArrayList<>();
+                long offset = 0;
+                long remaining = status.getLength();
+                for(int number = 1; remaining > 0; number++) {
+                    final long length = Math.min(size, remaining);
+                    chunks.add(this.submit(pool, write, file, collection, local, throttle, listener, status, number, offset, length, callback));
+                    remaining -= length;
+                    offset += length;
+                }
+                Interruptibles.awaitAll(chunks);
+                progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"), file.getName()));
+                this.assemble(file, collection, status);
+                // Collection is removed by the server when assembled
+                status.setComplete();
+                return null;
             }
-            Interruptibles.awaitAll(chunks);
-            progress.message(MessageFormat.format(LocaleFactory.localizedString("Finalize {0}", "Status"), file.getName()));
-            this.assemble(file, collection, status);
-            status.setComplete();
-            return null;
+            catch(BackgroundException | IOException e) {
+                this.cleanup(collection);
+                throw e;
+            }
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
@@ -129,9 +136,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
         }
         finally {
-            // Cancel future tasks
             pool.shutdown(false);
-            this.cleanup(collection);
         }
     }
 
@@ -194,7 +199,6 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             session.getClient().delete(new DAVPathEncoder(session).encode(collection));
         }
         catch(IOException e) {
-            // Collection is removed by the server when assembled
             log.debug("Failure removing upload collection {}: {}", collection, e.getMessage());
         }
     }
