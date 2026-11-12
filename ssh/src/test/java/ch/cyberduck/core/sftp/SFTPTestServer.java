@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
@@ -63,7 +64,11 @@ public enum SFTPTestServer {
                 .withCopyToContainer(MountableFile.forClasspathResource("certificate/ca.pub", 0644), "/config/sshd/ca.pub")
                 .withCopyToContainer(MountableFile.forClasspathResource("certificate/sshd.conf", 0644), "/config/sshd/sshd_config.d/certificate.conf")
                 .withExposedPorts(2222)
-                .waitingFor(Wait.forLogMessage(".*\\[ls\\.io-init\\] done.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
+                .waitingFor(new WaitAllStrategy()
+                        .withStrategy(Wait.forLogMessage(".*\\[ls\\.io-init\\] done.*", 1))
+                        // Init is done before the sshd service is started
+                        .withStrategy(Wait.forListeningPort())
+                        .withStartupTimeout(Duration.ofMinutes(2)));
     }
 
     private final String home;
