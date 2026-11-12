@@ -18,58 +18,75 @@ package ch.cyberduck.core.nextcloud;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.ocs.OcsCapabilities;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Chunked upload is the only one reporting progress for assembling the file on the server.
+ */
 public class NextcloudThresholdUploadFeatureTest extends AbstractNextcloudTest {
 
+    private static final long THRESHOLD = 4096L;
+
     @Test
-    public void testUploadChunks() throws Exception {
-        PreferencesFactory.get().setProperty("nextcloud.upload.multipart.threshold", 1024L);
-        PreferencesFactory.get().setProperty("nextcloud.upload.multipart.size", 5L * 1024 * 1024);
-        try {
-            final byte[] content = RandomUtils.nextBytes(12 * 1024 * 1024 + 17);
-            final Local local = new Local(Files.createTempFile("chunked", ".bin").toString());
-            try (OutputStream out = local.getOutputStream(false)) {
-                out.write(content);
-            }
-            final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-            final TransferStatus status = new TransferStatus().setLength(content.length);
-            new NextcloudThresholdUploadFeature(session, new OcsCapabilities()).upload(new NextcloudWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledProgressListener(), new DisabledStreamListener(), status, ConnectionCallback.noop);
-            assertTrue(status.isComplete());
-            final byte[] read = new byte[content.length];
-            try (InputStream in = new NextcloudReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop)) {
-                IOUtils.readFully(in, read);
-            }
-            assertArrayEquals(content, read);
-            new NextcloudDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            local.delete();
+    public void testBelowThresholdSingleRequest() throws Exception {
+        assertFalse(this.upload(THRESHOLD - 1));
+    }
+
+    @Test
+    public void testAtThresholdChunked() throws Exception {
+        assertTrue(this.upload(THRESHOLD));
+    }
+
+    @Test
+    public void testAboveThresholdChunked() throws Exception {
+        assertTrue(this.upload(THRESHOLD * 3 + 1));
+    }
+
+    /**
+     * @return True if chunked upload was used
+     */
+    private boolean upload(final long length) throws Exception {
+        final byte[] content = RandomUtils.nextBytes((int) length);
+        final Local local = new Local(Files.createTempFile("threshold", ".bin").toString());
+        try (OutputStream out = local.getOutputStream(false)) {
+            out.write(content);
         }
-        finally {
-            PreferencesFactory.get().deleteProperty("nextcloud.upload.multipart.threshold");
-            PreferencesFactory.get().deleteProperty("nextcloud.upload.multipart.size");
-        }
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        final List<String> messages = new ArrayList<>();
+        new NextcloudThresholdUploadFeature(session, new OcsCapabilities(), THRESHOLD, THRESHOLD).upload(new NextcloudWriteFeature(session), test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        messages.add(message);
+                    }
+                }, new DisabledStreamListener(), status, ConnectionCallback.noop);
+        assertTrue(status.isComplete());
+        assertEquals(length, new NextcloudAttributesFinderFeature(session).find(test).getSize());
+        new NextcloudDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+        return messages.stream().anyMatch(m -> m.contains("Finalize"));
     }
 }

@@ -51,10 +51,21 @@ public class NextcloudThresholdUploadFeature implements Upload<Void> {
     private final Upload<Void> chunked;
 
     public NextcloudThresholdUploadFeature(final DAVSession session, final OcsCapabilities capabilities) {
+        this(session, capabilities,
+                HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.threshold"),
+                HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.size"));
+    }
+
+    /**
+     * @param threshold Minimum length of files to upload in chunks
+     * @param chunksize Size of chunks limited to value advertised by the server
+     */
+    public NextcloudThresholdUploadFeature(final DAVSession session, final OcsCapabilities capabilities,
+                                           final long threshold, final long chunksize) {
         this.session = session;
-        this.threshold = HostPreferencesFactory.get(session.getHost()).getLong("nextcloud.upload.multipart.threshold");
+        this.threshold = threshold;
         this.single = new HttpUploadFeature<>(EnumSet.of(Flags.checksumOptional), HashAlgorithm.sha1);
-        this.chunked = new NextcloudChunkedUploadFeature(session, capabilities);
+        this.chunked = new NextcloudChunkedUploadFeature(session, capabilities, chunksize);
     }
 
     @Override
