@@ -14,4 +14,5 @@ RUN useradd --create-home --shell /bin/sh test \
 COPY proftpd.conf /etc/proftpd/proftpd.conf
 
 EXPOSE 2222
-CMD ["proftpd", "--nodaemon"]
+# mod_sftp cannot log to /dev/stderr, forward its log file to container output
+CMD ["sh", "-c", "touch /var/log/proftpd/sftp.log && tail -F /var/log/proftpd/sftp.log & exec proftpd --nodaemon"]

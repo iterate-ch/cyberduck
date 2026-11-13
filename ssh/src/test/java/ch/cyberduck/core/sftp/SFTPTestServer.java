@@ -92,6 +92,8 @@ public enum SFTPTestServer {
     public synchronized GenericContainer<?> container() {
         if(null == container) {
             container = factory.get();
+            // Include server output in test log to diagnose connection failures
+            container.withLogConsumer(f -> System.out.print(this.name() + " " + f.getUtf8String()));
             container.start();
             final GenericContainer<?> started = container;
             Runtime.getRuntime().addShutdownHook(new Thread(started::stop));
