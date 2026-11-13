@@ -35,7 +35,6 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import org.apache.http.Header;
 import org.apache.http.HttpVersion;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 
 import org.junit.Test;
@@ -157,33 +156,23 @@ public class SwiftProfileDefaultsTest {
     }
 
     @Test
-    public void testQuotaFromHeaders() {
-        // Header names in lower case as sent by some reverse proxies
-        final BasicHttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, 204, "No Content");
-        response.addHeader("x-container-bytes-used", "14680064");
-        response.addHeader("x-container-meta-quota-bytes", "42949672960");
-        final Quota.Space space = SwiftContainerQuotaFeature.toSpace(response);
+    public void testQuotaFromMetadata() {
+        final Quota.Space space = SwiftContainerQuotaFeature.toSpace(14680064L, "42949672960");
         assertEquals(Long.valueOf(14680064L), space.used);
         assertEquals(Long.valueOf(42949672960L - 14680064L), space.available);
     }
 
     @Test
-    public void testQuotaWithoutQuotaHeader() {
-        final BasicHttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, 204, "No Content");
-        response.addHeader("X-Container-Bytes-Used", "1024");
-        final Quota.Space space = SwiftContainerQuotaFeature.toSpace(response);
+    public void testQuotaWithoutQuotaMetadata() {
+        final Quota.Space space = SwiftContainerQuotaFeature.toSpace(1024L, null);
         assertEquals(Long.valueOf(1024L), space.used);
         assertEquals(Long.valueOf(Long.MAX_VALUE), space.available);
-        response.addHeader("X-Container-Meta-Quota-Bytes", "invalid");
-        assertEquals(Long.valueOf(Long.MAX_VALUE), SwiftContainerQuotaFeature.toSpace(response).available);
+        assertEquals(Long.valueOf(Long.MAX_VALUE), SwiftContainerQuotaFeature.toSpace(1024L, "invalid").available);
     }
 
     @Test
     public void testQuotaExceeded() {
-        final BasicHttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, 204, "No Content");
-        response.addHeader("X-Container-Bytes-Used", "2048");
-        response.addHeader("X-Container-Meta-Quota-Bytes", "1024");
-        assertEquals(Long.valueOf(0L), SwiftContainerQuotaFeature.toSpace(response).available);
+        assertEquals(Long.valueOf(0L), SwiftContainerQuotaFeature.toSpace(2048L, "1024").available);
     }
 
     private static LoginCallback prompted(final AtomicInteger count) {
