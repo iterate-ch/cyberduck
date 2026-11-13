@@ -17,12 +17,11 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
@@ -30,77 +29,148 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.http.protocol.HttpCoreContext;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(BrickUnauthorizedRetryStrategy.class);
-
+public class BrickUnauthorizedRetryStrategy implements HttpRequestInterceptor, HttpResponseInterceptor {
+    private static final String REST_REQUEST = "brick.rest.request";
     private final ReentrantLock lock = new ReentrantLock();
-    private final HostPasswordStore store = PasswordStoreFactory.get();
+    private final HostPasswordStore store;
     private final BrickSession session;
     private final LoginCallback prompt;
     private final CancelCallback cancel;
+    private volatile long recoveryCount;
+    private BackgroundException recoveryFailure;
+    private volatile String rejectedSavedKey;
 
-    private String apiKey = StringUtils.EMPTY;
-
-    public BrickUnauthorizedRetryStrategy(final BrickSession session, final LoginCallback prompt, final CancelCallback cancel) {
+    public BrickUnauthorizedRetryStrategy(final BrickSession session, final HostPasswordStore store, final LoginCallback prompt, final CancelCallback cancel) {
+        this.store = store;
         this.session = session;
         this.prompt = prompt;
         this.cancel = cancel;
     }
 
-    @Override
-    public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
-                log.debug("Try to acquire semaphore for {}", session);
-                // Pairing token no longer valid
-                if(!lock.tryLock()) {
-                    log.warn("Skip pairing because semaphore cannot be aquired for {}", session);
-                    return false;
-                }
-                try {
-                    log.warn("Run pairing flow for {}", session);
-                    // Blocks until pairing is complete or canceled
-                    final Credentials credentials = session.pair(session.getHost(), prompt, prompt, new BackgroundActionRegistryCancelCallback(cancel),
-                            LocaleFactory.localizedString("You've been logged out", "Brick"),
-                            LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick")
-                    );
-                    if(credentials.isSaved()) {
-                        store.save(session.getHost());
-                    }
-                    apiKey = credentials.getPassword();
-                    return true;
-                }
-                catch(BackgroundException e) {
-                    log.warn("Failure {} trying to refresh pairing after error response {}", e, response);
-                }
-                finally {
-                    log.debug("Release semaphore for {}", session);
-                    lock.unlock();
-                }
-        }
-        return false;
+    public long getRecoveryCount() {
+        return recoveryCount;
     }
 
-    public void setApiKey(final String apiKey) {
-        this.apiKey = apiKey;
+    public boolean retryRequest(final ApiException failure, final int executionCount, final String rejectedKey, final long requestRecoveryCount) throws BackgroundException {
+        if(failure.getCode() != HttpStatus.SC_UNAUTHORIZED) {
+            return false;
+        }
+        if(executionCount > 1) {
+            this.invalidate(rejectedKey);
+            return false;
+        }
+        final CancelCallback cancellation = new BackgroundActionRegistryCancelCallback(cancel);
+        try {
+            do {
+                cancellation.verify();
+            }
+            while(!lock.tryLock(100, TimeUnit.MILLISECONDS));
+        }
+        catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ConnectionCanceledException(e);
+        }
+        try {
+            cancellation.verify();
+            if(requestRecoveryCount != recoveryCount) {
+                if(recoveryFailure != null) {
+                    throw recoveryFailure;
+                }
+                return true;
+            }
+            try {
+                recoveryFailure = null;
+                final Credentials credentials = session.getHost().getCredentials();
+                if(credentials.isPasswordAuthentication() && !StringUtils.equals(rejectedKey, credentials.getPassword())) {
+                    return true;
+                }
+                if(BrickOAuth2AuthorizationService.isKeychainEnabled()) {
+                    final String saved = store.findLoginPassword(session.getHost());
+                    if(StringUtils.isNotBlank(saved) && !StringUtils.equals(rejectedKey, saved) && !StringUtils.equals(rejectedSavedKey, saved)) {
+                        credentials.setPassword(saved).setSaved(false);
+                        credentials.setProperty(BrickOAuth2AuthorizationService.ACCOUNT, credentials.getUsername());
+                        return true;
+                    }
+                }
+                session.authorize(prompt, cancellation);
+                if(credentials.isSaved() && BrickOAuth2AuthorizationService.isKeychainEnabled()) {
+                    store.save(session.getHost());
+                }
+                return true;
+            }
+            catch(BackgroundException e) {
+                recoveryFailure = e;
+                if(e instanceof LoginFailureException || e instanceof ConnectionCanceledException) {
+                    this.invalidate(rejectedKey);
+                }
+                throw e;
+            }
+            finally {
+                recoveryCount++;
+            }
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    private void invalidate(final String rejectedKey) {
+        final Credentials credentials = session.getHost().getCredentials();
+        if(StringUtils.equals(rejectedKey, credentials.getPassword())) {
+            if(StringUtils.isNotEmpty(rejectedKey)) {
+                rejectedSavedKey = rejectedKey;
+            }
+            credentials.setPassword(StringUtils.EMPTY).setSaved(false);
+        }
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        if(StringUtils.isNotBlank(apiKey)) {
-            request.removeHeaders("X-FilesAPI-Key");
-            request.addHeader("X-FilesAPI-Key", apiKey);
+        request.removeHeaders("X-FilesAPI-Key");
+        final boolean api = this.isApiRequest(request, context);
+        final List<URI> redirects = HttpClientContext.adapt(context).getRedirectLocations();
+        if(redirects == null || redirects.isEmpty()) {
+            context.setAttribute(REST_REQUEST, api);
+        }
+        if(api && session.getHost().getCredentials().isPasswordAuthentication()) {
+            request.addHeader("X-FilesAPI-Key", session.getHost().getCredentials().getPassword());
+        }
+    }
+
+    private boolean isApiRequest(final HttpRequest request, final HttpContext context) {
+        final HttpHost target = HttpCoreContext.adapt(context).getTargetHost();
+        final String path = URI.create(request.getRequestLine().getUri()).getPath();
+        return target != null && StringUtils.startsWith(path, "/api/rest/v1/")
+                && StringUtils.equalsIgnoreCase(target.getHostName(), session.getHost().getHostname())
+                && StringUtils.equalsIgnoreCase(target.getSchemeName(), session.getHost().getProtocol().getScheme().name())
+                && (target.getPort() == -1 ? 443 : target.getPort()) == session.getHost().getPort();
+    }
+
+    @Override
+    public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
+        final HttpRequest request = HttpCoreContext.adapt(context).getRequest();
+        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED
+                && Boolean.TRUE.equals(context.getAttribute(REST_REQUEST))
+                && (request == null || !this.isApiRequest(request, context))) {
+            // A redirected storage response must not start REST credential recovery.
+            throw new HttpResponseException(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getReasonPhrase());
         }
     }
 

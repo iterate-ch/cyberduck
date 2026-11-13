@@ -56,6 +56,9 @@ public abstract class AbstractProtocol implements Protocol {
         if(this.getOAuthRedirectUrl() != null) {
             dict.setStringForKey(this.getOAuthRedirectUrl(), OAUTH_REDIRECT_URL_KEY);
         }
+        if(this.getOAuthSuccessUrl() != null) {
+            dict.setStringForKey(this.getOAuthSuccessUrl(), OAUTH_SUCCESS_URL_KEY);
+        }
         if(this.getOAuthAuthorizationUrl() != null) {
             dict.setStringForKey(this.getOAuthAuthorizationUrl(), OAUTH_AUTHORIZATION_URL_KEY);
         }
@@ -343,6 +346,11 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public String getOAuthRedirectUrl() {
+        return null;
+    }
+
+    @Override
+    public String getOAuthSuccessUrl() {
         return null;
     }
 

@@ -17,11 +17,13 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Pairing;
+
+import java.util.Collections;
+import java.util.List;
 
 import com.google.auto.service.AutoService;
 
@@ -44,6 +46,61 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getOAuthClientId() {
+        return "cyberduck";
+    }
+
+    @Override
+    public String getOAuthClientSecret() {
+        return "";
+    }
+
+    @Override
+    public String getOAuthAuthorizationUrl() {
+        return "/auth/oauth/authorize";
+    }
+
+    @Override
+    public String getOAuthTokenUrl() {
+        return "/auth/oauth/token";
+    }
+
+    @Override
+    public String getOAuthRedirectUrl() {
+        return "http://127.0.0.1/oauth/callback";
+    }
+
+    @Override
+    public List<String> getOAuthScopes() {
+        return Collections.singletonList("desktop");
+    }
+
+    @Override
+    public String getOAuthSuccessUrl() {
+        return "/desktopSetup?client_id=cyberduck";
+    }
+
+    @Override
+    public String getDefaultHostname() {
+        return "app.files.com";
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isUsernameConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isOAuthConfigurable() {
+        return true;
+    }
+
+    @Override
     public Scheme getScheme() {
         return Scheme.https;
     }
@@ -60,7 +117,7 @@ public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
-        // Will get new pairing key if missing credentials
+        // Authorize in the browser if no API key is saved.
         return true;
     }
 
@@ -73,10 +130,7 @@ public class BrickProtocol extends AbstractProtocol {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Pairing.class) {
-            return (T) new BrickPairingFeature();
-        }
-        if(type == CredentialsConfigurator.class) {
-            return (T) new BrickCredentialsConfigurator();
+            return (T) new BrickCredentialsDeleteFeature();
         }
         return super.getFeature(type);
     }

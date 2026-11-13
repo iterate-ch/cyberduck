@@ -38,13 +38,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -52,18 +47,29 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.URI;
 
-public class BrickPairingFeature implements Pairing {
-    private static final Logger log = LogManager.getLogger(BrickPairingFeature.class);
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 
-    private final HostPasswordStore store = PasswordStoreFactory.get();
+public class BrickCredentialsDeleteFeature implements Pairing {
+    private static final Logger log = LogManager.getLogger(BrickCredentialsDeleteFeature.class);
+
+    private final HostPasswordStore store;
+
+    public BrickCredentialsDeleteFeature() {
+        this(PasswordStoreFactory.get());
+    }
+
+    BrickCredentialsDeleteFeature(final HostPasswordStore store) {
+        this.store = store;
+    }
 
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
         try {
             final String token = store.findLoginPassword(bookmark);
             if(StringUtils.isNotBlank(token)) {
-                log.warn("Delete pairing for {}", bookmark);
+                log.warn("Delete API key for {}", bookmark);
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
                         new DefaultTrustManagerHostnameCallback(bookmark), CertificateStoreFactory.get());
                 final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
@@ -72,20 +78,10 @@ public class BrickPairingFeature implements Pairing {
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, ProxyFactory.get());
                 final HttpClientBuilder configuration = builder.build(ProxyFactory.get(), new DisabledTranscriptListener(), LoginCallback.noop);
                 configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create().build());
-                final CloseableHttpClient client = configuration.build();
-                final HttpRequestBase resource = new HttpDelete(
-                        String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(bookmark)));
-                resource.setHeader("X-FilesAPI-Key", token);
-                resource.setHeader(HttpHeaders.ACCEPT, "application/json");
-                resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-                log.info("Delete paring key {}", token);
-                client.execute(resource, new ResponseHandler<Void>() {
-                    @Override
-                    public Void handleResponse(final HttpResponse response) {
-                        return null;
-                    }
-                });
-                client.close();
+                try(CloseableHttpClient client = configuration.build()) {
+                    new BrickApiKeyRevocationService(new ApacheHttpTransport(client)).revoke(
+                            URI.create(new HostUrlProvider().withUsername(false).withPath(false).get(bookmark)), token);
+                }
             }
         }
         catch(HttpResponseException e) {
@@ -95,6 +91,11 @@ public class BrickPairingFeature implements Pairing {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
+            store.deleteLoginPassword(bookmark);
+            if(StringUtils.isEmpty(bookmark.getCredentials().getUsername())) {
+                store.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
+                        bookmark.getProtocol().getPasswordPlaceholder());
+            }
             store.delete(bookmark);
         }
     }
