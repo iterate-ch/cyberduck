@@ -142,4 +142,10 @@ public abstract class DefaultBookmarkController extends BookmarkController {
         f.superview().superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.weburl.configurable"));
         super.setWebURLField(f);
     }
+
+    @Override
+    public void setKerberosRealmField(final NSTextField field) {
+        this.addObserver(host -> field.superview().setHidden(!host.getProtocol().isKerberosConfigurable()));
+        super.setKerberosRealmField(field);
+    }
 }
