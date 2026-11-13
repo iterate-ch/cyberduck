@@ -1,0 +1,110 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml">
+    <!-- WinUI Spacing Guides -->
+    <Thickness x:Key="CompactSpacing">4</Thickness>
+    <Thickness x:Key="CompactNegativeSpacing">-4</Thickness>
+    <Thickness x:Key="CompactItemSpacing">2</Thickness>
+    <Thickness x:Key="CompactItemNegativeSpacing">-2</Thickness>
+
+    <Thickness x:Key="UISpacing">8</Thickness>
+    <Thickness x:Key="UINegativeSpacing">-8</Thickness>
+    <Thickness x:Key="UIItemSpacing">4</Thickness>
+    <Thickness x:Key="UIItemNegativeSpacing">-4</Thickness>
+
+    <Thickness x:Key="ControlSpacing">12</Thickness>
+    <Thickness x:Key="ControlNegativeSpacing">-12</Thickness>
+    <Thickness x:Key="ControlItemSpacing">6</Thickness>
+    <Thickness x:Key="ControlItemNegativeSpacing">-6</Thickness>
+
+    <Thickness x:Key="CardSpacing">16</Thickness>
+    <Thickness x:Key="CardNegativeSpacing">-16</Thickness>
+    <Thickness x:Key="CardItemSpacing">8</Thickness>
+    <Thickness x:Key="CardItemNegativeSpacing">-8</Thickness>
+    <Thickness x:Key="CardRowSpacing">0,8</Thickness>
+    <Thickness x:Key="CardColumnSpacing">8,0</Thickness>
+
+    <Thickness x:Key="ContentSpacing">24</Thickness>
+    <Thickness x:Key="ContentNegativeSpacing">-24</Thickness>
+    <Thickness x:Key="ContentItemSpacing">12</Thickness>
+    <Thickness x:Key="ContentItemNegativeSpacing">-12</Thickness>
+
+    <!-- Combinations -->
+    <!-- Key: $(Target Spacing)$(Inner Spacing)Spacing -->
+    <Thickness x:Key="UIItemCompactItemSpacing">2</Thickness>
+    <Thickness x:Key="ControlCompactItemSpacing">10</Thickness>
+    <Thickness x:Key="CardItemCompactItemSpacing">14</Thickness>
+
+    <!-- Special Use -->
+    <Thickness x:Key="PageTitleControlSpacing">24,24,24,12</Thickness>
+    <!-- Key: $(Role)$(Base Spacing)$(Inner Spacing)Spacing-->
+    <Thickness x:Key="PageTitleCardCompactItemSpacing">14,14,14,2</Thickness>
+    <Thickness x:Key="PageTitleCardControlItemSpacing">10,10,10,6</Thickness>
+    <Thickness x:Key="PageTitleCardItemCompactItemSpacing">14,14,14,6</Thickness>
+    <Thickness x:Key="PageTitleCardUISpacing">14,14,14,8</Thickness>
+    <Thickness x:Key="DialogContentSpacing">14,14,14,0</Thickness>
+    <Thickness x:Key="CardColumnNegativeSpacing">0,-8</Thickness>
+
+    <Thickness x:Key="PageContentPadding">16</Thickness>
+    <Thickness x:Key="PageContentContentSpacing">0,12</Thickness>
+    <Thickness x:Key="PageContentNegativeContentSpacing">0,-12</Thickness>
+
+    <Style x:Key="LabeledControlStyle"
+           TargetType="HeaderedContentControl"
+           BasedOn="{StaticResource {x:Type HeaderedContentControl}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="HeaderedContentControl">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <Grid Margin="{StaticResource UIItemNegativeSpacing}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ContentPresenter ContentSource="Header"
+                                              Margin="{StaticResource UIItemSpacing}"
+                                              Grid.Row="0" />
+
+                            <ContentPresenter ContentSource="Content"
+                                              Margin="{StaticResource UIItemSpacing}"
+                                              Grid.Row="1" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="TitledTabTemplate"
+                     TargetType="HeaderedContentControl">
+        <Border Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{DynamicResource ControlCornerRadius}"
+                Padding="{TemplateBinding Padding}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ContentPresenter ContentSource="Header"
+                                  Margin="{DynamicResource TitledTabHeaderSpacing}"
+                                  Grid.Row="0" />
+
+                <ContentPresenter ContentSource="Content"
+                                  Margin="{DynamicResource TitledTabContentSpacing}"
+                                  Grid.Row="1" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+    <Style x:Key="TitledTabStyle"
+           TargetType="HeaderedContentControl"
+           BasedOn="{StaticResource {x:Type HeaderedContentControl}}">
+        <Setter Property="Template"
+                Value="{StaticResource TitledTabTemplate}" />
+    </Style>
+</ResourceDictionary>
