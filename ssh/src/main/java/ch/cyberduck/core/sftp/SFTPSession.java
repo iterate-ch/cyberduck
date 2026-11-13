@@ -137,7 +137,7 @@ public class SFTPSession extends Session<SSHClient> {
             heartbeat = KeepAliveProvider.KEEP_ALIVE;
         }
         else {
-            heartbeat = KeepAliveProvider.HEARTBEAT;
+            heartbeat = AuthenticatedHeartbeater.PROVIDER;
         }
         configuration.setKeepAliveProvider(heartbeat);
         configuration.setCipherFactories(this.lowestPriorityForCBC(configuration.getCipherFactories()));
