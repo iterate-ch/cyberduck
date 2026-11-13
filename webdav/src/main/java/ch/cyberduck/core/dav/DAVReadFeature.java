@@ -87,10 +87,19 @@ public class DAVReadFeature implements Read {
                 final ContentLengthStatusInputStream stream = new ContentLengthStatusInputStream(new HttpMethodReleaseInputStream(response, status),
                         response.getEntity().getContentLength(),
                         response.getStatusLine().getStatusCode());
+                // Range header is only sent when appending
                 if(status.isAppend()) {
+                    // Status 200 instead of 206 in response to a range request means the full representation is returned
                     if(stream.getCode() == HttpStatus.SC_OK) {
-                        if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
-                            if(stream.getLength() != status.getLength()) {
+                        // Append is also set for the first segment of a segmented download with offset 0 where there is nothing to skip
+                        if(status.getOffset() > 0) {
+                            // Unknown length in the transfer status or response (chunked transfer encoding) cannot be compared to detect a partial response
+                            if(TransferStatus.UNKNOWN_LENGTH == status.getLength()) {
+                                log.warn("Range header not supported. Skipping {} bytes in file {}.", status.getOffset(), file);
+                                stream.skip(status.getOffset());
+                            }
+                            // Response length not matching the requested remaining length means the full file was returned
+                            else if(stream.getLength() != status.getLength()) {
                                 log.warn("Range header not supported. Skipping {} bytes in file {}.", status.getOffset(), file);
                                 stream.skip(status.getOffset());
                             }
