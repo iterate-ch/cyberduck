@@ -22,6 +22,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
@@ -53,8 +54,19 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
         if(null == feature) {
             return Collections.emptyMap();
         }
-        final AttributedList<Path> containers = new SwiftContainerListService(session,
-                new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.root(), new DisabledListProgressListener());
+        final AttributedList<Path> containers;
+        try {
+            containers = new SwiftContainerListService(session,
+                    new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.root(), new DisabledListProgressListener());
+        }
+        catch(AccessDeniedException e) {
+            if(!SwiftExceptionMappingService.isForbidden(e)) {
+                throw e;
+            }
+            // No permission to list containers in account
+            log.warn("Skip loading distributions after failure {} listing containers", e.getMessage());
+            return Collections.emptyMap();
+        }
         final Map<Path, Set<Distribution>> distributions = new HashMap<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
