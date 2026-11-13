@@ -68,6 +68,29 @@ public class OcsCapabilitiesResponseHandler extends OcsResponseHandler<OcsCapabi
                                 log.warn("Failure parsing {}", value.data.capabilities.files.versioning);
                             }
                         }
+                        if(value.data.capabilities.files.chunkedupload != null) {
+                            try {
+                                if(value.data.capabilities.files.chunkedupload.maxsize != null) {
+                                    capabilities.withChunkSize(Long.parseLong(value.data.capabilities.files.chunkedupload.maxsize));
+                                }
+                                if(value.data.capabilities.files.chunkedupload.maxparallel != null) {
+                                    capabilities.withChunkConcurrency(Integer.parseInt(value.data.capabilities.files.chunkedupload.maxparallel));
+                                }
+                            }
+                            catch(NumberFormatException e) {
+                                log.warn("Failure parsing chunked upload limits {}", e.getMessage());
+                            }
+                        }
+                    }
+                    if(value.data.capabilities.dav != null) {
+                        if(value.data.capabilities.dav.chunking != null) {
+                            try {
+                                capabilities.withChunking(Double.parseDouble(value.data.capabilities.dav.chunking) >= 1.0);
+                            }
+                            catch(NumberFormatException e) {
+                                log.warn("Failure parsing {}", value.data.capabilities.dav.chunking);
+                            }
+                        }
                     }
                     if(value.data.capabilities.spaces != null) {
                         capabilities.withSpaces(toBoolean(value.data.capabilities.spaces.enabled));
