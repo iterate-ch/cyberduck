@@ -91,6 +91,47 @@ public class ResumeFilterTest {
     }
 
     @Test
+    public void testPrepareFileUnknownLength() throws Exception {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullTransferSession(host);
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
+                new DefaultDownloadFeature(session) {
+                    @Override
+                    public boolean offset(final Path file) {
+                        return true;
+                    }
+                }, new DownloadFilterOptions(host));
+        Path p = new Path("a", EnumSet.of(Path.Type.file));
+        final NullLocal local = new NullLocal("~/Downloads", "a") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("a") {
+                    @Override
+                    public long getSize() {
+                        return 13545L;
+                    }
+                };
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        };
+        p.attributes().setSize(TransferStatus.UNKNOWN_LENGTH);
+        final TransferStatus status = f.prepare(p, local, new TransferStatus(), ProgressListener.noop);
+        assertTrue(status.isAppend());
+        assertEquals(13545L, status.getOffset(), 0L);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getLength(), 0L);
+        assertFalse(status.isComplete());
+    }
+
+    @Test
     public void testPrepareDirectoryExists() throws Exception {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);

@@ -110,7 +110,10 @@ public class ResumeFilter extends AbstractDownloadFilter {
                     if(local.exists()) {
                         if(local.attributes().getSize() > 0) {
                             status.setAppend(true);
-                            status.setLength(status.getLength() - local.attributes().getSize());
+                            // Remaining length is only known when the remote length is known
+                            if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
+                                status.setLength(status.getLength() - local.attributes().getSize());
+                            }
                             status.setOffset(status.getOffset() + local.attributes().getSize());
                             status.setRename((Local) null);
                             if(status.getLength() == 0L) {
