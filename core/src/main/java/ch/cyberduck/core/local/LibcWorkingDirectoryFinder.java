@@ -25,12 +25,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
 public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
     private static final Logger log = LogManager.getLogger(LibcWorkingDirectoryFinder.class);
 
-    private static final CLibrary library = Native.load("c", CLibrary.class);
+    private static final CLibrary library = Native.load(Platform.C_LIBRARY_NAME, CLibrary.class);
 
     @Override
     public Local find() {

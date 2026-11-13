@@ -196,6 +196,9 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("oauth.handler.scheme",
                 String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
 
+        // Middleware library for keys in the Secure Enclave of a FIDO/U2F security key
+        this.setDefault("ssh.authentication.securitykey.provider", "/usr/lib/ssh-keychain.dylib");
+
         this.setDefault("update.feed.release", "https://version.cyberduck.io/macos/changelog.rss");
         this.setDefault("update.feed.beta", "https://version.cyberduck.io/macos/beta/changelog.rss");
         this.setDefault("update.feed.nightly", "https://version.cyberduck.io/macos/nightly/changelog.rss");
