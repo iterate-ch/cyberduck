@@ -34,6 +34,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3ListService;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,7 +42,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,16 +52,22 @@ import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 @RunWith(value = Parameterized.class)
 public class S3DirectoryFeatureTest extends AbstractS3Test {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     public void testMakeDirectoryEncrypted() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Directory placeholder objects are not versioned");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Directory placeholder objects are not versioned");
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DefaultVaultProvider provider = new DefaultVaultProvider(session);
@@ -77,7 +84,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertNotNull(attributes.getVersionId());
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault)
-                .toStream().filter(f -> !f.attributes().isDuplicate() && !f.attributes().isTrashed()).collect(Collectors.toList()).isEmpty());
+                .toStream().noneMatch(f -> !f.attributes().isDuplicate() && !f.attributes().isTrashed()));
         session.getRegistry().clear();
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }

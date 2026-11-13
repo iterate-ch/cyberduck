@@ -37,7 +37,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.junit.Test;
@@ -50,19 +50,21 @@ import java.util.HashSet;
 import static ch.cyberduck.core.features.Location.unknown;
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3LocationFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
+    @RunOn(S3TestServer.AWS)
     public void testNotfound() throws Exception {
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         final S3LocationFeature feature = new S3LocationFeature(session, cache);
-        final String bucket = new AsciiRandomStringService().random();
+        final String bucket = new AsciiRandomStringService().random().toLowerCase();
         feature.getLocation(new Path(bucket, EnumSet.of(Path.Type.volume, Path.Type.directory)));
         assertNull(cache.getRegionForBucketName(bucket));
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testGetLocation() throws Exception {
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         final S3LocationFeature feature = new S3LocationFeature(session, cache);
@@ -83,6 +85,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testForbidden() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
@@ -105,6 +108,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testGetLocationAWS4SignatureFrankfurt() throws Exception {
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(
@@ -114,6 +118,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
@@ -138,9 +143,10 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testAccessBucketNameInHostname() throws Exception {
-        final RegionEndpointCache cache = virtualhost.getClient().getRegionEndpointCache();
-        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(Home.root()));
+        final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(Home.root()));
         assertEquals("eu-central-1", cache.getRegionForBucketName(""));
     }
 
@@ -168,7 +174,8 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testVirtualhost() {
-        assertTrue(new S3LocationFeature(virtualhost, virtualhost.getClient().getRegionEndpointCache()).getLocations(Home.root()).isEmpty());
+        assertTrue(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocations(Home.root()).isEmpty());
     }
 }

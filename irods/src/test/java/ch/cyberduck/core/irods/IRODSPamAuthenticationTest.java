@@ -28,6 +28,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.irods.irods4j.authentication.AuthPlugin;
 import org.irods.irods4j.authentication.NativeAuthPlugin;
 import org.irods.irods4j.high_level.administration.IRODSUsers;
 import org.irods.irods4j.high_level.administration.IRODSZones;
@@ -48,7 +49,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -131,7 +134,9 @@ public class IRODSPamAuthenticationTest {
             // Create a test user named john. We do not set a password for this user because
             // they are using PAM authentication.
             conn.connect(host.getHostname(), host.getPort(), new QualifiedUsername("rods", host.getRegion()));
-            conn.authenticate(new NativeAuthPlugin(), "rods");
+            Map<String, Object> authInput = new HashMap<>();
+            authInput.put(AuthPlugin.AUTH_PASSWORD_KEY, "rods");
+            conn.authenticate(new NativeAuthPlugin(), authInput);
             IRODSUsers.addUser(conn.getRcComm(), testUser, IRODSUsers.UserType.RODSUSER, IRODSZones.ZoneType.LOCAL);
 
             try {
@@ -170,7 +175,9 @@ public class IRODSPamAuthenticationTest {
             // Create a test user named john. We do not set a password for this user because
             // they are using PAM authentication.
             conn.connect(host.getHostname(), host.getPort(), new QualifiedUsername("rods", host.getRegion()));
-            conn.authenticate(new NativeAuthPlugin(), "rods");
+            Map<String, Object> authInput = new HashMap<>();
+            authInput.put(AuthPlugin.AUTH_PASSWORD_KEY, "rods");
+            conn.authenticate(new NativeAuthPlugin(), authInput);
             IRODSUsers.addUser(conn.getRcComm(), testUser, IRODSUsers.UserType.RODSUSER, IRODSZones.ZoneType.LOCAL);
 
             try {

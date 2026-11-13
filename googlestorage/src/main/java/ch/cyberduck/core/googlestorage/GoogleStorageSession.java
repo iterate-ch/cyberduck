@@ -57,7 +57,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     private OAuth2RequestInterceptor authorizationService;
 
     private final Versioning versioning =
-            preferences.getBoolean("s3.versioning.enable") ? new GoogleStorageVersioningFeature(this) : null;
+            preferences.getBoolean("googlestorage.versioning.enable") ? new GoogleStorageVersioningFeature(this) : null;
 
     private final GoogleStorageAccessControlListFeature acl = new GoogleStorageAccessControlListFeature(this);
 

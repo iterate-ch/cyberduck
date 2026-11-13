@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.model.MultipartUpload;
 import org.junit.Test;
@@ -33,12 +33,13 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertNotNull;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testListBucketNameInHostname() throws Exception {
-        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(Home.root(), new DisabledListProgressListener());
+        new S3ListService(session, new S3AccessControlListFeature(session)).list(Home.root(), new DisabledListProgressListener());
     }
 
     @Test
@@ -49,6 +50,9 @@ public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListMultipartUploadDot() throws Exception {
+        this.assumeNot(S3TestServer.MINIO, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.RUSTFS, "Dot object keys not supported");
+        this.assumeNot(S3TestServer.SEAWEEDFS, "Dot object keys not supported");
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session).mkdir(

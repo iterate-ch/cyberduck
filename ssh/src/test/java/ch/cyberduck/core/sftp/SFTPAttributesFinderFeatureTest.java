@@ -40,6 +40,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testFindSymbolicLink() throws Exception {
+        this.assumeSymlink();
         final Path file = new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path symlink = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPSymlinkFeature(session).symlink(symlink, file.getAbsolute());

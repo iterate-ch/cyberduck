@@ -26,10 +26,13 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.utils.RestUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
 
@@ -47,9 +50,11 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
     public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(object.getContentLength());
-        final Date lastmodified = object.getLastModifiedDate();
-        if(lastmodified != null) {
-            attributes.setModificationDate(lastmodified.getTime());
+        // Do not fall back to the Date response header when Last-Modified is missing, as in the response
+        // to a PUT request. Date is the time of the response and not the modification date of the object.
+        final Object lastmodified = object.getMetadata(StorageObject.METADATA_HEADER_LAST_MODIFIED_DATE);
+        if(lastmodified instanceof Date) {
+            attributes.setModificationDate(((Date) lastmodified).getTime());
         }
         if(StringUtils.isNotBlank(object.getStorageClass())) {
             attributes.setStorageClass(object.getStorageClass());
@@ -114,7 +119,13 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
      * @return Pruned metadata with user editable headers only
      */
     public static Map<String, String> metadata(final StorageObject object) {
-        final Map<String, String> metadata = new HashMap<>(Maps.transformValues(object.getModifiableMetadata(), Object::toString));
+        final Map<String, String> metadata = new HashMap<>();
+        for(Map.Entry<String, Object> entry : object.getModifiableMetadata().entrySet()) {
+            // HTTP header names are case-insensitive. Some implementations return lowercase names
+            metadata.put(RestUtils.HTTP_HEADER_METADATA_NAMES.contains(StringUtils.lowerCase(entry.getKey()))
+                    ? Arrays.stream(StringUtils.split(StringUtils.lowerCase(entry.getKey()), '-')).map(StringUtils::capitalize).collect(Collectors.joining("-"))
+                    : entry.getKey(), entry.getValue().toString());
+        }
         metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "storage-class"));
         metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "server-side-encryption"));
         metadata.keySet().removeIf(header -> StringUtils.equalsIgnoreCase(header, "expiration"));

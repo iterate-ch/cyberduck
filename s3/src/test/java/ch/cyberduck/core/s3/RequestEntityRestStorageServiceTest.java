@@ -25,7 +25,7 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
@@ -37,7 +37,7 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
 
     @Test
@@ -53,6 +53,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS)
     public void testSetupConnection() throws Exception {
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(session, new HttpConnectionPoolBuilder(session.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
@@ -72,9 +73,10 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     }
 
     @Test
+    @RunOn(S3TestServer.AWS_VIRTUALHOST)
     public void testSetupConnectionVirtualHost() throws Exception {
-        final RequestEntityRestStorageService service = new RequestEntityRestStorageService(virtualhost, new HttpConnectionPoolBuilder(virtualhost.getHost(),
-                new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), virtualhost.getHost().getHostname()),
+        final RequestEntityRestStorageService service = new RequestEntityRestStorageService(session, new HttpConnectionPoolBuilder(session.getHost(),
+                new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
                 new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), LoginCallback.noop));
         final RegionEndpointCache cache = service.getRegionEndpointCache();
         cache.clear();

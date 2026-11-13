@@ -12,7 +12,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -34,7 +33,6 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -52,16 +50,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 public class FTPSessionTest extends AbstractFTPTest {
-
-    @BeforeClass
-    public static void protocol() {
-        ProtocolFactory.get().register(new FTPTLSProtocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        });
-    }
 
     @Ignore
     @Test(expected = ConnectionRefusedException.class)

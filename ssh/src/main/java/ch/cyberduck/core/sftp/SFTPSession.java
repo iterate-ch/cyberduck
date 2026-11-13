@@ -41,8 +41,8 @@ import ch.cyberduck.core.sftp.compression.JcraftZlibCompression;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
@@ -519,7 +519,7 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new SFTPUploadFeature(this);
+            return (T) new SFTPUploadFeature();
         }
         if(type == Write.class) {
             return (T) new SFTPWriteFeature(this);

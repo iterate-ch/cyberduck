@@ -54,7 +54,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -84,7 +83,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         assertEquals(id, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test).getFileId());
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new GraphItemListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener())
-                .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
+                .toStream().allMatch(f -> f.attributes().isDuplicate()));
         cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Collections.singletonList(vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

@@ -30,62 +30,55 @@ import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
-
-import java.time.Duration;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
+@RunWith(Parameterized.class)
 public abstract class AbstractSFTPTest {
-
-    private static final String USER = "test";
-    private static final String PASSWORD = "test";
-    private static final int SSH_PORT = 2222;
-    /**
-     * Home directory of user in container
-     */
-    protected static final String HOME = "/config";
-
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
-            .withEnv("PUID", "1000")
-            .withEnv("PGID", "1000")
-            .withEnv("PASSWORD_ACCESS", "true")
-            .withEnv("USER_NAME", USER)
-            .withEnv("USER_PASSWORD", PASSWORD)
-            .withExposedPorts(SSH_PORT)
-            .waitingFor(Wait.forLogMessage(".*\\[ls\\.io-init\\] done.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
-
-    @BeforeClass
-    public static void start() {
-        container.start();
-    }
-
-    @AfterClass
-    public static void stop() {
-        container.stop();
-    }
 
     protected SFTPSession session;
 
-    @Parameterized.Parameters(name = "vaultVersion = {0}")
-    public static Object[] data() {
-        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
+    /**
+     * Run against every server implementation
+     */
+    @Parameterized.Parameters(name = "server = {0}")
+    public static Object[][] configurations() {
+        final Object[][] data = new Object[SFTPTestServer.values().length][];
+        for(int i = 0; i < data.length; i++) {
+            data[i] = new Object[]{SFTPTestServer.values()[i], null};
+        }
+        return data;
     }
 
-    @Parameterized.Parameter
+    /**
+     * Run against every server implementation with all vault versions
+     */
+    protected static Object[][] parameterMatrix() {
+        final Object[][] data = new Object[SFTPTestServer.values().length * 2][];
+        int i = 0;
+        for(SFTPTestServer server : SFTPTestServer.values()) {
+            for(VaultVersion.Type type : new VaultVersion.Type[]{VaultVersion.Type.V8, VaultVersion.Type.UVF}) {
+                data[i++] = new Object[]{server, type};
+            }
+        }
+        return data;
+    }
+
+    @Parameterized.Parameter(0)
+    public SFTPTestServer server;
+
+    @Parameterized.Parameter(1)
     public VaultVersion.Type vaultVersion;
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), container.getHost(), container.getMappedPort(SSH_PORT), new Credentials(USER, PASSWORD));
+        final Host host = new Host(new SFTPProtocol(), server.host(), server.port(), new Credentials(SFTPTestServer.USER, SFTPTestServer.PASSWORD));
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -102,5 +95,12 @@ public abstract class AbstractSFTPTest {
     @After
     public void disconnect() throws Exception {
         session.close();
+    }
+
+    /**
+     * Skip test if server does not support creating symbolic links
+     */
+    protected void assumeSymlink() {
+        assumeTrue("No support for symbolic links", server != SFTPTestServer.SFTPGO);
     }
 }

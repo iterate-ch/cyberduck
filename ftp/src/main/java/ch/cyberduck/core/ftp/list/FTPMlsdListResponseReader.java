@@ -96,6 +96,11 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                         continue;
                     }
                 }
+                else if("cdir".equals(facts.get("type").toLowerCase(Locale.ROOT)) || "pdir".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
+                    // Current and parent directory entries are valid in a response with no child entries
+                    success = true;
+                    continue;
+                }
                 else {
                     log.warn("Ignored type {} in line {}", facts.get("type"), line);
                     continue;

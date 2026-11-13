@@ -19,6 +19,7 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testSymlink() throws Exception {
+        this.assumeSymlink();
         final SFTPHomeDirectoryService workdir = new SFTPHomeDirectoryService(session);
         final Path target = new Path(workdir.find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), target, new TransferStatus());

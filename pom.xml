@@ -88,8 +88,8 @@
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
-        <jackson-version>2.22.4</jackson-version>
-        <jackson-annotations-version>2.22</jackson-annotations-version>
+        <jackson-version>2.23.0</jackson-version>
+        <jackson-annotations-version>2.23</jackson-annotations-version>
         <slf4j-version>2.0.0</slf4j-version>
         <log4j-version>2.26.1</log4j-version>
         <bouncycastle-version>1.86</bouncycastle-version>
@@ -125,7 +125,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.16</version>
+                <version>1.18.17</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -416,7 +416,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.7.2-jre</version>
+                <version>33.8.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.joyent.util</groupId>
@@ -505,7 +505,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <version>3.7.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -737,7 +737,7 @@
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>3.0.83</version>
+                    <version>3.0.85</version>
                     <configuration>
                         <configOptions>
                             <sourceFolder>src/main/java</sourceFolder>

@@ -13,7 +13,7 @@ public class DefaultHomeFinderServiceTest extends AbstractFTPTest {
 
     @Test
     public void testFind() throws Exception {
-        assertEquals(new Path(HOME, EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
+        assertEquals(new Path(server.home(), EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
     }
 
     @Test

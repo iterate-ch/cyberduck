@@ -30,55 +30,50 @@ import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.images.builder.ImageFromDockerfile;
-
-import java.time.Duration;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
+@RunWith(Parameterized.class)
 public abstract class AbstractDAVTest {
-
-    private static final String USER = "cyberduck";
-    private static final String PASSWORD = "cyberduck";
-    private static final int HTTP_PORT = 80;
-
-    /**
-     * Apache httpd with mod_dav
-     */
-    private static final GenericContainer<?> container = new GenericContainer<>(new ImageFromDockerfile()
-            .withFileFromClasspath("Dockerfile", "httpd/Dockerfile")
-            .withFileFromClasspath("httpd.conf", "httpd/httpd.conf")
-            .withFileFromClasspath("htpasswd", "httpd/htpasswd"))
-            .withExposedPorts(HTTP_PORT)
-            .waitingFor(Wait.forHttp("/").forPort(HTTP_PORT).withBasicCredentials(USER, PASSWORD).forStatusCode(200)
-                    .withStartupTimeout(Duration.ofMinutes(5)));
-
-    @BeforeClass
-    public static void start() {
-        container.start();
-    }
-
-    @AfterClass
-    public static void stop() {
-        container.stop();
-    }
 
     protected DAVSession session;
 
-    @Parameterized.Parameters(name = "vaultVersion = {0}")
-    public static Object[] data() {
-        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
+    /**
+     * Run against every server implementation
+     */
+    @Parameterized.Parameters(name = "server = {0}")
+    public static Object[][] configurations() {
+        final Object[][] data = new Object[DAVTestServer.values().length][];
+        for(int i = 0; i < data.length; i++) {
+            data[i] = new Object[]{DAVTestServer.values()[i], null};
+        }
+        return data;
     }
 
-    @Parameterized.Parameter
+    /**
+     * Run against every server implementation with all vault versions
+     */
+    protected static Object[][] parameterMatrix() {
+        final Object[][] data = new Object[DAVTestServer.values().length * 2][];
+        int i = 0;
+        for(DAVTestServer server : DAVTestServer.values()) {
+            for(VaultVersion.Type type : new VaultVersion.Type[]{VaultVersion.Type.V8, VaultVersion.Type.UVF}) {
+                data[i++] = new Object[]{server, type};
+            }
+        }
+        return data;
+    }
+
+    @Parameterized.Parameter(0)
+    public DAVTestServer server;
+
+    @Parameterized.Parameter(1)
     public VaultVersion.Type vaultVersion;
 
     @After
@@ -88,7 +83,7 @@ public abstract class AbstractDAVTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new DAVProtocol(), container.getHost(), container.getMappedPort(HTTP_PORT), new Credentials(USER, PASSWORD));
+        final Host host = new Host(new DAVProtocol(), server.host(), server.port(), new Credentials(DAVTestServer.USER, DAVTestServer.PASSWORD));
         session = new DAVSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -98,5 +93,12 @@ public abstract class AbstractDAVTest {
             }
         }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
+    }
+
+    /**
+     * Skip test if server implementation is not expected to pass
+     */
+    protected void assumeNot(final DAVTestServer excluded, final String reason) {
+        assumeTrue(reason, server != excluded);
     }
 }

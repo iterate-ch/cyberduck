@@ -53,12 +53,15 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.irods.irods4j.authentication.AuthPlugin;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.connection.QualifiedUsername;
 import org.irods.irods4j.low_level.api.IRODSApi;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IRODSSession extends SSLSession<IRODSConnection> {
 
@@ -132,7 +135,10 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
             final Credentials credentials = host.getCredentials();
             final String password = credentials.getPassword();
 
-            client.authenticate(IRODSConnectionUtils.newAuthPlugin(this), password);
+            Map<String, Object> authInput = new HashMap<>();
+            authInput.put(AuthPlugin.AUTH_PASSWORD_KEY, password);
+
+            client.authenticate(IRODSConnectionUtils.newAuthPlugin(this), authInput);
             log.debug("authenticated with iRODS server successfully.");
         }
         catch(Exception e) {

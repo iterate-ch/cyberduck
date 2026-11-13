@@ -45,7 +45,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -59,7 +59,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3SingleTransferWorkerTest extends AbstractS3Test {
 
     @Test

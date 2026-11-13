@@ -47,14 +47,14 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class OcisUploadFeatureTest extends AbstractOpenCloudTest {
+public class OwncloudUploadFeatureTest extends AbstractOwncloudTest {
 
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
         final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1)
                 .withExtension(TusCapabilities.Extension.checksum)
                 .withExtension(TusCapabilities.Extension.creation);
-        final OcisUploadFeature feature = new OcisUploadFeature(session, capabilities);
+        final OwncloudUploadFeature feature = new OwncloudUploadFeature(session, capabilities);
         final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(new OwncloudHomeFeature(session.getHost()).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();

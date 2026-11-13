@@ -27,9 +27,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
@@ -60,13 +62,21 @@ public class IRODSListServiceTest extends IRODSDockerComposeManager {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);
-        final AttributedList<Path> list = new IRODSListService(session).list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
+        // Home is shared with other tests; list a dedicated empty folder instead
+        final Path folder = new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), new Path(
+                new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AttributedList<Path> list = new IRODSListService(session).list(folder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        for(Path p : list) {
-            assertEquals(new IRODSHomeFinderService(session).find(), p.getParent());
+        final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), test, new TransferStatus());
+        final AttributedList<Path> children = new IRODSListService(session).list(folder, new DisabledListProgressListener());
+        assertEquals(1, children.size());
+        for(Path p : children) {
+            assertEquals(folder, p.getParent());
             assertNotEquals(-1L, p.attributes().getModificationDate());
             assertNotEquals(-1L, p.attributes().getSize());
         }
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 

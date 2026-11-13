@@ -52,6 +52,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(value = Parameterized.class)
 public class DAVTouchFeatureTest extends AbstractDAVTest {
 
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] configurations() {
+        return parameterMatrix();
+    }
+
     @Test
     @Ignore(value = "Filename shortening not yet implemented")
     public void testTouchLongFilenameEncrypted() throws Exception {

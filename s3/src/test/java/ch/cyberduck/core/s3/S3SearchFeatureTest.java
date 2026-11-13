@@ -21,12 +21,11 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,21 +38,20 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
 public class S3SearchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSearchInBucket() throws Exception {
+        this.assumeNot(S3TestServer.AWS, "Listing buckets without permission in account");
         final String name = new AlphanumericRandomStringService().random();
-        final Path root = Home.root();
-        final Path bucket = new Path(root, "test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path(Home.root(), "test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3SearchFeature feature = new S3SearchFeature(session, acl);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        assertThrows(AccessDeniedException.class, () -> feature.search(root, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path subdir = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());

@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -44,8 +43,8 @@ import static org.junit.Assert.*;
 public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
 
     @Test
-    @Ignore
     public void testRevert() throws Exception {
+        this.assumeOnly(NextcloudTestServer.NEXTCLOUD, "Versions of ownCloud are listed with OwncloudVersioningFeature");
         final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -56,21 +55,26 @@ public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(initialContent), writer.write(test, status.setLength(initialContent.length), ConnectionCallback.noop));
         }
         final NextcloudVersioningFeature feature = new NextcloudVersioningFeature(session);
-        assertEquals(0, feature.list(test.withAttributes(new NextcloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()).size());
+        assertEquals(1, feature.list(test.withAttributes(new NextcloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()).size());
         final PathAttributes initialAttributes = new NextcloudAttributesFinderFeature(session).find(test);
         final byte[] contentUpdate = RandomUtils.nextBytes(16258);
+        // Versions are named by modification date with a resolution of seconds. Writes within the same second would overwrite a version
+        Thread.sleep(1100L);
         {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentUpdate), writer.write(test, status.setLength(contentUpdate.length).setExists(true), ConnectionCallback.noop));
             final AttributedList<Path> versions = feature.list(test.withAttributes(new NextcloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
-            assertEquals(1, versions.size());
+            assertEquals(2, versions.size());
         }
+        Thread.sleep(1100L);
         {
             final byte[] contentLatest = RandomUtils.nextBytes(13247);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.setLength(contentLatest.length).setExists(true), ConnectionCallback.noop));
         }
         final AttributedList<Path> versions = feature.list(test.withAttributes(new NextcloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
-        assertEquals(2, versions.size());
-        final Path initialVersion = versions.get(1);
+        assertEquals(3, versions.size());
+        // Nextcloud records the initial content as a version when creating the file. Modification dates of versions have
+        // a resolution of seconds, so the order is not guaranteed. Lookup by size
+        final Path initialVersion = versions.toList().stream().filter(v -> v.attributes().getSize() == initialContent.length).findFirst().orElseThrow(AssertionError::new);
         {
             assertEquals(initialAttributes.getSize(), initialVersion.attributes().getSize());
             assertEquals(initialAttributes.getModificationDate(), initialVersion.attributes().getModificationDate());
@@ -82,7 +86,7 @@ public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
                 assertArrayEquals(initialContent, IOUtils.readFully(reader, initialContent.length));
                 reader.close();
             }
-            final Path updatedVersion = versions.get(0);
+            final Path updatedVersion = versions.toList().stream().filter(v -> v.attributes().getSize() == contentUpdate.length).findFirst().orElseThrow(AssertionError::new);
             assertEquals(contentUpdate.length, new NextcloudAttributesFinderFeature(session).find(updatedVersion).getSize());
             {
                 final InputStream reader = new NextcloudReadFeature(session).read(updatedVersion, new TransferStatus(), LoginCallback.noop);

@@ -112,8 +112,6 @@ public abstract class AbstractSMBTest {
         private static final String SMB_CONF_CLASS_PATH = "smb/smb.conf";
         private static final String DOCKERFILE_PATH = "Dockerfile";
         private static final String DOCKERFILE_CLASS_PATH = "smb/Dockerfile";
-        private static final String SUPERVISORD_CONF_PATH = "supervisord.conf";
-        private static final String SUPERVISORD_CONF_CLASS_PATH = "smb/supervisord.conf";
         private static final String ENTRYPOINT_SH_PATH = "entrypoint.sh";
         private static final String ENTRYPOINT_SH_CLASS_PATH = "smb/entrypoint.sh";
 
@@ -121,7 +119,6 @@ public abstract class AbstractSMBTest {
             super(new ImageFromDockerfile()
                     .withFileFromClasspath(SMB_CONF_PATH, SMB_CONF_CLASS_PATH)
                     .withFileFromClasspath(DOCKERFILE_PATH, DOCKERFILE_CLASS_PATH)
-                    .withFileFromClasspath(SUPERVISORD_CONF_PATH, SUPERVISORD_CONF_CLASS_PATH)
                     .withFileFromClasspath(ENTRYPOINT_SH_PATH, ENTRYPOINT_SH_CLASS_PATH)
             );
 

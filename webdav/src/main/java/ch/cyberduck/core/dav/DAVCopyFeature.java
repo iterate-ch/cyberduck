@@ -23,15 +23,12 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import com.github.sardine.impl.SardineException;
@@ -49,14 +46,8 @@ public class DAVCopyFeature implements Copy {
         try {
             final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
                     new DAVPathEncoder(session).encode(copy));
-            if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
-                // Indicate that the client has knowledge of that state token
-                session.getClient().copy(new DAVPathEncoder(session).encode(source), target, status.isExists(),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(source), status.getLockId())));
-            }
-            else {
-                session.getClient().copy(new DAVPathEncoder(session).encode(source), target, status.isExists());
-            }
+            session.getClient().copy(new DAVPathEncoder(session).encode(source), target, status.isExists(),
+                    DAVLockFeature.toHeaders(session, source, status));
             listener.sent(status.getLength());
             return new Path(copy).withAttributes(new DefaultPathAttributes(source.attributes())
                     .setDisplayname(null)

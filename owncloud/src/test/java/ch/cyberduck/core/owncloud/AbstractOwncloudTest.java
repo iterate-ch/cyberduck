@@ -1,7 +1,7 @@
 package ch.cyberduck.core.owncloud;
 
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,49 +27,55 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
-
-import java.time.Duration;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
+@RunWith(Parameterized.class)
 public abstract class AbstractOwncloudTest {
 
-    private static final String USER = "admin";
-    private static final String PASSWORD = "admin-password";
-    private static final int HTTP_PORT = 8080;
-
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("owncloud/server:latest"))
-            .withEnv("OWNCLOUD_ADMIN_USERNAME", USER)
-            .withEnv("OWNCLOUD_ADMIN_PASSWORD", PASSWORD)
-            .withEnv("OWNCLOUD_DOMAIN", "localhost")
-            .withEnv("OWNCLOUD_TRUSTED_DOMAINS", "localhost")
-            .withEnv("OWNCLOUD_REDIS_ENABLED", "false")
-            .withExposedPorts(HTTP_PORT)
-            .waitingFor(Wait.forHttp("/status.php").forResponsePredicate(body -> body.contains("\"installed\":true"))
-                    .withStartupTimeout(Duration.ofMinutes(5)));
-
-    @BeforeClass
-    public static void start() {
-        container.start();
-    }
-
-    @AfterClass
-    public static void stop() {
-        container.stop();
-    }
-
     protected OwncloudSession session;
+
+    /**
+     * Run against every server implementation
+     */
+    @Parameterized.Parameters(name = "server = {0}")
+    public static Object[][] configurations() {
+        final Object[][] data = new Object[OwncloudTestServer.values().length][];
+        for(int i = 0; i < data.length; i++) {
+            data[i] = new Object[]{OwncloudTestServer.values()[i], null};
+        }
+        return data;
+    }
+
+    /**
+     * Run against every server implementation with all vault versions
+     */
+    protected static Object[][] parameterMatrix() {
+        final Object[][] data = new Object[OwncloudTestServer.values().length * 2][];
+        int i = 0;
+        for(OwncloudTestServer server : OwncloudTestServer.values()) {
+            for(VaultVersion.Type type : new VaultVersion.Type[]{VaultVersion.Type.V8, VaultVersion.Type.UVF}) {
+                data[i++] = new Object[]{server, type};
+            }
+        }
+        return data;
+    }
+
+    @Parameterized.Parameter(0)
+    public OwncloudTestServer server;
+
+    @Parameterized.Parameter(1)
+    public VaultVersion.Type vaultVersion;
 
     @After
     public void disconnect() throws Exception {
@@ -83,7 +89,7 @@ public abstract class AbstractOwncloudTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, container.getHost(), container.getMappedPort(HTTP_PORT), new Credentials(USER, PASSWORD));
+        }, server.host(), server.port(), "/remote.php/webdav/", new Credentials(OwncloudTestServer.USER, OwncloudTestServer.PASSWORD));
         session = new OwncloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -98,5 +104,12 @@ public abstract class AbstractOwncloudTest {
             }
         }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
+    }
+
+    /**
+     * Skip test unless running against the given server implementation
+     */
+    protected void assumeOnly(final OwncloudTestServer expected, final String reason) {
+        assumeTrue(reason, server == expected);
     }
 }

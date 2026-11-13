@@ -29,88 +29,31 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.Container;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Base64;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 @Category(TestcontainerTest.class)
+@RunWith(Parameterized.class)
 public abstract class AbstractNextcloudTest {
 
-    private static final String USER = "admin";
-    private static final String PASSWORD = "admin-password";
-    private static final int HTTP_PORT = 80;
-
-    private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("nextcloud:32-apache"))
-            .withEnv("SQLITE_DATABASE", "nextcloud")
-            .withEnv("NEXTCLOUD_ADMIN_USER", USER)
-            .withEnv("NEXTCLOUD_ADMIN_PASSWORD", PASSWORD)
-            .withExposedPorts(HTTP_PORT)
-            .waitingFor(Wait.forHttp("/status.php").forResponsePredicate(body -> body.contains("\"installed\":true"))
-                    .withStartupTimeout(Duration.ofMinutes(5)));
-
-    @BeforeClass
-    public static void start() throws Exception {
-        container.start();
-        // Advertises files.locking in capabilities
-        final Container.ExecResult result = container.execInContainer("runuser", "-u", "www-data", "--",
-                "php", "/var/www/html/occ", "app:install", "files_lock");
-        if(result.getExitCode() != 0) {
-            fail(String.format("Failure installing files_lock: %s", result.getStderr() + result.getStdout()));
-        }
-        awaitLockingCapability();
-    }
+    protected NextcloudSession session;
 
     /**
-     * Web server workers may still serve capabilities from before the app was installed
+     * Run against every server implementation
      */
-    private static void awaitLockingCapability() throws Exception {
-        final URL url = new URL(String.format("http://%s:%d/ocs/v1.php/cloud/capabilities?format=json",
-                container.getHost(), container.getMappedPort(HTTP_PORT)));
-        final String authorization = "Basic " + Base64.getEncoder().encodeToString(
-                String.format("%s:%s", USER, PASSWORD).getBytes(StandardCharsets.UTF_8));
-        final long timeout = System.currentTimeMillis() + Duration.ofMinutes(1).toMillis();
-        while(System.currentTimeMillis() < timeout) {
-            try {
-                final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("OCS-APIRequest", "true");
-                connection.setRequestProperty("Authorization", authorization);
-                try (InputStream in = connection.getInputStream()) {
-                    if(IOUtils.toString(in, StandardCharsets.UTF_8).contains("\"locking\"")) {
-                        return;
-                    }
-                }
-            }
-            catch(IOException e) {
-                // Retry
-            }
-            Thread.sleep(1000L);
-        }
-        fail("Timeout waiting for files.locking capability");
+    @Parameterized.Parameters(name = "server = {0}")
+    public static Object[] configurations() {
+        return NextcloudTestServer.values();
     }
 
-    @AfterClass
-    public static void stop() {
-        container.stop();
-    }
-
-    protected NextcloudSession session;
+    @Parameterized.Parameter
+    public NextcloudTestServer server;
 
     @After
     public void disconnect() throws Exception {
@@ -124,7 +67,7 @@ public abstract class AbstractNextcloudTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, container.getHost(), container.getMappedPort(HTTP_PORT), new Credentials(USER, PASSWORD));
+        }, server.host(), server.port(), new Credentials(NextcloudTestServer.USER, NextcloudTestServer.PASSWORD));
         session = new NextcloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -139,5 +82,12 @@ public abstract class AbstractNextcloudTest {
             }
         }, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
+    }
+
+    /**
+     * Skip test unless running against the given server implementation
+     */
+    protected void assumeOnly(final NextcloudTestServer expected, final String reason) {
+        assumeTrue(reason, server == expected);
     }
 }

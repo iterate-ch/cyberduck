@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
@@ -38,7 +38,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
+@Category(TestcontainerTest.class)
+@RunOn(S3TestServer.AWS)
 public class S3TransferAccelerationServiceTest extends AbstractS3Test {
 
     @Test

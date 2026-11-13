@@ -21,88 +21,73 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.SFTPTestServer;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
- * Public key authentication with an OpenSSH RSA user certificate against OpenSSH. The certificate in the test
- * resources is signed by a throwaway CA trusted by the server with <code>TrustedUserCAKeys</code>.
+ * Public key authentication with an OpenSSH RSA user certificate. The certificate in the test resources is signed by
+ * a throwaway CA trusted by the servers. ProFTPD is skipped as <code>mod_sftp</code> has no support for user
+ * certificates.
  */
-@Category(IntegrationTest.class)
-public class SFTPPublicKeyAuthenticationCertificateTest {
+public class SFTPPublicKeyAuthenticationCertificateTest extends AbstractSFTPTest {
 
-    private static final String USER = "test";
     private static final int SSH_PORT = 2222;
 
     private static final List<String> FILES = Arrays.asList("id_rsa", "id_rsa-cert.pub");
 
     /**
-     * Server accepting RSA certificates with SHA-2 signatures only, as Azure Blob Storage SFTP does
+     * OpenSSH without support for RSA certificates with SHA-2 signatures. Started on first use.
      */
-    private static final GenericContainer<?> sha2 = container("sshd-sha2.conf");
-    /**
-     * Server without support for RSA certificates with SHA-2 signatures
-     */
-    private static final GenericContainer<?> legacy = container("sshd-legacy.conf");
+    private static GenericContainer<?> legacy;
 
-    private static GenericContainer<?> container(final String config) {
-        return new GenericContainer<>(DockerImageName.parse("linuxserver/openssh-server:latest"))
-                .withEnv("PUID", "1000")
-                .withEnv("PGID", "1000")
-                .withEnv("USER_NAME", USER)
-                .withCopyToContainer(MountableFile.forClasspathResource("certificate/ca.pub", 0644), "/config/sshd/ca.pub")
-                .withCopyToContainer(MountableFile.forClasspathResource(String.format("certificate/%s", config), 0644), "/config/sshd/sshd_config.d/certificate.conf")
-                .withExposedPorts(SSH_PORT)
-                .waitingFor(Wait.forLogMessage(".*\\[ls\\.io-init\\] done.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
-    }
-
-    @BeforeClass
-    public static void start() {
-        sha2.start();
-        legacy.start();
+    private static synchronized GenericContainer<?> legacy() {
+        if(null == legacy) {
+            legacy = SFTPTestServer.openssh()
+                    .withCopyToContainer(MountableFile.forClasspathResource("certificate/sshd-legacy.conf", 0644), "/config/sshd/sshd_config.d/legacy.conf");
+            legacy.start();
+        }
+        return legacy;
     }
 
     @AfterClass
-    public static void stop() {
-        try {
-            sha2.stop();
-        }
-        finally {
+    public static synchronized void stop() {
+        if(null != legacy) {
             legacy.stop();
+            legacy = null;
         }
     }
 
-    private SFTPSession session;
+    /**
+     * Separate connection as no further authentication is possible on the session of the parent
+     */
+    private SFTPSession certificate;
     private Path directory;
 
     @After
-    public void disconnect() throws Exception {
+    public void close() throws Exception {
         try {
-            if(null != session) {
-                session.close();
+            if(null != certificate) {
+                certificate.close();
             }
         }
         finally {
@@ -116,12 +101,14 @@ public class SFTPPublicKeyAuthenticationCertificateTest {
     }
 
     /**
-     * Fails when the client only offers the certificate with the legacy ssh-rsa-cert-v01@openssh.com algorithm
-     * or signs with SHA-1 while advertising a SHA-2 algorithm.
+     * Servers only accept RSA certificates with SHA-2 signatures by default, as Azure Blob Storage SFTP does. Fails
+     * when the client only offers the certificate with the legacy ssh-rsa-cert-v01@openssh.com algorithm or signs
+     * with SHA-1 while advertising a SHA-2 algorithm.
      */
     @Test
-    public void testAuthenticateRsaCertificateSha2() throws Exception {
-        assertTrue(this.authenticate(sha2));
+    public void testAuthenticateRsaCertificate() throws Exception {
+        assumeTrue("No support for user certificates", server != SFTPTestServer.PROFTPD);
+        assertTrue(this.authenticate(server.host(), server.port()));
     }
 
     /**
@@ -130,21 +117,22 @@ public class SFTPPublicKeyAuthenticationCertificateTest {
      */
     @Test
     public void testAuthenticateRsaCertificateLegacy() throws Exception {
-        assertTrue(this.authenticate(legacy));
+        assumeTrue("Legacy algorithm only configured for OpenSSH", server == SFTPTestServer.OPENSSH);
+        assertTrue(this.authenticate(legacy().getHost(), legacy().getMappedPort(SSH_PORT)));
     }
 
-    private boolean authenticate(final GenericContainer<?> container) throws Exception {
+    private boolean authenticate(final String hostname, final int port) throws Exception {
         directory = Files.createTempDirectory("certificate");
         for(String name : FILES) {
             try(InputStream in = this.getClass().getResourceAsStream(String.format("/certificate/%s", name))) {
                 Files.copy(in, directory.resolve(name));
             }
         }
-        final Credentials credentials = new Credentials(USER);
+        final Credentials credentials = new Credentials(SFTPTestServer.USER);
         credentials.setIdentity(new Local(directory.toString(), "id_rsa"));
-        final Host host = new Host(new SFTPProtocol(), container.getHost(), container.getMappedPort(SSH_PORT), credentials);
-        session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, new DisabledLoginCallback(), CancelCallback.noop);
-        return new SFTPPublicKeyAuthentication(session.getClient()).authenticate(host, new DisabledLoginCallback(), CancelCallback.noop);
+        final Host host = new Host(new SFTPProtocol(), hostname, port, credentials);
+        certificate = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        certificate.open(new DisabledProxyFinder(), HostKeyCallback.noop, new DisabledLoginCallback(), CancelCallback.noop);
+        return new SFTPPublicKeyAuthentication(certificate.getClient()).authenticate(host, new DisabledLoginCallback(), CancelCallback.noop);
     }
 }

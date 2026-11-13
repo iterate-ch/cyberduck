@@ -80,7 +80,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         if(features.contains(Search.Flags.recursive)) {
             for(Path directory : list) {
                 if(directory.isDirectory()) {
-                    if(!list.toStream().filter(f -> f.isChild(directory)).findAny().isPresent()) {
+                    if(list.toStream().noneMatch(f -> f.isChild(directory))) {
                         removal.add(directory);
                     }
                 }
