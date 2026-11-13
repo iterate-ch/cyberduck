@@ -73,8 +73,9 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
                     if(status.isExists()) {
-                        // Remove any large object header read from metadata of existing file
-                        headers.remove(Constants.X_STATIC_LARGE_OBJECT);
+                        // Remove any large object header read from metadata of existing file. Header names are
+                        // case-insensitive and may be returned in lower case
+                        headers.keySet().removeIf(Constants.X_STATIC_LARGE_OBJECT::equalsIgnoreCase);
                     }
                     final Checksum checksum = status.getChecksum();
                     final String etag = session.getClient().storeObject(
