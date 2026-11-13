@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -39,6 +40,11 @@ public class LocalDirectoryFeature implements Directory<Void> {
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot create folder {0}", e, folder);
+        }
+        if(Permission.EMPTY != status.getPermission()) {
+            if(session.isPosixFilesystem()) {
+                new LocalUnixPermissionFeature(session).setUnixPermission(folder, status);
+            }
         }
         return folder;
     }
