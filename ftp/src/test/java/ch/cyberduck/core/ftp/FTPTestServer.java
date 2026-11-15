@@ -56,7 +56,7 @@ public enum FTPTestServer {
             .withFileFromPath("proftpd.conf", Paths.get("src/test/resources/proftpd/proftpd.conf")))
             .withExposedPorts(FTPTestServer.PORT)
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)))),
-    PUREFTPD("/home/test", 21040, 21050, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-pure-ftpd", false)
+    PUREFTPD("/home/test", 21100, 21299, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-pure-ftpd", false)
             .withFileFromPath("Dockerfile", Paths.get("src/test/resources/pure-ftpd/Dockerfile")))
             // Required to drop privileges
             .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.SYS_NICE, Capability.DAC_READ_SEARCH))

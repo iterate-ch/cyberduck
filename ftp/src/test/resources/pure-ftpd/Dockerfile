@@ -10,5 +10,6 @@ RUN useradd --create-home --shell /bin/sh test \
 EXPOSE 21
 
 # Authenticate against system users, no anonymous. Passive data connections are made to the port announced by the
-# server and must be mapped one to one
-CMD ["pure-ftpd", "-l", "unix", "-E", "-c", "50", "-C", "50", "-P", "127.0.0.1", "-p", "21040:21050"]
+# server and must be mapped one to one. Wide range as pure-ftpd does not set SO_REUSEADDR on passive sockets and ports
+# closed by the server remain in TIME_WAIT
+CMD ["pure-ftpd", "-l", "unix", "-E", "-c", "50", "-C", "50", "-P", "127.0.0.1", "-p", "21100:21299"]
