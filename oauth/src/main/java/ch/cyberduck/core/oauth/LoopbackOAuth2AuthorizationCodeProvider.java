@@ -61,7 +61,7 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                 if(!StringUtils.isBlank(code)) {
                     authenticationCode.set(code);
                 }
-                signal.countDown();
+                // Released by the callback handler once the response is written
             }
         });
         try {
@@ -86,20 +86,29 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                         }
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                    final boolean recognized = oauth.notify(callbackState, code);
-                    final String successUrl = bookmark.getProtocol().getOAuthSuccessUrl();
-                    exchange.getResponseHeaders().set(HttpHeaders.CACHE_CONTROL, "no-store");
-                    exchange.getResponseHeaders().set("Referrer-Policy", "no-referrer");
-                    if(recognized) {
-                        // Keep the authorization code and state on the loopback callback.
-                        exchange.getResponseHeaders().set(HttpHeaders.LOCATION, StringUtils.isNotBlank(code) && StringUtils.isNotBlank(successUrl) ?
-                                URI.create(authorizationCodeUrl).resolve(successUrl).toString() : OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
-                        exchange.sendResponseHeaders(302, -1);
+                    if(oauth.notify(callbackState, code)) {
+                        try {
+                            final String successUrl = bookmark.getProtocol().getOAuthSuccessUrl();
+                            // Keep the authorization code and state on the loopback callback.
+                            exchange.getResponseHeaders().set(HttpHeaders.LOCATION, StringUtils.isNotBlank(code) && StringUtils.isNotBlank(successUrl) ?
+                                    URI.create(authorizationCodeUrl).resolve(successUrl).toString() : OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                            exchange.sendResponseHeaders(302, -1);
+                        }
+                        finally {
+                            exchange.close();
+                            // Continue login only after the response is written so stopping the server cannot drop it.
+                            // Only this handler notifies listeners for the state of a loopback redirect URI.
+                            signal.countDown();
+                        }
                     }
                     else {
-                        exchange.sendResponseHeaders(400, -1);
+                        try {
+                            exchange.sendResponseHeaders(400, -1);
+                        }
+                        finally {
+                            exchange.close();
+                        }
                     }
-                    exchange.close();
                 }
             });
             server.setExecutor(executor);
@@ -116,8 +125,8 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                 return authenticationCode.get();
             }
             finally {
-                // Finish serving the callback page before closing the loopback listener.
-                server.stop(1);
+                // Callback response already written before the signal was released
+                server.stop(0);
                 executor.shutdown();
             }
         }

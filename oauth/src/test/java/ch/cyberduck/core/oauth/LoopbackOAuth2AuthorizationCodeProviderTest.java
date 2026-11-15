@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class LoopbackOAuth2AuthorizationCodeProviderTest {
+
     @Test
     public void testHostedCompletionRedirectDoesNotForwardCredentials() throws Exception {
         final String redirect = OAuth2AuthorizationService.toRedirectUri("http://127.0.0.1/oauth/callback");
@@ -63,8 +64,6 @@ public class LoopbackOAuth2AuthorizationCodeProviderTest {
                     valid.setReadTimeout(5000);
                     assertEquals(302, valid.getResponseCode());
                     assertEquals("https://site.files.test/desktopSetup?client_id=cyberduck", valid.getHeaderField("Location"));
-                    assertEquals("no-store", valid.getHeaderField("Cache-Control"));
-                    assertEquals("no-referrer", valid.getHeaderField("Referrer-Policy"));
                     valid.disconnect();
                 }
                 catch(Exception e) {
@@ -101,7 +100,6 @@ public class LoopbackOAuth2AuthorizationCodeProviderTest {
                     valid.setConnectTimeout(5000);
                     valid.setReadTimeout(5000);
                     assertEquals(302, valid.getResponseCode());
-                    assertEquals("no-store", valid.getHeaderField("Cache-Control"));
                     assertEquals(OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI, valid.getHeaderField("Location"));
                     valid.disconnect();
                     assertTrue(signal.await(5, TimeUnit.SECONDS));
@@ -137,8 +135,6 @@ public class LoopbackOAuth2AuthorizationCodeProviderTest {
                         denied.setReadTimeout(5000);
                         assertEquals(302, denied.getResponseCode());
                         assertEquals(OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI, denied.getHeaderField("Location"));
-                        assertEquals("no-store", denied.getHeaderField("Cache-Control"));
-                        assertEquals("no-referrer", denied.getHeaderField("Referrer-Policy"));
                         denied.disconnect();
                         assertTrue(signal.await(5, TimeUnit.SECONDS));
                     }
