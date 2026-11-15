@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Pairing;
@@ -66,8 +67,11 @@ public class BrickCredentialsDeleteFeature implements Pairing {
 
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
+        final OAuthTokens tokens = store.findOAuthTokens(bookmark);
+        final String legacy = store.findLoginPassword(bookmark);
+        final String token = tokens.validate() ? tokens.getAccessToken() : legacy;
+        bookmark.getCredentials().setOauth(tokens);
         try {
-            final String token = store.findLoginPassword(bookmark);
             if(StringUtils.isNotBlank(token)) {
                 log.warn("Delete API key for {}", bookmark);
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
@@ -91,12 +95,17 @@ public class BrickCredentialsDeleteFeature implements Pairing {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            store.deleteLoginPassword(bookmark);
-            if(StringUtils.isEmpty(bookmark.getCredentials().getUsername())) {
-                store.deletePassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
-                        bookmark.getProtocol().getPasswordPlaceholder());
+            try {
+                store.delete(bookmark);
+                if(StringUtils.isNotBlank(legacy)) {
+                    // Include unmigrated keys and leftovers from an interrupted migration.
+                    BrickOAuth2AuthorizationService.deleteLegacyPassword(bookmark, store);
+                }
+                bookmark.setProperty(BrickOAuth2AuthorizationService.VERIFIED, Boolean.FALSE.toString());
             }
-            store.delete(bookmark);
+            finally {
+                bookmark.getCredentials().setOauth(OAuthTokens.EMPTY).setPassword(null).setSaved(false);
+            }
         }
     }
 }

@@ -23,7 +23,6 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -48,12 +47,10 @@ public class BrickApiClient extends ApiClient {
 
     private final Host host;
     private final CloseableHttpClient client;
-    private final BrickUnauthorizedRetryStrategy retryHandler;
 
-    public BrickApiClient(final Host host, final CloseableHttpClient client, final BrickUnauthorizedRetryStrategy retryHandler) {
+    public BrickApiClient(final Host host, final CloseableHttpClient client) {
         this.host = host;
         this.client = client;
-        this.retryHandler = retryHandler;
         this.setHttpClient(ClientBuilder.newClient(new ClientConfig()
                 .register(new InputStreamProvider())
                 .register(MultiPartFeature.class)
@@ -81,22 +78,10 @@ public class BrickApiClient extends ApiClient {
     @Override
     public <T> T invokeAPI(final String path, final String method, final List<Pair> queryParams, final Object body, final Map<String, String> headerParams, final Map<String, Object> formParams, final String accept, final String contentType, final String[] authNames, final GenericType<T> returnType) throws ApiException {
         try {
-            for(int executionCount = 1; ; executionCount++) {
-                final long recoveryCount = retryHandler.getRecoveryCount();
-                final String apiKey = host.getCredentials().getPassword();
-                // Rebuild the request if authorization changes the bookmark's hostname.
-                this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).get(host)));
-                try {
-                    return super.invokeAPI(path, method, queryParams, body, headerParams, formParams, accept, contentType, authNames, returnType);
-                }
-                catch(ApiException e) {
-                    if(!retryHandler.retryRequest(e, executionCount, apiKey, recoveryCount)) {
-                        throw e;
-                    }
-                }
-            }
+            this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).withPath(false).get(host)));
+            return super.invokeAPI(path, method, queryParams, body, headerParams, formParams, accept, contentType, authNames, returnType);
         }
-        catch(BackgroundException | ProcessingException e) {
+        catch(ProcessingException e) {
             throw new ApiException(e);
         }
     }

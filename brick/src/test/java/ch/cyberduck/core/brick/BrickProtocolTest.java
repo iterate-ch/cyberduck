@@ -112,22 +112,6 @@ public class BrickProtocolTest {
     }
 
     @Test
-    public void testOAuthConfiguration() {
-        final BrickProtocol protocol = new BrickProtocol();
-        assertEquals("cyberduck", protocol.getOAuthClientId());
-        assertEquals("", protocol.getOAuthClientSecret());
-        assertEquals("/auth/oauth/authorize", protocol.getOAuthAuthorizationUrl());
-        assertEquals("/auth/oauth/token", protocol.getOAuthTokenUrl());
-        assertEquals("http://127.0.0.1/oauth/callback", protocol.getOAuthRedirectUrl());
-        assertEquals(Collections.singletonList("desktop"), protocol.getOAuthScopes());
-        assertTrue(protocol.isOAuthPKCE());
-        assertFalse(protocol.isUsernameConfigurable());
-        assertFalse(protocol.isPasswordConfigurable());
-        assertTrue(protocol.isOAuthConfigurable());
-        assertEquals(LocaleFactory.localizedString("Password", "Credentials"), protocol.getPasswordPlaceholder());
-    }
-
-    @Test
     public void testBundledOAuthProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new BrickProtocol()));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -137,6 +121,9 @@ public class BrickProtocolTest {
         assertFalse(options.password);
         assertFalse(options.user);
         assertFalse(options.token);
+        assertEquals("app.files.com", profile.getDefaultHostname());
+        assertTrue(profile.isOAuthPKCE());
+        assertEquals(LocaleFactory.localizedString("Password", "Credentials"), profile.getPasswordPlaceholder());
         assertTrue(new Credentials().validate(profile, options));
         assertEquals("cyberduck", profile.getOAuthClientId());
         assertEquals("/auth/oauth/authorize", profile.getOAuthAuthorizationUrl());

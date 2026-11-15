@@ -87,21 +87,23 @@ public class OAuth2AuthorizationServiceTest {
     public void testAuthorizeLoopbackRedirectUriWithoutPort() throws Exception {
         final AtomicReference<String> tokenRequestRedirectUri = new AtomicReference<>();
         final AtomicReference<String> promptedRedirectUri = new AtomicReference<>();
-        final OAuth2AuthorizationService service = spy(new OAuth2AuthorizationService(new MockHttpTransport(), new Host(new TestProtocol()),
+        final Host host = new Host(new TestProtocol());
+        final OAuth2AuthorizationCodeProvider provider = mock(OAuth2AuthorizationCodeProvider.class);
+        final OAuth2AuthorizationService service = new OAuth2AuthorizationService(new MockHttpTransport(), host,
                 "http://localhost/token", "http://localhost/authorize", "client", null, Collections.emptyList(), true,
-                new DisabledLoginCallback()) {
+                new DisabledLoginCallback(), provider) {
             @Override
             protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String code, final String redirectUri) {
                 tokenRequestRedirectUri.set(redirectUri);
                 return new IdTokenResponse().setAccessToken("a").setRefreshToken("r").setExpiresInSeconds(3600L);
             }
-        }.setRedirectUri("http://localhost/"));
+        }.setRedirectUri("http://localhost/");
         doAnswer(invocation -> {
-            final String redirectUri = invocation.getArgument(1);
+            final String redirectUri = invocation.getArgument(3);
             promptedRedirectUri.set(redirectUri);
-            assertEquals(redirectUri, new GenericUrl(invocation.<String>getArgument(0)).getFirst("redirect_uri"));
+            assertEquals(redirectUri, new GenericUrl(invocation.<String>getArgument(2)).getFirst("redirect_uri"));
             return "code";
-        }).when(service).promptForCode(anyString(), anyString(), anyString());
+        }).when(provider).prompt(eq(host), any(), anyString(), anyString(), anyString());
         assertEquals("a", service.authorize(CancelCallback.noop).getAccessToken());
         assertTrue(URI.create(promptedRedirectUri.get()).getPort() > 0);
         assertEquals(promptedRedirectUri.get(), tokenRequestRedirectUri.get());

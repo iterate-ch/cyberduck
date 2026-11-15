@@ -22,9 +22,6 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Pairing;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
@@ -43,61 +40,6 @@ public class BrickProtocol extends AbstractProtocol {
     @Override
     public String getDescription() {
         return "Files.com";
-    }
-
-    @Override
-    public String getOAuthClientId() {
-        return "cyberduck";
-    }
-
-    @Override
-    public String getOAuthClientSecret() {
-        return "";
-    }
-
-    @Override
-    public String getOAuthAuthorizationUrl() {
-        return "/auth/oauth/authorize";
-    }
-
-    @Override
-    public String getOAuthTokenUrl() {
-        return "/auth/oauth/token";
-    }
-
-    @Override
-    public String getOAuthRedirectUrl() {
-        return "http://127.0.0.1/oauth/callback";
-    }
-
-    @Override
-    public List<String> getOAuthScopes() {
-        return Collections.singletonList("desktop");
-    }
-
-    @Override
-    public String getOAuthSuccessUrl() {
-        return "/desktopSetup?client_id=cyberduck";
-    }
-
-    @Override
-    public String getDefaultHostname() {
-        return "app.files.com";
-    }
-
-    @Override
-    public boolean isPasswordConfigurable() {
-        return false;
-    }
-
-    @Override
-    public boolean isUsernameConfigurable() {
-        return false;
-    }
-
-    @Override
-    public boolean isOAuthConfigurable() {
-        return true;
     }
 
     @Override
