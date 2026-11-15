@@ -10,6 +10,7 @@
       <group targetFramework="net472">
         <dependency id="Cyberduck.Bonjour" version="$version$" />
         <dependency id="Microsoft.CSharp" version="$PkgMicrosoft_CSharpVersion$" />
+        <dependency id="Microsoft.Windows.SDK.Contracts" version="$PkgMicrosoft_Windows_SDK_ContractsVersion$" />
       </group>
     </dependencies>
   </metadata>
