@@ -43,6 +43,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMove() throws Exception {
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         final TransferStatus status = new TransferStatus();

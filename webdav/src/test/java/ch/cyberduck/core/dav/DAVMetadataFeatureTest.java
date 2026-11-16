@@ -45,6 +45,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testSetMetadataFile() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final TransferStatus status = new TransferStatus();
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final String v = new AlphanumericRandomStringService().random();
@@ -63,6 +64,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testSetMetadataFolder() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final TransferStatus status = new TransferStatus();
         final Path test = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         final String v = new AlphanumericRandomStringService().random();
@@ -79,6 +81,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testMetadataRetainedOnUpdate() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
         final String v1 = new AlphanumericRandomStringService().random();
@@ -98,6 +101,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testMetadataRetainedOnOverwrite() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
         final String v = new AlphanumericRandomStringService().random();
@@ -114,6 +118,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testMetadataRetainedOnMove() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
@@ -128,6 +133,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testMetadataRetainedOnCopy() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
