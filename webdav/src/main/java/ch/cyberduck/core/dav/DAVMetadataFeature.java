@@ -34,6 +34,7 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class DAVMetadataFeature implements Headers {
         try {
             final List<DavResource> resources = session.getClient().list(new DAVPathEncoder(session).encode(file), 0);
             for(DavResource resource : resources) {
-                return resource.getCustomProps();
+                return toMetadata(resource);
             }
             return Collections.emptyMap();
         }
@@ -79,6 +80,23 @@ public class DAVMetadataFeature implements Headers {
         }
     }
 
+    /**
+     * @return Properties in custom namespace as written with {@link #setMetadata(Path, TransferStatus)}
+     */
+    public static Map<String, String> toMetadata(final DavResource resource) {
+        final Map<String, String> metadata = new HashMap<>();
+        final Map<QName, String> properties = resource.getCustomPropsNS();
+        if(null == properties) {
+            return metadata;
+        }
+        for(Map.Entry<QName, String> entry : properties.entrySet()) {
+            if(SardineUtil.CUSTOM_NAMESPACE_URI.equals(entry.getKey().getNamespaceURI())) {
+                metadata.put(entry.getKey().getLocalPart(), entry.getValue());
+            }
+        }
+        return metadata;
+    }
+
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         log.debug("Write metadata {} for file {}", status, file);
@@ -92,8 +110,7 @@ public class DAVMetadataFeature implements Headers {
             }
             final List<QName> removeProps = new ArrayList<>();
             for(String key : file.attributes().getMetadata().keySet()) {
-                final Element element = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace(key));
-                if(!setProps.contains(element)) {
+                if(!status.getMetadata().containsKey(key)) {
                     // Deleted property
                     removeProps.add(SardineUtil.createQNameWithCustomNamespace(key));
                 }

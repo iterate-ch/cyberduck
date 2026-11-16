@@ -210,6 +210,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
             attributes.setETag(resource.getEtag());
         }
         attributes.setLockId(resource.getLockToken());
+        attributes.setMetadata(DAVMetadataFeature.toMetadata(resource));
         return attributes;
     }
 }
