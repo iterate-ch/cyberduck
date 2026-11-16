@@ -89,6 +89,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     // List of certificates with private key
     private final Set<String> certificates = new LinkedHashSet<>();
+    private boolean certificatesLoaded;
 
     @Outlet
     private NSTabView tabView;
@@ -186,22 +187,41 @@ public abstract class BookmarkController extends SheetController implements NSTa
     }
 
     @Override
-    public void display(final boolean key, final String frameName) {
-        super.display(key, frameName);
-        if(options.certificate) {
-            this.loadCertificateAliases();
-        }
+    public void windowDidBecomeKey(final NSNotification notification) {
+        super.windowDidBecomeKey(notification);
+        this.loadCertificateAliases();
     }
 
-    private Set<String> loadCertificateAliases() {
-        if(certificates.isEmpty()) {
-            log.debug("Loading certificate aliases for bookmark {}", bookmark);
-            certificates.addAll(new DelegatingCertificateStoreX509KeyManager(
-                    new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
-                    new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
-            ).list());
+    /**
+     * Load once in background when on screen to allow sheet with PIN prompt to read certificates from hardware token
+     */
+    private void loadCertificateAliases() {
+        if(certificatesLoaded || !options.certificate) {
+            return;
         }
-        return certificates;
+        final NSWindow parent = certificatePopup.window();
+        if(null == parent || !parent.isVisible()) {
+            // Not on screen yet
+            return;
+        }
+        certificatesLoaded = true;
+        log.debug("Loading certificate aliases for bookmark {}", bookmark);
+        this.background(new AbstractBackgroundAction<List<String>>() {
+            @Override
+            public List<String> run() {
+                return new DelegatingCertificateStoreX509KeyManager(
+                        new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
+                        new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(BookmarkController.this))
+                ).list();
+            }
+
+            @Override
+            public void cleanup(final List<String> result, final BackgroundException failure) {
+                certificates.addAll(result);
+                update();
+                super.cleanup(result, failure);
+            }
+        });
     }
 
     public void focus() {
@@ -217,6 +237,8 @@ public abstract class BookmarkController extends SheetController implements NSTa
             }
         }
         super.focus();
+        // Invoked after popover is shown
+        this.loadCertificateAliases();
     }
 
     @Override
