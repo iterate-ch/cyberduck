@@ -282,7 +282,6 @@ namespace Ch.Cyberduck.Core.TaskDialog
             int button = default;
             int radioButton = default;
             BOOL verificationChecked = default;
-            HRESULT result;
 
             unsafe static void CopyButtons(ref TASKDIALOG_BUTTON target, List<TASKDIALOG_BUTTON> buttons, out TASKDIALOG_BUTTON* first)
             {
@@ -314,7 +313,14 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 copy.lpCallbackData = GCHandle.ToIntPtr(handle);
 
                 syncLockAcquired = syncEvent.WaitOne(250);
-                result = TaskDialogIndirect(copy, &button, &radioButton, &verificationChecked);
+                if (TaskDialogIndirect(copy, &button, &radioButton, &verificationChecked) is
+                    {
+                        Failed: true,
+                        Value: { } dialogError
+                    })
+                {
+                    throw Marshal.GetExceptionForHR(dialogError);
+                }
             }
             finally
             {
@@ -326,10 +332,6 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
                 Closed?.Invoke(this, EventArgs.Empty);
                 this.Dispose();
-            }
-            if (button == 0)
-            {
-                Marshal.ThrowExceptionForHR(result);
             }
 
             return new(
