@@ -106,23 +106,40 @@ public final class PKCS11KeyStore {
                     }
                     catch(IOException e) {
                         if(ExceptionUtils.getRootCause(e) instanceof LoginException) {
-                            // Token requires PIN or provided PIN was incorrect — prompt and retry
+                            // Token requires PIN — prompt and retry until accepted or canceled
                             log.debug("Token requires PIN: {}", e.getCause().getMessage());
-                            final Credentials credentials;
-                            try {
-                                credentials = login.prompt(bookmark,
-                                        bookmark.getCredentials().getUsername(),
-                                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                        LocaleFactory.localizedString("Enter PIN for PKCS11 token", "Credentials"),
-                                        new LoginOptions().user(false).password(true).keychain(false)
-                                                .icon(bookmark.getProtocol().disk()));
+                            String reason = LocaleFactory.localizedString("Enter PIN for PKCS11 token", "Credentials");
+                            while(true) {
+                                final Credentials credentials;
+                                try {
+                                    credentials = login.prompt(bookmark,
+                                            bookmark.getCredentials().getUsername(),
+                                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                            reason,
+                                            new LoginOptions().user(false).password(true).keychain(false)
+                                                    .icon(bookmark.getProtocol().disk()));
+                                }
+                                catch(LoginCanceledException ex) {
+                                    log.info("PIN prompt canceled for {}", library);
+                                    throw new ConcurrentException(ex);
+                                }
+                                try {
+                                    // Retry with PIN entry
+                                    store.load(null, credentials.getPassword().toCharArray());
+                                    break;
+                                }
+                                catch(IOException failure) {
+                                    if(ExceptionUtils.indexOfType(failure, LoginException.class) == -1) {
+                                        throw failure;
+                                    }
+                                    // Provided PIN was incorrect
+                                    final String cause = ExceptionUtils.getRootCause(failure).getMessage();
+                                    log.warn("PIN rejected for {}: {}", library, cause);
+                                    reason = String.format("%s (%s). %s",
+                                            LocaleFactory.localizedString("Login failed", "Credentials"), cause,
+                                            LocaleFactory.localizedString("Enter PIN for PKCS11 token", "Credentials"));
+                                }
                             }
-                            catch(LoginCanceledException ex) {
-                                log.info("PIN prompt canceled for {}", library);
-                                throw new ConcurrentException(ex);
-                            }
-                            // Retry with PIN entry
-                            store.load(null, credentials.getPassword().toCharArray());
                         }
                         else {
                             log.error("Failed to initialize PKCS11 keystore from {}: {}", library, e.getMessage());
