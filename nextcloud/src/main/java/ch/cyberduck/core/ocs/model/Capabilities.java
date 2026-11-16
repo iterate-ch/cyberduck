@@ -67,6 +67,7 @@ public final class Capabilities {
     public static final class capabilities {
         public core core;
         public files files;
+        public dav dav;
         public spaces spaces;
     }
 
@@ -74,6 +75,11 @@ public final class Capabilities {
     public static final class core {
         @JsonProperty("webdav-root")
         public String webdav;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static final class dav {
+        public String chunking;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -85,6 +91,16 @@ public final class Capabilities {
         @JsonProperty("file_locking_support")
         public String lockingSupport;
         public String versioning;
+        @JsonProperty("chunked_upload")
+        public chunkedupload chunkedupload;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static final class chunkedupload {
+        @JsonProperty("max_size")
+        public String maxsize;
+        @JsonProperty("max_parallel_count")
+        public String maxparallel;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
