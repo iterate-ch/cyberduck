@@ -27,9 +27,11 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
@@ -125,6 +127,38 @@ public class BrickSessionTest {
             finally {
                 session.close();
             }
+        }
+    }
+
+    @Test
+    public void testRejectedExplicitKeyDoesNotStartAuthorization() throws Exception {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        final List<String> keys = new ArrayList<>();
+        server.createContext("/api/rest/v1/files", exchange -> {
+            keys.add(exchange.getRequestHeaders().getFirst("X-FilesAPI-Key"));
+            exchange.sendResponseHeaders(401, -1);
+            exchange.close();
+        });
+        server.start();
+        final Host host = this.httpHost(server);
+        host.getCredentials().setPassword("manual-key").setOauth(OAuthTokens.EMPTY);
+        final OAuth2AuthorizationCodeProvider provider = mock(OAuth2AuthorizationCodeProvider.class);
+        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        try(MockedStatic<PasswordStoreFactory> passwords = mockStatic(PasswordStoreFactory.class, withSettings().mockMaker("mock-maker-inline"));
+            MockedStatic<OAuth2AuthorizationCodeProviderFactory> codes = mockStatic(OAuth2AuthorizationCodeProviderFactory.class, withSettings().mockMaker("mock-maker-inline"))) {
+            passwords.when(PasswordStoreFactory::get).thenReturn(mock(HostPasswordStore.class));
+            codes.when(OAuth2AuthorizationCodeProviderFactory::get).thenReturn(provider);
+            session.open(target -> Proxy.DIRECT, HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+            final AccessDeniedException failure = assertThrows(AccessDeniedException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
+            assertTrue(failure.getCause() instanceof LoginFailureException);
+            assertEquals(failure.getCause().getMessage(), failure.getMessage());
+            assertEquals(((LoginFailureException) failure.getCause()).getDetail(), failure.getDetail());
+            assertEquals(Collections.singletonList("manual-key"), keys);
+            verifyNoInteractions(provider);
+        }
+        finally {
+            session.close();
+            server.stop(0);
         }
     }
 

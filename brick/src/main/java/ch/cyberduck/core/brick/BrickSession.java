@@ -23,8 +23,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -85,7 +85,8 @@ public class BrickSession extends HttpSession<BrickApiClient> {
         }
         catch(LoginFailureException e) {
             if(credentials.isPasswordAuthentication()) {
-                throw new LoginCanceledException(e);
+                // Explicit API key rejected. Report the failure without the OAuth retry prompt.
+                throw new AccessDeniedException(e.getMessage(), e.getDetail(), e);
             }
             throw e;
         }

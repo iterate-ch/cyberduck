@@ -26,6 +26,7 @@ import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProviderFactory;
@@ -84,21 +85,11 @@ public class BrickOAuth2AuthorizationService extends OAuth2RequestInterceptor {
             final String password = store.findLoginPassword(host);
             if(StringUtils.isNotBlank(password)) {
                 final OAuthTokens migrated = this.save(new OAuthTokens(password, null, Long.MAX_VALUE));
-                if(host.getCredentials().isSaved()) {
-                    deleteLegacyPassword(host, store);
-                }
                 host.setProperty(VERIFIED, Boolean.TRUE.toString());
                 return migrated;
             }
         }
         return this.save(super.validate(saved, cancel));
-    }
-
-    static void deleteLegacyPassword(final Host host, final HostPasswordStore store) throws BackgroundException {
-        store.deleteLoginPassword(host);
-        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
-            store.deletePassword(host.getProtocol().getScheme(), host.getPort(), host.getHostname(), host.getProtocol().getPasswordPlaceholder());
-        }
     }
 
     @Override
@@ -111,7 +102,6 @@ public class BrickOAuth2AuthorizationService extends OAuth2RequestInterceptor {
         }
         this.setTokenServerUrl(toUrl(host, host.getProtocol().getOAuthTokenUrl()));
         this.setAuthorizationServerUrl(toUrl(host, host.getProtocol().getOAuthAuthorizationUrl()));
-        this.setParameter("login_hint", Boolean.parseBoolean(host.getProperty(VERIFIED)) ? host.getCredentials().getUsername() : null);
         return super.authorize(cancel);
     }
 
@@ -145,7 +135,7 @@ public class BrickOAuth2AuthorizationService extends OAuth2RequestInterceptor {
         final IdTokenResponse response = super.exchangeToken(flow, authorizationCode, redirectUri);
         final Object value = response.get(API_KEY);
         if(!(value instanceof Map)) {
-            throw new LoginFailureException("Missing Files.com API key in OAuth response");
+            throw new InteroperabilityException("Missing Files.com API key in OAuth response");
         }
         final Map<?, ?> key = (Map<?, ?>) value;
         final String password = this.required(key, PASSWORD);
@@ -155,17 +145,13 @@ public class BrickOAuth2AuthorizationService extends OAuth2RequestInterceptor {
             server = URI.create(this.required(key, SERVER));
         }
         catch(IllegalArgumentException e) {
-            throw new LoginFailureException("Invalid Files.com server in OAuth response", e);
+            throw new InteroperabilityException("Invalid Files.com server in OAuth response", e);
         }
         if(!Scheme.https.name().equalsIgnoreCase(server.getScheme()) || StringUtils.isBlank(server.getHost())) {
-            throw new LoginFailureException("Invalid Files.com server in OAuth response");
+            throw new InteroperabilityException("Invalid Files.com server in OAuth response");
         }
         final int port = server.getPort() == -1 ? Scheme.https.getPort() : server.getPort();
         final boolean verified = Boolean.parseBoolean(host.getProperty(VERIFIED));
-        if(verified && StringUtils.isNotBlank(host.getCredentials().getUsername()) && !StringUtils.equals(host.getCredentials().getUsername(), username)) {
-            throw new LoginFailureException(String.format("Sign out of Files.com in your browser, then sign in as %s on %s to reconnect this bookmark.",
-                    host.getCredentials().getUsername(), host.getHostname()));
-        }
         final boolean defaultOrigin = StringUtils.equalsIgnoreCase(host.getHostname(), host.getProtocol().getDefaultHostname())
                 && host.getPort() == host.getProtocol().getDefaultPort();
         if(verified && !defaultOrigin && (!StringUtils.equalsIgnoreCase(host.getHostname(), server.getHost()) || host.getPort() != port)) {
@@ -179,10 +165,10 @@ public class BrickOAuth2AuthorizationService extends OAuth2RequestInterceptor {
         return new IdTokenResponse().setAccessToken(password);
     }
 
-    private String required(final Map<?, ?> key, final String name) throws LoginFailureException {
+    private String required(final Map<?, ?> key, final String name) throws InteroperabilityException {
         final Object value = key.get(name);
         if(!(value instanceof String) || StringUtils.isBlank((String) value)) {
-            throw new LoginFailureException(String.format("Missing Files.com %s in OAuth response", name));
+            throw new InteroperabilityException(String.format("Missing Files.com %s in OAuth response", name));
         }
         return (String) value;
     }

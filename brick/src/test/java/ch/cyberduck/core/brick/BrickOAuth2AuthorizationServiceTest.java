@@ -27,6 +27,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.UnsecureHostPasswordStore;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.preferences.Preferences;
@@ -77,7 +78,6 @@ public class BrickOAuth2AuthorizationServiceTest {
         assertEquals("cyberduck", authorize.getFirst("client_id"));
         assertEquals("desktop", authorize.getFirst("scope"));
         assertEquals("S256", authorize.getFirst("code_challenge_method"));
-        assertEquals("jane", authorize.getFirst("login_hint"));
         assertEquals(InetAddress.getLocalHost().getHostName(), authorize.getFirst("computer"));
         assertEquals("Cyberduck", authorize.getFirst("platform"));
         assertNotNull(authorize.getFirst("state"));
@@ -98,19 +98,33 @@ public class BrickOAuth2AuthorizationServiceTest {
     }
 
     @Test
-    public void testFreshAuthorizationIgnoresImplicitUsernameAndAdoptsCanonicalHostname() throws Exception {
+    public void testFreshAuthorizationAdoptsAuthorizedAccountAndCanonicalHostname() throws Exception {
         final Host host = new Host(this.protocol(), "custom.example.com", new Credentials("os-user"));
         final OAuth2AuthorizationCodeProvider provider = this.provider();
         this.service(host, this.transport(this.key()), mock(HostPasswordStore.class), provider).authorize(CancelCallback.noop);
-        final ArgumentCaptor<String> url = ArgumentCaptor.forClass(String.class);
-        verify(provider).prompt(eq(host), any(), url.capture(), anyString(), anyString());
-        assertNull(new GenericUrl(url.getValue()).getFirst("login_hint"));
         assertEquals("customer.files.com", host.getHostname());
         assertEquals("jane", host.getCredentials().getUsername());
     }
 
     @Test
-    public void testVerifiedAccountSurvivesBookmarkSerializationAndTokenReset() throws Exception {
+    public void testReauthorizationAdoptsBrowserAccountAndSavesKey() throws Exception {
+        final Host host = this.host();
+        host.setProperty(BrickOAuth2AuthorizationService.VERIFIED, "true");
+        final Map<String, Object> key = this.key();
+        key.put("user_username", "other-user");
+        final HostPasswordStore store = mock(HostPasswordStore.class);
+        final OAuth2AuthorizationCodeProvider provider = this.provider();
+        final OAuthTokens tokens = this.service(host, this.transport(key), store, provider).validate(OAuthTokens.EMPTY, CancelCallback.noop);
+        assertEquals("other-user", host.getCredentials().getUsername());
+        assertEquals("api-key", tokens.getAccessToken());
+        verify(store).save(host);
+        final ArgumentCaptor<String> url = ArgumentCaptor.forClass(String.class);
+        verify(provider).prompt(eq(host), any(), url.capture(), anyString(), anyString());
+        assertNull(new GenericUrl(url.getValue()).getFirst("login_hint"));
+    }
+
+    @Test
+    public void testVerifiedSiteSurvivesBookmarkSerializationAndTokenReset() throws Exception {
         final Host host = this.host();
         host.setProperty(BrickOAuth2AuthorizationService.VERIFIED, "true");
         final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new BrickProtocol()));
@@ -118,9 +132,9 @@ public class BrickOAuth2AuthorizationServiceTest {
         final Host restored = new HostDictionary<>(factory).deserialize(host.serialize(new PlistSerializer()));
         assertEquals("true", restored.getProperty(BrickOAuth2AuthorizationService.VERIFIED));
         assertFalse(restored.getCredentials().getOauth().validate());
-        for(String field : new String[]{"user_username", "server"}) {
+        for(String server : new String[]{"https://other.files.com", "https://customer.files.com:8443"}) {
             final Map<String, Object> key = this.key();
-            key.put(field, field.equals("server") ? "https://other.files.com" : "other-user");
+            key.put("server", server);
             assertThrows(LoginFailureException.class, () -> this.service(restored, this.transport(key), mock(HostPasswordStore.class), this.provider())
                     .authorize(CancelCallback.noop));
             assertEquals("customer.files.com", restored.getHostname());
@@ -143,21 +157,23 @@ public class BrickOAuth2AuthorizationServiceTest {
         for(String field : new String[]{"password", "user_username", "server"}) {
             final Map<String, Object> key = this.key();
             key.remove(field);
-            assertThrows(LoginFailureException.class, () -> this.service(this.host(), this.transport(key), mock(HostPasswordStore.class), this.provider())
+            assertThrows(InteroperabilityException.class, () -> this.service(this.host(), this.transport(key), mock(HostPasswordStore.class), this.provider())
                     .authorize(CancelCallback.noop));
         }
         for(String server : new String[]{"http://customer.files.com", "not a URI", "https:///missing-host"}) {
             final Map<String, Object> key = this.key();
             key.put("server", server);
-            assertThrows(LoginFailureException.class, () -> this.service(this.host(), this.transport(key), mock(HostPasswordStore.class), this.provider())
+            assertThrows(InteroperabilityException.class, () -> this.service(this.host(), this.transport(key), mock(HostPasswordStore.class), this.provider())
                     .authorize(CancelCallback.noop));
         }
-        assertThrows(LoginFailureException.class, () -> this.service(this.host(), this.transport(null), mock(HostPasswordStore.class), this.provider())
-                .authorize(CancelCallback.noop));
+        for(Object payload : new Object[]{null, "invalid"}) {
+            assertThrows(InteroperabilityException.class, () -> this.service(this.host(), this.transport(payload), mock(HostPasswordStore.class), this.provider())
+                    .authorize(CancelCallback.noop));
+        }
     }
 
     @Test
-    public void testMigrationSavesTokenBeforeRemovingLegacyKey() throws Exception {
+    public void testMigrationSavesTokenWithoutRemovingLegacyKey() throws Exception {
         final Host host = this.host();
         final HostPasswordStore store = mock(HostPasswordStore.class);
         when(store.findLoginPassword(host)).thenReturn("legacy-key");
@@ -170,7 +186,6 @@ public class BrickOAuth2AuthorizationServiceTest {
         final InOrder order = inOrder(store);
         order.verify(store).findLoginPassword(host);
         order.verify(store).save(host);
-        order.verify(store).deleteLoginPassword(host);
         verifyNoInteractions(provider);
         verifyNoMoreInteractions(store);
     }
@@ -193,7 +208,7 @@ public class BrickOAuth2AuthorizationServiceTest {
         final OAuth2AuthorizationCodeProvider provider = this.provider();
         final BrickOAuth2AuthorizationService service = this.service(host, this.transport(this.key()), store, provider);
         service.validate(OAuthTokens.EMPTY, CancelCallback.noop);
-        assertNull(store.findLoginPassword(host));
+        assertEquals("legacy-key", store.findLoginPassword(host));
         assertEquals("legacy-key", store.findOAuthTokens(host).getAccessToken());
         new KeychainLoginService(store).prompt(host, "Rejected key", LoginCallback.noop, new LoginOptions(host.getProtocol()));
         assertEquals("api-key", service.validate(host.getCredentials().getOauth(), CancelCallback.noop).getAccessToken());
@@ -216,15 +231,16 @@ public class BrickOAuth2AuthorizationServiceTest {
     }
 
     @Test
-    public void testFailedMigrationSaveKeepsLegacyKey() throws Exception {
+    public void testFailedMigrationSaveDoesNotStartAuthorization() throws Exception {
         final Host host = this.host();
         final HostPasswordStore store = mock(HostPasswordStore.class);
         when(store.findLoginPassword(host)).thenReturn("legacy-key");
-        doThrow(new AccessDeniedException("Cannot save")).when(store).save(host);
-        final BrickOAuth2AuthorizationService service = this.service(host, this.transport(this.key()), store, this.provider());
-        assertThrows(AccessDeniedException.class, () -> service.validate(OAuthTokens.EMPTY, CancelCallback.noop));
-        verify(store, never()).deleteLoginPassword(any());
-        verify(store, never()).deletePassword(any(), anyInt(), anyString(), anyString());
+        final AccessDeniedException failure = new AccessDeniedException("Cannot save");
+        doThrow(failure).when(store).save(host);
+        final OAuth2AuthorizationCodeProvider provider = this.provider();
+        final BrickOAuth2AuthorizationService service = this.service(host, this.transport(this.key()), store, provider);
+        assertSame(failure, assertThrows(AccessDeniedException.class, () -> service.validate(OAuthTokens.EMPTY, CancelCallback.noop)));
+        verifyNoInteractions(provider);
     }
 
     @Test

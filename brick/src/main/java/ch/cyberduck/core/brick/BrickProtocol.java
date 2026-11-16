@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.features.Pairing;
 
 import com.google.auto.service.AutoService;
 
@@ -66,14 +65,5 @@ public class BrickProtocol extends AbstractProtocol {
     @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.storage;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
-        if(type == Pairing.class) {
-            return (T) new BrickCredentialsDeleteFeature();
-        }
-        return super.getFeature(type);
     }
 }
