@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -145,6 +146,9 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Thumbnail.class) {
             return (T) new BoxThumbnailFeature(this, fileid);
+        }
+        if(type == Metadata.class) {
+            return (T) new BoxMetadataFeature(this, fileid);
         }
         return super._getFeature(type);
     }
