@@ -34,10 +34,14 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
@@ -62,6 +66,13 @@ public class DAVMetadataFeature implements Headers {
      */
     public static final QName METADATA_CUSTOM_NAMESPACE = new QName(CUSTOM_NAMESPACE_URI, "metadata", CUSTOM_NAMESPACE_PREFIX);
 
+    /**
+     * Properties in custom namespace not used for metadata
+     */
+    private static final Set<QName> LEGACY_EXCLUDED = new HashSet<>(Arrays.asList(
+            DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+            DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE));
+
     private static final Gson gson = new Gson();
     private static final Type MAP_TYPE = new TypeToken<Map<String, String>>() {
     }.getType();
@@ -80,10 +91,14 @@ public class DAVMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder(session).encode(file), 0,
+            final String path = new DAVPathEncoder(session).encode(file);
+            final List<DavResource> resources = session.getClient().list(path, 0,
                     Collections.singleton(METADATA_CUSTOM_NAMESPACE));
             for(DavResource resource : resources) {
-                return toMetadata(resource);
+                // Properties written by previous versions with value in property for each key
+                final Map<String, String> metadata = new HashMap<>(this.getLegacyMetadata(path));
+                metadata.putAll(toMetadata(resource));
+                return metadata;
             }
             return Collections.emptyMap();
         }
@@ -127,23 +142,58 @@ public class DAVMetadataFeature implements Headers {
         }
     }
 
+    /**
+     * Properties in custom namespace with value for each key as written by previous versions. Only found on servers
+     * returning dead properties for <code>allprop</code> requests.
+     *
+     * @param path Encoded path
+     * @return Metadata from properties in custom namespace excluding timestamps
+     */
+    protected Map<String, String> getLegacyMetadata(final String path) throws IOException {
+        final Map<String, String> metadata = new HashMap<>();
+        try {
+            for(DavResource resource : session.getClient().list(path, 0)) {
+                final Map<QName, String> properties = resource.getCustomPropsNS();
+                if(null == properties) {
+                    continue;
+                }
+                for(Map.Entry<QName, String> entry : properties.entrySet()) {
+                    if(!SardineUtil.CUSTOM_NAMESPACE_URI.equals(entry.getKey().getNamespaceURI())) {
+                        continue;
+                    }
+                    if(LEGACY_EXCLUDED.contains(entry.getKey())) {
+                        continue;
+                    }
+                    metadata.put(entry.getKey().getLocalPart(), entry.getValue());
+                }
+            }
+        }
+        catch(SardineException e) {
+            log.warn("Failure {} reading properties in custom namespace for {}", e.getMessage(), path);
+        }
+        return metadata;
+    }
+
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         log.debug("Write metadata {} for file {}", status, file);
         try {
-            final List<Element> setProps;
-            final List<QName> removeProps;
+            final String path = new DAVPathEncoder(session).encode(file);
+            final List<Element> setProps = new ArrayList<>();
+            final List<QName> removeProps = new ArrayList<>();
             if(status.getMetadata().isEmpty()) {
-                setProps = Collections.emptyList();
-                removeProps = Collections.singletonList(METADATA_CUSTOM_NAMESPACE);
+                removeProps.add(METADATA_CUSTOM_NAMESPACE);
             }
             else {
                 final Element element = SardineUtil.createElement(METADATA_CUSTOM_NAMESPACE);
                 element.setTextContent(gson.toJson(status.getMetadata(), MAP_TYPE));
-                setProps = Collections.singletonList(element);
-                removeProps = Collections.emptyList();
+                setProps.add(element);
             }
-            session.getClient().patch(new DAVPathEncoder(session).encode(file), setProps, removeProps,
+            // Migrate properties written by previous versions
+            for(String key : this.getLegacyMetadata(path).keySet()) {
+                removeProps.add(SardineUtil.createQNameWithCustomNamespace(key));
+            }
+            session.getClient().patch(path, setProps, removeProps,
                     DAVLockFeature.toHeaders(session, file, status));
         }
         catch(SardineException e) {

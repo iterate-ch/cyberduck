@@ -32,6 +32,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.w3c.dom.Element;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -39,6 +40,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.sardine.util.SardineUtil;
 
 import static org.junit.Assert.*;
 
@@ -60,6 +63,33 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         test.attributes().setMetadata(metadata);
         feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
         assertFalse(feature.getMetadata(test).containsKey("Test"));
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testLegacyMetadata() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
+        final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new DAVTimestampFeature(session).setTimestamp(test, new TransferStatus().setModified(1530305150000L));
+        // Property with value for key written by previous versions
+        final String v1 = new AlphanumericRandomStringService().random();
+        final Element element = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("Legacy"));
+        element.setTextContent(v1);
+        final String path = new DAVPathEncoder(session).encode(test);
+        session.getClient().patch(path, Collections.singletonList(element), Collections.emptyList());
+        final DAVMetadataFeature feature = new DAVMetadataFeature(session);
+        final Map<String, String> metadata = feature.getMetadata(test);
+        // Timestamps in custom namespace are not metadata
+        assertEquals(Collections.singletonMap("Legacy", v1), metadata);
+        final Map<String, String> update = new HashMap<>(metadata);
+        final String v2 = new AlphanumericRandomStringService().random();
+        update.put("Test", v2);
+        feature.setMetadata(test, new TransferStatus().setMetadata(update));
+        // Migrated to single property found with attributes finder and listing
+        this.assertMetadata(test, update);
+        assertFalse(session.getClient().list(path, 0).get(0).getCustomPropsNS().containsKey(SardineUtil.createQNameWithCustomNamespace("Legacy")));
+        assertEquals(1530305150000L, new DAVAttributesFinderFeature(session).find(test).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
