@@ -219,7 +219,7 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
         }
         final X509Certificate selected;
         try {
-            selected = callback.choose(prompt, keyTypes, issuers, bookmark);
+            selected = this.choose(keyTypes, issuers);
         }
         catch(ConnectionCanceledException e) {
             log.info("No certificate selected for socket {}", socket);
@@ -239,5 +239,13 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
         }
         log.warn("No matching alias found for selected certificate {}", selected);
         return null;
+    }
+
+    /**
+     * @return Certificate selected by user from this store
+     * @throws ConnectionCanceledException No certificate selected
+     */
+    protected X509Certificate choose(final String[] keyTypes, final Principal[] issuers) throws ConnectionCanceledException {
+        return callback.choose(prompt, keyTypes, issuers, bookmark);
     }
 }

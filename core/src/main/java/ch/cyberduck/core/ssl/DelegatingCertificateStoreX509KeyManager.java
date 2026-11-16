@@ -15,6 +15,9 @@ package ch.cyberduck.core.ssl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,10 +41,12 @@ import java.util.Set;
 public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager {
     private static final Logger log = LogManager.getLogger(DelegatingCertificateStoreX509KeyManager.class);
 
+    private final Host bookmark;
     private final CertificateStoreX509KeyManager[] delegates;
     private final Map<String, CertificateStoreX509KeyManager> aliases = new LinkedHashMap<>();
 
-    public DelegatingCertificateStoreX509KeyManager(final CertificateStoreX509KeyManager... delegates) {
+    public DelegatingCertificateStoreX509KeyManager(final Host bookmark, final CertificateStoreX509KeyManager... delegates) {
+        this.bookmark = bookmark;
         this.delegates = delegates;
     }
 
@@ -120,12 +125,21 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
 
     @Override
     public String chooseClientAlias(final String[] keyType, final Principal[] issuers, final Socket socket) {
+        final String saved = bookmark.getCredentials().getCertificate();
         for(CertificateStoreX509KeyManager delegate : delegates) {
             final String alias = delegate.chooseClientAlias(keyType, issuers, socket);
             if(null == alias) {
+                if(null == saved) {
+                    // Reset empty selection saved by delegate with no certificate selected to prompt for next store
+                    bookmark.getCredentials().setCertificate(null);
+                }
                 continue;
             }
             return alias;
+        }
+        if(null == saved) {
+            // Save empty selection with no certificate selected from any store
+            bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
         }
         return null;
     }
