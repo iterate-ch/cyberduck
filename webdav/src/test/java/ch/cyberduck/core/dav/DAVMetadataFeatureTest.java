@@ -19,8 +19,10 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -151,8 +153,10 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
      */
     private void assertMetadata(final Path file, final Map<String, String> expected) throws Exception {
         final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(file);
-        for(Map.Entry<String, String> entry : expected.entrySet()) {
-            assertEquals(entry.getValue(), metadata.get(entry.getKey()));
-        }
+        assertEquals(expected, metadata);
+        assertEquals(metadata, new DAVAttributesFinderFeature(session).find(file).getMetadata());
+        final Path found = new DAVListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(file));
+        assertNotNull(found);
+        assertEquals(metadata, found.attributes().getMetadata());
     }
 }

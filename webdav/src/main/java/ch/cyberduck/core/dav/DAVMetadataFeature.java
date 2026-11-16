@@ -26,13 +26,14 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +42,29 @@ import java.util.Map;
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 
+/**
+ * Metadata stored as JSON object in a single dead property. Request the property by name with
+ * {@link #METADATA_CUSTOM_NAMESPACE} as servers such as Nextcloud and ownCloud omit dead properties from
+ * <code>allprop</code> responses.
+ */
 public class DAVMetadataFeature implements Headers {
     private static final Logger log = LogManager.getLogger(DAVMetadataFeature.class);
+
+    public static final String CUSTOM_NAMESPACE_PREFIX = "cd";
+    public static final String CUSTOM_NAMESPACE_URI = "https://cyberduck.io/ns";
+
+    /**
+     * Property with metadata key/value pairs serialized as JSON object
+     */
+    public static final QName METADATA_CUSTOM_NAMESPACE = new QName(CUSTOM_NAMESPACE_URI, "metadata", CUSTOM_NAMESPACE_PREFIX);
+
+    private static final Gson gson = new Gson();
+    private static final Type MAP_TYPE = new TypeToken<Map<String, String>>() {
+    }.getType();
 
     private final DAVSession session;
 
@@ -59,7 +80,8 @@ public class DAVMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder(session).encode(file), 0);
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder(session).encode(file), 0,
+                    Collections.singleton(METADATA_CUSTOM_NAMESPACE));
             for(DavResource resource : resources) {
                 return toMetadata(resource);
             }
@@ -81,39 +103,45 @@ public class DAVMetadataFeature implements Headers {
     }
 
     /**
-     * @return Properties in custom namespace as written with {@link #setMetadata(Path, TransferStatus)}
+     * @return Metadata parsed from JSON in property {@link #METADATA_CUSTOM_NAMESPACE}
      */
     public static Map<String, String> toMetadata(final DavResource resource) {
-        final Map<String, String> metadata = new HashMap<>();
         final Map<QName, String> properties = resource.getCustomPropsNS();
         if(null == properties) {
-            return metadata;
+            return Collections.emptyMap();
         }
-        for(Map.Entry<QName, String> entry : properties.entrySet()) {
-            if(SardineUtil.CUSTOM_NAMESPACE_URI.equals(entry.getKey().getNamespaceURI())) {
-                metadata.put(entry.getKey().getLocalPart(), entry.getValue());
+        final String value = properties.get(METADATA_CUSTOM_NAMESPACE);
+        if(StringUtils.isBlank(value)) {
+            return Collections.emptyMap();
+        }
+        try {
+            final Map<String, String> metadata = gson.fromJson(value, MAP_TYPE);
+            if(null == metadata) {
+                return Collections.emptyMap();
             }
+            return new HashMap<>(metadata);
         }
-        return metadata;
+        catch(JsonParseException e) {
+            log.warn("Failure parsing value {} of property {}. {}", value, METADATA_CUSTOM_NAMESPACE, e.getMessage());
+            return Collections.emptyMap();
+        }
     }
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         log.debug("Write metadata {} for file {}", status, file);
         try {
-            final List<Element> setProps = new ArrayList<>();
-            for(Map.Entry<String, String> entry : status.getMetadata().entrySet()) {
-                final Element element = SardineUtil.createElement(
-                        SardineUtil.createQNameWithCustomNamespace(entry.getKey()));
-                element.setTextContent(entry.getValue());
-                setProps.add(element);
+            final List<Element> setProps;
+            final List<QName> removeProps;
+            if(status.getMetadata().isEmpty()) {
+                setProps = Collections.emptyList();
+                removeProps = Collections.singletonList(METADATA_CUSTOM_NAMESPACE);
             }
-            final List<QName> removeProps = new ArrayList<>();
-            for(String key : file.attributes().getMetadata().keySet()) {
-                if(!status.getMetadata().containsKey(key)) {
-                    // Deleted property
-                    removeProps.add(SardineUtil.createQNameWithCustomNamespace(key));
-                }
+            else {
+                final Element element = SardineUtil.createElement(METADATA_CUSTOM_NAMESPACE);
+                element.setTextContent(gson.toJson(status.getMetadata(), MAP_TYPE));
+                setProps = Collections.singletonList(element);
+                removeProps = Collections.emptyList();
             }
             session.getClient().patch(new DAVPathEncoder(session).encode(file), setProps, removeProps,
                     DAVLockFeature.toHeaders(session, file, status));

@@ -137,7 +137,8 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
         return session.getClient().list(new DAVPathEncoder(session).encode(file), 0,
                 Stream.of(
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
+                                DAVMetadataFeature.METADATA_CUSTOM_NAMESPACE).
                         collect(Collectors.toSet())
         );
     }
