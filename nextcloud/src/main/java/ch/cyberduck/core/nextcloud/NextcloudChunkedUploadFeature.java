@@ -164,15 +164,16 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
             @Override
             public Void call() throws BackgroundException {
                 overall.validate();
-                final Map<String, String> metadata = new HashMap<>();
-                metadata.put(HttpHeaders.DESTINATION, destination);
-                metadata.put(NextcloudWriteFeature.HEADER_TOTAL_LENGTH, String.valueOf(overall.getLength()));
+                // Headers required on all requests of a chunking v2 upload
+                final Map<String, String> parameters = new HashMap<>();
+                parameters.put(HttpHeaders.DESTINATION, destination);
+                parameters.put(NextcloudWriteFeature.HEADER_TOTAL_LENGTH, String.valueOf(overall.getLength()));
                 final TransferStatus status = new TransferStatus()
                         .setSegment(true)
                         .setParent(overall)
                         .setOffset(offset)
                         .setLength(length)
-                        .setMetadata(metadata);
+                        .setParameters(parameters);
                 status.setPart(number);
                 // Chunks are sorted by name when assembled
                 final Path chunk = new Path(collection, String.format("%05d", number), EnumSet.of(Path.Type.file));

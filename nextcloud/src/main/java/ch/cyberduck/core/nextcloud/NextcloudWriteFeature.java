@@ -23,16 +23,16 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.message.BasicHeader;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 public class NextcloudWriteFeature extends DAVWriteFeature {
 
     /**
-     * Header and transfer status metadata key with the length of the complete file of a chunking v2 upload
+     * Header and transfer status parameter with the length of the complete file of a chunking v2 upload
      */
     public static final String HEADER_TOTAL_LENGTH = "OC-Total-Length";
 
@@ -49,8 +49,11 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
         if(null != status.getCreated()) {
             headers.add(new BasicHeader("X-OC-CTime", String.valueOf(status.getCreated() / 1000)));
         }
-        for(Map.Entry<String, String> entry : status.getMetadata().entrySet()) {
-            headers.add(new BasicHeader(entry.getKey(), entry.getValue()));
+        // Headers for chunk of chunking v2 upload
+        for(String name : new String[]{HttpHeaders.DESTINATION, HEADER_TOTAL_LENGTH}) {
+            if(status.getParameters().containsKey(name)) {
+                headers.add(new BasicHeader(name, status.getParameters().get(name).toString()));
+            }
         }
         final Checksum checksum = status.getChecksum();
         switch(checksum.algorithm) {
