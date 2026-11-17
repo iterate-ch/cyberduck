@@ -67,9 +67,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
     @Override
     public List<String> list() {
         final List<String> list = new ArrayList<>();
-        if(keystore == null) {
-            return list;
-        }
         try {
             final Enumeration<String> aliases = keystore.get().aliases();
             while(aliases.hasMoreElements()) {
@@ -95,9 +92,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
     }
 
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
-        if(keystore == null) {
-            return null;
-        }
         try {
             final Certificate cert = keystore.get().getCertificate(alias);
             if(this.matches(cert, keyTypes, issuers)) {
@@ -123,9 +117,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public X509Certificate[] getCertificateChain(final String alias) {
-        if(keystore == null) {
-            return null;
-        }
         try {
             final List<X509Certificate> result = new ArrayList<>();
             final Certificate[] chain = keystore.get().getCertificateChain(alias);
@@ -158,9 +149,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public PrivateKey getPrivateKey(final String alias) {
-        if(keystore == null) {
-            return null;
-        }
         try {
             if(keystore.get().isKeyEntry(alias)) {
                 final Key key = keystore.get().getKey(alias, null);
@@ -188,7 +176,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
     }
 
     public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
-        final Logger log = LogManager.getLogger(getClass());
         final List<String> list = new ArrayList<>();
         for(String alias : this.list()) {
             final X509Certificate cert = this.getCertificate(alias, keyTypes, issuers);
@@ -207,7 +194,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-        final Logger log = LogManager.getLogger(getClass());
         final String saved = bookmark.getCredentials().getCertificate();
         if(null != saved) {
             log.info("Return saved certificate alias {} for host {}", saved, bookmark);
