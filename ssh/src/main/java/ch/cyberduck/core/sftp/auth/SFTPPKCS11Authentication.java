@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentitiesOnlyConfigurator;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.ssl.PKCS11KeyStore;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -112,9 +110,7 @@ public class SFTPPKCS11Authentication implements AuthenticationProvider<Boolean>
             store = PKCS11KeyStore.build(library, bookmark, prompt).get();
         }
         catch(ConcurrentException e) {
-            if(ExceptionUtils.getRootCause(e) instanceof LoginCanceledException) {
-                throw new LoginCanceledException(e);
-            }
+            // Continue with other authentication methods when failing to load token or prompt for PIN is canceled
             log.warn("Skip authentication with PKCS11 library {} failing with {}", library, e.getMessage());
             return false;
         }
