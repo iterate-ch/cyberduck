@@ -39,6 +39,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.config.AuthSchemes;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
@@ -228,6 +229,8 @@ public class HttpConnectionPoolBuilder {
                 // Disable use of Expect: Continue by default for all methods
                 .setExpectContinueEnabled(false)
                 .setAuthenticationEnabled(true)
+                // Parse cookies per RFC 6265. The legacy default spec rejects cookies with an RFC 1123 expires date
+                .setCookieSpec(CookieSpecs.STANDARD)
                 .setConnectTimeout(timeout)
                 // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
                 .setConnectionRequestTimeout(HostPreferencesFactory.get(host).getInteger("http.manager.timeout"))
