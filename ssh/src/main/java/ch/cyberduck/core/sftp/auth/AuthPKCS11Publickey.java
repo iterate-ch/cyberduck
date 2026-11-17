@@ -49,6 +49,16 @@ public class AuthPKCS11Publickey extends AuthPublickey {
     }
 
     @Override
+    public boolean shouldRetry() {
+        if(!params.getTransport().getServerSignatureAlgorithms().isEmpty()) {
+            // Key refused with signature algorithm supported by server. Do not use up the authentication attempts
+            // allowed by the server for other keys on the token
+            return false;
+        }
+        return super.shouldRetry();
+    }
+
+    @Override
     protected SSHPacket putSig(final SSHPacket reqBuf) throws UserAuthException {
         try {
             final PublicKey publicKey = provider.getPublic();

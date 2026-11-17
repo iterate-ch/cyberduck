@@ -102,6 +102,36 @@ public class AuthPKCS11PublickeyTest extends AbstractSFTPTest {
         }
     }
 
+    @Test
+    public void testAuthenticateAfterUnknownRsaKeys() throws Exception {
+        final KeyPair pair = ecdsa("secp256r1");
+        server.authorize(openssh(pair));
+        final KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        final SSHClient client = new SSHClient(new DefaultConfig());
+        client.addHostKeyVerifier(new PromiscuousVerifier());
+        client.connect(server.host(), server.port());
+        try {
+            // Keys refused must not use up the authentication attempts allowed by the server
+            for(int i = 0; i < 2; i++) {
+                try {
+                    client.auth(SFTPTestServer.USER, new AuthPKCS11Publickey(new PKCS11KeyProvider(
+                            store("alias", generator.generateKeyPair(), "SHA256withRSA"), "alias")));
+                }
+                catch(UserAuthException e) {
+                    // Expected
+                }
+                assertFalse(client.isAuthenticated());
+            }
+            client.auth(SFTPTestServer.USER, new AuthPKCS11Publickey(new PKCS11KeyProvider(
+                    store("alias", pair, "SHA256withECDSA"), "alias")));
+            assertTrue(client.isAuthenticated());
+        }
+        finally {
+            client.disconnect();
+        }
+    }
+
     private boolean authenticate(final KeyPair pair, final String algorithm) throws Exception {
         final SSHClient client = new SSHClient(new DefaultConfig());
         client.addHostKeyVerifier(new PromiscuousVerifier());
