@@ -425,7 +425,9 @@ public class SFTPSession extends Session<SSHClient> {
     @Override
     public void disconnect() throws BackgroundException {
         try {
-            client.close();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             log.warn("Ignore disconnect failure {}", e.getMessage());

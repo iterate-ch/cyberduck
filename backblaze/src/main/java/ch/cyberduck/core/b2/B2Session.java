@@ -72,7 +72,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
     public void disconnect() throws BackgroundException {
         try {
             fileid.clear();
-            client.close();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
