@@ -23,6 +23,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -33,6 +34,7 @@ import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StatelessSessionPoolTest {
 
@@ -74,5 +76,25 @@ public class StatelessSessionPoolTest {
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", "d"));
         assertFalse(interrupt.get());
+    }
+
+    @Test
+    public void testReleaseCancelFailureClosesSession() throws Exception {
+        final AtomicBoolean close = new AtomicBoolean();
+        final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
+            @Override
+            public boolean check(final Session<?> session, final CancelCallback callback) {
+                return true;
+            }
+        }, new NullSession(new Host(new TestProtocol())) {
+            @Override
+            public void close() throws BackgroundException {
+                close.set(true);
+                super.close();
+            }
+        }, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        pool.release(session, new ConnectionCanceledException("m", new IllegalStateException("Connection pool shut down")));
+        assertTrue(close.get());
     }
 }
