@@ -16,6 +16,7 @@
                 <outlet property="encodingPopup" destination="hvx-ue-IcP" id="98"/>
                 <outlet property="ftpModePopup" destination="7ki-B7-LbY" id="96"/>
                 <outlet property="hostField" destination="L04-rl-TAx" id="99"/>
+                <outlet property="kerberosRealmField" destination="Krb-Fd-Tx1" id="Krb-Ot-Ln1"/>
                 <outlet property="labelsField" destination="AvO-GE-eBC" id="noh6Wai"/>
                 <outlet property="nicknameField" destination="lfg-XO-WdV" id="100"/>
                 <outlet property="passwordField" destination="GuU-jB-XfB" id="ohWoosh"/>
@@ -711,9 +712,48 @@
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
                                             </stackView>
+                                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Krb-Rw-St1" userLabel="Kerberos Realm Row">
+                                                <rect key="frame" x="0.0" y="-29" width="420" height="21"/>
+                                                <subviews>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Krb-Lb-Tx1">
+                                                        <rect key="frame" x="-2" y="3" width="154" height="16"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Krb-Lb-Wc1"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Kerberos Realm:" id="Krb-Lb-Cl1">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField focusRingType="none" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Krb-Fd-Tx1" userLabel="Kerberos Realm Text Field">
+                                                        <rect key="frame" x="158" y="0.0" width="262" height="21"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Krb-Fd-Wc1"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="Krb-Fd-Cl1">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="Krb-Rw-Wc1"/>
+                                                </constraints>
+                                                <visibilityPriorities>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                </visibilityPriorities>
+                                                <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                </customSpacing>
+                                            </stackView>
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="5os-0x-QLP"/>
+                                            <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="Krb-Fd-Tx1" secondAttribute="width" id="Krb-Eq-Wc1"/>
                                             <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="hvx-ue-IcP" secondAttribute="width" id="HOS-hL-Yy8"/>
                                             <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="zZW-tu-gdf" secondAttribute="width" id="SyJ-HL-Dc1"/>
                                             <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="AvO-GE-eBC" secondAttribute="width" id="byM-GW-ccS"/>
@@ -727,8 +767,10 @@
                                             <integer value="1000"/>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
+                                            <integer value="1000"/>
                                         </visibilityPriorities>
                                         <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>

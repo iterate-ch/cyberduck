@@ -73,6 +73,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.comboBoxEncoding = new System.Windows.Forms.ComboBox();
             this.labelDownloadFolder = new System.Windows.Forms.Label();
             this.textBoxWebUrl = new System.Windows.Forms.TextBox();
+            this.labelKerberosRealm = new System.Windows.Forms.Label();
+            this.textBoxKerberosRealm = new System.Windows.Forms.TextBox();
+            this.checkBoxUseMitKerberos = new System.Windows.Forms.CheckBox();
             this.linkLabelDownloadFolder = new System.Windows.Forms.LinkLabel();
             this.labelWebURL = new System.Windows.Forms.Label();
             this.labelTransferFiles = new System.Windows.Forms.Label();
@@ -412,6 +415,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.Controls.Add(this.labelNotes, 0, 9);
             this.optionsPanel.Controls.Add(this.comboBoxConnectMode, 1, 1);
             this.optionsPanel.Controls.Add(this.label3, 0, 2);
+            this.optionsPanel.Controls.Add(this.labelKerberosRealm, 0, 3);
+            this.optionsPanel.Controls.Add(this.textBoxKerberosRealm, 1, 3);
+            this.optionsPanel.Controls.Add(this.checkBoxUseMitKerberos, 1, 4);
             this.optionsPanel.Controls.Add(this.buttonWebURL, 3, 8);
             this.optionsPanel.Controls.Add(this.comboBoxEncoding, 1, 2);
             this.optionsPanel.Controls.Add(this.labelDownloadFolder, 0, 5);
@@ -581,6 +587,41 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelDownloadFolder.Text = "Download Folder:";
             this.labelDownloadFolder.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // labelKerberosRealm
+            // 
+            this.labelKerberosRealm.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelKerberosRealm.AutoSize = true;
+            this.labelKerberosRealm.Location = new System.Drawing.Point(23, 98);
+            this.labelKerberosRealm.Name = "labelKerberosRealm";
+            this.labelKerberosRealm.Size = new System.Drawing.Size(90, 15);
+            this.labelKerberosRealm.TabIndex = 43;
+            this.labelKerberosRealm.Text = "Kerberos Realm:";
+            this.labelKerberosRealm.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // textBoxKerberosRealm
+            // 
+            this.textBoxKerberosRealm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.optionsPanel.SetColumnSpan(this.textBoxKerberosRealm, 3);
+            this.textBoxKerberosRealm.Location = new System.Drawing.Point(119, 94);
+            this.textBoxKerberosRealm.Name = "textBoxKerberosRealm";
+            this.textBoxKerberosRealm.Size = new System.Drawing.Size(350, 23);
+            this.textBoxKerberosRealm.TabIndex = 44;
+            this.textBoxKerberosRealm.TextChanged += new System.EventHandler(this.textBoxKerberosRealm_TextChanged);
+            //
+            // checkBoxUseMitKerberos
+            //
+            this.checkBoxUseMitKerberos.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBoxUseMitKerberos.AutoSize = true;
+            this.optionsPanel.SetColumnSpan(this.checkBoxUseMitKerberos, 3);
+            this.checkBoxUseMitKerberos.Location = new System.Drawing.Point(119, 123);
+            this.checkBoxUseMitKerberos.Name = "checkBoxUseMitKerberos";
+            this.checkBoxUseMitKerberos.Size = new System.Drawing.Size(119, 19);
+            this.checkBoxUseMitKerberos.TabIndex = 45;
+            this.checkBoxUseMitKerberos.Text = "Use MIT Kerberos";
+            this.checkBoxUseMitKerberos.UseVisualStyleBackColor = true;
+            this.checkBoxUseMitKerberos.CheckedChanged += new System.EventHandler(this.checkBoxUseMitKerberos_CheckedChanged);
+            // 
             // textBoxWebUrl
             // 
             this.textBoxWebUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -731,6 +772,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TextBox textBoxWebUrl;
         private System.Windows.Forms.LinkLabel linkLabelDownloadFolder;
         private System.Windows.Forms.Label labelWebURL;
+        private System.Windows.Forms.Label labelKerberosRealm;
+        private System.Windows.Forms.TextBox textBoxKerberosRealm;
+        private System.Windows.Forms.CheckBox checkBoxUseMitKerberos;
         private System.Windows.Forms.Label labelTransferFiles;
         private System.Windows.Forms.ComboBox comboBoxTransferFiles;
         private System.Windows.Forms.Button downloadFolderButton;
