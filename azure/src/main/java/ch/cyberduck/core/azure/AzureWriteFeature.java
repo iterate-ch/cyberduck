@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -156,6 +157,11 @@ public class AzureWriteFeature implements Write<Void> {
         catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.metadata);
     }
 
     /**
