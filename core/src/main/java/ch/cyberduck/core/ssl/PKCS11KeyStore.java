@@ -76,6 +76,11 @@ public final class PKCS11KeyStore {
             protected KeyStore initialize() throws ConcurrentException {
                 try {
                     log.info("Load PKCS11 store from library {}", library);
+                    if(PreferencesFactory.get().getList("connection.keystore.pkcs11.library.blacklist").contains(library)) {
+                        // Loading library not supported would crash the runtime
+                        log.warn("Skip loading blacklisted PKCS11 library {}", library);
+                        throw new ConcurrentException(new UnsupportedException(library));
+                    }
                     // Resolve name of bundled library in search path to absolute path
                     final String libraryPath = LocalFactory.get(library).exists() ? library :
                             LocalFactory.get(System.getProperty("java.library.path"), library).getAbsolute();

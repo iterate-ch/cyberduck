@@ -32,7 +32,7 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
 
     public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
                                                 final CertificateStore store, final LoginCallback login) {
-        this(prompt, bookmark, store, login, HostPreferencesFactory.get(bookmark).getProperty("connection.ssl.keystore.pkcs11.library"));
+        this(prompt, bookmark, store, login, HostPreferencesFactory.get(bookmark).getProperty("connection.keystore.pkcs11.library"));
     }
 
     /**

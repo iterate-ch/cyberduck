@@ -313,7 +313,7 @@ public class SFTPSession extends Session<SSHClient> {
             // Equivalent to PKCS11Provider in ssh_config respectively ssh -I
             String library = new OpenSSHPKCS11ProviderConfigurator().getProvider(host.getHostname());
             if(null == library) {
-                library = preferences.getProperty("ssh.authentication.pkcs11.library");
+                library = preferences.getProperty("connection.keystore.pkcs11.library");
             }
             if(StringUtils.isNotBlank(library)) {
                 log.debug("Determined PKCS11 library {} for {}", library, host.getHostname());
