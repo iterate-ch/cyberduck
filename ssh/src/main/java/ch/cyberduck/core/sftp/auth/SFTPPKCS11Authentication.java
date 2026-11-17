@@ -57,6 +57,9 @@ import net.schmizz.sshj.userauth.UserAuthException;
  * <p>
  * With <code>IdentitiesOnly</code> in <code>ssh_config</code> only the key on the token matching the public key file
  * set with <code>IdentityFile</code> is offered. The token is not used when no public key file is configured.
+ * <p>
+ * Likewise with a public key file selected in the bookmark only the matching key on the token is offered. The token is
+ * not used with a private key file selected in the bookmark to not prompt for the PIN of the token.
  */
 public class SFTPPKCS11Authentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = LogManager.getLogger(SFTPPKCS11Authentication.class);
@@ -101,20 +104,40 @@ public class SFTPPKCS11Authentication implements AuthenticationProvider<Boolean>
                 throw new DefaultIOExceptionMappingService().map(e);
             }
         }
+        else if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+            final Local selected = bookmark.getCredentials().getIdentity();
+            try {
+                if(SFTPAgentAuthentication.isPrivateKey(selected)) {
+                    // Private key file selected cannot be on token. Skip to not prompt for PIN of token
+                    log.warn("Skip authentication with PKCS11 library {} with private key {} selected", library, selected);
+                    return false;
+                }
+                final Identity identity = SFTPAgentAuthentication.identityFromPublicKey(selected);
+                if(null == identity) {
+                    log.warn("Missing public key for {}", selected);
+                    return false;
+                }
+                log.info("Only read key matching public key {} from PKCS11 token", selected);
+                configured = identity.getBlob();
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+        }
         else {
             configured = null;
         }
         final KeyStore store;
         try {
             // Prompts for PIN if required by token
-            store = PKCS11KeyStore.build(library, bookmark, prompt).get();
+            store = this.load(bookmark, prompt);
         }
         catch(ConcurrentException e) {
             // Continue with other authentication methods when failing to load token or prompt for PIN is canceled
             log.warn("Skip authentication with PKCS11 library {} failing with {}", library, e.getMessage());
             return false;
         }
-        final List<PKCS11KeyProvider> identities = this.list(store);
+        final List<PKCS11KeyProvider> identities = this.filter(this.list(store), configured);
         if(identities.isEmpty()) {
             log.warn("No identity found in PKCS11 token for library {}", library);
             return false;
@@ -122,10 +145,6 @@ public class SFTPPKCS11Authentication implements AuthenticationProvider<Boolean>
         for(PKCS11KeyProvider identity : identities) {
             cancel.verify();
             try {
-                if(configured != null && !Arrays.equals(identity.getBlob(), configured)) {
-                    log.debug("Skip identity {} not matching IdentityFile configuration", identity);
-                    continue;
-                }
                 client.auth(bookmark.getCredentials().getUsername(), new AuthPKCS11Publickey(identity));
                 // Successfully authenticated
                 break;
@@ -145,9 +164,41 @@ public class SFTPPKCS11Authentication implements AuthenticationProvider<Boolean>
     }
 
     /**
+     * Load keystore from token
+     *
+     * @throws ConcurrentException Failure loading library or prompt for PIN canceled
+     */
+    protected KeyStore load(final Host bookmark, final LoginCallback prompt) throws ConcurrentException {
+        return PKCS11KeyStore.build(library, bookmark, prompt).get();
+    }
+
+    /**
+     * @param configured Public key blob to limit authentication to or null to attempt with all keys on the token
+     * @return Keys on the token matching the configured public key
+     */
+    protected List<PKCS11KeyProvider> filter(final List<PKCS11KeyProvider> identities, final byte[] configured) {
+        if(null == configured) {
+            return identities;
+        }
+        for(PKCS11KeyProvider identity : identities) {
+            try {
+                if(Arrays.equals(identity.getBlob(), configured)) {
+                    log.debug("Matching identity {} found by public key blob", identity);
+                    return Collections.singletonList(identity);
+                }
+            }
+            catch(IOException e) {
+                log.warn("Failure {} reading public key for identity {}", e.getMessage(), identity);
+            }
+        }
+        log.warn("No identity in PKCS11 token matches configured public key");
+        return Collections.emptyList();
+    }
+
+    /**
      * @return Keys on the token with a certificate to read the public key from
      */
-    private List<PKCS11KeyProvider> list(final KeyStore store) {
+    protected List<PKCS11KeyProvider> list(final KeyStore store) {
         final List<PKCS11KeyProvider> identities = new ArrayList<>();
         try {
             final Enumeration<String> aliases = store.aliases();
