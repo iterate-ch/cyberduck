@@ -28,7 +28,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.brick.BrickSession;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProviderFactory;
@@ -69,7 +69,7 @@ public class TerminalLoginServiceTest {
     }
 
     @Test
-    public void testRejectedExplicitKeyWithAssumeYesCancelsWithoutRetryOrBrowser() throws Exception {
+    public void testRejectedExplicitKeyWithAssumeYesFailsWithoutRetryOrBrowser() throws Exception {
         final CommandLine input = new DefaultParser().parse(TerminalOptionsBuilder.options(),
                 new String[]{"-y", "--username", "jane", "--password", "rejected-key", "--list", "brick://127.0.0.1/"});
         assertTrue(input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name()));
@@ -97,7 +97,7 @@ public class TerminalLoginServiceTest {
             final TerminalLoginService login = new TerminalLoginService(input);
             login.validate(host, new DefaultX509KeyManager(), prompt, new LoginOptions(protocol));
             session.open(target -> Proxy.DIRECT, HostKeyCallback.noop, prompt, CancelCallback.noop);
-            final LoginCanceledException failure = assertThrows(LoginCanceledException.class,
+            final AccessDeniedException failure = assertThrows(AccessDeniedException.class,
                     () -> login.authenticate(session, ProgressListener.noop, prompt, CancelCallback.noop));
             assertTrue(failure.getCause() instanceof LoginFailureException);
             assertEquals(1, requests.get());
