@@ -22,8 +22,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,9 +37,6 @@ public class StatelessSessionPool implements SessionPool {
     private final TranscriptListener transcript;
     private final Session<?> session;
     private final VaultRegistry registry;
-
-    private final FailureDiagnostics<BackgroundException> diagnostics
-            = new DefaultFailureDiagnostics();
 
     private final Lock sync = new ReentrantLock();
 
@@ -69,16 +64,7 @@ public class StatelessSessionPool implements SessionPool {
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
         if(failure != null) {
-            switch(diagnostics.determine(failure)) {
-                case cancel:
-                    // The connection may be in an unusable state while still flagged as open, for example the HTTP
-                    // client failing with "Connection pool shut down". Close to reconnect with the next borrow.
-                    log.warn("Close connection {} after failure {}", conn, failure);
-                    this.evict();
-                    break;
-                default:
-                    log.warn("Keep connection {} alive with failure {}", conn, failure);
-            }
+            log.warn("Keep connection {} alive with failure {}", conn, failure);
         }
     }
 
