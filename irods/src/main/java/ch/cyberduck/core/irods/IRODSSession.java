@@ -153,7 +153,6 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
         try {
             if(null != client) {
                 client.disconnect();
-                client = null;
                 log.debug("disconnected from iRODS server.");
             }
         }
