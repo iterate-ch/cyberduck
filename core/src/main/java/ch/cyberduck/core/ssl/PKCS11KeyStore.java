@@ -190,13 +190,13 @@ public final class PKCS11KeyStore {
      * @return configured (but not yet registered) {@link Provider}
      */
     static Provider load(final String libraryPath) throws ReflectiveOperationException {
-        final String config = String.format("--\nname=%s\nlibrary=%s\n", name(libraryPath), libraryPath);
+        final String config = String.format("name=%s\nlibrary=%s\n", name(libraryPath), libraryPath);
         // Java 9+: standard JCA Provider.configure(String) with inline config (prefix --)
         final Provider base = Security.getProvider("SunPKCS11");
         if(base != null) {
             try {
                 final Method configure = Provider.class.getMethod("configure", String.class);
-                return (Provider) configure.invoke(base, config);
+                return (Provider) configure.invoke(base, String.format("--\n%s", config));
             }
             catch(NoSuchMethodException ignored) {
                 // Java 8 does not have Provider.configure() — fall through
@@ -204,7 +204,8 @@ public final class PKCS11KeyStore {
             }
         }
         // Java 8: sun.security.pkcs11.SunPKCS11(InputStream) — accessed via reflection so
-        // the source compiles without a direct sun.* reference on Java 9+/21
+        // the source compiles without a direct sun.* reference on Java 9+/21. The configuration
+        // parser rejects the inline prefix -- as unknown keyword
         final Class<?> cls = Class.forName("sun.security.pkcs11.SunPKCS11");
         return (Provider) cls.getConstructor(InputStream.class)
                 .newInstance(new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8)));
