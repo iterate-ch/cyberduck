@@ -26,6 +26,7 @@ import java.security.Provider;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 
+import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
@@ -58,6 +59,13 @@ public class PKCS11KeyProvider implements KeyProvider {
         catch(GeneralSecurityException e) {
             throw new IOException(String.format("Failure reading certificate for alias %s from PKCS11 token", alias), e);
         }
+    }
+
+    /**
+     * @return Public key in the format found in public key files
+     */
+    public byte[] getBlob() throws IOException {
+        return new Buffer.PlainBuffer().putPublicKey(this.getPublic()).getCompactData();
     }
 
     /**

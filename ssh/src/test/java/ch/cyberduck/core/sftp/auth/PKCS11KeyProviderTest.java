@@ -15,6 +15,9 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
+
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.ContentSigner;
@@ -23,18 +26,25 @@ import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 import net.schmizz.sshj.common.KeyType;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 public class PKCS11KeyProviderTest {
@@ -59,6 +69,30 @@ public class PKCS11KeyProviderTest {
         final PKCS11KeyProvider provider = new PKCS11KeyProvider(store("alias", pair, "SHA256withECDSA"), "alias");
         assertEquals(KeyType.ECDSA256, provider.getType());
         assertEquals("alias", provider.getAlias());
+    }
+
+    @Test
+    public void testBlob() throws Exception {
+        final KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
+        generator.initialize(new ECGenParameterSpec("secp256r1"));
+        final KeyPair pair = generator.generateKeyPair();
+        final PKCS11KeyProvider provider = new PKCS11KeyProvider(store("alias", pair, "SHA256withECDSA"), "alias");
+        // Public key file as referenced with IdentityFile
+        final Local file = new Local(System.getProperty("java.io.tmpdir"), String.format("%s.pub", UUID.randomUUID()));
+        try {
+            try(OutputStream out = file.getOutputStream(false)) {
+                IOUtils.write(String.format("ecdsa-sha2-nistp256 %s comment\n",
+                        Base64.getEncoder().encodeToString(provider.getBlob())), out, StandardCharsets.UTF_8);
+            }
+            assertFalse(SFTPAgentAuthentication.isPrivateKey(file));
+            assertArrayEquals(provider.getBlob(), SFTPAgentAuthentication.identityFromPublicKey(file).getBlob());
+            // Different key
+            assertFalse(Arrays.equals(new PKCS11KeyProvider(store("alias", generator.generateKeyPair(), "SHA256withECDSA"), "alias").getBlob(),
+                    SFTPAgentAuthentication.identityFromPublicKey(file).getBlob()));
+        }
+        finally {
+            file.delete();
+        }
     }
 
     @Test(expected = IOException.class)
