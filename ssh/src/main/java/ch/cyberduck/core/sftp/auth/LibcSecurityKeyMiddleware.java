@@ -31,8 +31,9 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.PointerByReference;
 
 /**
- * Native OpenSSH security key middleware such as <code>/usr/lib/ssh-keychain.dylib</code> loaded from a shared
- * library. Signing blocks in the native call until the request is confirmed on the authenticator.
+ * Native OpenSSH security key middleware loaded from a shared library of the platform (<code>.dylib</code> on macOS,
+ * <code>.so</code> on Linux) such as <code>/usr/lib/ssh-keychain.dylib</code> or a standalone
+ * <code>sk-libfido2</code>. Signing blocks in the native call until the request is confirmed on the authenticator.
  *
  * @see <a href="https://github.com/openssh/openssh-portable/blob/master/sk-api.h">sk-api.h</a>
  */

@@ -97,7 +97,7 @@ public class OpenSshConfigTest {
     @Test
     public void testSecurityKeyProvider() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-securitykey"));
-        assertEquals("/opt/homebrew/lib/libsk-libfido2.dylib", config.lookup("token.example.com").getSecurityKeyProvider());
+        assertEquals("/opt/homebrew/lib/sk-libfido2.dylib", config.lookup("token.example.com").getSecurityKeyProvider());
         // Inherited from wildcard host
         assertEquals("/usr/lib/ssh-keychain.dylib", config.lookup("other.example.com").getSecurityKeyProvider());
     }

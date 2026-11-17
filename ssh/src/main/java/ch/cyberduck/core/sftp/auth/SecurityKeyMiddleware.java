@@ -21,7 +21,8 @@ import java.io.IOException;
  * Middleware library talking to a FIDO/U2F authenticator, the same interface OpenSSH loads with
  * <code>SecurityKeyProvider</code> respectively <code>ssh-keygen -w</code>. On macOS
  * <code>/usr/lib/ssh-keychain.dylib</code> implements it for keys in the Secure Enclave where user verification is a
- * Touch ID prompt, elsewhere it is implemented by <code>libsk-libfido2</code> for USB tokens.
+ * Touch ID prompt. For USB tokens it is implemented by <code>sk-libfido2</code> (<code>.dylib</code> or
+ * <code>.so</code>) when OpenSSH is built with <code>--with-security-key-standalone</code>.
  *
  * @see <a href="https://github.com/openssh/openssh-portable/blob/master/sk-api.h">sk-api.h</a>
  */

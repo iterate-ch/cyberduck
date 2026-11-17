@@ -37,7 +37,7 @@ public class OpenSSHSecurityKeyProviderConfiguratorTest {
 
     @Test
     public void testProviderFromPath() {
-        assertEquals("/opt/homebrew/lib/libsk-libfido2.dylib",
+        assertEquals("/opt/homebrew/lib/sk-libfido2.dylib",
                 configurator(null).getProvider("path.example.com"));
     }
 
@@ -46,13 +46,13 @@ public class OpenSSHSecurityKeyProviderConfiguratorTest {
      */
     @Test
     public void testProviderFromEnvironmentVariable() {
-        assertEquals("/usr/local/lib/libsk-libfido2.so",
-                configurator("/usr/local/lib/libsk-libfido2.so").getProvider("variable.example.com"));
+        assertEquals("/usr/local/lib/sk-libfido2.so",
+                configurator("/usr/local/lib/sk-libfido2.so").getProvider("variable.example.com"));
     }
 
     @Test
     public void testProviderFromUnsetEnvironmentVariable() {
-        assertNull(configurator("/usr/local/lib/libsk-libfido2.so").getProvider("missing.example.com"));
+        assertNull(configurator("/usr/local/lib/sk-libfido2.so").getProvider("missing.example.com"));
     }
 
     @Test
