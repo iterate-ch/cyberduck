@@ -24,7 +24,7 @@ jobs:
   # Equivalent of the former Jenkins `release:prepare` job. Commits the release
   # version, tags it and commits the next development version, then pushes. The push
   # uses a GitHub App token, which is a bypass actor of the master ruleset and, unlike
-  # GITHUB_TOKEN, triggers the tag workflows (release.yml, appstore.yml, image.yml).
+  # GITHUB_TOKEN, triggers the tag workflows (release.yml, appstore.yml, winstore.yml, image.yml).
   prepare:
     permissions:
       contents: read
