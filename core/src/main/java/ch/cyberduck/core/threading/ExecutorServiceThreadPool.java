@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -26,11 +27,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class ExecutorServiceThreadPool implements ThreadPool {
     private static final Logger log = LogManager.getLogger(ExecutorServiceThreadPool.class);
 
-    /**
-     * Maximum time to wait for running tasks to complete on shutdown
-     */
-    private static final int TERMINATION_TIMEOUT_SECONDS = 5;
-
     private final AbstractExecutorService pool;
 
     public ExecutorServiceThreadPool(final AbstractExecutorService pool) {
@@ -38,7 +34,16 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
     }
 
     @Override
-    public void shutdown(boolean gracefully) {
+    public void shutdown(final boolean gracefully) {
+        this.shutdown(gracefully, null);
+    }
+
+    /**
+     * @param gracefully Wait for tasks to complete
+     * @param timeout    Maximum time to await termination of running tasks or null to wait indefinitely
+     */
+    @Override
+    public void shutdown(final boolean gracefully, final Duration timeout) {
         if(gracefully) {
             log.info("Shutdown pool {} gracefully", pool);
             pool.shutdown();
@@ -48,17 +53,20 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
             pool.shutdownNow();
         }
         try {
-            // Running tasks may be blocked in uninterruptible calls such as a socket connect. Do not block quit indefinitely.
-            for(int i = 0; i < TERMINATION_TIMEOUT_SECONDS; i++) {
-                if(pool.awaitTermination(1L, TimeUnit.SECONDS)) {
-                    return;
+            if(null == timeout) {
+                while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+                    log.warn("Await termination for pool {}", pool);
                 }
-                log.warn("Await termination for pool {}", pool);
             }
-            log.error("Giving up awaiting termination of pool {} after {} seconds", pool, TERMINATION_TIMEOUT_SECONDS);
+            else {
+                if(!pool.awaitTermination(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+                    log.error("Giving up awaiting termination of pool {} after {}", pool, timeout);
+                }
+            }
         }
         catch(InterruptedException e) {
             log.error("Failure awaiting pool termination. {}", e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 
