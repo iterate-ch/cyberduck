@@ -85,6 +85,7 @@
         <!-- Default project root. Overridden by directory-maven-plugin in the
              project-root-jenkins profile. -->
         <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
+        <git.buildnumber.skip>false</git.buildnumber.skip>
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
@@ -844,6 +845,7 @@
                 <configuration>
                     <repositoryDirectory>${main.basedir}</repositoryDirectory>
                     <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                    <skip>${git.buildnumber.skip}</skip>
                 </configuration>
             </plugin>
             <plugin>
@@ -1130,6 +1132,19 @@
                     </plugins>
                 </pluginManagement>
             </build>
+        </profile>
+        <profile>
+            <id>git-worktree</id>
+            <activation>
+                <file>
+                    <missing>${maven.multiModuleProjectDirectory}/.git/HEAD</missing>
+                </file>
+            </activation>
+            <properties>
+                <git.buildnumber.skip>true</git.buildnumber.skip>
+                <git.revision>0</git.revision>
+                <git.commitsCount>0</git.commitsCount>
+            </properties>
         </profile>
     </profiles>
 </project>
