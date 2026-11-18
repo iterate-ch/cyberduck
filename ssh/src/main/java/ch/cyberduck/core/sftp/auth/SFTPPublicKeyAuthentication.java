@@ -213,7 +213,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             return configuration;
         }
         final String environment = System.getenv("SSH_SK_PROVIDER");
-        if(StringUtils.isNotBlank(environment)) {
+        if(StringUtils.isNotBlank(environment) && !OpenSSHSecurityKeyProviderConfigurator.isInternal(environment)) {
             log.debug("Determined security key provider {} from environment", environment);
             return environment;
         }

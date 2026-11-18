@@ -37,7 +37,7 @@ public class OpenSSHSecurityKeyProviderConfiguratorTest {
 
     @Test
     public void testProviderFromPath() {
-        assertEquals("/opt/homebrew/lib/sk-libfido2.dylib",
+        assertEquals("/opt/homebrew/lib/libsk-libfido2.dylib",
                 configurator(null).getProvider("path.example.com"));
     }
 
@@ -58,5 +58,14 @@ public class OpenSSHSecurityKeyProviderConfiguratorTest {
     @Test
     public void testNoConfiguration() {
         assertNull(configurator(null).getProvider("other.example.com"));
+    }
+
+    /**
+     * <code>internal</code> selects the middleware linked into OpenSSH, not available here
+     */
+    @Test
+    public void testInternalIgnored() {
+        assertNull(configurator(null).getProvider("internal.example.com"));
+        assertNull(configurator("INTERNAL").getProvider("internal-variable.example.com"));
     }
 }

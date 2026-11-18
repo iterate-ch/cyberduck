@@ -47,6 +47,10 @@ public class OpenSSHSecurityKeyProviderConfigurator {
             log.debug("No configuration for alias {}", alias);
             return null;
         }
+        if(isInternal(library)) {
+            log.debug("Ignore built-in middleware {} for alias {}", library, alias);
+            return null;
+        }
         if(StringUtils.startsWith(library, "$")) {
             final String variable = StringUtils.removeStart(library, "$");
             final String resolved = this.getEnv(variable);
@@ -55,11 +59,25 @@ public class OpenSSHSecurityKeyProviderConfigurator {
                         variable, alias);
                 return null;
             }
+            if(isInternal(resolved)) {
+                log.debug("Ignore built-in middleware {} from environment variable {} for alias {}", resolved, variable, alias);
+                return null;
+            }
             log.debug("Found configuration {} from environment variable {} for alias {}", resolved, variable, alias);
             return resolved;
         }
         log.debug("Found configuration {} for alias {}", library, alias);
         return library;
+    }
+
+    /**
+     * In OpenSSH, <code>internal</code> selects the middleware linked into the ssh binary. There is none available.
+     *
+     * @param provider Value of <code>SecurityKeyProvider</code>
+     * @return True if the built-in middleware is selected
+     */
+    public static boolean isInternal(final String provider) {
+        return StringUtils.equalsIgnoreCase(StringUtils.trim(provider), "internal");
     }
 
     protected String getEnv(final String variable) {

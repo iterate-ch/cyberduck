@@ -6,3 +6,10 @@ Host missing.example.com
 
 Host path.example.com
 	SecurityKeyProvider /opt/homebrew/lib/libsk-libfido2.dylib
+
+
+Host internal.example.com
+	SecurityKeyProvider Internal
+
+Host internal-variable.example.com
+	SecurityKeyProvider $SSH_SK_PROVIDER_TEST
