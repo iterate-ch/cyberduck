@@ -23,6 +23,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -35,6 +36,11 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     public static BackgroundExecutor get() {
         return DEFAULT;
     }
+
+    /**
+     * Maximum time to wait for running tasks to complete on shutdown
+     */
+    private static final Duration TERMINATION_TIMEOUT = Duration.ofSeconds(5L);
 
     private final ThreadPool concurrentExecutor;
 
@@ -90,6 +96,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     @Override
     public void shutdown() {
         log.info("Terminating concurrent executor thread pool {}", concurrentExecutor);
-        concurrentExecutor.shutdown(false);
+        // Running tasks may be blocked in uninterruptible calls such as a socket connect. Do not block quit indefinitely.
+        concurrentExecutor.shutdown(false, TERMINATION_TIMEOUT);
     }
 }

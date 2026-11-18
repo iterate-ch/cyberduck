@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -33,7 +34,16 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
     }
 
     @Override
-    public void shutdown(boolean gracefully) {
+    public void shutdown(final boolean gracefully) {
+        this.shutdown(gracefully, null);
+    }
+
+    /**
+     * @param gracefully Wait for tasks to complete
+     * @param timeout    Maximum time to await termination of running tasks or null to wait indefinitely
+     */
+    @Override
+    public void shutdown(final boolean gracefully, final Duration timeout) {
         if(gracefully) {
             log.info("Shutdown pool {} gracefully", pool);
             pool.shutdown();
@@ -43,12 +53,20 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
             pool.shutdownNow();
         }
         try {
-            while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
-                log.warn("Await termination for pool {}", pool);
+            if(null == timeout) {
+                while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+                    log.warn("Await termination for pool {}", pool);
+                }
+            }
+            else {
+                if(!pool.awaitTermination(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+                    log.error("Giving up awaiting termination of pool {} after {}", pool, timeout);
+                }
             }
         }
         catch(InterruptedException e) {
             log.error("Failure awaiting pool termination. {}", e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 
