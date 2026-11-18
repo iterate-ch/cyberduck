@@ -36,7 +36,10 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -229,6 +232,15 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Scheduler.class) {
             return (T) scheduler;
+        }
+        if(type == Home.class) {
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new SwiftHomeFeature(host));
+        }
+        if(type == Quota.class) {
+            final Path container = new SwiftHomeFeature(host).find();
+            if(container != null) {
+                return (T) new SwiftContainerQuotaFeature(this, regionService, container);
+            }
         }
         return super._getFeature(type);
     }

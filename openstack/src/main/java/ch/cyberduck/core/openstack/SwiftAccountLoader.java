@@ -70,6 +70,11 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
                     log.warn("Ignore failure {} for region {}", e, region);
                     continue;
                 }
+                if(e.getHttpStatusCode() == HttpStatus.SC_FORBIDDEN) {
+                    // No access to account metadata when user is limited to a container in a shared account
+                    log.warn("Ignore failure {} reading account info for region {}", e, region);
+                    continue;
+                }
                 throw new SwiftExceptionMappingService().map(e);
             }
             catch(IOException e) {
