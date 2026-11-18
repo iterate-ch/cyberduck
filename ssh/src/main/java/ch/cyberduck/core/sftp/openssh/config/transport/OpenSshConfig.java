@@ -164,9 +164,9 @@ public class OpenSshConfig {
                     continue;
                 }
                 final String keyword = parts[0].trim();
-                // Arguments may be followed by a comment, except for the command passed to the user's shell
-                final String argValue = "ProxyCommand".equalsIgnoreCase(keyword) ? parts[1].trim() : uncomment(parts[1].trim());
-                if(argValue.isEmpty()) {
+                // Arguments may be followed by a comment, removed by tokenize except for the command passed to the user's shell
+                final String argValue = parts[1].trim();
+                if(argValue.isEmpty() || argValue.startsWith("#")) {
                     continue;
                 }
                 if("Host".equalsIgnoreCase(keyword)) {
@@ -384,7 +384,7 @@ public class OpenSshConfig {
     /**
      * Split arguments the way OpenSSH does. Whitespace separates arguments unless escaped with a backslash or enclosed
      * in single or double quotes. Backslash escapes a space outside of quotes, a quote or another backslash. Any other
-     * backslash is kept as is to preserve Windows paths.
+     * backslash is kept as is to preserve Windows paths. A {@code #} at the start of an argument begins a comment.
      */
     static List<String> tokenize(final String value) {
         final List<String> tokens = new ArrayList<>();
@@ -410,6 +410,9 @@ public class OpenSshConfig {
                     current.setLength(0);
                     started = false;
                 }
+            }
+            else if(quote == 0 && !started && c == '#') {
+                break;
             }
             else if(quote == 0 && (c == '"' || c == '\'')) {
                 quote = c;
@@ -438,27 +441,6 @@ public class OpenSshConfig {
      */
     private static String dequote(final String value) {
         return String.join(" ", tokenize(value));
-    }
-
-    /**
-     * Remove a trailing comment starting with {@code #} at the beginning of an unquoted argument
-     */
-    private static String uncomment(final String value) {
-        boolean quoted = false;
-        for(int i = 0; i < value.length(); i++) {
-            final char c = value.charAt(i);
-            if(c == '\\') {
-                // Skip escaped character
-                i++;
-            }
-            else if(c == '"') {
-                quoted = !quoted;
-            }
-            else if(c == '#' && !quoted && (i == 0 || Character.isWhitespace(value.charAt(i - 1)))) {
-                return value.substring(0, i).trim();
-            }
-        }
-        return value;
     }
 
     /**

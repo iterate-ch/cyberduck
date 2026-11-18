@@ -233,8 +233,13 @@ public class OpenSshConfigTest {
         assertEquals("alice", host.getUser());
         // Quoted arguments are not truncated
         assertEquals("/tmp/a # b", host.getIdentityAgent());
+        assertEquals("a # b", host.getHostName());
+        // Escaped space before # within argument
+        assertEquals("/tmp/a #b.pem", host.getIdentityFile());
         // The command is passed to the user's shell unmodified
         assertEquals("nc %h %p # passed to the shell", host.getProxyCommand());
+        // Option with only a comment is ignored, # within an argument is kept
+        assertEquals("bob#alice", config.lookup("comment-only").getUser());
     }
 
     @Test
