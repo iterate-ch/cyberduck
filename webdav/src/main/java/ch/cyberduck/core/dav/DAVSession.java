@@ -130,7 +130,9 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void disconnect() throws BackgroundException {
         try {
-            client.shutdown();
+            if(client != null) {
+                client.shutdown();
+            }
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);

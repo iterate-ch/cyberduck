@@ -182,6 +182,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         finally {
             preferences.clear();
             state = State.closed;
+            client = null;
             log.debug("Connection did close to {}", host);
         }
     }
@@ -196,6 +197,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         }
         finally {
             state = State.closed;
+            client = null;
             log.debug("Connection did close to {}", host);
         }
     }

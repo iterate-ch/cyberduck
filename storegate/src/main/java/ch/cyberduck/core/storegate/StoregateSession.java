@@ -186,7 +186,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     public void disconnect() throws BackgroundException {
         fileid.clear();
         try {
-            client.getHttpClient().close();
+            if(client != null) {
+                client.getHttpClient().close();
+            }
         }
         finally {
             super.disconnect();

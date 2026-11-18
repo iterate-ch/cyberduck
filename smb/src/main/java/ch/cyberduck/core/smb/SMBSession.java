@@ -367,7 +367,9 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     @Override
     protected void disconnect() throws BackgroundException {
         try {
-            client.close();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             log.warn("Ignore disconnect failure {}", e.getMessage());
