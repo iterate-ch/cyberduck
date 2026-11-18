@@ -57,6 +57,6 @@ public class SwiftHomeFeature extends AbstractHomeFeature {
             log.warn("Invalid home container {} from pattern {}", container, pattern);
             return null;
         }
-        return new Path(String.valueOf(Path.DELIMITER) + container, EnumSet.of(Path.Type.volume, Path.Type.directory));
+        return new Path(String.format("%s%s", Path.DELIMITER, container), EnumSet.of(Path.Type.volume, Path.Type.directory));
     }
 }
