@@ -241,7 +241,50 @@ public class OpenSshConfigTest {
         assertEquals("alice", host.getUser());
         // Quoted arguments are not truncated
         assertEquals("/tmp/a # b", host.getIdentityAgent());
+        assertEquals("a # b", host.getHostName());
+        // Escaped space before # within argument
+        assertEquals("/tmp/a #b.pem", host.getIdentityFile());
         // The command is passed to the user's shell unmodified
         assertEquals("nc %h %p # passed to the shell", host.getProxyCommand());
+        // Option with only a comment is ignored, # within an argument is kept
+        assertEquals("bob#alice", config.lookup("comment-only").getUser());
+    }
+
+    @Test
+    public void testEscapedSpaceInPaths() throws Exception {
+        final File config = tmp.newFile("config-escaped-space");
+        try(final FileWriter w = new FileWriter(config)) {
+            w.write("Host escaped\n");
+            w.write("  IdentityFile ~/.ssh/lorem\\ ipsum.pem\n");
+            w.write("  IdentityAgent ~/agent\\ dir/sock\n");
+            w.write("Host quoted\n");
+            w.write("  IdentityFile \"~/.ssh/lorem ipsum.pem\"\n");
+        }
+        final OpenSshConfig sshConfig = new OpenSshConfig(new Local(config.getAbsolutePath()));
+        assertEquals("~/.ssh/lorem ipsum.pem", sshConfig.lookup("escaped").getIdentityFile());
+        assertEquals("~/agent dir/sock", sshConfig.lookup("escaped").getIdentityAgent());
+        assertEquals("~/.ssh/lorem ipsum.pem", sshConfig.lookup("quoted").getIdentityFile());
+    }
+
+    @Test
+    public void testEscapedSpaceInInclude() throws Exception {
+        final File dir = tmp.newFolder("my configs");
+        try(final FileWriter w = new FileWriter(new File(dir, "extra"))) {
+            w.write("Host included\n  User bob\n");
+        }
+        final File config = tmp.newFile("config-include-escaped");
+        try(final FileWriter w = new FileWriter(config)) {
+            w.write("Include " + dir.getAbsolutePath().replace(" ", "\\ ") + "/extra\n");
+        }
+        assertEquals("bob", new OpenSshConfig(new Local(config.getAbsolutePath())).lookup("included").getUser());
+    }
+
+    @Test
+    public void testUnknownEscapeKeptForWindowsPath() throws Exception {
+        final File config = tmp.newFile("config-windows-path");
+        try(final FileWriter w = new FileWriter(config)) {
+            w.write("Host win\n  IdentityFile C:\\Users\\me\\.ssh\\id_rsa\n");
+        }
+        assertEquals("C:\\Users\\me\\.ssh\\id_rsa", new OpenSshConfig(new Local(config.getAbsolutePath())).lookup("win").getIdentityFile());
     }
 }
