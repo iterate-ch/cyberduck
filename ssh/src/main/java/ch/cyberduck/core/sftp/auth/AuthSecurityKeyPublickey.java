@@ -31,15 +31,14 @@ import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.hierynomus.sshj.userauth.fido.SecurityKeyPrivateKey;
 import com.hierynomus.sshj.userauth.fido.SecurityKeyPublicKey;
 import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHPacket;
-import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.userauth.method.AuthPublickey;
@@ -99,11 +98,9 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
             reqBuf.putString(encode(type, response));
             return reqBuf;
         }
-        catch(TransportException e) {
-            throw new UserAuthException(String.format("Failure signing with %s", keys), e);
-        }
         catch(IOException e) {
-            throw new UserAuthException(String.format("Failure signing with security key %s", keys), e);
+            throw new UserAuthException(String.format("Failure signing with security key %s",
+                    bookmark.getCredentials().getIdentity()), e);
         }
     }
 
