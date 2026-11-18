@@ -9,6 +9,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -298,5 +299,19 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         // With Expect: Continue header
         final HttpResponseOutputStream<Void> out = new DAVWriteFeature(session).write(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
         out.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testWriteMissingParent() throws Exception {
+        final Path test = new Path(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        // PUT without parent collection fails with 409 Conflict
+        final HttpResponseOutputStream<Void> out = new DAVWriteFeature(session).write(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
+        try {
+            out.close();
+        }
+        catch(IOException e) {
+            throw (Exception) e.getCause();
+        }
     }
 }

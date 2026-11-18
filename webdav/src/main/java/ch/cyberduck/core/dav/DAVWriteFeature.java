@@ -23,6 +23,7 @@ import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
@@ -131,7 +133,13 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
                     return null;
                 }
                 catch(SardineException e) {
-                    throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
+                    final BackgroundException failure = new DAVExceptionMappingService().map("Upload {0} failed", e, file);
+                    if(e.getStatusCode() == HttpStatus.SC_CONFLICT) {
+                        // RFC 4918 section 9.7.1: A PUT that would result in the creation of a resource without an
+                        // appropriately scoped parent collection MUST fail with a 409 (Conflict)
+                        throw new NotfoundException(failure.getDetail(), e);
+                    }
+                    throw failure;
                 }
                 catch(IOException e) {
                     throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
