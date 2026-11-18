@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -41,21 +40,16 @@ public class SwiftListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            try {
+            // Listing the account is not permitted when every user owns a single container in a shared account
+            final Path home = new SwiftHomeFeature(session.getHost()).find();
+            if(null == home) {
                 return new SwiftContainerListService(session,
                         new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(directory, listener);
             }
-            catch(AccessDeniedException e) {
-                // Listing the account is not permitted when every user owns a single container in a shared account
-                final Path home = new SwiftHomeFeature(session.getHost()).find();
-                if(null == home || !SwiftExceptionMappingService.isForbidden(e)) {
-                    throw e;
-                }
-                log.warn("Listing account denied with {}. Return home container {}", e, home);
-                final AttributedList<Path> containers = new AttributedList<>(Collections.singletonList(home));
-                listener.chunk(directory, containers);
-                return containers;
-            }
+            log.warn("Return home container {}", home);
+            final AttributedList<Path> containers = new AttributedList<>(Collections.singletonList(home));
+            listener.chunk(directory, containers);
+            return containers;
         }
         else {
             return new SwiftObjectListService(session, regionService).list(directory, listener);

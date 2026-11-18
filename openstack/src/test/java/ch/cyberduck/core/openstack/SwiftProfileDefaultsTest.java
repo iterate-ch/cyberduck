@@ -37,7 +37,6 @@ import org.apache.http.HttpVersion;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -254,19 +253,6 @@ public class SwiftProfileDefaultsTest {
     @Test(expected = AccessDeniedException.class)
     public void testListRootForbiddenWithoutHomeContainer() throws Exception {
         listRoot(session(properties("openstack.list.container.limit", "100"), 403));
-    }
-
-    @Test
-    public void testListRootTransientFailureNotReplacedByHomeContainer() throws Exception {
-        for(int status : new int[]{429, 500, 406}) {
-            try {
-                listRoot(session(properties("openstack.container.home", "{0}", "openstack.list.container.limit", "100"), status));
-                fail("Expected failure for status " + status);
-            }
-            catch(AccessDeniedException e) {
-                assertFalse(SwiftExceptionMappingService.isForbidden(e));
-            }
-        }
     }
 
     @Test
