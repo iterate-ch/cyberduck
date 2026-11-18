@@ -29,8 +29,6 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -75,7 +73,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     if(status.isExists()) {
                         // Remove any large object header read from metadata of existing file. Header names are
                         // case-insensitive and may be returned in lower case
-                        headers.keySet().removeIf(Constants.X_STATIC_LARGE_OBJECT::equalsIgnoreCase);
+                        headers.keySet().removeIf(key -> Constants.X_STATIC_LARGE_OBJECT.equalsIgnoreCase(key)
+                                || Constants.MANIFEST_HEADER.equalsIgnoreCase(key));
                     }
                     final Checksum checksum = status.getChecksum();
                     final String etag = session.getClient().storeObject(
