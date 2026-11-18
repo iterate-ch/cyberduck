@@ -21,30 +21,62 @@ import org.xml.sax.XMLReader;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Creates SAX readers safe to parse untrusted input. DOCTYPE declarations are rejected and
- * external entities and DTDs are never resolved to prevent XML external entity (XXE) injection.
+ * Creates SAX readers safe to parse untrusted input to prevent XML external entity (XXE) injection.
+ * {@link XMLConstants#FEATURE_SECURE_PROCESSING} is always enabled and cannot be overridden.
  */
 public final class SecureXMLReaderFactory {
+
+    public static final String FEATURE_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
+    public static final String FEATURE_EXTERNAL_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
+    public static final String FEATURE_EXTERNAL_PARAMETER_ENTITIES = "http://xml.org/sax/features/external-parameter-entities";
+    public static final String FEATURE_LOAD_EXTERNAL_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+
+    /**
+     * Features for parsers reading remote content. DOCTYPE declarations are rejected and external
+     * entities and DTDs are never resolved.
+     */
+    public static final Map<String, Boolean> DEFAULT_FEATURES;
+
+    static {
+        final Map<String, Boolean> features = new LinkedHashMap<>();
+        features.put(FEATURE_DISALLOW_DOCTYPE_DECL, true);
+        features.put(FEATURE_EXTERNAL_GENERAL_ENTITIES, false);
+        features.put(FEATURE_EXTERNAL_PARAMETER_ENTITIES, false);
+        features.put(FEATURE_LOAD_EXTERNAL_DTD, false);
+        DEFAULT_FEATURES = Collections.unmodifiableMap(features);
+    }
 
     private SecureXMLReaderFactory() {
         //
     }
 
     /**
-     * @return Namespace aware reader rejecting DOCTYPE declarations
+     * @return Namespace aware reader configured with {@link #DEFAULT_FEATURES}
      * @throws SAXException If the parser does not support the required security features
      */
     public static XMLReader create() throws SAXException {
+        return create(DEFAULT_FEATURES);
+    }
+
+    /**
+     * @param features Feature flags to set on the parser factory in addition to secure processing
+     * @return Namespace aware reader configured with the given features
+     * @throws SAXException If the parser does not support one of the features
+     */
+    public static XMLReader create(final Map<String, Boolean> features) throws SAXException {
         try {
             final SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
+            for(Map.Entry<String, Boolean> feature : features.entrySet()) {
+                factory.setFeature(feature.getKey(), feature.getValue());
+            }
+            // Set last to make sure it cannot be disabled by the given features
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             return factory.newSAXParser().getXMLReader();
         }
         catch(ParserConfigurationException e) {
