@@ -63,6 +63,7 @@ import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
 import ch.cyberduck.core.sts.STSGetSessionTokenCredentialsStrategy;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.xml.SecureXMLReaderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -82,6 +83,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.utils.SignatureUtils;
+import org.xml.sax.SAXException;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -175,7 +177,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(client.getConfiguration(), false);
+        try {
+            return new XmlResponsesSaxParser(client.getConfiguration(), false, SecureXMLReaderFactory.create());
+        }
+        catch(SAXException e) {
+            throw new ServiceException("Failed to initialize a SAX XMLReader", e);
+        }
     }
 
     public S3CredentialsStrategy getAuthentication() {

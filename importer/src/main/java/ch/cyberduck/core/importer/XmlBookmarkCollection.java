@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.xml.SecureXMLReaderFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,17 +31,33 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = LogManager.getLogger(XmlBookmarkCollection.class);
 
     private static final long serialVersionUID = -3145592458663362423L;
+
+    /**
+     * Third-party files may declare a DOCTYPE such as Transmit 4 favorites referencing CoreData.dtd. Accept the
+     * declaration but never load the external DTD subset or resolve external entities.
+     */
+    private static final Map<String, Boolean> FEATURES;
+
+    static {
+        final Map<String, Boolean> features = new LinkedHashMap<>();
+        features.put(SecureXMLReaderFactory.FEATURE_EXTERNAL_GENERAL_ENTITIES, false);
+        features.put(SecureXMLReaderFactory.FEATURE_EXTERNAL_PARAMETER_ENTITIES, false);
+        features.put(SecureXMLReaderFactory.FEATURE_LOAD_EXTERNAL_DTD, false);
+        FEATURES = Collections.unmodifiableMap(features);
+    }
 
     public XmlBookmarkCollection() {
         super();
@@ -85,9 +102,9 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
     protected void read(final ProtocolFactory protocols, final Local child) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),
-                StandardCharsets.UTF_8));
-            AbstractHandler handler = this.getHandler(protocols);
-            final XMLReader xr = XMLReaderFactory.createXMLReader();
+                    StandardCharsets.UTF_8));
+            final AbstractHandler handler = this.getHandler(protocols);
+            final XMLReader xr = SecureXMLReaderFactory.create(FEATURES);
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
             xr.parse(new InputSource(in));
