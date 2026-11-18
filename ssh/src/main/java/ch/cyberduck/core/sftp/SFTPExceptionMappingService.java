@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+import com.hierynomus.sshj.common.KeyDecryptionFailedException;
 import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.SSHException;
@@ -91,6 +92,10 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
             }
         }
         if(e instanceof UserAuthException) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
+        if(e instanceof KeyDecryptionFailedException) {
+            // Wrong passphrase for private key
             return new LoginFailureException(buffer.toString(), e);
         }
         if(e instanceof ConnectionException) {
