@@ -19,72 +19,192 @@ import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.junit.Test;
 
-import java.net.Socket;
+import javax.security.auth.x500.X500Principal;
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
 import java.security.Principal;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.security.spec.ECGenParameterSpec;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
 public class DelegatingCertificateStoreX509KeyManagerTest {
 
-    /**
-     * Store with no certificate selected saving empty selection
-     */
-    private static CertificateStoreX509KeyManager none(final Host bookmark, final AtomicBoolean invoked) {
-        return new DefaultCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, new DisabledCertificateStore()) {
-            @Override
-            public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-                invoked.set(true);
-                if(null == bookmark.getCredentials().getCertificate()) {
-                    bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
-                }
-                return null;
-            }
-        };
-    }
+    private static final X500Principal ISSUER = new X500Principal("CN=Test CA");
 
     @Test
-    public void testChooseClientAliasFromNextStore() {
-        final Host bookmark = new Host(new TestProtocol());
-        final AtomicBoolean first = new AtomicBoolean();
-        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(bookmark, none(bookmark, first),
-                new DefaultCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, new DisabledCertificateStore()) {
-                    @Override
-                    public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-                        // Empty selection from previous store must not prevent selection
-                        assertNull(bookmark.getCredentials().getCertificate());
-                        bookmark.getCredentials().setCertificate("token");
-                        return "token";
-                    }
-                });
-        assertEquals("token", m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{}, null));
-        assertTrue(first.get());
+    public void testChooseClientAliasSinglePrompt() throws Exception {
+        final Host bookmark = new Host(new TestProtocol(), "test.cyberduck.ch");
+        final X509Certificate system = certificate("RSA", ISSUER);
+        final X509Certificate token = certificate("EC", ISSUER);
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            prompts.incrementAndGet();
+            assertEquals("test.cyberduck.ch", hostname);
+            // Certificates from both stores to choose from
+            assertEquals(2, certificates.size());
+            assertTrue(certificates.contains(system));
+            assertTrue(certificates.contains(token));
+            return token;
+        }, bookmark, manager(bookmark, store("system", system)), manager(bookmark, store("token", token)));
+        assertEquals("token", m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        assertEquals(1, prompts.get());
         assertEquals("token", bookmark.getCredentials().getCertificate());
+        assertEquals(token, m.getCertificateChain("token")[0]);
+        // No prompt with certificate saved
+        assertEquals("token", m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        assertEquals(1, prompts.get());
     }
 
     @Test
-    public void testChooseClientAliasNoSelection() {
+    public void testChooseClientAliasCanceled() throws Exception {
         final Host bookmark = new Host(new TestProtocol());
-        final AtomicBoolean first = new AtomicBoolean();
-        final AtomicBoolean second = new AtomicBoolean();
-        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(bookmark, none(bookmark, first), none(bookmark, second));
-        assertNull(m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{}, null));
-        assertTrue(first.get());
-        assertTrue(second.get());
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            throw new ConnectionCanceledException();
+        }, bookmark, manager(bookmark, store("system", certificate("RSA", ISSUER))), manager(bookmark, store("token", certificate("EC", ISSUER))));
+        assertNull(m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
         // Empty selection saved
         assertEquals(StringUtils.EMPTY, bookmark.getCredentials().getCertificate());
     }
 
     @Test
-    public void testChooseClientAliasSavedEmptySelection() {
+    public void testChooseClientAliasNoCertificate() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store()), manager(bookmark, store()));
+        assertNull(m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        // Empty selection saved
+        assertEquals(StringUtils.EMPTY, bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
+    public void testChooseClientAliasIssuerNotAccepted() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store("system", certificate("RSA", new X500Principal("CN=Other CA")))), manager(bookmark, store()));
+        assertNull(m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        // Empty selection saved
+        assertEquals(StringUtils.EMPTY, bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
+    public void testChooseClientAliasOtherKeyType() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        final X509Certificate token = certificate("RSA", ISSUER);
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            prompts.incrementAndGet();
+            assertEquals(1, certificates.size());
+            return certificates.get(0);
+        }, bookmark, manager(bookmark, store()), manager(bookmark, store("token", token)));
+        // Requested for single key type first
+        assertNull(m.chooseClientAlias(new String[]{"EC"}, new Principal[]{ISSUER}, null));
+        assertEquals(0, prompts.get());
+        // Empty selection not saved to allow selection when requested with other key type
+        assertNull(bookmark.getCredentials().getCertificate());
+        assertEquals("token", m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{ISSUER}, null));
+        assertEquals(1, prompts.get());
+        assertEquals("token", bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
+    public void testChooseClientAliasDuplicateCertificate() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        // Same certificate available from both stores
+        final X509Certificate certificate = certificate("RSA", ISSUER);
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            assertEquals(1, certificates.size());
+            return certificates.get(0);
+        }, bookmark, manager(bookmark, store("system", certificate)), manager(bookmark, store("token", certificate)));
+        // First store preferred
+        assertEquals("system", m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        assertEquals("system", bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
+    public void testChooseClientAliasSavedEmptySelection() throws Exception {
         final Host bookmark = new Host(new TestProtocol());
         bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
-        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(bookmark, none(bookmark, new AtomicBoolean()), none(bookmark, new AtomicBoolean()));
-        assertNull(m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{}, null));
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store("system", certificate("RSA", ISSUER))), manager(bookmark, store()));
+        assertNull(m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{ISSUER}, null));
         assertEquals(StringUtils.EMPTY, bookmark.getCredentials().getCertificate());
+    }
+
+    /**
+     * Prompt not expected
+     */
+    private static CertificateIdentityCallback fail() {
+        return (hostname, certificates) -> {
+            throw new AssertionError("Unexpected prompt");
+        };
+    }
+
+    private static CertificateStoreX509KeyManager manager(final Host bookmark, final KeyStore store) {
+        return new DefaultCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, new DisabledCertificateStore(),
+                new LazyInitializer<KeyStore>() {
+                    @Override
+                    protected KeyStore initialize() {
+                        return store;
+                    }
+                });
+    }
+
+    private static final List<KeyPair> keys = new ArrayList<>();
+
+    /**
+     * @param type Key type
+     * @return Certificate with key pair to add to store
+     */
+    private static X509Certificate certificate(final String type, final X500Principal issuer) throws Exception {
+        final KeyPairGenerator generator = KeyPairGenerator.getInstance(type);
+        if("EC".equals(type)) {
+            generator.initialize(new ECGenParameterSpec("secp256r1"));
+        }
+        else {
+            generator.initialize(2048);
+        }
+        final KeyPair pair = generator.generateKeyPair();
+        keys.add(pair);
+        final Date now = new Date();
+        return new JcaX509CertificateConverter().getCertificate(new JcaX509v3CertificateBuilder(issuer,
+                BigInteger.valueOf(keys.size()), now, new Date(now.getTime() + 24L * 60 * 60 * 1000),
+                new X500Principal(String.format("CN=Test %d", keys.size())), pair.getPublic()).build(
+                new JcaContentSignerBuilder("EC".equals(type) ? "SHA256withECDSA" : "SHA256withRSA").build(pair.getPrivate())));
+    }
+
+    private static KeyStore store() throws Exception {
+        final KeyStore store = KeyStore.getInstance("PKCS12");
+        store.load(null, null);
+        return store;
+    }
+
+    /**
+     * @return Store with private key and certificate for alias
+     */
+    private static KeyStore store(final String alias, final X509Certificate certificate) throws Exception {
+        final KeyStore store = store();
+        for(KeyPair pair : keys) {
+            if(pair.getPublic().equals(certificate.getPublicKey())) {
+                store.setKeyEntry(alias, pair.getPrivate(), null, new Certificate[]{certificate});
+            }
+        }
+        return store;
     }
 }

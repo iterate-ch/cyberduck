@@ -209,9 +209,9 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.background(new AbstractBackgroundAction<List<String>>() {
             @Override
             public List<String> run() {
-                return new DelegatingCertificateStoreX509KeyManager(bookmark,
+                return new DelegatingCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark,
                         new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
-                        new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(BookmarkController.this))
+                        new PKCS11CertificateStoreX509KeyManager(bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(BookmarkController.this))
                 ).list();
             }
 

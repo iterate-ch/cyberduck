@@ -15,7 +15,9 @@ package ch.cyberduck.core.ssl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,15 +39,24 @@ import java.util.Set;
  * Combines multiple {@link CertificateStoreX509KeyManager} delegates into a single key manager.
  * Certificates and keys from all delegates are presented as one unified list; routing to the
  * correct delegate is transparent to callers.
+ * <p>
+ * When the server requests a client certificate and none is selected in the bookmark, the certificates from all
+ * delegates accepted by the server are offered to choose from in a single prompt.
  */
 public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager {
     private static final Logger log = LogManager.getLogger(DelegatingCertificateStoreX509KeyManager.class);
 
+    private final CertificateIdentityCallback prompt;
     private final Host bookmark;
     private final CertificateStoreX509KeyManager[] delegates;
     private final Map<String, CertificateStoreX509KeyManager> aliases = new LinkedHashMap<>();
 
-    public DelegatingCertificateStoreX509KeyManager(final Host bookmark, final CertificateStoreX509KeyManager... delegates) {
+    /**
+     * @param prompt Prompt to choose from the certificates of all delegates
+     */
+    public DelegatingCertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
+                                                    final CertificateStoreX509KeyManager... delegates) {
+        this.prompt = prompt;
         this.bookmark = bookmark;
         this.delegates = delegates;
     }
@@ -124,23 +135,79 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
     }
 
     @Override
-    public String chooseClientAlias(final String[] keyType, final Principal[] issuers, final Socket socket) {
+    public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         final String saved = bookmark.getCredentials().getCertificate();
-        for(CertificateStoreX509KeyManager delegate : delegates) {
-            final String alias = delegate.chooseClientAlias(keyType, issuers, socket);
-            if(null == alias) {
-                if(null == saved) {
-                    // Reset empty selection saved by delegate with no certificate selected to prompt for next store
-                    bookmark.getCredentials().setCertificate(null);
-                }
-                continue;
+        if(null != saved) {
+            log.info("Return saved certificate alias {} for host {}", saved, bookmark);
+            if(StringUtils.isBlank(saved)) {
+                // Empty selection by user
+                return null;
             }
-            return alias;
+            return saved;
         }
-        if(null == saved) {
-            // Save empty selection with no certificate selected from any store
+        // Certificates from all stores issued by an authority accepted by the server to choose from by alias
+        final Map<String, X509Certificate> candidates = new LinkedHashMap<>();
+        final Map<String, CertificateStoreX509KeyManager> stores = new LinkedHashMap<>();
+        // Certificate found with a key type not requested
+        boolean skipped = false;
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            for(String alias : delegate.list()) {
+                final X509Certificate[] chain = delegate.getCertificateChain(alias);
+                if(null == chain || chain.length == 0) {
+                    continue;
+                }
+                final X509Certificate certificate = chain[0];
+                final String type = certificate.getPublicKey().getAlgorithm();
+                if(null == delegate.getCertificate(alias, new String[]{type}, issuers)) {
+                    // Not issued by authority accepted by the server
+                    continue;
+                }
+                if(!Arrays.asList(keyTypes).contains(type)) {
+                    log.debug("Skip certificate with alias {} with key type {} not matching any of {}", alias, type, Arrays.toString(keyTypes));
+                    skipped = true;
+                    continue;
+                }
+                if(candidates.containsKey(alias) || candidates.containsValue(certificate)) {
+                    // Same certificate available from multiple stores
+                    log.debug("Skip duplicate certificate with alias {} from {}, keeping first", alias, delegate);
+                    continue;
+                }
+                candidates.put(alias, certificate);
+                stores.put(alias, delegate);
+            }
+        }
+        if(candidates.isEmpty()) {
+            if(skipped) {
+                // May be requested again for another key type. Do not save empty selection
+                log.info("No certificate found for key types {} and issuers {}", Arrays.toString(keyTypes), Arrays.toString(issuers));
+                return null;
+            }
+            log.info("No certificate found for issuers {}", Arrays.toString(issuers));
+            // Save empty selection with no certificate in any store
             bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
+            return null;
         }
+        final X509Certificate selected;
+        try {
+            // Single prompt with certificates from all stores
+            selected = prompt.prompt(bookmark.getHostname(), new ArrayList<>(candidates.values()));
+        }
+        catch(ConnectionCanceledException e) {
+            log.info("No certificate selected for socket {}", socket);
+            // Save empty selection with no certificate selected
+            bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
+            return null;
+        }
+        for(Map.Entry<String, X509Certificate> candidate : candidates.entrySet()) {
+            if(candidate.getValue().equals(selected)) {
+                final String alias = candidate.getKey();
+                log.info("Selected certificate alias {} for certificate {}", alias, selected);
+                aliases.put(alias, stores.get(alias));
+                bookmark.getCredentials().setCertificate(alias);
+                return alias;
+            }
+        }
+        log.warn("No matching alias found for selected certificate {}", selected);
         return null;
     }
 

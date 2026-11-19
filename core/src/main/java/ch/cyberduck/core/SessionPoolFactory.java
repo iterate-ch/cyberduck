@@ -78,7 +78,10 @@ public class SessionPoolFactory {
         final CertificateIdentityCallback prompt = CertificateIdentityCallbackFactory.get(controller);
         return create(connect, transcript, bookmark,
                 new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), certificates),
-                new DelegatingCertificateStoreX509KeyManager(bookmark, new KeychainX509KeyManager(prompt, bookmark, certificates), new PKCS11CertificateStoreX509KeyManager(prompt, bookmark, certificates, login)),
+                new DelegatingCertificateStoreX509KeyManager(prompt, bookmark,
+                        // Prompt to choose from the certificates of all stores displayed by the delegating key manager
+                        new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, certificates),
+                        new PKCS11CertificateStoreX509KeyManager(bookmark, certificates, login)),
                 VaultRegistryFactory.get(login), usage);
     }
 

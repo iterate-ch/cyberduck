@@ -19,49 +19,23 @@ import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
-import java.security.Principal;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+/**
+ * Certificates with private key on a PKCS#11 token. Only used with {@link DelegatingCertificateStoreX509KeyManager}
+ * prompting to choose from the certificates of all stores.
+ */
 public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509KeyManager {
 
-    public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore store, final LoginCallback login) {
-        this(prompt, bookmark, store, login, HostPreferencesFactory.get(bookmark).getProperty("connection.keystore.pkcs11.library"));
+    public PKCS11CertificateStoreX509KeyManager(final Host bookmark, final CertificateStore store, final LoginCallback login) {
+        this(bookmark, store, login, HostPreferencesFactory.get(bookmark).getProperty("connection.keystore.pkcs11.library"));
     }
 
     /**
      * @param library Native PKCS11 library name or path
      */
-    public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore store, final LoginCallback login,
+    public PKCS11CertificateStoreX509KeyManager(final Host bookmark, final CertificateStore store, final LoginCallback login,
                                                 final String library) {
-        super(prompt, bookmark, store, PKCS11KeyStore.build(library, bookmark, login));
-    }
-
-    /**
-     * Prompt with certificates from token which are not known to the system certificate store
-     */
-    @Override
-    protected X509Certificate choose(final String[] keyTypes, final Principal[] issuers) throws ConnectionCanceledException {
-        final List<X509Certificate> certificates = new ArrayList<>();
-        final String[] aliases = this.getClientAliases(keyTypes, issuers);
-        if(null != aliases) {
-            for(String alias : aliases) {
-                final X509Certificate certificate = this.getCertificate(alias, keyTypes, issuers);
-                if(null != certificate) {
-                    certificates.add(certificate);
-                }
-            }
-        }
-        if(certificates.isEmpty()) {
-            throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));
-        }
-        return prompt.prompt(bookmark.getHostname(), certificates);
+        super(CertificateIdentityCallback.noop, bookmark, store, PKCS11KeyStore.build(library, bookmark, login));
     }
 }
