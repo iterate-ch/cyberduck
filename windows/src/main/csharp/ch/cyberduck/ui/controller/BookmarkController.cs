@@ -524,22 +524,29 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.UsernameEnabled = true;
-                if (
-                    PreferencesFactory.get()
-                        .getProperty("connection.login.name")
-                        .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
-                {
-                    View.Username = String.Empty;
-                }
-                else
-                {
-                    View.Username = PreferencesFactory.get().getProperty("connection.login.name");
-                }
+                ResetAnonymousLogin();
             }
 
             ItemChanged();
             Update();
+        }
+
+        /// <summary>
+        /// Replace anonymous credentials with default username and no password
+        /// </summary>
+        private void ResetAnonymousLogin()
+        {
+            if (PreferencesFactory.get()
+                .getProperty("connection.login.name")
+                .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
+            {
+                _host.getCredentials().setUsername(String.Empty);
+            }
+            else
+            {
+                _host.getCredentials().setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
+            }
+            _host.getCredentials().setPassword(null);
         }
 
         private void View_ChangedBrowserDownloadPathEvent()
@@ -628,6 +635,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 _host.setProtocol(selected);
                 _host.setPort(HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname()));
+                if (!selected.isAnonymousConfigurable() && _host.getCredentials().isAnonymousLogin())
+                {
+                    // Anonymous login not supported by selected protocol
+                    ResetAnonymousLogin();
+                }
                 _host.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(_host));
                 _options.configure(selected);
                 _validator.configure(selected);
