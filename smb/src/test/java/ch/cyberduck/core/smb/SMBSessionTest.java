@@ -19,7 +19,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -62,7 +61,6 @@ public class SMBSessionTest extends AbstractSMBTest {
         assertNotNull(session.getFeature(Delete.class));
         assertNotNull(session.getFeature(ListService.class));
         assertSame(session.getFeature(ListService.class), session.getFeature(ListService.class));
-        assertNotNull(session.getFeature(PathContainerService.class));
         assertNotNull(session.getFeature(Quota.class));
         assertNotNull(session.getFeature(Read.class));
         assertNotNull(session.getFeature(Write.class));

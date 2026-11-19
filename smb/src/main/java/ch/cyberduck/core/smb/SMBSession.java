@@ -18,12 +18,12 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -80,7 +80,6 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     private Session session;
     private SMBRootListService shares;
 
-    private final SMBPathContainerService containerService = new SMBPathContainerService(this);
     /**
      * Disk share pool per share name
      */
@@ -291,7 +290,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     public DiskShareWrapper openShare(final Path file) throws BackgroundException {
         try {
-            final String shareName = containerService.getContainer(file).getName();
+            final String shareName = new DefaultPathContainerService().getContainer(file).getName();
             GenericObjectPool<DiskShareWrapper> pool;
             lock.lock();
             try {
@@ -386,9 +385,6 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == PathContainerService.class) {
-            return (T) containerService;
-        }
         if(type == Find.class) {
             return (T) new SMBFindFeature(this);
         }
