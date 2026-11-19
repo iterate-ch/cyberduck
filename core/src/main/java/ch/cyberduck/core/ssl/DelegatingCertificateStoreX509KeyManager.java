@@ -34,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Combines multiple {@link CertificateStoreX509KeyManager} delegates into a single key manager.
@@ -88,23 +89,75 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
         return this;
     }
 
+    /**
+     * @return Aliases from all delegates with a certificate available from multiple stores listed only once
+     */
     @Override
     public List<String> list() {
         aliases.clear();
         final List<String> list = new ArrayList<>();
-        for(CertificateStoreX509KeyManager delegate : delegates) {
-            for(String alias : delegate.list()) {
-                if(!aliases.containsKey(alias)) {
-                    aliases.put(alias, delegate);
-                    list.add(alias);
-                }
-                else {
-                    log.warn("Duplicate alias {} from delegate {}, keeping first", alias, delegate);
-                }
-            }
+        for(Map.Entry<String, Candidate> candidate : this.candidates(null).entrySet()) {
+            aliases.put(candidate.getKey(), candidate.getValue().store);
+            list.add(candidate.getKey());
         }
         list.sort(String::compareTo);
         return list;
+    }
+
+    /**
+     * Certificates from all delegates. A certificate available from multiple stores is included only once, from the
+     * store authenticated to list its certificates if any to not prompt again for authentication by another store when
+     * signing, or from the first store otherwise.
+     *
+     * @param issuers Authorities accepted by the server or null to include certificates of any issuer
+     * @return Certificate and store by alias
+     */
+    private Map<String, Candidate> candidates(final Principal[] issuers) {
+        final Map<String, Candidate> candidates = new LinkedHashMap<>();
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            for(String alias : delegate.list()) {
+                final X509Certificate[] chain = delegate.getCertificateChain(alias);
+                if(null == chain || chain.length == 0) {
+                    continue;
+                }
+                final X509Certificate certificate = chain[0];
+                if(null != issuers) {
+                    final String type = certificate.getPublicKey().getAlgorithm();
+                    if(null == delegate.getCertificate(alias, new String[]{type}, issuers)) {
+                        // Not issued by authority accepted by the server
+                        continue;
+                    }
+                }
+                // Same certificate available from multiple stores
+                final String duplicate = candidates.entrySet().stream()
+                        .filter(entry -> entry.getValue().certificate.equals(certificate)).map(Map.Entry::getKey).findFirst().orElse(null);
+                if(null != duplicate) {
+                    final CertificateStoreX509KeyManager existing = candidates.get(duplicate).store;
+                    if(!delegate.isAuthenticatedToList() || existing.isAuthenticatedToList()) {
+                        log.debug("Skip duplicate certificate with alias {} from {}, keeping alias {} from {}", alias, delegate, duplicate, existing);
+                        continue;
+                    }
+                    log.debug("Replace duplicate certificate with alias {} from {} with alias {} from {}", duplicate, existing, alias, delegate);
+                    candidates.remove(duplicate);
+                }
+                else if(candidates.containsKey(alias)) {
+                    log.warn("Skip certificate with duplicate alias {} from {}, keeping first", alias, delegate);
+                    continue;
+                }
+                candidates.put(alias, new Candidate(certificate, delegate));
+            }
+        }
+        return candidates;
+    }
+
+    private static final class Candidate {
+        private final X509Certificate certificate;
+        private final CertificateStoreX509KeyManager store;
+
+        private Candidate(final X509Certificate certificate, final CertificateStoreX509KeyManager store) {
+            this.certificate = certificate;
+            this.store = store;
+        }
     }
 
     @Override
@@ -148,41 +201,7 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
         // Certificates from all stores issued by an authority accepted by the server to choose from by alias. Include
         // certificates of all key types as the key manager is queried separately for each key type in order of
         // preference of the server with only a single prompt shown for the first query
-        final Map<String, X509Certificate> candidates = new LinkedHashMap<>();
-        final Map<String, CertificateStoreX509KeyManager> stores = new LinkedHashMap<>();
-        for(CertificateStoreX509KeyManager delegate : delegates) {
-            for(String alias : delegate.list()) {
-                final X509Certificate[] chain = delegate.getCertificateChain(alias);
-                if(null == chain || chain.length == 0) {
-                    continue;
-                }
-                final X509Certificate certificate = chain[0];
-                final String type = certificate.getPublicKey().getAlgorithm();
-                if(null == delegate.getCertificate(alias, new String[]{type}, issuers)) {
-                    // Not issued by authority accepted by the server
-                    continue;
-                }
-                // Same certificate available from multiple stores
-                final String duplicate = candidates.entrySet().stream()
-                        .filter(entry -> entry.getValue().equals(certificate)).map(Map.Entry::getKey).findFirst().orElse(null);
-                if(null != duplicate) {
-                    if(!delegate.isAuthenticatedToList() || stores.get(duplicate).isAuthenticatedToList()) {
-                        log.debug("Skip duplicate certificate with alias {} from {}, keeping alias {} from {}", alias, delegate, duplicate, stores.get(duplicate));
-                        continue;
-                    }
-                    // Prefer store already authenticated to list its certificates to not prompt again for authentication when signing
-                    log.debug("Replace duplicate certificate with alias {} from {} with alias {} from {}", duplicate, stores.get(duplicate), alias, delegate);
-                    candidates.remove(duplicate);
-                    stores.remove(duplicate);
-                }
-                else if(candidates.containsKey(alias)) {
-                    log.warn("Skip certificate with duplicate alias {} from {}, keeping first", alias, delegate);
-                    continue;
-                }
-                candidates.put(alias, certificate);
-                stores.put(alias, delegate);
-            }
-        }
+        final Map<String, Candidate> candidates = this.candidates(issuers);
         if(candidates.isEmpty()) {
             log.info("No certificate found for issuers {}", Arrays.toString(issuers));
             // Save empty selection with no certificate in any store
@@ -192,7 +211,8 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
         final X509Certificate selected;
         try {
             // Single prompt with certificates from all stores
-            selected = prompt.prompt(bookmark.getHostname(), new ArrayList<>(candidates.values()));
+            selected = prompt.prompt(bookmark.getHostname(), candidates.values().stream()
+                    .map(candidate -> candidate.certificate).collect(Collectors.toList()));
         }
         catch(ConnectionCanceledException e) {
             log.info("No certificate selected for socket {}", socket);
@@ -200,11 +220,11 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
             bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
             return null;
         }
-        for(Map.Entry<String, X509Certificate> candidate : candidates.entrySet()) {
-            if(candidate.getValue().equals(selected)) {
+        for(Map.Entry<String, Candidate> candidate : candidates.entrySet()) {
+            if(candidate.getValue().certificate.equals(selected)) {
                 final String alias = candidate.getKey();
                 log.info("Selected certificate alias {} for certificate {}", alias, selected);
-                aliases.put(alias, stores.get(alias));
+                aliases.put(alias, candidate.getValue().store);
                 bookmark.getCredentials().setCertificate(alias);
                 return this.match(alias, keyTypes);
             }

@@ -38,6 +38,8 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -185,6 +187,42 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
                 manager(bookmark, store("system", certificate("RSA", ISSUER))), manager(bookmark, store()));
         assertNull(m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{ISSUER}, null));
         assertEquals(StringUtils.EMPTY, bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
+    public void testList() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        // Certificates of any issuer and key type
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store("system", certificate("RSA", new X500Principal("CN=Other CA")))),
+                manager(bookmark, store("token", certificate("EC", ISSUER))));
+        assertEquals(Arrays.asList("system", "token"), m.list());
+    }
+
+    @Test
+    public void testListDuplicateCertificate() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        // Same certificate available from both stores
+        final X509Certificate certificate = certificate("RSA", ISSUER);
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store("system", certificate)), manager(bookmark, store("token", certificate)));
+        // First store preferred
+        assertEquals(Collections.singletonList("system"), m.list());
+    }
+
+    @Test
+    public void testListDuplicateCertificateAuthenticatedStore() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        // Same certificate available from system store and from token unlocked to list its certificates
+        final X509Certificate certificate = certificate("RSA", ISSUER);
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store("system", certificate)), authenticated(bookmark, store("token", certificate)));
+        // Store already authenticated preferred as when choosing from prompt
+        assertEquals(Collections.singletonList("token"), m.list());
+        assertEquals(certificate, m.getCertificateChain("token")[0]);
+        // Alias not listed still resolved such as saved in bookmark previously
+        assertEquals(certificate, m.getCertificateChain("system")[0]);
+        assertNotNull(m.getPrivateKey("system"));
     }
 
     /**
