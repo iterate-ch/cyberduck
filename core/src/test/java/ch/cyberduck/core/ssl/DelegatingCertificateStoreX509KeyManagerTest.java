@@ -162,6 +162,22 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
     }
 
     @Test
+    public void testChooseClientAliasDuplicateCertificateAuthenticatedStore() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        // Same certificate available from system store and from token unlocked to list its certificates
+        final X509Certificate certificate = certificate("RSA", ISSUER);
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            assertEquals(1, certificates.size());
+            return certificates.get(0);
+        }, bookmark, manager(bookmark, store("system", certificate)), authenticated(bookmark, store("token", certificate)));
+        // Store already authenticated preferred to not prompt again when signing
+        assertEquals("token", m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        assertEquals("token", bookmark.getCredentials().getCertificate());
+        assertEquals(certificate, m.getCertificateChain("token")[0]);
+        assertNotNull(m.getPrivateKey("token"));
+    }
+
+    @Test
     public void testChooseClientAliasSavedEmptySelection() throws Exception {
         final Host bookmark = new Host(new TestProtocol());
         bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
@@ -188,6 +204,24 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
                         return store;
                     }
                 });
+    }
+
+    /**
+     * @return Key manager for store requiring authentication to list certificates such as a token
+     */
+    private static CertificateStoreX509KeyManager authenticated(final Host bookmark, final KeyStore store) {
+        return new DefaultCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, new DisabledCertificateStore(),
+                new LazyInitializer<KeyStore>() {
+                    @Override
+                    protected KeyStore initialize() {
+                        return store;
+                    }
+                }) {
+            @Override
+            public boolean isAuthenticatedToList() {
+                return true;
+            }
+        };
     }
 
     private static final List<KeyPair> keys = new ArrayList<>();

@@ -234,4 +234,13 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
     protected X509Certificate choose(final String[] keyTypes, final Principal[] issuers) throws ConnectionCanceledException {
         return callback.choose(prompt, keyTypes, issuers, bookmark);
     }
+
+    /**
+     * @return True when listing certificates requires authentication such as entering the PIN of a token. A certificate
+     * available from multiple stores is then used from this store to not prompt again for authentication by another
+     * store when signing
+     */
+    public boolean isAuthenticatedToList() {
+        return false;
+    }
 }

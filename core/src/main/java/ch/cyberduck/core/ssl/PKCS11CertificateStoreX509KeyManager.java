@@ -38,4 +38,12 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
                                                 final String library) {
         super(CertificateIdentityCallback.noop, bookmark, store, PKCS11KeyStore.build(library, bookmark, login));
     }
+
+    /**
+     * @return True as the PIN of the token is required to read its key entries
+     */
+    @Override
+    public boolean isAuthenticatedToList() {
+        return true;
+    }
 }

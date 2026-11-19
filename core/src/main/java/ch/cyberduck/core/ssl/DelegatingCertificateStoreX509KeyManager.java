@@ -162,9 +162,21 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
                     // Not issued by authority accepted by the server
                     continue;
                 }
-                if(candidates.containsKey(alias) || candidates.containsValue(certificate)) {
-                    // Same certificate available from multiple stores
-                    log.debug("Skip duplicate certificate with alias {} from {}, keeping first", alias, delegate);
+                // Same certificate available from multiple stores
+                final String duplicate = candidates.entrySet().stream()
+                        .filter(entry -> entry.getValue().equals(certificate)).map(Map.Entry::getKey).findFirst().orElse(null);
+                if(null != duplicate) {
+                    if(!delegate.isAuthenticatedToList() || stores.get(duplicate).isAuthenticatedToList()) {
+                        log.debug("Skip duplicate certificate with alias {} from {}, keeping alias {} from {}", alias, delegate, duplicate, stores.get(duplicate));
+                        continue;
+                    }
+                    // Prefer store already authenticated to list its certificates to not prompt again for authentication when signing
+                    log.debug("Replace duplicate certificate with alias {} from {} with alias {} from {}", duplicate, stores.get(duplicate), alias, delegate);
+                    candidates.remove(duplicate);
+                    stores.remove(duplicate);
+                }
+                else if(candidates.containsKey(alias)) {
+                    log.warn("Skip certificate with duplicate alias {} from {}, keeping first", alias, delegate);
                     continue;
                 }
                 candidates.put(alias, certificate);
