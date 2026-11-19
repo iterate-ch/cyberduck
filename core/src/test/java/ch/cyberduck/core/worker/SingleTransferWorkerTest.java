@@ -1,5 +1,6 @@
 package ch.cyberduck.core.worker;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
@@ -13,6 +14,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.StreamListener;
@@ -30,6 +32,8 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.junit.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.Future;
@@ -232,6 +236,63 @@ public class SingleTransferWorkerTest {
         worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
+    }
+
+    @Test
+    public void testFailedStatusUploadWithLengthOfLocalFile() throws Exception {
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        Files.write(Paths.get(local.getAbsolute()), new byte[]{1, 2, 3});
+        try {
+            final Host bookmark = new Host(new TestProtocol());
+            final Transfer t = new UploadTransfer(bookmark, file, local);
+            final NullSession session = new NullSession(bookmark);
+            final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t),
+                    new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                    ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
+            final TransferStatus status = worker.failed(file, local, new AccessDeniedException());
+            assertEquals(3L, status.getLength());
+            assertFalse(status.isComplete());
+        }
+        finally {
+            local.delete();
+        }
+    }
+
+    @Test
+    public void testFailedStatusDownloadWithLengthOfRemoteFile() throws Exception {
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        file.attributes().setSize(5L);
+        final NullLocal local = new NullLocal("l");
+        final Host bookmark = new Host(new TestProtocol());
+        final Transfer t = new DownloadTransfer(bookmark, file, local);
+        final NullSession session = new NullSession(bookmark);
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t),
+                new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
+        assertEquals(5L, worker.failed(file, local, new AccessDeniedException()).getLength());
+    }
+
+    @Test
+    public void testFailedStatusPrepared() throws Exception {
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        file.attributes().setSize(5L);
+        final NullLocal local = new NullLocal("l");
+        final Host bookmark = new Host(new TestProtocol());
+        final Transfer t = new DownloadTransfer(bookmark, file, local);
+        final NullSession session = new NullSession(bookmark);
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t),
+                new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
+        final TransferStatus prepared = new TransferStatus().setLength(7L).setComplete();
+        worker.getStatus().put(new TransferItem(file, local), prepared);
+        final TransferStatus status = worker.failed(file, local, new AccessDeniedException());
+        // Status determined by filter is preferred over length of file
+        assertEquals(7L, status.getLength());
+        assertNotSame(prepared, status);
+        assertFalse(status.isComplete());
+        // Status in table is not modified
+        assertTrue(prepared.isComplete());
     }
 
     @Test(expected = NotfoundException.class)
