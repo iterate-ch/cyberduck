@@ -678,6 +678,12 @@ public abstract class BookmarkController extends SheetController implements NSTa
                     certificatePopup.addItemWithTitle(certificate);
                     certificatePopup.lastItem().setRepresentedObject(certificate);
                 }
+                final String saved = bookmark.getCredentials().getCertificate();
+                if(StringUtils.isNotBlank(saved) && !certificates.contains(saved)) {
+                    // Saved selection not loaded yet or certificate not available
+                    certificatePopup.addItemWithTitle(saved);
+                    certificatePopup.lastItem().setRepresentedObject(saved);
+                }
             }
             if(bookmark.getCredentials().isCertificateAuthentication()) {
                 certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
