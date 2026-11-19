@@ -292,6 +292,10 @@ public abstract class BookmarkController extends SheetController implements NSTa
             log.debug("Protocol selection changed to {}", selected);
             bookmark.setProtocol(selected);
             bookmark.setPort(HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname()));
+            if(!selected.isAnonymousConfigurable() && bookmark.getCredentials().isAnonymousLogin()) {
+                // Anonymous login not supported by selected protocol
+                this.resetAnonymousLogin();
+            }
             bookmark.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(bookmark));
             options.configure(selected);
             validator.configure(selected);
@@ -535,16 +539,23 @@ public abstract class BookmarkController extends SheetController implements NSTa
             bookmark.getCredentials().setPassword(HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.pass"));
         }
         if(sender.state() == NSCell.NSOffState) {
-            if(HostPreferencesFactory.get(bookmark).getProperty("connection.login.name").equals(
-                    HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.name"))) {
-                bookmark.getCredentials().setUsername(StringUtils.EMPTY);
-            }
-            else {
-                bookmark.getCredentials().setUsername(HostPreferencesFactory.get(bookmark).getProperty("connection.login.name"));
-            }
-            bookmark.getCredentials().setPassword(null);
+            this.resetAnonymousLogin();
         }
         this.update();
+    }
+
+    /**
+     * Replace anonymous credentials with default username and no password
+     */
+    private void resetAnonymousLogin() {
+        if(HostPreferencesFactory.get(bookmark).getProperty("connection.login.name").equals(
+                HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.name"))) {
+            bookmark.getCredentials().setUsername(StringUtils.EMPTY);
+        }
+        else {
+            bookmark.getCredentials().setUsername(HostPreferencesFactory.get(bookmark).getProperty("connection.login.name"));
+        }
+        bookmark.getCredentials().setPassword(null);
     }
 
     @Outlet
