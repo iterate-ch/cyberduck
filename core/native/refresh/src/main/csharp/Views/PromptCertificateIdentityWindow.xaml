@@ -50,50 +50,34 @@
             </DockPanel>
         </Border>
 
-        <Grid Margin="5.5"
-              KeyboardNavigation.TabIndex="0"
-              KeyboardNavigation.TabNavigation="Local">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <DockPanel Margin="11"
+                   KeyboardNavigation.TabIndex="0"
+                   KeyboardNavigation.TabNavigation="Local">
+            <TextBlock Name="message"
+                       DockPanel.Dock="Top"
+                       Margin="0,0,0,5.5"
+                       TextWrapping="Wrap" />
 
-            <Image Height="64"
-                   HorizontalAlignment="Left"
-                   Margin="5.5"
-                   Source="{xaml:Icon locked, Size=64}"
-                   VerticalAlignment="Top"
-                   Width="64"
-                   Grid.Column="0" />
-
-            <DockPanel Margin="5.5"
-                       Grid.Column="1">
-                <TextBlock Name="message"
-                           DockPanel.Dock="Top"
-                           Margin="0,0,0,5.5"
-                           TextWrapping="Wrap" />
-
-                <ListBox Name="certificates"
-                         AutomationProperties.LabeledBy="{Binding ElementName=message}"
-                         HorizontalContentAlignment="Stretch"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         SelectionMode="Single">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="2,3">
-                                <TextBlock FontWeight="SemiBold"
-                                           Text="{Binding Name}"
-                                           TextTrimming="CharacterEllipsis" />
-                                <TextBlock Foreground="{x:Static SystemColors.GrayTextBrush}"
-                                           Text="{Binding Issuer}"
-                                           TextTrimming="CharacterEllipsis" />
-                                <TextBlock Foreground="{x:Static SystemColors.GrayTextBrush}"
-                                           Text="{Binding Validity}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </DockPanel>
-        </Grid>
+            <ListBox Name="certificates"
+                     AutomationProperties.LabeledBy="{Binding ElementName=message}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="2,3">
+                            <TextBlock FontWeight="SemiBold"
+                                       Text="{Binding Name}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Foreground="{x:Static SystemColors.GrayTextBrush}"
+                                       Text="{Binding Issuer}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Foreground="{x:Static SystemColors.GrayTextBrush}"
+                                       Text="{Binding Validity}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
     </DockPanel>
 </local:PromptCertificateIdentityWindowBase>
