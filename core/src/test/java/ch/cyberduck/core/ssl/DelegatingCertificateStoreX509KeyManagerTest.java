@@ -106,6 +106,20 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
     }
 
     @Test
+    public void testChooseClientAliasIntermediateAuthorityOtherKeyType() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        // Issued by intermediate authority with other key type. Only the root authority is accepted by the server
+        final X509Certificate intermediate = certificate("RSA", ISSUER);
+        final X509Certificate certificate = certificate("EC", intermediate);
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            assertEquals(Collections.singletonList(certificate), certificates);
+            return certificate;
+        }, bookmark, manager(bookmark, store("system", certificate, intermediate)));
+        assertEquals("system", m.chooseClientAlias(new String[]{"RSA", "EC"}, new Principal[]{ISSUER}, null));
+        assertEquals("system", bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
     public void testChooseClientAliasOtherKeyType() throws Exception {
         final Host bookmark = new Host(new TestProtocol());
         final X509Certificate token = certificate("RSA", ISSUER);
@@ -285,6 +299,28 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
                 new JcaContentSignerBuilder("EC".equals(type) ? "SHA256withECDSA" : "SHA256withRSA").build(pair.getPrivate())));
     }
 
+    /**
+     * @param authority Certificate of issuing authority with key pair to sign with
+     * @return Certificate with key pair to add to store signed by the authority
+     */
+    private static X509Certificate certificate(final String type, final X509Certificate authority) throws Exception {
+        final KeyPairGenerator generator = KeyPairGenerator.getInstance(type);
+        if("EC".equals(type)) {
+            generator.initialize(new ECGenParameterSpec("secp256r1"));
+        }
+        else {
+            generator.initialize(2048);
+        }
+        final KeyPair pair = generator.generateKeyPair();
+        final KeyPair signer = keys.stream().filter(k -> k.getPublic().equals(authority.getPublicKey())).findFirst().orElseThrow(IllegalArgumentException::new);
+        keys.add(pair);
+        final Date now = new Date();
+        return new JcaX509CertificateConverter().getCertificate(new JcaX509v3CertificateBuilder(authority.getSubjectX500Principal(),
+                BigInteger.valueOf(keys.size()), now, new Date(now.getTime() + 24L * 60 * 60 * 1000),
+                new X500Principal(String.format("CN=Test %d", keys.size())), pair.getPublic()).build(
+                new JcaContentSignerBuilder("EC".equals(authority.getPublicKey().getAlgorithm()) ? "SHA256withECDSA" : "SHA256withRSA").build(signer.getPrivate())));
+    }
+
     private static KeyStore store() throws Exception {
         final KeyStore store = KeyStore.getInstance("PKCS12");
         store.load(null, null);
@@ -292,13 +328,17 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
     }
 
     /**
+     * @param authorities Certificates of the issuing authorities to add to the certificate chain
      * @return Store with private key and certificate for alias
      */
-    private static KeyStore store(final String alias, final X509Certificate certificate) throws Exception {
+    private static KeyStore store(final String alias, final X509Certificate certificate, final X509Certificate... authorities) throws Exception {
         final KeyStore store = store();
+        final List<Certificate> chain = new ArrayList<>();
+        chain.add(certificate);
+        chain.addAll(Arrays.asList(authorities));
         for(KeyPair pair : keys) {
             if(pair.getPublic().equals(certificate.getPublicKey())) {
-                store.setKeyEntry(alias, pair.getPrivate(), null, new Certificate[]{certificate});
+                store.setKeyEntry(alias, pair.getPrivate(), null, chain.toArray(new Certificate[0]));
             }
         }
         return store;

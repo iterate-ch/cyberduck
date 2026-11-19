@@ -122,8 +122,10 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
                 }
                 final X509Certificate certificate = chain[0];
                 if(null != issuers) {
-                    final String type = certificate.getPublicKey().getAlgorithm();
-                    if(null == delegate.getCertificate(alias, new String[]{type}, issuers)) {
+                    // Key types of all certificates in the chain as the issuer of an intermediate authority with a
+                    // key type different from the certificate may be the authority accepted by the server
+                    final String[] types = Arrays.stream(chain).map(c -> c.getPublicKey().getAlgorithm()).distinct().toArray(String[]::new);
+                    if(null == delegate.getCertificate(alias, types, issuers)) {
                         // Not issued by authority accepted by the server
                         continue;
                     }
