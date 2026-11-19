@@ -522,8 +522,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.UsernameEnabled = false;
                 View.Username = PreferencesFactory.get().getProperty("connection.login.anon.name");
             }
-            else
+            else if (_host.getCredentials().isAnonymousLogin())
             {
+                // Event is also raised when checkbox state is updated from model
                 ResetAnonymousLogin();
             }
 
