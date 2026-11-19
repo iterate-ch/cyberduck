@@ -23,6 +23,7 @@ using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
+using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
@@ -63,6 +64,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
         private readonly HostPasswordStore _keychain = PasswordStoreFactory.get();
         private readonly List<string> _keys = new List<string> { LocaleFactory.localizedString("None") };
+        private readonly List<string> _certificates = new List<string>();
+        private bool _certificatesLoaded;
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
         private readonly IDisposable profileObserver;
@@ -133,6 +136,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
             View.OpenUrl += View_OpenUrl;
             View.OpenWebUrl += View_OpenWebUrl;
+            View.ViewShownEvent += LoadCertificateAliases;
 
             ProfileListObserver observer = Locator.Current.GetService<ProfileListObserver>();
             profileObserver = Observable.FromEventPattern<EventHandler, EventArgs>(
@@ -303,9 +307,13 @@ namespace Ch.Cyberduck.Ui.Controller
             List<string> keys = new List<string> { LocaleFactory.localizedString("None") };
             if (_options.certificate())
             {
-                foreach (String certificate in SystemCertificateStore.ListAliases())
+                keys.AddRange(_certificates);
+                if (_host.getCredentials().isCertificateAuthentication() &&
+                    !string.IsNullOrEmpty(_host.getCredentials().getCertificate()) &&
+                    !keys.Contains(_host.getCredentials().getCertificate()))
                 {
-                    keys.Add(certificate);
+                    // Saved selection not loaded yet or certificate not available
+                    keys.Add(_host.getCredentials().getCertificate());
                 }
             }
 
@@ -487,6 +495,21 @@ namespace Ch.Cyberduck.Ui.Controller
             background(new FaviconAction(this, _host));
         }
 
+        /// <summary>
+        /// Load once in background when on screen to allow prompt for PIN to read certificates from hardware token
+        /// </summary>
+        private void LoadCertificateAliases()
+        {
+            if (_certificatesLoaded || !_options.certificate() || !Visible)
+            {
+                return;
+            }
+
+            _certificatesLoaded = true;
+            Log.debug($"Loading certificate aliases for bookmark {_host}");
+            background(new CertificateAliasesAction(this, _host));
+        }
+
         private void OnRechability(object state)
         {
             Log.debug("OnRechability");
@@ -633,6 +656,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _validator.configure(selected);
                 ItemChanged();
                 Reachable();
+                LoadCertificateAliases();
             }
             Update();
         }
@@ -767,6 +791,43 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _reachable = ReachabilityFactory.get().isReachable(_host);
                 return true;
+            }
+        }
+
+        private class CertificateAliasesAction : AbstractBackgroundAction
+        {
+            private readonly BookmarkController<T> _controller;
+            private readonly Host _host;
+            private IList<string> _aliases;
+
+            public CertificateAliasesAction(BookmarkController<T> controller, Host host)
+            {
+                _controller = controller;
+                _host = host;
+            }
+
+            public override object run()
+            {
+                // Certificates from system store and PKCS#11 token
+                _aliases = Utils.ConvertFromJavaList<string>(new DelegatingCertificateStoreX509KeyManager(
+                    new DisabledCertificateIdentityCallback(), _host,
+                    new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), _host,
+                        CertificateStoreFactory.get()),
+                    new PKCS11CertificateStoreX509KeyManager(_host, CertificateStoreFactory.get(),
+                        LoginCallbackFactory.get(_controller))
+                ).list());
+                return true;
+            }
+
+            public override void cleanup()
+            {
+                if (null != _aliases)
+                {
+                    _controller._certificates.Clear();
+                    _controller._certificates.AddRange(_aliases);
+                }
+
+                _controller.Update();
             }
         }
 
