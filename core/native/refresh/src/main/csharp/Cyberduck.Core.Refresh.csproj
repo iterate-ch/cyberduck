@@ -45,6 +45,7 @@
 
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
     <PackageReference Include="System.Memory" />
+    <Reference Include="System.Security" />
   </ItemGroup>
 
   <ItemGroup>
