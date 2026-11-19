@@ -89,6 +89,12 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                     nearestFit = item;
                 }
             }
+
+            if (nearestFit is null)
+            {
+                return null;
+            }
+
             nearestFit = new Bitmap(nearestFit, size, size);
             cacheCallback(IconCache, size, nearestFit);
             return nearestFit;
@@ -111,7 +117,10 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 var protocol = (Protocol)iterator.next();
                 var key = protocol.disk();
                 removedKeys.Remove(key);
-                ProtocolList.Images.Add(key, GetDisk(protocol, 16));
+                if (GetDisk(protocol, 16) is { } image)
+                {
+                    ProtocolList.Images.Add(key, image);
+                }
             }
             foreach (var item in removedKeys)
             {

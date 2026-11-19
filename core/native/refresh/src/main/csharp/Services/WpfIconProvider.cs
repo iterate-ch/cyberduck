@@ -88,6 +88,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 }
             }
 
+            if (nearestFit is null)
+            {
+                return null;
+            }
+
             nearestFit = ResizeImage(nearestFit, size);
             cacheCallback(IconCache, size, nearestFit);
             return nearestFit;
@@ -169,6 +174,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                         }
                         IconCache.CacheIcon(key, s, i, classifier);
                     }, isBase64);
+
+                    if (isDefault)
+                    {
+                        Log.warn($"No {classifier} image found for {key}");
+                    }
                 }
             }
             @default = image;
@@ -181,6 +191,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             if (!isBase64 || !TryGetBase64Images(name, getCache, cacheIcon, out var images))
             {
                 using var stream = GetStream(name);
+                if (stream is null)
+                {
+                    return [];
+                }
+
                 images = GetImages(stream, getCache, cacheIcon);
             }
 
