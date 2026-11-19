@@ -118,7 +118,6 @@ public final class PKCS11KeyStore {
                                 final Credentials credentials;
                                 try {
                                     credentials = login.prompt(bookmark,
-                                            bookmark.getCredentials().getUsername(),
                                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                                             reason,
                                             new LoginOptions().user(false).password(true).keychain(false)
