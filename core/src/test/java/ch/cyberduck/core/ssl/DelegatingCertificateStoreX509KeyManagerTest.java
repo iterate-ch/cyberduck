@@ -113,14 +113,38 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
             assertEquals(1, certificates.size());
             return certificates.get(0);
         }, bookmark, manager(bookmark, store()), manager(bookmark, store("token", token)));
-        // Requested for single key type first
+        // Requested for single key type first. Prompt with certificate of other key type
         assertNull(m.chooseClientAlias(new String[]{"EC"}, new Principal[]{ISSUER}, null));
-        assertEquals(0, prompts.get());
-        // Empty selection not saved to allow selection when requested with other key type
-        assertNull(bookmark.getCredentials().getCertificate());
+        assertEquals(1, prompts.get());
+        // Selection saved but not returned for key type not matching
+        assertEquals("token", bookmark.getCredentials().getCertificate());
+        // Returned without prompt when requested with matching key type
         assertEquals("token", m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{ISSUER}, null));
         assertEquals(1, prompts.get());
-        assertEquals("token", bookmark.getCredentials().getCertificate());
+    }
+
+    @Test
+    public void testChooseClientAliasMixedKeyTypes() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        final X509Certificate system = certificate("RSA", ISSUER);
+        final X509Certificate token = certificate("EC", ISSUER);
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager((hostname, certificates) -> {
+            prompts.incrementAndGet();
+            // Certificates of all key types to choose from although requested for single key type
+            assertEquals(2, certificates.size());
+            assertTrue(certificates.contains(system));
+            assertTrue(certificates.contains(token));
+            return system;
+        }, bookmark, manager(bookmark, store("system", system)), manager(bookmark, store("token", token)));
+        // Requested for key type preferred by server first
+        assertNull(m.chooseClientAlias(new String[]{"EC"}, new Principal[]{ISSUER}, null));
+        assertEquals(1, prompts.get());
+        assertEquals("system", bookmark.getCredentials().getCertificate());
+        // Selected certificate returned when requested with its key type
+        assertEquals("system", m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{ISSUER}, null));
+        assertEquals(1, prompts.get());
+        assertEquals(system, m.getCertificateChain("system")[0]);
     }
 
     @Test

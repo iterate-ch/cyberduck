@@ -143,13 +143,13 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
                 // Empty selection by user
                 return null;
             }
-            return saved;
+            return this.match(saved, keyTypes);
         }
-        // Certificates from all stores issued by an authority accepted by the server to choose from by alias
+        // Certificates from all stores issued by an authority accepted by the server to choose from by alias. Include
+        // certificates of all key types as the key manager is queried separately for each key type in order of
+        // preference of the server with only a single prompt shown for the first query
         final Map<String, X509Certificate> candidates = new LinkedHashMap<>();
         final Map<String, CertificateStoreX509KeyManager> stores = new LinkedHashMap<>();
-        // Certificate found with a key type not requested
-        boolean skipped = false;
         for(CertificateStoreX509KeyManager delegate : delegates) {
             for(String alias : delegate.list()) {
                 final X509Certificate[] chain = delegate.getCertificateChain(alias);
@@ -162,11 +162,6 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
                     // Not issued by authority accepted by the server
                     continue;
                 }
-                if(!Arrays.asList(keyTypes).contains(type)) {
-                    log.debug("Skip certificate with alias {} with key type {} not matching any of {}", alias, type, Arrays.toString(keyTypes));
-                    skipped = true;
-                    continue;
-                }
                 if(candidates.containsKey(alias) || candidates.containsValue(certificate)) {
                     // Same certificate available from multiple stores
                     log.debug("Skip duplicate certificate with alias {} from {}, keeping first", alias, delegate);
@@ -177,11 +172,6 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
             }
         }
         if(candidates.isEmpty()) {
-            if(skipped) {
-                // May be requested again for another key type. Do not save empty selection
-                log.info("No certificate found for key types {} and issuers {}", Arrays.toString(keyTypes), Arrays.toString(issuers));
-                return null;
-            }
             log.info("No certificate found for issuers {}", Arrays.toString(issuers));
             // Save empty selection with no certificate in any store
             bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
@@ -204,10 +194,30 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
                 log.info("Selected certificate alias {} for certificate {}", alias, selected);
                 aliases.put(alias, stores.get(alias));
                 bookmark.getCredentials().setCertificate(alias);
-                return alias;
+                return this.match(alias, keyTypes);
             }
         }
         log.warn("No matching alias found for selected certificate {}", selected);
+        return null;
+    }
+
+    /**
+     * @param alias    Selected certificate alias
+     * @param keyTypes Key types requested
+     * @return Alias when the key type of its certificate is requested. Null otherwise to be returned when queried
+     * again with the matching key type
+     */
+    private String match(final String alias, final String[] keyTypes) {
+        final X509Certificate[] chain = this.getCertificateChain(alias);
+        if(null == chain || chain.length == 0) {
+            // Key type unknown
+            return alias;
+        }
+        final String type = chain[0].getPublicKey().getAlgorithm();
+        if(Arrays.asList(keyTypes).contains(type)) {
+            return alias;
+        }
+        log.debug("Skip certificate with alias {} with key type {} not matching any of {}", alias, type, Arrays.toString(keyTypes));
         return null;
     }
 
