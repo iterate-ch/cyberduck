@@ -64,6 +64,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindFile() throws Exception {
+        this.assumeNot(DAVTestServer.NGINX, "No ETag in PROPFIND response");
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
@@ -87,6 +88,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testFindDirectory() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No ETag for collections");
+        this.assumeNot(DAVTestServer.NGINX, "No ETag in PROPFIND response");
         final Path test = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);

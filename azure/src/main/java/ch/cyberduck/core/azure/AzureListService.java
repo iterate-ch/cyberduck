@@ -21,6 +21,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 public class AzureListService implements ListService {
 
     private final AzureSession session;
@@ -40,5 +42,10 @@ public class AzureListService implements ListService {
             }
             return new AzureObjectListService(session).list(directory, listener);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return EnumSet.of(Flags.metadata);
     }
 }

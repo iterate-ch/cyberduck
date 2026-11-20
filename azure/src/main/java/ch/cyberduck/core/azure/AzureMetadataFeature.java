@@ -23,7 +23,6 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 
 import java.util.HashMap;
@@ -59,14 +58,7 @@ public class AzureMetadataFeature implements Headers {
                 final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
                         .getBlobClient(containerService.getKey(file));
                 final BlobProperties properties = client.getProperties();
-                final Map<String, String> metadata = properties.getMetadata();
-                if(StringUtils.isNotBlank(properties.getContentType())) {
-                    metadata.put(HttpHeaders.CONTENT_TYPE, properties.getContentType());
-                }
-                if(StringUtils.isNotBlank(properties.getCacheControl())) {
-                    metadata.put(HttpHeaders.CACHE_CONTROL, properties.getCacheControl());
-                }
-                return metadata;
+                return AzureBlobAttributesFinderFeature.toMetadata(properties.getMetadata(), properties.getContentType(), properties.getCacheControl());
             }
         }
         catch(RuntimeException e) {

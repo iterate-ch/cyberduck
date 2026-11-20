@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
 public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
@@ -99,5 +100,20 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
             delete.delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         }
         delete.delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindDataLakeDirectoryMetadata() throws Exception {
+        assumeTrue(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session),
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final String v = new AlphanumericRandomStringService().random();
+        session.getClient().getDataLakeServiceClient().getFileSystemClient(container.getName())
+                .getDirectoryClient(folder.getName()).setMetadata(Collections.singletonMap("Test", v));
+        final PathAttributes attributes = new AzureDataLakeAttributesFinderFeature(session).find(folder);
+        assertEquals(v, attributes.getMetadata().get("Test"));
+        assertEquals(attributes.getMetadata(), new AzureAttributesFinderFeature(session).find(folder).getMetadata());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

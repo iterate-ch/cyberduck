@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -97,22 +98,23 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        // Read online metadata (storing non-edited metadata entries)
-        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
-        // Purge removed entries
-        update.entrySet().removeIf(entry -> !metadata.containsKey(entry.getKey()));
-        // iterate all metadata entries and
-        for(Map.Entry<String, String> entry : metadata.entrySet()) {
-            // check if update is non-null (should not) && entry value is not null
-            if(entry.getValue() != null) {
-                // update
-                update.put(entry.getKey(), entry.getValue());
-            }
+        // Last known metadata of file
+        final Map<String, String> cached = file.attributes().getMetadata();
+        Map<String, String> online = cached;
+        if(online.isEmpty()) {
+            // Metadata not included in listing (S3, Swift). Read from server to retain entries not changed
+            online = feature.getMetadata(file);
+            log.debug("Read metadata {} for {}", online, file);
         }
+        final Map<String, String> update = toUpdate(cached, metadata, online);
         // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
-        if(!update.equals(file.attributes().getMetadata())) {
+        if(update.equals(online)) {
+            log.debug("Skip writing unchanged metadata {} for {}", update, file);
+            file.attributes().setMetadata(online);
+        }
+        else {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                file.getName()));
+                    file.getName()));
             final TransferStatus status = new TransferStatus();
             feature.setMetadata(file, status.setMetadata(update).setLockId(this.getLockId(file)));
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
@@ -129,6 +131,28 @@ public class WriteMetadataWorker extends Worker<Boolean> {
                 }
             }
         }
+    }
+
+    /**
+     * Apply changes of requested metadata compared to last known metadata to current metadata on server. Entries
+     * changed on server since last known metadata are retained when not changed in requested metadata.
+     *
+     * @param cached   Last known metadata
+     * @param metadata Requested metadata. Entries with null value are kept unchanged
+     * @param online   Current metadata on server
+     * @return Metadata to write
+     */
+    public static Map<String, String> toUpdate(final Map<String, String> cached, final Map<String, String> metadata,
+                                               final Map<String, String> online) {
+        final Map<String, String> update = new HashMap<>(online);
+        // Purge removed entries
+        cached.keySet().stream().filter(key -> !metadata.containsKey(key)).forEach(update::remove);
+        // Added or changed entries
+        metadata.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .filter(entry -> !StringUtils.equals(entry.getValue(), cached.get(entry.getKey())))
+                .forEach(entry -> update.put(entry.getKey(), entry.getValue()));
+        return update;
     }
 
     @Override

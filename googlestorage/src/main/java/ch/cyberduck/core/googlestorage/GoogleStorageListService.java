@@ -21,6 +21,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 public class GoogleStorageListService implements ListService {
 
     private final GoogleStorageSession session;
@@ -35,5 +37,10 @@ public class GoogleStorageListService implements ListService {
             return new GoogleStorageBucketListService(session).list(directory, listener);
         }
         return new GoogleStorageObjectListService(session).list(directory, listener);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return EnumSet.of(Flags.metadata);
     }
 }

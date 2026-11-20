@@ -33,9 +33,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -145,7 +143,12 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                 });
                 log.debug("Received response {} for upload of {}", files, file);
                 if(files.getEntries().stream().findFirst().isPresent()) {
-                    return files.getEntries().stream().findFirst().get();
+                    final File created = files.getEntries().stream().findFirst().get();
+                    if(status.isExists()) {
+                        // Metadata is retained for new version
+                        return created;
+                    }
+                    return new BoxMetadataFeature(session, fileid).create(file, created, status.getMetadata());
                 }
                 throw new NotfoundException(file.getAbsolute());
             }

@@ -292,4 +292,67 @@ public class WriteMetadataWorkerTest {
         });
         assertTrue(call.get());
     }
+
+    @Test
+    public void testToUpdateWithoutCachedMetadata() {
+        // Metadata not included in listing (S3, Swift)
+        final Map<String, String> online = new HashMap<>();
+        online.put("Content-Type", "text/plain");
+        online.put("Cache-Control", "no-cache");
+        final Map<String, String> expected = new HashMap<>(online);
+        expected.put("user_tags", "Red%0A6");
+        assertEquals(expected, WriteMetadataWorker.toUpdate(Collections.emptyMap(),
+                Collections.singletonMap("user_tags", "Red%0A6"), online));
+    }
+
+    @Test
+    public void testToUpdateChange() {
+        final Map<String, String> cached = new HashMap<>();
+        cached.put("Content-Type", "text/plain");
+        cached.put("user_tags", "Work");
+        final Map<String, String> metadata = new HashMap<>(cached);
+        metadata.put("user_tags", "Red%0A6");
+        final Map<String, String> expected = new HashMap<>(cached);
+        expected.put("user_tags", "Red%0A6");
+        assertEquals(expected, WriteMetadataWorker.toUpdate(cached, metadata, cached));
+    }
+
+    @Test
+    public void testToUpdateRemove() {
+        final Map<String, String> cached = new HashMap<>();
+        cached.put("Content-Type", "text/plain");
+        cached.put("user_tags", "Work");
+        assertEquals(Collections.singletonMap("Content-Type", "text/plain"), WriteMetadataWorker.toUpdate(cached,
+                Collections.singletonMap("Content-Type", "text/plain"), cached));
+    }
+
+    @Test
+    public void testToUpdateRetainChangedOnServer() {
+        // Entries changed on server since last known metadata are not overwritten
+        final Map<String, String> cached = new HashMap<>();
+        cached.put("Content-Type", "text/plain");
+        final Map<String, String> online = new HashMap<>();
+        online.put("Content-Type", "text/html");
+        online.put("Cache-Control", "no-cache");
+        final Map<String, String> metadata = new HashMap<>(cached);
+        metadata.put("user_tags", "Work");
+        final Map<String, String> expected = new HashMap<>(online);
+        expected.put("user_tags", "Work");
+        assertEquals(expected, WriteMetadataWorker.toUpdate(cached, metadata, online));
+    }
+
+    @Test
+    public void testToUpdateUnchanged() {
+        final Map<String, String> cached = Collections.singletonMap("user_tags", "Work");
+        assertEquals(cached, WriteMetadataWorker.toUpdate(cached, cached, cached));
+    }
+
+    @Test
+    public void testToUpdateNullValueKept() {
+        // Null value for entries with different values in multiple files
+        final Map<String, String> cached = Collections.singletonMap("key", "v1");
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("key", null);
+        assertEquals(cached, WriteMetadataWorker.toUpdate(cached, metadata, cached));
+    }
 }

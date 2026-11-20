@@ -23,7 +23,6 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
-
 import ch.cyberduck.core.vault.VaultVersion;
 
 import org.apache.commons.lang3.StringUtils;
@@ -275,6 +274,9 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         }
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
+        }
+        if(!metadata.isEmpty()) {
+            dict.setMapForKey(metadata, "Metadata");
         }
         if(verdict != null) {
             dict.setStringForKey(verdict.name(), "Verdict");

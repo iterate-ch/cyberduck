@@ -400,6 +400,22 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     }
                 }
             }
+            if(!status.getMetadata().isEmpty()) {
+                if(!session.getFeature(Write.class).features(file).contains(Write.Flags.metadata)) {
+                    final Headers feature = session.getFeature(Headers.class);
+                    if(feature != null) {
+                        try {
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                                    file.getName()));
+                            feature.setMetadata(file, status);
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
+                    }
+                }
+            }
             if(file.isFile()) {
                 if(status.getDisplayname().remote != null) {
                     final Move move = session.getFeature(Move.class);
