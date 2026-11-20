@@ -19,13 +19,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
+import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -37,6 +40,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
@@ -293,6 +297,106 @@ public class SingleTransferWorkerTest {
         assertFalse(status.isComplete());
         // Status in table is not modified
         assertTrue(prepared.isComplete());
+    }
+
+    @Test
+    public void testErrorCallbackStatusWhenFilterPrepareFails() throws Exception {
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        file.attributes().setSize(5L);
+        final AtomicReference<TransferStatus> failed = new AtomicReference<>();
+        this.runWithFailingFilter(file, new TransferPathFilterStub() {
+            @Override
+            public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener listener) throws BackgroundException {
+                throw new AccessDeniedException();
+            }
+        }, failed);
+        assertNotNull(failed.get());
+        // Length of remote file instead of unknown length of root parent status
+        assertEquals(5L, failed.get().getLength());
+        assertFalse(failed.get().isComplete());
+    }
+
+    @Test
+    public void testErrorCallbackStatusWhenFilterApplyFails() throws Exception {
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        file.attributes().setSize(5L);
+        final AtomicReference<TransferStatus> prepared = new AtomicReference<>();
+        final AtomicReference<TransferStatus> failed = new AtomicReference<>();
+        this.runWithFailingFilter(file, new TransferPathFilterStub() {
+            @Override
+            public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener listener) {
+                final TransferStatus status = new TransferStatus().setLength(7L);
+                prepared.set(status);
+                return status;
+            }
+
+            @Override
+            public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                throw new AccessDeniedException();
+            }
+        }, failed);
+        assertNotNull(failed.get());
+        // Status determined by filter is passed to callback
+        assertEquals(7L, failed.get().getLength());
+        assertNotSame(prepared.get(), failed.get());
+    }
+
+    /**
+     * Run copy transfer of single file with filter and error callback continuing on failure capturing status
+     */
+    private void runWithFailingFilter(final Path file, final TransferPathFilter filter, final AtomicReference<TransferStatus> failed) throws BackgroundException {
+        final Host bookmark = new Host(new TestProtocol());
+        final Transfer t = new CopyTransfer(bookmark, bookmark,
+                Collections.singletonMap(file, new Path("/c", EnumSet.of(Path.Type.file)))) {
+            @Override
+            public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return filter;
+            }
+        };
+        final NullSession session = new NullSession(bookmark);
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new TransferErrorCallback() {
+            @Override
+            public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
+                assertEquals(file, item.remote);
+                assertTrue(failed.compareAndSet(null, status));
+                // Continue
+                return true;
+            }
+        }, ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
+            @Override
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) {
+                // Skip transfer
+                return null;
+            }
+        };
+        worker.run(session);
+    }
+
+    private static class TransferPathFilterStub implements TransferPathFilter {
+        @Override
+        public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener listener) {
+            return true;
+        }
+
+        @Override
+        public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener listener) throws BackgroundException {
+            return new TransferStatus();
+        }
+
+        @Override
+        public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+            //
+        }
+
+        @Override
+        public void complete(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
+            //
+        }
     }
 
     @Test(expected = NotfoundException.class)
