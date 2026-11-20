@@ -147,8 +147,10 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     @Override
     public void loadBundle() {
-        if(!NSBundle.loadNibNamed("Bookmark", this.id())) {
-            throw new FactoryException(String.format("Failure loading %s.xib", "Bookmark"));
+        if(!awaked) {
+            if(!NSBundle.loadNibNamed("Bookmark", this.id())) {
+                throw new FactoryException(String.format("Failure loading %s.xib", "Bookmark"));
+            }
         }
         super.loadBundle();
     }
