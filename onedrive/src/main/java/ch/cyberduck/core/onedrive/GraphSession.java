@@ -39,6 +39,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -165,8 +166,13 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                     }
                 }
             }
-        }.setRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-                .setParameter("prompt", "select_account");
+        }.setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        if(StringUtils.isBlank(host.getCredentials().getUsername())) {
+            authorizationService.setParameter("prompt", "select_account");
+        }
+        else {
+            authorizationService.setParameter("login_hint", host.getCredentials().getUsername());
+        }
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request
                 .addHeader(new BasicHeader("Prefer", "Include-Feature=AddToOneDrive")));
