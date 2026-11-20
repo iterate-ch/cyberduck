@@ -78,54 +78,45 @@ public class SFTPPKCS11Authentication implements AuthenticationProvider<Boolean>
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         log.debug("Login using PKCS11 library {} for {}", library, bookmark);
-        // Public key to limit authentication to or null to attempt with all keys on the token
-        final byte[] configured;
+        // Public key file to limit authentication to or null to attempt with all keys on the token
+        final Local file;
         if(new OpenSSHIdentitiesOnlyConfigurator().isIdentitiesOnly(bookmark.getHostname())) {
             final Credentials configuration = new OpenSSHCredentialsConfigurator().configure(bookmark);
             if(!configuration.isPublicKeyAuthentication()) {
                 log.warn("Missing IdentityFile configuration for {}", bookmark);
                 return false;
             }
-            final Local setting = configuration.getIdentity();
-            try {
-                if(SFTPAgentAuthentication.isPrivateKey(setting)) {
-                    log.warn("Skip authentication with PKCS11 library {} with private key {} and IdentitiesOnly configuration", library, setting);
-                    return false;
-                }
-                final Identity identity = SFTPAgentAuthentication.identityFromPublicKey(setting);
-                if(null == identity) {
-                    log.warn("Missing public key for {}", setting);
-                    return false;
-                }
-                log.warn("Only read specific key {} from PKCS11 token with IdentitiesOnly configuration", setting);
-                configured = identity.getBlob();
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            file = configuration.getIdentity();
         }
         else if(bookmark.getCredentials().isPublicKeyAuthentication()) {
-            final Local selected = bookmark.getCredentials().getIdentity();
+            file = bookmark.getCredentials().getIdentity();
+        }
+        else {
+            file = null;
+        }
+        // Public key to limit authentication to or null to attempt with all keys on the token
+        final byte[] configured;
+        if(null == file) {
+            configured = null;
+        }
+        else {
             try {
-                if(SFTPAgentAuthentication.isPrivateKey(selected)) {
-                    // Private key file selected cannot be on token. Skip to not prompt for PIN of token
-                    log.warn("Skip authentication with PKCS11 library {} with private key {} selected", library, selected);
+                if(SFTPAgentAuthentication.isPrivateKey(file)) {
+                    // Private key file cannot be on token. Skip to not prompt for PIN of token
+                    log.warn("Skip authentication with PKCS11 library {} with private key {}", library, file);
                     return false;
                 }
-                final Identity identity = SFTPAgentAuthentication.identityFromPublicKey(selected);
+                final Identity identity = SFTPAgentAuthentication.identityFromPublicKey(file);
                 if(null == identity) {
-                    log.warn("Missing public key for {}", selected);
+                    log.warn("Missing public key for {}", file);
                     return false;
                 }
-                log.info("Only read key matching public key {} from PKCS11 token", selected);
+                log.info("Only read key matching public key {} from PKCS11 token", file);
                 configured = identity.getBlob();
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
-        }
-        else {
-            configured = null;
         }
         final KeyStore store;
         try {
