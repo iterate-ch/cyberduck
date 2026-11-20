@@ -173,8 +173,8 @@ public enum S3TestServer {
         if(StringUtils.isNotBlank(System.getenv("LOCALSTACK_AUTH_TOKEN"))) {
             created.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
         }
-        created.start();
-        return created;
+        return start(created, null, () -> {
+        });
     }
 
     private static GenericContainer<?> minio() {
@@ -197,9 +197,7 @@ public enum S3TestServer {
                 .withCommand("server", "/data", "--license", "/minio.license")
                 .withExposedPorts(MINIO_PORT)
                 .waitingFor(Wait.forHttp("/minio/health/ready").forPort(MINIO_PORT).withStartupTimeout(Duration.ofMinutes(5)));
-        created.start();
-        createBuckets(network, null, "http://minio:9000", null);
-        return created;
+        return start(created, network, () -> createBuckets(network, null, "http://minio:9000", null));
     }
 
     private static GenericContainer<?> rustfs() {
@@ -211,9 +209,8 @@ public enum S3TestServer {
                 .withEnv("RUSTFS_SECRET_KEY", SECRET_KEY)
                 .withExposedPorts(RUSTFS_PORT)
                 .waitingFor(Wait.forHttp("/health").forPort(RUSTFS_PORT).withStartupTimeout(Duration.ofMinutes(5)));
-        created.start();
-        createBuckets(network, null, "http://rustfs:9000", null);
-        return created;
+        // Location constraint must match the server region
+        return start(created, network, () -> createBuckets(network, null, "http://rustfs:9000", "us-east-1"));
     }
 
     private static GenericContainer<?> seaweedfs() {
@@ -226,9 +223,7 @@ public enum S3TestServer {
                 .withExposedPorts(SEAWEEDFS_PORT)
                 // Unauthenticated request is rejected once the S3 gateway is ready
                 .waitingFor(Wait.forHttp("/").forPort(SEAWEEDFS_PORT).forStatusCode(403).withStartupTimeout(Duration.ofMinutes(5)));
-        created.start();
-        createBuckets(network, null, "http://seaweedfs:8333", null);
-        return created;
+        return start(created, network, () -> createBuckets(network, null, "http://seaweedfs:8333", null));
     }
 
     private static GenericContainer<?> cloudserver() {
@@ -240,10 +235,8 @@ public enum S3TestServer {
                 .withExposedPorts(CLOUDSERVER_PORT)
                 // Unauthenticated request is rejected once ready
                 .waitingFor(Wait.forHttp("/").forPort(CLOUDSERVER_PORT).forStatusCode(403).withStartupTimeout(Duration.ofMinutes(5)));
-        created.start();
         // Only the default location constraint is configured. Requests are only accepted with a known host name
-        createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8000", "us-east-1");
-        return created;
+        return start(created, null, () -> createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8000", "us-east-1"));
     }
 
     private static GenericContainer<?> ceph() {
@@ -254,10 +247,30 @@ public enum S3TestServer {
                 .withEnv("S3_SECRET_KEY", SECRET_KEY)
                 .withExposedPorts(CEPH_PORT)
                 .waitingFor(Wait.forLogMessage(".*ceph init done.*", 1).withStartupTimeout(Duration.ofMinutes(10)));
-        created.start();
         // Location constraint must match the zonegroup. Requests are only accepted with the host name of the gateway
-        createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8080", "us-east-1");
-        return created;
+        return start(created, null, () -> createBuckets(null, "container:" + created.getContainerId(), "http://localhost:8080", "us-east-1"));
+    }
+
+    /**
+     * Start container and run initialization. Stop container and remove network on failure to not leak resources
+     * when the server is requested again by the next test.
+     *
+     * @param network Network of the server or null
+     * @param init    Initialization to run once the container is started
+     */
+    private static GenericContainer<?> start(final GenericContainer<?> container, final Network network, final Runnable init) {
+        try {
+            container.start();
+            init.run();
+            return container;
+        }
+        catch(RuntimeException e) {
+            container.stop();
+            if(null != network) {
+                network.close();
+            }
+            throw e;
+        }
     }
 
     /**

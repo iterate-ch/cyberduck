@@ -52,6 +52,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     @Test
     public void testCreateBucket() throws Exception {
         this.assumeNot(S3TestServer.CEPH, "Bucket location constraint differs");
+        this.assumeNot(S3TestServer.RUSTFS, "Bucket location constraint differs");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
