@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Required;
 
+import java.util.EnumSet;
+
 @Required
 public interface ListService {
     default AttributedList<Path> list(Path directory) throws BackgroundException {
@@ -30,5 +32,23 @@ public interface ListService {
 
     default void preflight(final Path directory) throws BackgroundException {
         //
+    }
+
+    /**
+     * @param directory Directory to list
+     * @return Supported features
+     */
+    default EnumSet<Flags> features(Path directory) {
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * Feature flags
+     */
+    enum Flags {
+        /**
+         * Attributes of files in listing include user metadata
+         */
+        metadata
     }
 }

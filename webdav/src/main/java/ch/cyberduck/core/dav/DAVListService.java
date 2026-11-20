@@ -104,4 +104,9 @@ public class DAVListService implements ListService {
                                 DAVMetadataFeature.METADATA_CUSTOM_NAMESPACE).
                         collect(Collectors.toSet()));
     }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return EnumSet.of(Flags.metadata);
+    }
 }

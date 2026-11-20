@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultFinderListService;
@@ -30,6 +31,8 @@ import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.EnumSet;
 
 public class VaultRegistryListService implements ListService {
     private static final Logger log = LogManager.getLogger(VaultRegistryListService.class);
@@ -80,5 +83,18 @@ public class VaultRegistryListService implements ListService {
     @Override
     public void preflight(final Path directory) throws BackgroundException {
         registry.find(session, directory, false).getFeature(session, ListService.class, proxy).preflight(directory);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        try {
+            return registry.find(session, directory, false).getFeature(session, ListService.class, proxy).features(directory);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.features(directory);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
+        }
     }
 }
