@@ -18,7 +18,6 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -290,7 +289,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
 
     public DiskShareWrapper openShare(final Path file) throws BackgroundException {
         try {
-            final String shareName = new DefaultPathContainerService().getContainer(file).getName();
+            final String shareName = new SMBPathContainerService(this).getContainer(file).getName();
             GenericObjectPool<DiskShareWrapper> pool;
             lock.lock();
             try {
