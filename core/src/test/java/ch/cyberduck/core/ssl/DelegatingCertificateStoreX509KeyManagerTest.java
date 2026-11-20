@@ -16,8 +16,11 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateIdentityCallback;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
@@ -201,6 +204,24 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
                 manager(bookmark, store("system", certificate("RSA", ISSUER))), manager(bookmark, store()));
         assertNull(m.chooseClientAlias(new String[]{"RSA"}, new Principal[]{ISSUER}, null));
         assertEquals(StringUtils.EMPTY, bookmark.getCredentials().getCertificate());
+    }
+
+    /**
+     * No PKCS11 library configured such as by default on Windows
+     */
+    @Test
+    public void testNoLibrary() {
+        final Host bookmark = new Host(new TestProtocol());
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark, new DisabledCertificateStore(),
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                        throw new AssertionError("No prompt for PIN with no PKCS11 library");
+                    }
+                }, StringUtils.EMPTY);
+        // Only certificates from the system store
+        assertEquals(new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, new DisabledCertificateStore()).list(), m.list());
+        assertNull(m.getPrivateKey("alias"));
     }
 
     @Test

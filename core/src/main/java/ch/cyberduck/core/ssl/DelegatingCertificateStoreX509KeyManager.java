@@ -16,8 +16,11 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateIdentityCallback;
+import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -51,6 +54,32 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
     private final Host bookmark;
     private final CertificateStoreX509KeyManager[] delegates;
     private final Map<String, CertificateStoreX509KeyManager> aliases = new LinkedHashMap<>();
+
+    /**
+     * Certificates from the Keychain respectively the system certificate store and from the PKCS#11 token of the
+     * library configured
+     *
+     * @param prompt Prompt to choose from the certificates of all stores
+     * @param login  Prompt for the PIN of the token
+     */
+    public DelegatingCertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
+                                                    final CertificateStore store, final LoginCallback login) {
+        this(prompt, bookmark, store, login, HostPreferencesFactory.get(bookmark).getProperty("connection.keystore.pkcs11.library"));
+    }
+
+    /**
+     * @param library Native PKCS11 library name or path. No certificates are listed from a token when blank
+     */
+    public DelegatingCertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
+                                                    final CertificateStore store, final LoginCallback login, final String library) {
+        // Prompt to choose from the certificates of all stores displayed by the delegating key manager
+        this(prompt, bookmark, StringUtils.isBlank(library) ?
+                new CertificateStoreX509KeyManager[]{
+                        new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, store)} :
+                new CertificateStoreX509KeyManager[]{
+                        new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, store),
+                        new PKCS11CertificateStoreX509KeyManager(bookmark, store, login, library)});
+    }
 
     /**
      * @param prompt Prompt to choose from the certificates of all delegates

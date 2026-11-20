@@ -23,9 +23,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.PKCS11CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -75,13 +73,9 @@ public class SessionPoolFactory {
                                      final Usage... usage) {
         final LoginConnectionService connect = new LoginConnectionService(login, key, keychain, listener);
         final CertificateStore certificates = CertificateStoreFactory.get();
-        final CertificateIdentityCallback prompt = CertificateIdentityCallbackFactory.get(controller);
         return create(connect, transcript, bookmark,
                 new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), certificates),
-                new DelegatingCertificateStoreX509KeyManager(prompt, bookmark,
-                        // Prompt to choose from the certificates of all stores displayed by the delegating key manager
-                        new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, certificates),
-                        new PKCS11CertificateStoreX509KeyManager(bookmark, certificates, login)),
+                new DelegatingCertificateStoreX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, certificates, login),
                 VaultRegistryFactory.get(login), usage);
     }
 

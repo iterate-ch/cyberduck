@@ -41,8 +41,6 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.PKCS11CertificateStoreX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -210,9 +208,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
             @Override
             public List<String> run() {
                 return new DelegatingCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark,
-                        new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
-                        new PKCS11CertificateStoreX509KeyManager(bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(BookmarkController.this))
-                ).list();
+                        CertificateStoreFactory.get(), LoginCallbackFactory.get(BookmarkController.this)).list();
             }
 
             @Override

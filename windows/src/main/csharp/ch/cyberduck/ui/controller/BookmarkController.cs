@@ -810,12 +810,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Certificates from system store and PKCS#11 token
                 _aliases = Utils.ConvertFromJavaList<string>(new DelegatingCertificateStoreX509KeyManager(
-                    new DisabledCertificateIdentityCallback(), _host,
-                    new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), _host,
-                        CertificateStoreFactory.get()),
-                    new PKCS11CertificateStoreX509KeyManager(_host, CertificateStoreFactory.get(),
-                        LoginCallbackFactory.get(_controller))
-                ).list());
+                    new DisabledCertificateIdentityCallback(), _host, CertificateStoreFactory.get(),
+                    LoginCallbackFactory.get(_controller)).list());
                 return true;
             }
 
