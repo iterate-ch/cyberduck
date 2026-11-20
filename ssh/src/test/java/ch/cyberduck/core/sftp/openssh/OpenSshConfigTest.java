@@ -126,6 +126,14 @@ public class OpenSshConfigTest {
     }
 
     @Test
+    public void testPKCS11Provider() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-pkcs11"));
+        assertEquals("/opt/homebrew/lib/opensc-pkcs11.so", config.lookup("token.example.com").getPKCS11Provider());
+        // Inherited from wildcard host
+        assertEquals("/usr/lib/ssh-keychain.dylib", config.lookup("other.example.com").getPKCS11Provider());
+    }
+
+    @Test
     public void testMatchHost() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match"));
         // Glob pattern

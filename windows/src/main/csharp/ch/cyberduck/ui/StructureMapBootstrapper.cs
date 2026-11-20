@@ -85,6 +85,7 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteSingleton<Images>();
                 x.ForConcreteSingleton<MetadataTemplateProvider>();
                 x.ForConcreteSingleton<ProfileListObserver>();
+                x.ForConcreteSingleton<PromptCertificateIdentityWindow.Factory>();
                 x.ForConcreteSingleton<PromptShareeWindow.Factory>();
                 x.ForConcreteSingleton<TransferController>();
                 x.ForConcreteSingleton<TransfersStore>();
@@ -93,6 +94,7 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteSingleton<WpfIconProvider>();
 
                 x.For<IViewFor<ProfileViewModel>>().Use<ProfileElement>();
+                x.Forward<PromptCertificateIdentityWindow.Factory, IWindowFactory<PromptCertificateIdentityViewModel>>();
                 x.Forward<PromptShareeWindow.Factory, IWindowFactory<PromptShareeViewModel>>();
 
                 // Singletons
