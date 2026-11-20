@@ -40,6 +40,12 @@ public class Win32IconProvider : IconProvider<Icon>
         }
 
         using var stream = GetStream(path);
+        if (stream is null)
+        {
+            Log.warn($"No image found for {key}");
+            return default;
+        }
+
         Icon icon = new(stream);
         IconCache.CacheIcon(key, 0, icon, classifier);
         return icon;
