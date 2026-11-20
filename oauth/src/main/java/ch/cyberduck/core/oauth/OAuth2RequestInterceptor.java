@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 
 public class OAuth2RequestInterceptor extends OAuth2AuthorizationService implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
@@ -75,7 +77,14 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt, final CancelCallback cancel) throws LoginCanceledException {
-        super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
+        this(new ApacheHttpTransport(client), host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce,
+                prompt, cancel, OAuth2AuthorizationCodeProviderFactory.get());
+    }
+
+    public OAuth2RequestInterceptor(final HttpTransport transport, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
+                                    final LoginCallback prompt, final CancelCallback cancel, final OAuth2AuthorizationCodeProvider provider) {
+        super(transport, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt, provider);
         this.host = host;
         this.cancel = cancel;
     }

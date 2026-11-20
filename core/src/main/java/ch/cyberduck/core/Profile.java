@@ -55,6 +55,7 @@ public class Profile implements Protocol {
     public static final String OAUTH_CLIENT_SECRET_KEY = "OAuth Client Secret";
     public static final String OAUTH_TOKEN_URL_KEY = "OAuth Token Url";
     public static final String OAUTH_REDIRECT_URL_KEY = "OAuth Redirect Url";
+    public static final String OAUTH_SUCCESS_URL_KEY = "OAuth Success Url";
     public static final String OAUTH_AUTHORIZATION_URL_KEY = "OAuth Authorization Url";
     public static final String OAUTH_PKCE_KEY = "OAuth PKCE";
     public static final String SCOPES_KEY = "Scopes";
@@ -603,6 +604,15 @@ public class Profile implements Protocol {
         final String v = this.value(OAUTH_REDIRECT_URL_KEY);
         if(StringUtils.isBlank(v)) {
             return parent.getOAuthRedirectUrl();
+        }
+        return v;
+    }
+
+    @Override
+    public String getOAuthSuccessUrl() {
+        final String v = this.value(OAUTH_SUCCESS_URL_KEY);
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthSuccessUrl();
         }
         return v;
     }

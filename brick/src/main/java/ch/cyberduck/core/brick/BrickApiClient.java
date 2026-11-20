@@ -78,7 +78,7 @@ public class BrickApiClient extends ApiClient {
     @Override
     public <T> T invokeAPI(final String path, final String method, final List<Pair> queryParams, final Object body, final Map<String, String> headerParams, final Map<String, Object> formParams, final String accept, final String contentType, final String[] authNames, final GenericType<T> returnType) throws ApiException {
         try {
-            this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).get(host)));
+            this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).withPath(false).get(host)));
             return super.invokeAPI(path, method, queryParams, body, headerParams, formParams, accept, contentType, authNames, returnType);
         }
         catch(ProcessingException e) {

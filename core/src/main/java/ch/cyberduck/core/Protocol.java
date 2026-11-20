@@ -275,6 +275,11 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
     String getOAuthRedirectUrl();
 
     /**
+     * @return Optional browser destination after a successful loopback callback, absolute or relative to the authorization URL
+     */
+    String getOAuthSuccessUrl();
+
+    /**
      * @return Default OAuth 2.0 client id
      */
     String getOAuthClientId();
