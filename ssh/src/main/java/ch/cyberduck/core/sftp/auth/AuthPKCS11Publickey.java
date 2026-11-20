@@ -17,7 +17,6 @@ package ch.cyberduck.core.sftp.auth;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
 
 import com.hierynomus.sshj.key.KeyAlgorithm;
 import net.schmizz.sshj.common.Buffer;
@@ -61,8 +60,8 @@ public class AuthPKCS11Publickey extends AuthPublickey {
     @Override
     protected SSHPacket putSig(final SSHPacket reqBuf) throws UserAuthException {
         try {
-            final PublicKey publicKey = provider.getPublic();
-            final KeyType type = KeyType.fromKey(publicKey);
+            // Determined from the public key read from the certificate on the token
+            final KeyType type = provider.getType();
             final KeyAlgorithm algorithm = this.getPublicKeyAlgorithm(type);
             if(null == algorithm) {
                 throw new UserAuthException(String.format("No key algorithm configured for key type %s", type));

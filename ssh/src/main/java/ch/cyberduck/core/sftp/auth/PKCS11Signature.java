@@ -71,10 +71,7 @@ public final class PKCS11Signature {
      * @return Signature engine not yet initialized
      */
     public static Signature create(final String algorithm, final Provider provider) throws NoSuchAlgorithmException {
-        return engine(algorithm(algorithm), provider);
-    }
-
-    private static Signature engine(final String jca, final Provider provider) throws NoSuchAlgorithmException {
+        final String jca = algorithm(algorithm);
         if(provider != null) {
             try {
                 return Signature.getInstance(jca, provider);
