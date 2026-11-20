@@ -28,8 +28,7 @@ public class ETagComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(null != local.getETag() && null != remote.getETag()) {
-            if(StringUtils.equals(StringUtils.removeStart(StringUtils.removeEnd(local.getETag(), "\""), "\""),
-                    StringUtils.removeStart(StringUtils.removeEnd(remote.getETag(), "\""), "\""))) {
+            if(StringUtils.equals(opaque(local.getETag()), opaque(remote.getETag()))) {
                 log.debug("Equal ETag {}", remote.getETag());
                 return Comparison.equal;
             }
@@ -44,6 +43,24 @@ public class ETagComparisonService implements ComparisonService {
         if(null == attr.getETag()) {
             return 0;
         }
-        return attr.getETag().hashCode();
+        return opaque(attr.getETag()).hashCode();
+    }
+
+    /**
+     * Weak comparison as defined in RFC 9110 Section 8.8.3.2. Two entity tags are equivalent if their opaque-tags
+     * match character-by-character, regardless of either or both being tagged as "weak". Unquoted values as
+     * returned by some providers are compared as is.
+     *
+     * @param etag Entity tag in the form [ W/ ] DQUOTE *etagc DQUOTE
+     * @return Opaque tag with weakness indicator and enclosing double quotes removed
+     */
+    protected static String opaque(final String etag) {
+        final String tag = StringUtils.removeStart(etag, "W/");
+        if(tag.length() >= 2) {
+            if(StringUtils.startsWith(tag, "\"") && StringUtils.endsWith(tag, "\"")) {
+                return tag.substring(1, tag.length() - 1);
+            }
+        }
+        return tag;
     }
 }

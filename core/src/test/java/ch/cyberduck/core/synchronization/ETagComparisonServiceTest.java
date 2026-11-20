@@ -30,4 +30,33 @@ public class ETagComparisonServiceTest extends TestCase {
         assertSame(Comparison.equal, new ETagComparisonService().compare(Path.Type.file,
                 new DefaultPathAttributes().setETag("1"), new DefaultPathAttributes().setETag("\"1\"")));
     }
+
+    public void testCompareRfc9110() {
+        final ETagComparisonService s = new ETagComparisonService();
+        // Examples from RFC 9110 Section 8.8.3.2 using weak comparison
+        assertSame(Comparison.equal, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("W/\"1\""), new DefaultPathAttributes().setETag("W/\"1\"")));
+        assertSame(Comparison.notequal, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("W/\"1\""), new DefaultPathAttributes().setETag("W/\"2\"")));
+        assertSame(Comparison.equal, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("W/\"1\""), new DefaultPathAttributes().setETag("\"1\"")));
+        assertSame(Comparison.equal, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("\"1\""), new DefaultPathAttributes().setETag("\"1\"")));
+        // Weakness indicator is case-sensitive
+        assertSame(Comparison.notequal, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("w/\"1\""), new DefaultPathAttributes().setETag("\"1\"")));
+        // Only enclosing quotes are removed
+        assertSame(Comparison.notequal, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("\"1"), new DefaultPathAttributes().setETag("1")));
+        assertSame(Comparison.unknown, s.compare(Path.Type.file,
+                new DefaultPathAttributes().setETag("\"1\""), new DefaultPathAttributes()));
+    }
+
+    public void testHashCode() {
+        final ETagComparisonService s = new ETagComparisonService();
+        assertEquals(s.hashCode(Path.Type.file, new DefaultPathAttributes().setETag("1")),
+                s.hashCode(Path.Type.file, new DefaultPathAttributes().setETag("\"1\"")));
+        assertEquals(s.hashCode(Path.Type.file, new DefaultPathAttributes().setETag("1")),
+                s.hashCode(Path.Type.file, new DefaultPathAttributes().setETag("W/\"1\"")));
+    }
 }
