@@ -37,6 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -203,9 +204,17 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
 
     @Override
     public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        return this.aliases(delegate -> delegate.getClientAliases(keyType, issuers));
+    }
+
+    /**
+     * @param function Aliases from delegate or null with no matches
+     * @return Aliases from all delegates or null with no matches
+     */
+    private String[] aliases(final Function<CertificateStoreX509KeyManager, String[]> function) {
         final Set<String> aliases = new LinkedHashSet<>();
         for(CertificateStoreX509KeyManager delegate : delegates) {
-            final String[] c = delegate.getClientAliases(keyType, issuers);
+            final String[] c = function.apply(delegate);
             if(null == c) {
                 // No matches
                 continue;
@@ -286,18 +295,7 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
 
     @Override
     public String[] getServerAliases(final String keyType, final Principal[] issuers) {
-        final Set<String> aliases = new LinkedHashSet<>();
-        for(CertificateStoreX509KeyManager delegate : delegates) {
-            final String[] c = delegate.getServerAliases(keyType, issuers);
-            if(null == c) {
-                continue;
-            }
-            aliases.addAll(Arrays.asList(c));
-        }
-        if(aliases.isEmpty()) {
-            return null;
-        }
-        return aliases.toArray(new String[0]);
+        return this.aliases(delegate -> delegate.getServerAliases(keyType, issuers));
     }
 
     @Override

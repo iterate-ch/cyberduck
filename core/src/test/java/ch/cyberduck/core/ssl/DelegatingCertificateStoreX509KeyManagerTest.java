@@ -225,6 +225,19 @@ public class DelegatingCertificateStoreX509KeyManagerTest {
     }
 
     @Test
+    public void testGetClientAliases() throws Exception {
+        final Host bookmark = new Host(new TestProtocol());
+        final X509KeyManager m = new DelegatingCertificateStoreX509KeyManager(fail(), bookmark,
+                manager(bookmark, store("system", certificate("RSA", ISSUER))),
+                manager(bookmark, store("token", certificate("EC", ISSUER))));
+        // Aliases from all delegates matching key type
+        assertArrayEquals(new String[]{"system"}, m.getClientAliases("RSA", new Principal[]{ISSUER}));
+        assertArrayEquals(new String[]{"token"}, m.getClientAliases("EC", new Principal[]{ISSUER}));
+        // No match in any delegate
+        assertNull(m.getClientAliases("RSA", new Principal[]{new X500Principal("CN=Other CA")}));
+    }
+
+    @Test
     public void testList() throws Exception {
         final Host bookmark = new Host(new TestProtocol());
         // Certificates of any issuer and key type
