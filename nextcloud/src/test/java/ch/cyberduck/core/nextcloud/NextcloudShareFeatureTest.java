@@ -149,7 +149,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
         }
         catch(AccessDeniedException e) {
             assertEquals(NextcloudTestServer.OWNCLOUD == server ? "You can't share your root folder. Please contact your web hosting service provider for assistance."
-                : "You cannot share your root folder. Please contact your web hosting service provider for assistance.", e.getDetail());
+                    : "You cannot share your home folder. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
     }
 
