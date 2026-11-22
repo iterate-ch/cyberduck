@@ -20,10 +20,12 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -68,6 +70,20 @@ public class B2MetadataFeatureTest extends AbstractB2Test {
         assertNotNull(found);
         assertEquals("a,b", found.attributes().getMetadata().get("tags"));
         assertEquals(t, found.attributes().getMetadata().get("touch"));
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetMetadataTooLarge() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid),
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final B2MetadataFeature feature = new B2MetadataFeature(session, fileid);
+        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 8 * 1024));
+        final TransferStatus status = new TransferStatus().setMetadata(metadata);
+        // Same limit as when writing metadata with upload
+        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, status));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

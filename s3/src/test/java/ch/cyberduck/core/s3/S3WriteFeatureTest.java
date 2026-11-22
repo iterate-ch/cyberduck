@@ -14,7 +14,9 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -26,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -214,5 +217,23 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(content.length, attr.getSize());
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    @RunOn({S3TestServer.AWS, S3TestServer.CLOUDSERVER})
+    public void testWriteMetadataTooLarge() throws Exception {
+        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        assertTrue(feature.features(null).contains(Write.Flags.metadata));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(1024);
+        // User-defined metadata limited to 2 KB
+        final TransferStatus status = new TransferStatus().setLength(content.length)
+                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 4096)));
+        assertThrows(InteroperabilityException.class, () -> {
+            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        });
     }
 }

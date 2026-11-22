@@ -7,10 +7,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -81,6 +83,18 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
             assertEquals(t, metadata.get("Touch"));
             assertEquals(new AzureMetadataFeature(session).getMetadata(test), metadata);
         }
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetMetadataTooLarge() throws Exception {
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
+        final AzureMetadataFeature feature = new AzureMetadataFeature(session);
+        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 10 * 1024));
+        // Same limit as when writing metadata with upload
+        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

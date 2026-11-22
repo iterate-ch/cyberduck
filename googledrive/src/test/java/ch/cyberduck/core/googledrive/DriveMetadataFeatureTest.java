@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -133,5 +135,17 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         assertNotNull(found);
         assertEquals(t, found.attributes().getMetadata().get("write"));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetMetadataTooLarge() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid),
+                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DriveMetadataFeature feature = new DriveMetadataFeature(session, fileid);
+        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 124));
+        // Same limit as when writing metadata with upload
+        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
