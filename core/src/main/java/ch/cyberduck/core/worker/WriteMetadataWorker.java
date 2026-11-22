@@ -30,18 +30,14 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class WriteMetadataWorker extends Worker<Boolean> {
     private static final Logger log = LogManager.getLogger(WriteMetadataWorker.class);
@@ -61,11 +57,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
      */
     private final RecursiveCallback<String> callback;
     private final ProgressListener listener;
-
-    /**
-     * Keys removed from metadata of selected files
-     */
-    private Set<String> removed = Collections.emptySet();
 
     public WriteMetadataWorker(List<Path> files, final Map<String, String> metadata,
                                final boolean recursive,
@@ -89,10 +80,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             return false;
         }
         log.debug("Run with feature {}", feature);
-        // Keys removed from metadata read for selected files. Applied to all files including contents of folders
-        // with metadata not included in listing
-        removed = toRemoved(files, metadata);
-        log.debug("Remove keys {} from metadata", removed);
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -110,23 +97,22 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        // Last known metadata of file
-        final Map<String, String> cached = file.attributes().getMetadata();
-        Map<String, String> online = cached;
-        if(online.isEmpty()) {
-            // Metadata not included in listing (S3, Swift). Read from server to retain entries not changed
-            online = feature.getMetadata(file);
-            log.debug("Read metadata {} for {}", online, file);
+        // Start from last known metadata of file to keep entries requested with null value for keys differing or missing between multiple selected files
+        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
+        // Purge removed entries
+        update.entrySet().removeIf(entry -> !metadata.containsKey(entry.getKey()));
+        // iterate all metadata entries and
+        for(Map.Entry<String, String> entry : metadata.entrySet()) {
+            // check if update is non-null (should not) && entry value is not null
+            if(entry.getValue() != null) {
+                // update
+                update.put(entry.getKey(), entry.getValue());
+            }
         }
-        final Map<String, String> update = toUpdate(cached, metadata, online, removed);
         // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
-        if(update.equals(online)) {
-            log.debug("Skip writing unchanged metadata {} for {}", update, file);
-            file.attributes().setMetadata(online);
-        }
-        else {
+        if(!update.equals(file.attributes().getMetadata())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                    file.getName()));
+                file.getName()));
             final TransferStatus status = new TransferStatus();
             feature.setMetadata(file, status.setMetadata(update).setLockId(this.getLockId(file)));
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
@@ -143,54 +129,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
                 }
             }
         }
-    }
-
-    /**
-     * @param files    Selected files with metadata read from server
-     * @param metadata Requested metadata
-     * @return Keys in metadata of selected files missing in requested metadata
-     */
-    public static Set<String> toRemoved(final List<Path> files, final Map<String, String> metadata) {
-        return files.stream().flatMap(file -> file.attributes().getMetadata().keySet().stream())
-                .filter(key -> !metadata.containsKey(key)).collect(Collectors.toSet());
-    }
-
-    /**
-     * Apply changes of requested metadata compared to last known metadata to current metadata on server. Entries
-     * changed on server since last known metadata are retained when not changed in requested metadata.
-     *
-     * @param cached   Last known metadata
-     * @param metadata Requested metadata. Entries with null value are kept unchanged
-     * @param online   Current metadata on server
-     * @return Metadata to write
-     */
-    public static Map<String, String> toUpdate(final Map<String, String> cached, final Map<String, String> metadata,
-                                               final Map<String, String> online) {
-        return toUpdate(cached, metadata, online, Collections.emptySet());
-    }
-
-    /**
-     * Apply changes of requested metadata compared to last known metadata to current metadata on server. Entries
-     * changed on server since last known metadata are retained when not changed in requested metadata.
-     *
-     * @param cached   Last known metadata
-     * @param metadata Requested metadata. Entries with null value are kept unchanged
-     * @param online   Current metadata on server
-     * @param removed  Keys removed from metadata of selected files
-     * @return Metadata to write
-     */
-    public static Map<String, String> toUpdate(final Map<String, String> cached, final Map<String, String> metadata,
-                                               final Map<String, String> online, final Set<String> removed) {
-        final Map<String, String> update = new HashMap<>(online);
-        // Purge removed entries
-        cached.keySet().stream().filter(key -> !metadata.containsKey(key)).forEach(update::remove);
-        removed.stream().filter(key -> !metadata.containsKey(key)).forEach(update::remove);
-        // Added or changed entries
-        metadata.entrySet().stream()
-                .filter(entry -> entry.getValue() != null)
-                .filter(entry -> !StringUtils.equals(entry.getValue(), cached.get(entry.getKey())))
-                .forEach(entry -> update.put(entry.getKey(), entry.getValue()));
-        return update;
     }
 
     @Override

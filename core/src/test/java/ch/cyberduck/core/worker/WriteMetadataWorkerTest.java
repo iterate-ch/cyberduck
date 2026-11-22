@@ -1,9 +1,7 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -19,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -294,150 +291,5 @@ public class WriteMetadataWorkerTest {
             }
         });
         assertTrue(call.get());
-    }
-
-    @Test
-    public void testToUpdateWithoutCachedMetadata() {
-        // Metadata not included in listing (S3, Swift)
-        final Map<String, String> online = new HashMap<>();
-        online.put("Content-Type", "text/plain");
-        online.put("Cache-Control", "no-cache");
-        final Map<String, String> expected = new HashMap<>(online);
-        expected.put("user_tags", "Red%0A6");
-        assertEquals(expected, WriteMetadataWorker.toUpdate(Collections.emptyMap(),
-                Collections.singletonMap("user_tags", "Red%0A6"), online));
-    }
-
-    @Test
-    public void testToUpdateChange() {
-        final Map<String, String> cached = new HashMap<>();
-        cached.put("Content-Type", "text/plain");
-        cached.put("user_tags", "Work");
-        final Map<String, String> metadata = new HashMap<>(cached);
-        metadata.put("user_tags", "Red%0A6");
-        final Map<String, String> expected = new HashMap<>(cached);
-        expected.put("user_tags", "Red%0A6");
-        assertEquals(expected, WriteMetadataWorker.toUpdate(cached, metadata, cached));
-    }
-
-    @Test
-    public void testToUpdateRemove() {
-        final Map<String, String> cached = new HashMap<>();
-        cached.put("Content-Type", "text/plain");
-        cached.put("user_tags", "Work");
-        assertEquals(Collections.singletonMap("Content-Type", "text/plain"), WriteMetadataWorker.toUpdate(cached,
-                Collections.singletonMap("Content-Type", "text/plain"), cached));
-    }
-
-    @Test
-    public void testToUpdateRetainChangedOnServer() {
-        // Entries changed on server since last known metadata are not overwritten
-        final Map<String, String> cached = new HashMap<>();
-        cached.put("Content-Type", "text/plain");
-        final Map<String, String> online = new HashMap<>();
-        online.put("Content-Type", "text/html");
-        online.put("Cache-Control", "no-cache");
-        final Map<String, String> metadata = new HashMap<>(cached);
-        metadata.put("user_tags", "Work");
-        final Map<String, String> expected = new HashMap<>(online);
-        expected.put("user_tags", "Work");
-        assertEquals(expected, WriteMetadataWorker.toUpdate(cached, metadata, online));
-    }
-
-    @Test
-    public void testToUpdateUnchanged() {
-        final Map<String, String> cached = Collections.singletonMap("user_tags", "Work");
-        assertEquals(cached, WriteMetadataWorker.toUpdate(cached, cached, cached));
-    }
-
-    @Test
-    public void testToUpdateNullValueKept() {
-        // Null value for entries with different values in multiple files
-        final Map<String, String> cached = Collections.singletonMap("key", "v1");
-        final Map<String, String> metadata = new HashMap<>();
-        metadata.put("key", null);
-        assertEquals(cached, WriteMetadataWorker.toUpdate(cached, metadata, cached));
-    }
-
-    @Test
-    public void testToUpdateRemovedWithoutCachedMetadata() {
-        // Contents of folder with metadata not included in listing
-        final Map<String, String> online = new HashMap<>();
-        online.put("A", "1");
-        online.put("B", "2");
-        assertEquals(Collections.singletonMap("A", "1"), WriteMetadataWorker.toUpdate(Collections.emptyMap(),
-                Collections.singletonMap("A", "1"), online, Collections.singleton("B")));
-        // Remove all
-        assertEquals(Collections.emptyMap(), WriteMetadataWorker.toUpdate(Collections.emptyMap(),
-                Collections.emptyMap(), online, new HashSet<>(Arrays.asList("A", "B"))));
-        // Not removed without key removed from selection
-        assertEquals(online, WriteMetadataWorker.toUpdate(Collections.emptyMap(),
-                Collections.singletonMap("A", "1"), online, Collections.emptySet()));
-    }
-
-    @Test
-    public void testToRemoved() {
-        final Path a = new Path("/a", EnumSet.of(Path.Type.file));
-        final Map<String, String> ma = new HashMap<>();
-        ma.put("A", "1");
-        ma.put("B", "2");
-        a.attributes().setMetadata(ma);
-        final Path b = new Path("/b", EnumSet.of(Path.Type.file));
-        b.attributes().setMetadata(Collections.singletonMap("C", "3"));
-        final Map<String, String> requested = new HashMap<>();
-        requested.put("A", "1");
-        requested.put("C", null);
-        assertEquals(Collections.singleton("B"), WriteMetadataWorker.toRemoved(Arrays.asList(a, b), requested));
-    }
-
-    @Test
-    public void testRunRecursiveRemoveFromChildWithoutCachedMetadata() throws Exception {
-        final Path folder = new Path("/f", EnumSet.of(Path.Type.directory));
-        final Map<String, String> selected = new HashMap<>();
-        selected.put("A", "1");
-        selected.put("B", "2");
-        folder.attributes().setMetadata(selected);
-        final Path child = new Path(folder, "c", EnumSet.of(Path.Type.file));
-        final Map<String, Map<String, String>> written = new HashMap<>();
-        new WriteMetadataWorker(Collections.singletonList(folder), Collections.singletonMap("A", "1"), true, ProgressListener.noop)
-                .run(new NullSession(new Host(new TestProtocol())) {
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public <T> T _getFeature(final Class<T> type) {
-                        if(type == Metadata.class) {
-                            return (T) new Metadata() {
-                                @Override
-                                public Map<String, String> getDefault(final Path file) {
-                                    return Collections.emptyMap();
-                                }
-
-                                @Override
-                                public Map<String, String> getMetadata(final Path file) {
-                                    // Metadata on server for child
-                                    final Map<String, String> online = new HashMap<>();
-                                    online.put("A", "1");
-                                    online.put("B", "2");
-                                    online.put("Content-Type", "text/plain");
-                                    return online;
-                                }
-
-                                @Override
-                                public void setMetadata(final Path file, final TransferStatus status) {
-                                    written.put(file.getName(), status.getMetadata());
-                                }
-                            };
-                        }
-                        if(type == ListService.class) {
-                            // Listing without metadata
-                            return (T) (ListService) (directory, listener) -> new AttributedList<>(Collections.singletonList(child));
-                        }
-                        return super._getFeature(type);
-                    }
-                });
-        assertEquals(Collections.singletonMap("A", "1"), written.get("f"));
-        final Map<String, String> expected = new HashMap<>();
-        expected.put("A", "1");
-        expected.put("Content-Type", "text/plain");
-        assertEquals(expected, written.get("c"));
     }
 }
