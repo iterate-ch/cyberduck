@@ -41,7 +41,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -191,7 +191,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                                     containerService.getContainer(file)),
                             containerService.getContainer(file).getName(),
                             overall.getMime(),
-                            containerService.getKey(file), manifest, Collections.emptyMap());
+                            containerService.getKey(file), manifest, SwiftLargeObjectUploadFeature.toManifestMetadata(overall));
                     final StorageObject object = new StorageObject(containerService.getKey(file));
                     object.setMd5sum(checksum);
                     Long length = 0L;
@@ -213,5 +213,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
         public StorageObject getResponse() {
             return response.get();
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.metadata);
     }
 }

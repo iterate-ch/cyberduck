@@ -182,6 +182,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             out.close();
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
+            status.setMetadata(Collections.singletonMap("C", "duck"));
 
             final SwiftRegionService regionService = new SwiftRegionService(session);
             final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
@@ -219,6 +220,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
             assertFalse(metadata.isEmpty());
             assertEquals("text/plain", metadata.get("Content-Type"));
+            // Metadata set on manifest
+            assertEquals("duck", metadata.get("X-Object-Meta-C"));
 
             final List<Path> segments = new SwiftSegmentService(session).list(test);
             assertFalse(segments.isEmpty());
@@ -238,6 +241,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             final TransferStatus status = new TransferStatus();
             status.setExists(true);
             status.setLength(content.length);
+            // Metadata of existing file read in upload filter
+            status.setMetadata(new SwiftMetadataFeature(session).getMetadata(test));
 
             final SwiftRegionService regionService = new SwiftRegionService(session);
             final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
@@ -270,6 +275,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             in.close();
             buffer.close();
             assertArrayEquals(content, buffer.toByteArray());
+            // Metadata retained on overwrite
+            assertEquals("duck", new SwiftMetadataFeature(session).getMetadata(test).get("X-Object-Meta-C"));
         }
 
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
