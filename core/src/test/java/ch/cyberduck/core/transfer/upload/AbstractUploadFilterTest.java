@@ -25,7 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -245,8 +245,8 @@ public class AbstractUploadFilterTest {
                         }
                     };
                 }
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Path file) {
                             return Collections.emptyMap();

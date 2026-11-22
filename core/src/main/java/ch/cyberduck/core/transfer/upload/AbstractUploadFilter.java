@@ -43,6 +43,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
@@ -402,7 +403,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             if(!status.getMetadata().isEmpty()) {
                 if(!session.getFeature(Write.class).features(file).contains(Write.Flags.metadata)) {
-                    final Headers feature = session.getFeature(Headers.class);
+                    // Set with additional request when not set with upload
+                    final Metadata feature = session.getFeature(Metadata.class);
                     if(feature != null) {
                         try {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
