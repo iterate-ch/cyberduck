@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,7 +55,7 @@ import com.google.gson.reflect.TypeToken;
  * {@link #METADATA_CUSTOM_NAMESPACE} as servers such as Nextcloud and ownCloud omit dead properties from
  * <code>allprop</code> responses.
  */
-public class DAVMetadataFeature implements Headers {
+public class DAVMetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(DAVMetadataFeature.class);
 
     public static final String CUSTOM_NAMESPACE_PREFIX = "cd";

@@ -192,9 +192,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Search.class) {
             return (T) new B2SearchFeature(this, fileid);
         }
-        if(type == Headers.class) {
-            return (T) new B2MetadataFeature(this, fileid);
-        }
         if(type == Metadata.class) {
             return (T) new B2MetadataFeature(this, fileid);
         }

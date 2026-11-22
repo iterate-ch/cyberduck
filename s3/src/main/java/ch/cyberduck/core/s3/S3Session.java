@@ -492,9 +492,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == AclPermission.class) {
             return (T) acl;
         }
-        if(type == Headers.class) {
-            return (T) new S3MetadataFeature(this, acl);
-        }
         if(type == Metadata.class) {
             return (T) new S3MetadataFeature(this, acl);
         }

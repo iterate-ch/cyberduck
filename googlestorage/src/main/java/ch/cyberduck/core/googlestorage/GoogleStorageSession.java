@@ -139,9 +139,6 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         if(type == Move.class) {
             return (T) new GoogleStorageMoveFeature(this);
         }
-        if(type == Headers.class) {
-            return (T) new GoogleStorageMetadataFeature(this);
-        }
         if(type == Metadata.class) {
             return (T) new GoogleStorageMetadataFeature(this);
         }

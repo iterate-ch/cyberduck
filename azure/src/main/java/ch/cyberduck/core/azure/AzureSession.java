@@ -33,7 +33,6 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
@@ -177,9 +176,6 @@ public class AzureSession extends HttpSession<AzureClient> {
         }
         if(type == Delete.class) {
             return (T) new AzureDeleteFeature(this);
-        }
-        if(type == Headers.class) {
-            return (T) new AzureMetadataFeature(this);
         }
         if(type == Metadata.class) {
             return (T) new AzureMetadataFeature(this);

@@ -261,7 +261,7 @@ public class CteraSession extends DAVSession {
         if(type == Timestamp.class) {
             return null;
         }
-        if(type == Metadata.class || type == Headers.class) {
+        if(type == Metadata.class) {
             return null;
         }
         if(type == CustomActions.class) {

@@ -27,7 +27,6 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
@@ -89,7 +88,7 @@ public class FreenetSession extends DAVSession {
         if(type == Timestamp.class) {
             return null;
         }
-        if(type == Metadata.class || type == Headers.class) {
+        if(type == Metadata.class) {
             return null;
         }
         return super._getFeature(type);

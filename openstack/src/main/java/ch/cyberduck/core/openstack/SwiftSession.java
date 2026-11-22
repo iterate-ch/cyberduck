@@ -180,9 +180,6 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Delete.class) {
             return (T) new SwiftThresholdDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
         }
-        if(type == Headers.class) {
-            return (T) new SwiftMetadataFeature(this, regionService);
-        }
         if(type == Metadata.class) {
             return (T) new SwiftMetadataFeature(this, regionService);
         }

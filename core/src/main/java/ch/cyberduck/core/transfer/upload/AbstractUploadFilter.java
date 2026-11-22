@@ -42,7 +42,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
@@ -222,7 +221,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.metadata) {
-            final Headers feature = session.getFeature(Headers.class);
+            final Metadata feature = session.getFeature(Metadata.class);
             if(feature != null) {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),

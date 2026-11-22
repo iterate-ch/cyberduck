@@ -346,9 +346,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Move.class) {
             return (T) new DAVMoveFeature(this);
         }
-        if(type == Headers.class) {
-            return (T) new DAVMetadataFeature(this);
-        }
         if(type == Metadata.class) {
             return (T) new DAVMetadataFeature(this);
         }
