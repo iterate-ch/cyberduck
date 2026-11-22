@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -28,6 +29,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -147,5 +150,22 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         // Same limit as when writing metadata with upload
         assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testComparisonAfterSetMetadata() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid),
+                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new DriveListService(session, fileid).features(test.getParent()).contains(ListService.Flags.metadata));
+        final PathAttributes before = new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test)).attributes();
+        new DriveMetadataFeature(session, fileid).setMetadata(test.withAttributes(before), Collections.singletonMap("user_tags", "Red"));
+        final Path found = new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test));
+        assertEquals("Red", found.attributes().getMetadata().get("user_tags"));
+        // Change of metadata only not detected by comparison service. Requires comparing metadata from listing
+        assertEquals(Comparison.equal, session.getFeature(ComparisonService.class).compare(Path.Type.file, before, found.attributes()));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(found), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

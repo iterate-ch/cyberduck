@@ -19,7 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVMetadataFeature;
@@ -29,6 +32,8 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -98,5 +103,21 @@ public class OwncloudMetadataFeatureTest extends AbstractOwncloudTest {
         final Path found = new OwncloudRootListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(file));
         assertNotNull(found);
         assertEquals(expected, found.attributes().getMetadata());
+    }
+
+    @Test
+    public void testComparisonAfterSetMetadata() throws Exception {
+        final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session),
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new OwncloudRootListService(session).features(test.getParent()).contains(ListService.Flags.metadata));
+        final PathAttributes before = new OwncloudRootListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test)).attributes();
+        new DAVMetadataFeature(session).setMetadata(test.withAttributes(before), Collections.singletonMap("user_tags", "Red"));
+        final Path found = new OwncloudRootListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test));
+        assertEquals("Red", found.attributes().getMetadata().get("user_tags"));
+        // Change of metadata only not detected by comparison service. Requires comparing metadata from listing
+        assertEquals(Comparison.equal, session.getFeature(ComparisonService.class).compare(Path.Type.file, before, found.attributes()));
+        new OwncloudDeleteFeature(session).delete(Collections.singletonList(found), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

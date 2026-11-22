@@ -18,10 +18,15 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -85,5 +90,22 @@ public class B2MetadataFeatureTest extends AbstractB2Test {
         // Same limit as when writing metadata with upload
         assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, status));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testComparisonAfterSetMetadata() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid),
+                new Path(new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new B2ListService(session, fileid).features(test.getParent()).contains(ListService.Flags.metadata));
+        final PathAttributes before = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test)).attributes();
+        new B2MetadataFeature(session, fileid).setMetadata(test.withAttributes(before), Collections.singletonMap("user_tags", "Red"));
+        final Path found = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test));
+        assertEquals("Red", found.attributes().getMetadata().get("user_tags"));
+        // Change of metadata only not detected by comparison service. Requires comparing metadata from listing
+        assertEquals(Comparison.equal, session.getFeature(ComparisonService.class).compare(Path.Type.file, before, found.attributes()));
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(found), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

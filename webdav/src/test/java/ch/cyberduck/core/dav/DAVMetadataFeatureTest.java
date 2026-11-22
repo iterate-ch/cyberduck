@@ -20,14 +20,18 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -188,5 +192,23 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         final Path found = new DAVListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(file));
         assertNotNull(found);
         assertEquals(metadata, found.attributes().getMetadata());
+    }
+
+    @Test
+    public void testComparisonAfterSetMetadata() throws Exception {
+        this.assumeNot(DAVTestServer.SFTPGO, "No support for custom properties");
+        this.assumeNot(DAVTestServer.NGINX, "No support for PROPPATCH");
+        final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session),
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new DAVListService(session).features(test.getParent()).contains(ListService.Flags.metadata));
+        final PathAttributes before = new DAVListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test)).attributes();
+        new DAVMetadataFeature(session).setMetadata(test.withAttributes(before), Collections.singletonMap("user_tags", "Red"));
+        final Path found = new DAVListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test));
+        assertEquals("Red", found.attributes().getMetadata().get("user_tags"));
+        // Change of metadata only not detected by comparison service. Requires comparing metadata from listing
+        assertEquals(Comparison.equal, session.getFeature(ComparisonService.class).compare(Path.Type.file, before, found.attributes()));
+        new DAVDeleteFeature(session).delete(Collections.singletonList(found), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

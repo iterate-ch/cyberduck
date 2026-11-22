@@ -3,12 +3,16 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -96,5 +100,21 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
         // Same limit as when writing metadata with upload
         assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testComparisonAfterSetMetadata() throws Exception {
+        final Path test = new AzureTouchFeature(session).touch(new AzureWriteFeature(session),
+                new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new AzureListService(session).features(test.getParent()).contains(ListService.Flags.metadata));
+        final PathAttributes before = new AzureListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test)).attributes();
+        new AzureMetadataFeature(session).setMetadata(test.withAttributes(before), Collections.singletonMap("user_tags", "Red"));
+        final Path found = new AzureListService(session).list(test.getParent(), new DisabledListProgressListener())
+                .find(new SimplePathPredicate(test));
+        assertEquals("Red", found.attributes().getMetadata().get("user_tags"));
+        // Change of metadata only not detected by comparison service. Requires comparing metadata from listing
+        assertEquals(Comparison.equal, session.getFeature(ComparisonService.class).compare(Path.Type.file, before, found.attributes()));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(found), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
