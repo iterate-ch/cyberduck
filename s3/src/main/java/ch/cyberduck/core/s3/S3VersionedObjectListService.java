@@ -252,4 +252,10 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             }
         });
     }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        // Metadata of every object found read with HEAD request
+        return metadata ? EnumSet.of(Flags.metadata) : EnumSet.noneOf(Flags.class);
+    }
 }
