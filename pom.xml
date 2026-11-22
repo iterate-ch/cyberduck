@@ -586,6 +586,7 @@
                             <exclude>${surefire.exclude}</exclude>
                         </excludes>
                         <trimStackTrace>false</trimStackTrace>
+                        <useManifestOnlyJar>false</useManifestOnlyJar>
                     </configuration>
                 </plugin>
                 <plugin>
