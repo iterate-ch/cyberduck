@@ -178,7 +178,8 @@ public class SMBWriteFeature implements Write<Void> {
                 }
             }
             catch(SMBRuntimeException e) {
-                throw new IOException(e);
+                // Release share if not yet released after last write
+                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
             }
         }
     }
