@@ -143,12 +143,8 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                 });
                 log.debug("Received response {} for upload of {}", files, file);
                 if(files.getEntries().stream().findFirst().isPresent()) {
-                    final File created = files.getEntries().stream().findFirst().get();
-                    if(status.isExists()) {
-                        // Metadata is retained for new version
-                        return created;
-                    }
-                    return new BoxMetadataFeature(session, fileid).create(file, created, status.getMetadata());
+                    // Metadata is set with additional request in upload filter
+                    return files.getEntries().stream().findFirst().get();
                 }
                 throw new NotfoundException(file.getAbsolute());
             }

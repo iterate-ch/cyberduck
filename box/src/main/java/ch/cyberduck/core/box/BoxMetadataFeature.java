@@ -18,7 +18,6 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
-import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -132,33 +131,6 @@ public class BoxMetadataFeature implements Metadata {
             final HttpPut request = new HttpPut(this.toUrl(file));
             request.setEntity(new ByteArrayEntity(mapper.writeValueAsBytes(operations), JSON_PATCH));
             this.execute(request);
-        }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-        }
-    }
-
-    /**
-     * Create metadata template instance for newly uploaded file
-     *
-     * @param file     File uploaded
-     * @param created  Response for uploaded file
-     * @param metadata Metadata to attach
-     * @return Response with metadata set
-     */
-    public File create(final Path file, final File created, final Map<String, String> metadata) throws BackgroundException {
-        if(metadata.isEmpty()) {
-            return created;
-        }
-        fileid.cache(file, created.getId());
-        try {
-            final HttpPost request = new HttpPost(this.toUrl(file));
-            request.setEntity(new ByteArrayEntity(mapper.writeValueAsBytes(metadata), ContentType.APPLICATION_JSON));
-            this.execute(request);
-            return created.metadata(toInstance(metadata));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map("Failure to write attributes of {0}", e, file);

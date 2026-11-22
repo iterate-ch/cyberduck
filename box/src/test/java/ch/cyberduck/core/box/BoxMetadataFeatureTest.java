@@ -23,14 +23,17 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -90,10 +93,9 @@ public class BoxMetadataFeatureTest extends AbstractBoxTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String t = new AlphanumericRandomStringService().random();
         final Path test = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid),
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().setMetadata(Collections.singletonMap("touch", t)));
-        assertEquals(t, test.attributes().getMetadata().get("touch"));
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final BoxMetadataFeature feature = new BoxMetadataFeature(session, fileid);
+        feature.setMetadata(test, Collections.singletonMap("touch", t));
         final Map<String, String> metadata = new HashMap<>(feature.getMetadata(test));
         assertEquals(Collections.singletonMap("touch", t), metadata);
         final String v = new AlphanumericRandomStringService().random();
@@ -120,12 +122,26 @@ public class BoxMetadataFeatureTest extends AbstractBoxTest {
         status.setChecksum(session.getFeature(Upload.class).checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<File> out = new BoxWriteFeature(session, fileid).write(test, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertEquals(t, new BoxAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getMetadata().get("write"));
-        assertEquals(t, new BoxMetadataFeature(session, fileid).getMetadata(test).get("write"));
+        // Metadata not set with upload but with separate request in upload filter
+        assertFalse(new BoxWriteFeature(session, fileid).features(test).contains(Write.Flags.metadata));
+        assertTrue(new BoxMetadataFeature(session, fileid).getMetadata(test).isEmpty());
+        new BoxMetadataFeature(session, fileid).setMetadata(test, status.getMetadata());
         assertEquals(t, new BoxAttributesFinderFeature(session, fileid).find(test).getMetadata().get("write"));
         final Path found = new BoxListService(session, fileid).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertNotNull(found);
         assertEquals(t, found.attributes().getMetadata().get("write"));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetMetadataTooLarge() throws Exception {
+        final BoxFileidProvider fileid = new BoxFileidProvider(session);
+        final Path test = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid),
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final BoxMetadataFeature feature = new BoxMetadataFeature(session, fileid);
+        // Rejected between 256 KiB and 1 MiB
+        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 1024 * 1024));
+        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
