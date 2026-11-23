@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
@@ -140,7 +141,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     /**
      * HTTP headers
      */
-    private Map<String, String> metadata = Collections.emptyMap();
+    private Map<String, String> metadata = Metadata.EMPTY_METADATA;
 
     /**
      * Cryptomator vault metadata
@@ -186,7 +187,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         region = copy.getRegion();
         displayname = copy.getDisplayname();
         link = DescriptiveUrl.EMPTY == copy.getLink() ? DescriptiveUrl.EMPTY : new DescriptiveUrl(copy.getLink());
-        metadata = new HashMap<>(copy.getMetadata());
+        metadata = Metadata.EMPTY_METADATA == copy.getMetadata() ? Metadata.EMPTY_METADATA : new HashMap<>(copy.getMetadata());
         custom = new HashMap<>(copy.getCustom());
         verdict = copy.getVerdict();
         vaultVersion = copy.getVaultVersion();
@@ -275,7 +276,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
         }
-        if(!metadata.isEmpty()) {
+        if(Metadata.EMPTY_METADATA != metadata) {
             dict.setMapForKey(metadata, "Metadata");
         }
         if(verdict != null) {

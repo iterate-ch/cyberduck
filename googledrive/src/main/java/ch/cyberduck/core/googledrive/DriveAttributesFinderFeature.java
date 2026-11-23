@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Collections;
 
 import com.google.api.services.drive.model.File;
 
@@ -133,9 +134,8 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
                         .getBytes(Charset.defaultCharset()).length);
             }
         }
-        if(null != f.getProperties()) {
-            attributes.setMetadata(f.getProperties());
-        }
+        // Properties requested in fields are omitted in response when not set
+        attributes.setMetadata(null != f.getProperties() ? f.getProperties() : Collections.emptyMap());
         return attributes;
     }
 }

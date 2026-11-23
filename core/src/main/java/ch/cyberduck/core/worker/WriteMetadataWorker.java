@@ -117,6 +117,10 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             feature.setMetadata(file, status.setMetadata(update).setLockId(this.getLockId(file)));
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 file.withAttributes(status.getResponse());
+                if(Metadata.EMPTY_METADATA == file.attributes().getMetadata()) {
+                    // Metadata missing in response
+                    file.attributes().setMetadata(update);
+                }
             }
             else {
                 file.attributes().setMetadata(update);

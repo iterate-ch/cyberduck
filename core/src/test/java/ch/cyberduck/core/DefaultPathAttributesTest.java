@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -8,6 +9,7 @@ import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,18 @@ public class DefaultPathAttributesTest {
         assertEquals(DescriptiveUrl.EMPTY, clone.getLink());
         assertTrue(clone.isTrashed());
         assertTrue(clone.isHidden());
+    }
+
+    @Test
+    public void testCopyMetadata() {
+        assertSame(Metadata.EMPTY_METADATA, PathAttributes.EMPTY.getMetadata());
+        assertSame(Metadata.EMPTY_METADATA, new DefaultPathAttributes().getMetadata());
+        assertSame(Metadata.EMPTY_METADATA, new DefaultPathAttributes(new DefaultPathAttributes()).getMetadata());
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
+        attributes.setMetadata(Collections.emptyMap());
+        final DefaultPathAttributes clone = new DefaultPathAttributes(attributes);
+        assertTrue(clone.getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY_METADATA, clone.getMetadata());
     }
 
     @Test

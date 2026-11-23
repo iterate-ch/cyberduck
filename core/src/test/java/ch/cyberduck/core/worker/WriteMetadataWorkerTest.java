@@ -212,6 +212,42 @@ public class WriteMetadataWorkerTest {
     }
 
     @Test
+    public void testRunResponseWithoutMetadata() throws Exception {
+        final Path p = new Path("a", EnumSet.of(Path.Type.file));
+        p.attributes().setMetadata(Collections.singletonMap("k1", "v1"));
+        new WriteMetadataWorker(Collections.singletonList(p), Collections.emptyMap(), false, ProgressListener.noop).run(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
+                        @Override
+                        public Map<String, String> getDefault(final Path file) {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            // Response with attributes but no metadata
+                            status.setResponse(new DefaultPathAttributes().setVersionId("v"));
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        });
+        assertEquals("v", p.attributes().getVersionId());
+        // Removal of all entries applied
+        assertTrue(p.attributes().getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY_METADATA, p.attributes().getMetadata());
+    }
+
+    @Test
     public void testRunDifferent() throws Exception {
         final PathAttributes attributesA = new
                 DefaultPathAttributes();

@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.StaticPermission;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
@@ -80,6 +81,16 @@ public class PathAttributesDictionaryTest {
         final PathAttributes clone = new PathAttributesDictionary<>().deserialize(new DefaultPathAttributes()
                 .setCustom(Collections.singletonMap("k", "v")).serialize(SerializerFactory.get()));
         assertTrue(clone.getMetadata().isEmpty());
+        assertSame(Metadata.EMPTY_METADATA, clone.getMetadata());
+    }
+
+    @Test
+    public void testSerializeEmptyMetadata() {
+        // Retrieved without any metadata on server
+        final PathAttributes clone = new PathAttributesDictionary<>().deserialize(new DefaultPathAttributes()
+                .setMetadata(Collections.emptyMap()).serialize(SerializerFactory.get()));
+        assertTrue(clone.getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY_METADATA, clone.getMetadata());
     }
 
     @Test

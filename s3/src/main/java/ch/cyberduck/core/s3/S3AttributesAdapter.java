@@ -99,7 +99,11 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
             }
         }
         final Map<String, String> metadata = metadata(object);
-        if(!metadata.isEmpty()) {
+        if(object.isMetadataComplete()) {
+            // All headers from HEAD or GET request. Empty if no user metadata is set
+            attributes.setMetadata(metadata);
+        }
+        else if(!metadata.isEmpty()) {
             attributes.setMetadata(metadata);
         }
         final Long mtime = S3TimestampFeature.fromHeaders(S3TimestampFeature.METADATA_MODIFICATION_DATE,
