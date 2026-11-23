@@ -153,9 +153,8 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
         }
-        if(!response.getFileInfo().isEmpty()) {
-            attributes.setMetadata(new HashMap<>(response.getFileInfo()));
-        }
+        // File info is always included in response. Empty if none set
+        attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         attributes.setVersionId(response.getFileId());
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
@@ -204,9 +203,8 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
         }
-        if(!response.getFileInfo().isEmpty()) {
-            attributes.setMetadata(new HashMap<>(response.getFileInfo()));
-        }
+        // File info is always included in response. Empty if none set
+        attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         attributes.setVersionId(response.getFileId());
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
@@ -265,9 +263,8 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
         }
-        if(!response.getFileInfo().isEmpty()) {
-            attributes.setMetadata(new HashMap<>(response.getFileInfo()));
-        }
+        // File info is always included in response. Empty if none set
+        attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         attributes.setVersionId(response.getFileId());
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
             attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
