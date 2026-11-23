@@ -6,7 +6,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -17,6 +19,7 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -160,5 +163,23 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         stream.close();
         assertArrayEquals(content, compare);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    @RunOn({S3TestServer.AWS, S3TestServer.CLOUDSERVER})
+    public void testWriteMetadataTooLarge() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, acl);
+        assertTrue(feature.features(null).contains(Write.Flags.metadata));
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        // User-defined metadata limited to 2 KB
+        final TransferStatus status = new TransferStatus().setLength(-1L)
+                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 4096)));
+        assertThrows(InteroperabilityException.class, () -> {
+            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(1024)), out);
+            out.close();
+        });
     }
 }

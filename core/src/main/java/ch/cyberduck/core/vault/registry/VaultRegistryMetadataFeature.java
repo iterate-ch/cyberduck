@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -27,13 +27,13 @@ import ch.cyberduck.core.vault.VaultUnlockCancelException;
 import java.util.Collections;
 import java.util.Map;
 
-public class VaultRegistryHeadersFeature implements Headers {
+public class VaultRegistryMetadataFeature implements Metadata {
 
     private final Session<?> session;
-    private final Headers proxy;
+    private final Metadata proxy;
     private final VaultRegistry registry;
 
-    public VaultRegistryHeadersFeature(final Session<?> session, final Headers proxy, final VaultRegistry registry) {
+    public VaultRegistryMetadataFeature(final Session<?> session, final Metadata proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -42,7 +42,7 @@ public class VaultRegistryHeadersFeature implements Headers {
     @Override
     public Map<String, String> getDefault(final Path file) {
         try {
-            return registry.find(session, file).getFeature(session, Headers.class, proxy).getDefault(file);
+            return registry.find(session, file).getFeature(session, Metadata.class, proxy).getDefault(file);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.getDefault(file);
@@ -54,17 +54,17 @@ public class VaultRegistryHeadersFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Headers.class, proxy).getMetadata(file);
+        return registry.find(session, file).getFeature(session, Metadata.class, proxy).getMetadata(file);
     }
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Headers.class, proxy).setMetadata(file, status);
+        registry.find(session, file).getFeature(session, Metadata.class, proxy).setMetadata(file, status);
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("VaultRegistryHeadersFeature{");
+        final StringBuilder sb = new StringBuilder("VaultRegistryMetadataFeature{");
         sb.append("proxy=").append(proxy);
         sb.append('}');
         return sb.toString();

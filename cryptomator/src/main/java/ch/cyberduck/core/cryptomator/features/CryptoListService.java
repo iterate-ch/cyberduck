@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
+import java.util.EnumSet;
+
 public class CryptoListService implements ListService {
 
     private final Session<?> session;
@@ -44,6 +46,11 @@ public class CryptoListService implements ListService {
     @Override
     public void preflight(final Path directory) throws BackgroundException {
         delegate.preflight(vault.encrypt(session, directory));
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return delegate.features(directory);
     }
 
     @Override

@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class S3MetadataFeature implements Headers {
+public class S3MetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(S3MetadataFeature.class);
 
     private final S3Session session;

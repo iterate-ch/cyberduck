@@ -42,7 +42,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
@@ -221,7 +221,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.metadata) {
-            final Headers feature = session.getFeature(Headers.class);
+            final Metadata feature = session.getFeature(Metadata.class);
             if(feature != null) {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
@@ -392,6 +392,23 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                                     file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getModified())));
                             feature.setTimestamp(file, status);
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
+                    }
+                }
+            }
+            if(!status.getMetadata().isEmpty()) {
+                if(!session.getFeature(Write.class).features(file).contains(Write.Flags.metadata)) {
+                    // Set with additional request when not set with upload
+                    final Metadata feature = session.getFeature(Metadata.class);
+                    if(feature != null) {
+                        try {
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                                    file.getName()));
+                            feature.setMetadata(file, status);
                         }
                         catch(BackgroundException e) {
                             // Ignore

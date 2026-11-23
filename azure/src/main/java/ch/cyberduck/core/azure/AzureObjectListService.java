@@ -85,7 +85,7 @@ public class AzureObjectListService implements ListService {
                         attr = PathAttributes.EMPTY;
                     }
                     else {
-                        attr = attributes.toAttributes(item.getProperties());
+                        attr = attributes.toAttributes(item);
                     }
                     // A directory is designated by a delimiter character.
                     final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()

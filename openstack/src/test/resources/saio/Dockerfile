@@ -1,1 +1,1 @@
-FROM openstackswift/saio:latest
+FROM --platform=linux/amd64 openstackswift/saio:latest

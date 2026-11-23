@@ -59,6 +59,7 @@ public class DriveTouchFeature implements Touch<File> {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
                     .setMimeType(status.getMime())
+                    .setProperties(status.getMetadata().isEmpty() ? null : status.getMetadata())
                     .setParents(Collections.singletonList(fileid.getFileId(file.getParent()))));
             final File execute = insert
                     .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)

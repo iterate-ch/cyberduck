@@ -12,16 +12,15 @@
 
 package ch.cyberduck.core.box.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
 import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.box.io.swagger.client.model.FileSharedLink;
-import ch.cyberduck.core.box.io.swagger.client.model.FileVersion;
-import ch.cyberduck.core.box.io.swagger.client.model.Folder;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.joda.time.DateTime;
+
 /**
  * A standard representation of a file, as returned from any file API endpoints by default
  */
@@ -158,6 +157,9 @@ public class File {
 
   @JsonProperty("expires_at")
   private DateTime expiresAt = null;
+
+  @JsonProperty("metadata")
+  private java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> metadata = null;
 
   public File id(String id) {
     this.id = id;
@@ -573,6 +575,25 @@ public class File {
     this.expiresAt = expiresAt;
   }
 
+
+  public File metadata(java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> metadata) {
+    this.metadata = metadata;
+    return this;
+  }
+
+  /**
+   * Metadata template instances by scope and template key when requested with field metadata.&lt;scope&gt;.&lt;templateKey&gt;
+   *
+   * @return metadata
+   **/
+  @Schema(description = "Metadata template instances by scope and template key")
+  public java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> metadata) {
+    this.metadata = metadata;
+  }
 
   @Override
   public boolean equals(java.lang.Object o) {

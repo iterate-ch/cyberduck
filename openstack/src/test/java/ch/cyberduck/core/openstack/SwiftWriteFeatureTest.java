@@ -6,12 +6,15 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -58,5 +61,22 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
         overwrite.close();
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteMetadataTooLarge() throws Exception {
+        final SwiftWriteFeature feature = new SwiftWriteFeature(session, new SwiftRegionService(session));
+        assertTrue(feature.features(null).contains(Write.Flags.metadata));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
+        // Metadata value limited to 256 bytes and 4096 bytes in total by default
+        final TransferStatus status = new TransferStatus().setLength(content.length)
+                .setMetadata(Collections.singletonMap("K", StringUtils.repeat('a', 8 * 1024)));
+        assertThrows(InteroperabilityException.class, () -> {
+            final StatusOutputStream<StorageObject> out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        });
     }
 }

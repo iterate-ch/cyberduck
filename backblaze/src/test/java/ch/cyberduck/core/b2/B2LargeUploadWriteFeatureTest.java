@@ -19,14 +19,18 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -122,5 +126,22 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertArrayEquals(content, compare);
         assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(file).getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteMetadataTooLarge() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
+        assertTrue(feature.features(null).contains(Write.Flags.metadata));
+        final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        // File info limited to 7000 bytes in total
+        final TransferStatus status = new TransferStatus().setLength(-1L)
+                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 8 * 1024)));
+        assertThrows(InteroperabilityException.class, () -> {
+            final StatusOutputStream<BaseB2Response> out = feature.write(file, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(6 * 1024 * 1024)), out);
+            out.close();
+        });
     }
 }

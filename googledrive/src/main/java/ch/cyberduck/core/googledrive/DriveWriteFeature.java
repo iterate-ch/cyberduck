@@ -21,12 +21,8 @@ import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
-import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -36,7 +32,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -109,6 +104,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                             metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));
                         }
                         metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent())));
+                        if(!status.getMetadata().isEmpty()) {
+                            metadata.append(String.format(",\"properties\":%s", session.getClient().getJsonFactory().toString(status.getMetadata())));
+                        }
                         metadata.append("}");
                         request.setEntity(new StringEntity(metadata.toString(),
                                 ContentType.create("application/json", StandardCharsets.UTF_8.name())));
@@ -134,8 +132,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                 }
                                 break;
                             default:
-                                throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
-                                        new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()), file);
+                                throw new DriveExceptionMappingService(fileid).map("Upload {0} failed", DriveExceptionMappingService.toFailure(postResponse), file);
                         }
                     }
                     finally {
@@ -157,8 +154,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                         fileid.cache(file, response.getId());
                                         return response;
                                     default:
-                                        throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
-                                                new HttpResponseException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()), file);
+                                        throw new DriveExceptionMappingService(fileid).map("Upload {0} failed", DriveExceptionMappingService.toFailure(putResponse), file);
                                 }
                             }
                             finally {
@@ -166,8 +162,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                             }
                         }
                         else {
-                            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed",
-                                    new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()), file);
+                            throw new DriveExceptionMappingService(fileid).map("Upload {0} failed", DriveExceptionMappingService.toFailure(postResponse), file);
                         }
                     }
                     return null;
@@ -184,5 +179,4 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
         };
         return this.write(file, status, command);
     }
-
 }

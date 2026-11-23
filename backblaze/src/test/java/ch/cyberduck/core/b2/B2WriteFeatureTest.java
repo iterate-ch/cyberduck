@@ -21,7 +21,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
@@ -32,6 +34,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -105,5 +108,24 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertNotEquals(new B2AttributesFinderFeature(session, fileid).toAttributes(response), new B2AttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()));
         assertNotEquals(((B2FileResponse) response).getFileId(), ((B2FileResponse) overwrite.getStatus()).getFileId());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteMetadataTooLarge() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final B2WriteFeature feature = new B2WriteFeature(session, fileid);
+        assertTrue(feature.features(null).contains(Write.Flags.metadata));
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(4);
+        // File info limited to 7000 bytes of headers in total
+        final TransferStatus status = new TransferStatus().setLength(content.length)
+                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 8 * 1024)));
+        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        assertThrows(InteroperabilityException.class, () -> {
+            final StatusOutputStream<BaseB2Response> out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        });
     }
 }

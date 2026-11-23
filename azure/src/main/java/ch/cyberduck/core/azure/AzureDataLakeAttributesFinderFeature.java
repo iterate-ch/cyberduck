@@ -72,6 +72,7 @@ public class AzureDataLakeAttributesFinderFeature implements AttributesFinder, A
             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }
         attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
+        attributes.setMetadata(AzureBlobAttributesFinderFeature.toMetadata(properties.getMetadata(), properties.getContentType(), properties.getCacheControl()));
         return attributes;
     }
 

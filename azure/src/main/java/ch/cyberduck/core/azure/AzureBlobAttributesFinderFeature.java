@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,7 @@ import java.util.Map;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobContainerProperties;
+import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobProperties;
 
@@ -114,6 +116,16 @@ public class AzureBlobAttributesFinderFeature implements AttributesFinder, Attri
         final Map<String, String> custom = new HashMap<>();
         custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
         attributes.setCustom(custom);
+        attributes.setMetadata(toMetadata(properties.getMetadata(), properties.getContentType(), properties.getCacheControl()));
+        return attributes;
+    }
+
+    /**
+     * @param item Blob from listing requested with metadata included
+     */
+    public PathAttributes toAttributes(final BlobItem item) {
+        final PathAttributes attributes = this.toAttributes(item.getProperties());
+        attributes.setMetadata(toMetadata(item.getMetadata(), item.getProperties().getContentType(), item.getProperties().getCacheControl()));
         return attributes;
     }
 
@@ -126,5 +138,22 @@ public class AzureBlobAttributesFinderFeature implements AttributesFinder, Attri
             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }
         return attributes;
+    }
+
+    /**
+     * @return User metadata including HTTP headers as returned by {@link AzureMetadataFeature#getMetadata}
+     */
+    protected static Map<String, String> toMetadata(final Map<String, String> metadata, final String contentType, final String cacheControl) {
+        final Map<String, String> result = new HashMap<>();
+        if(metadata != null) {
+            result.putAll(metadata);
+        }
+        if(StringUtils.isNotBlank(contentType)) {
+            result.put(HttpHeaders.CONTENT_TYPE, contentType);
+        }
+        if(StringUtils.isNotBlank(cacheControl)) {
+            result.put(HttpHeaders.CACHE_CONTROL, cacheControl);
+        }
+        return result;
     }
 }

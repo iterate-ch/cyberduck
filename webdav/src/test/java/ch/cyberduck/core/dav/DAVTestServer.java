@@ -38,6 +38,16 @@ public enum DAVTestServer {
             .withExposedPorts(80)
             .waitingFor(Wait.forHttp("/").forPort(80).withBasicCredentials(DAVTestServer.USER, DAVTestServer.PASSWORD).forStatusCode(200)
                     .withStartupTimeout(Duration.ofMinutes(5)))),
+    /**
+     * nginx with ngx_http_dav_module and nginx-dav-ext-module. No support for PROPPATCH.
+     */
+    NGINX(80, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-nginx-dav", false)
+            .withFileFromClasspath("Dockerfile", "nginx/Dockerfile")
+            .withFileFromClasspath("nginx.conf", "nginx/nginx.conf")
+            .withFileFromClasspath("htpasswd", "nginx/htpasswd"))
+            .withExposedPorts(80)
+            .waitingFor(Wait.forHttp("/").forPort(80).withBasicCredentials(DAVTestServer.USER, DAVTestServer.PASSWORD).forStatusCode(200)
+                    .withStartupTimeout(Duration.ofMinutes(5)))),
     SFTPGO(8090, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-sftpgo-dav", false)
             .withFileFromClasspath("Dockerfile", "sftpgo/Dockerfile"))
             .withCopyToContainer(MountableFile.forClasspathResource("sftpgo/data.json", 0644), "/etc/sftpgo/data.json")

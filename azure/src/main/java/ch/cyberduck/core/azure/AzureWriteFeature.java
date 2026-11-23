@@ -42,7 +42,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.OutputStream;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -149,13 +151,18 @@ public class AzureWriteFeature implements Write<Void> {
                         log.warn(String.format("Ignore failure %s", e));
                         return;
                     }
-                    throw e;
+                    throw new IOException(e.getMessage(), new AzureExceptionMappingService().map("Upload {0} failed", new UncheckedIOException(e), file));
                 }
             };
         }
         catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.metadata);
     }
 
     /**

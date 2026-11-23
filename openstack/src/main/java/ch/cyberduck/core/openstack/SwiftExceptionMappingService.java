@@ -21,7 +21,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
@@ -48,10 +47,6 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
         if(e instanceof ContainerExistsException) {
             // 202 Accepted for existing container
             return new ConflictException(buffer.toString(), e);
-        }
-        switch(e.getHttpStatusCode()) {
-            case HttpStatus.SC_BAD_REQUEST:
-                return new LoginFailureException(buffer.toString(), e);
         }
         return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getHttpStatusCode(), buffer.toString()));
     }

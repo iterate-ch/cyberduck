@@ -72,6 +72,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
     @Test
     public void testAppend() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
+        this.assumeNot(DAVTestServer.NGINX, "No support for partial uploads");
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final int length = 32770;
         final byte[] content = RandomUtils.nextBytes(length);

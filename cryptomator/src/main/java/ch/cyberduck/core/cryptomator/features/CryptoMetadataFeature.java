@@ -19,19 +19,19 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
-public class CryptoHeadersFeature implements Headers {
+public class CryptoMetadataFeature implements Metadata {
 
     private final Session<?> session;
-    private final Headers delegate;
+    private final Metadata delegate;
     private final Vault vault;
 
-    public CryptoHeadersFeature(final Session<?> session, final Headers delegate, final Vault vault) {
+    public CryptoMetadataFeature(final Session<?> session, final Metadata delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
@@ -55,7 +55,7 @@ public class CryptoHeadersFeature implements Headers {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoHeadersFeature{");
+        final StringBuilder sb = new StringBuilder("CryptoMetadataFeature{");
         sb.append("delegate=").append(delegate);
         sb.append('}');
         return sb.toString();

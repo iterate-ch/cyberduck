@@ -27,7 +27,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
@@ -78,7 +77,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         assertNotNull(session.getFeature(DistributionConfiguration.class));
         assertNotNull(session.getFeature(Logging.class));
         assertNotNull(session.getFeature(Metadata.class));
-        assertNotNull(session.getFeature(Headers.class));
+        assertNotNull(session.getFeature(Metadata.class));
     }
 
     @Test(expected = LoginCanceledException.class)
