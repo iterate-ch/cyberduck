@@ -28,7 +28,7 @@ public interface Metadata {
     /**
      * Marker for metadata not retrieved. Compare by identity to distinguish from file without metadata on server
      */
-    Map<String, String> EMPTY_METADATA = Collections.unmodifiableMap(new HashMap<>());
+    Map<String, String> EMPTY = Collections.unmodifiableMap(new HashMap<>());
 
     Map<String, String> getDefault(Path file);
 

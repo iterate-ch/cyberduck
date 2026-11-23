@@ -244,7 +244,7 @@ public class WriteMetadataWorkerTest {
         assertEquals("v", p.attributes().getVersionId());
         // Removal of all entries applied
         assertTrue(p.attributes().getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, p.attributes().getMetadata());
+        assertNotSame(Metadata.EMPTY, p.attributes().getMetadata());
     }
 
     @Test

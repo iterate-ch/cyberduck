@@ -78,17 +78,17 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final Path file = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, new TransferStatus());
         // Response from upload
         assertTrue(file.attributes().getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, file.attributes().getMetadata());
+        assertNotSame(Metadata.EMPTY, file.attributes().getMetadata());
         // Response from file info
         final PathAttributes attributes = new B2AttributesFinderFeature(session, fileid).find(test);
         assertTrue(attributes.getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, attributes.getMetadata());
+        assertNotSame(Metadata.EMPTY, attributes.getMetadata());
         // Response from listing
         final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
                 new SimplePathPredicate(test));
         assertNotNull(found);
         assertTrue(found.attributes().getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, found.attributes().getMetadata());
+        assertNotSame(Metadata.EMPTY, found.attributes().getMetadata());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

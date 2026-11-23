@@ -400,7 +400,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     }
                 }
             }
-            if(Metadata.EMPTY_METADATA != status.getMetadata()) {
+            if(Metadata.EMPTY != status.getMetadata()) {
                 if(!session.getFeature(Write.class).features(file).contains(Write.Flags.metadata)) {
                     // Set with additional request when not set with upload
                     final Metadata feature = session.getFeature(Metadata.class);

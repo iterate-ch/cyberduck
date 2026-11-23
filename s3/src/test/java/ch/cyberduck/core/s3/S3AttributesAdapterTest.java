@@ -143,7 +143,7 @@ public class S3AttributesAdapterTest {
     public void testMetadataNotRetrieved() {
         // Object from listing without metadata
         final StorageObject object = new StorageObject();
-        assertSame(Metadata.EMPTY_METADATA, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getMetadata());
+        assertSame(Metadata.EMPTY, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getMetadata());
     }
 
     @Test
@@ -154,7 +154,7 @@ public class S3AttributesAdapterTest {
         object.setMetadataComplete(true);
         final Map<String, String> metadata = new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getMetadata();
         assertTrue(metadata.isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, metadata);
+        assertNotSame(Metadata.EMPTY, metadata);
     }
 
     @Test

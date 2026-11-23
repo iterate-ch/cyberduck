@@ -183,7 +183,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
             = Collections.emptyMap();
 
     private Map<String, String> metadata
-            = Metadata.EMPTY_METADATA;
+            = Metadata.EMPTY;
 
     /**
      * Overall transfer status for this segment

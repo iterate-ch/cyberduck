@@ -141,7 +141,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     /**
      * HTTP headers
      */
-    private Map<String, String> metadata = Metadata.EMPTY_METADATA;
+    private Map<String, String> metadata = Metadata.EMPTY;
 
     /**
      * Cryptomator vault metadata
@@ -187,7 +187,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         region = copy.getRegion();
         displayname = copy.getDisplayname();
         link = DescriptiveUrl.EMPTY == copy.getLink() ? DescriptiveUrl.EMPTY : new DescriptiveUrl(copy.getLink());
-        metadata = Metadata.EMPTY_METADATA == copy.getMetadata() ? Metadata.EMPTY_METADATA : new HashMap<>(copy.getMetadata());
+        metadata = Metadata.EMPTY == copy.getMetadata() ? Metadata.EMPTY : new HashMap<>(copy.getMetadata());
         custom = new HashMap<>(copy.getCustom());
         verdict = copy.getVerdict();
         vaultVersion = copy.getVaultVersion();
@@ -276,7 +276,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
         }
-        if(Metadata.EMPTY_METADATA != metadata) {
+        if(Metadata.EMPTY != metadata) {
             dict.setMapForKey(metadata, "Metadata");
         }
         if(verdict != null) {

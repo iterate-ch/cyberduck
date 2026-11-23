@@ -81,7 +81,7 @@ public class PathAttributesDictionaryTest {
         final PathAttributes clone = new PathAttributesDictionary<>().deserialize(new DefaultPathAttributes()
                 .setCustom(Collections.singletonMap("k", "v")).serialize(SerializerFactory.get()));
         assertTrue(clone.getMetadata().isEmpty());
-        assertSame(Metadata.EMPTY_METADATA, clone.getMetadata());
+        assertSame(Metadata.EMPTY, clone.getMetadata());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PathAttributesDictionaryTest {
         final PathAttributes clone = new PathAttributesDictionary<>().deserialize(new DefaultPathAttributes()
                 .setMetadata(Collections.emptyMap()).serialize(SerializerFactory.get()));
         assertTrue(clone.getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, clone.getMetadata());
+        assertNotSame(Metadata.EMPTY, clone.getMetadata());
     }
 
     @Test

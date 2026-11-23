@@ -52,14 +52,14 @@ public class DefaultPathAttributesTest {
 
     @Test
     public void testCopyMetadata() {
-        assertSame(Metadata.EMPTY_METADATA, PathAttributes.EMPTY.getMetadata());
-        assertSame(Metadata.EMPTY_METADATA, new DefaultPathAttributes().getMetadata());
-        assertSame(Metadata.EMPTY_METADATA, new DefaultPathAttributes(new DefaultPathAttributes()).getMetadata());
+        assertSame(Metadata.EMPTY, PathAttributes.EMPTY.getMetadata());
+        assertSame(Metadata.EMPTY, new DefaultPathAttributes().getMetadata());
+        assertSame(Metadata.EMPTY, new DefaultPathAttributes(new DefaultPathAttributes()).getMetadata());
         final DefaultPathAttributes attributes = new DefaultPathAttributes();
         attributes.setMetadata(Collections.emptyMap());
         final DefaultPathAttributes clone = new DefaultPathAttributes(attributes);
         assertTrue(clone.getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, clone.getMetadata());
+        assertNotSame(Metadata.EMPTY, clone.getMetadata());
     }
 
     @Test

@@ -308,7 +308,7 @@ public interface PathAttributes extends Attributes, Serializable {
     PathAttributes setTrashed(boolean trashed);
 
     /**
-     * @return Metadata or {@link ch.cyberduck.core.features.Metadata#EMPTY_METADATA} when not retrieved
+     * @return Metadata or {@link ch.cyberduck.core.features.Metadata#EMPTY} when not retrieved
      */
     Map<String, String> getMetadata();
 

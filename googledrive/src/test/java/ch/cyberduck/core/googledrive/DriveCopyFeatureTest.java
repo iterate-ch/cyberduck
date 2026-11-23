@@ -74,7 +74,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         assertEquals(Collections.singletonMap("key", "value"), new DriveAttributesFinderFeature(session, fileid).find(copy).getMetadata());
         // Properties not copied when metadata is not set in status
         final Path other = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertSame(Metadata.EMPTY_METADATA, new TransferStatus().getMetadata());
+        assertSame(Metadata.EMPTY, new TransferStatus().getMetadata());
         assertTrue(new DriveCopyFeature(session, fileid).copy(test, other, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getMetadata().isEmpty());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy, other), LoginCallback.noop, new Delete.DisabledCallback());
     }
@@ -88,7 +88,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         // Properties requested in response but none set
         assertTrue(target.attributes().getMetadata().isEmpty());
-        assertNotSame(Metadata.EMPTY_METADATA, target.attributes().getMetadata());
+        assertNotSame(Metadata.EMPTY, target.attributes().getMetadata());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
