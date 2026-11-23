@@ -48,6 +48,9 @@ public class CommandLineUriParser {
         if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
             host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
         }
+        if(input.hasOption(TerminalOptionsBuilder.Params.certificate.name())) {
+            host.getCredentials().setCertificate(input.getOptionValue(TerminalOptionsBuilder.Params.certificate.name()));
+        }
         final Path directory = new CommandLinePathParser(input, factory).parse(uri);
         if(directory.isDirectory()) {
             host.setDefaultPath(directory.getAbsolute());
