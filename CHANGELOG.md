@@ -1,9 +1,16 @@
 # Changelog
 
 [9.7.0](https://github.com/iterate-ch/cyberduck/compare/release-9-6-0...release-9-7-0)
-
 * [Feature] Support authentication with client certificate from PKCS11 hardware token (WebDAV, FTP-SSL)
 * [Feature] Support public key authentication with key from PKCS11 hardware token (SFTP)
+* [Feature] Support public key authentication with FIDO/U2F security key including Touch ID (SFTP) ([#14732](https://trac.cyberduck.io/ticket/14732))
+* [Feature] Support chunked file upload (Nextcloud) ([#10925](https://trac.cyberduck.io/ticket/10925))
+* [Feature] Add text view to edit notes for bookmarks ([#18388](https://trac.cyberduck.io/ticket/18388))
+* [Bugfix] Editing a remote file starts VS Code without showing a window (Windows) ([#18711](https://trac.cyberduck.io/ticket/18711))
+* [Bugfix] Selection in browser is cleared after dragging files to Finder (macOS) ([#18569](https://trac.cyberduck.io/ticket/18569))
+* [Bugfix] Unable to make changes to shared folders and files (Google Drive) ([#17421](https://trac.cyberduck.io/ticket/17421))
+* [Bugfix] No scroll bar appears after expanding a folder ([#13677](https://trac.cyberduck.io/ticket/13677))
+* [Bugfix] Fails to launch OAuth URL (CLI, Windows) ([#18737](https://trac.cyberduck.io/ticket/18737))
 
 [9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
 * [Feature] Support `ProxyCommand` from ssh_config (SFTP) ([#8688](https://trac.cyberduck.io/ticket/8688))
