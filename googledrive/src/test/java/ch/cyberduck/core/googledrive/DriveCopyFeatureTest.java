@@ -66,16 +66,16 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test,
                 new TransferStatus().setMetadata(Collections.singletonMap("key", "value")));
         assertEquals(Collections.singletonMap("key", "value"), new DriveAttributesFinderFeature(session, fileid).find(test).getMetadata());
-        // Properties from source attributes
+        // Properties from metadata of source read in copy filter
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
+        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy,
+                new TransferStatus().setMetadata(new DriveMetadataFeature(session, fileid).getMetadata(test)), ConnectionCallback.noop, StreamListener.noop);
         assertEquals(Collections.singletonMap("key", "value"), target.attributes().getMetadata());
         assertEquals(Collections.singletonMap("key", "value"), new DriveAttributesFinderFeature(session, fileid).find(copy).getMetadata());
-        // Properties read from server when not retrieved for source
-        final Path source = new Path(test.getParent(), test.getName(), EnumSet.of(Path.Type.file));
-        assertSame(Metadata.EMPTY_METADATA, source.attributes().getMetadata());
+        // Properties not copied when metadata is not set in status
         final Path other = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertEquals(Collections.singletonMap("key", "value"), new DriveCopyFeature(session, fileid).copy(source, other, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getMetadata());
+        assertSame(Metadata.EMPTY_METADATA, new TransferStatus().getMetadata());
+        assertTrue(new DriveCopyFeature(session, fileid).copy(test, other, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getMetadata().isEmpty());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy, other), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

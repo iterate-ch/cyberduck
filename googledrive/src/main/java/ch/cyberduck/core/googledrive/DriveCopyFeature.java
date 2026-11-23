@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,9 +47,8 @@ public class DriveCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            // Properties are not copied by server
-            final Map<String, String> properties = Metadata.EMPTY_METADATA != source.attributes().getMetadata() ?
-                    source.attributes().getMetadata() : new DriveMetadataFeature(session, fileid).getMetadata(source);
+            // Properties are not copied by server. Set from metadata of source read in copy filter
+            final Map<String, String> properties = status.getMetadata();
             final File copy = session.getClient().files().copy(fileid.getFileId(source), new File()
                             .setParents(Collections.singletonList(fileid.getFileId(target.getParent())))
                             .setName(target.getName())
