@@ -44,6 +44,10 @@
     <PackageReference Include="System.Runtime.Caching" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
+    <Reference Include="System.Security" />
+  </ItemGroup>
+
   <ItemGroup>
     <ImageResource Include="$(CyberduckDir)img\*.png" />
     <ImageResource Include="$(CyberduckDir)img\*.tiff" />

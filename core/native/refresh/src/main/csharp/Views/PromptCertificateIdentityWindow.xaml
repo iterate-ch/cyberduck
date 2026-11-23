@@ -1,0 +1,83 @@
+﻿<local:PromptCertificateIdentityWindowBase x:Class="Ch.Cyberduck.Core.Refresh.Views.PromptCertificateIdentityWindow"
+                                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                           xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
+                                           xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
+                                           mc:Ignorable="d"
+                                           Height="340"
+                                           Icon="{xaml:Icon 'cyberduck-application'}"
+                                           MinHeight="260"
+                                           MinWidth="380"
+                                           ResizeMode="CanResizeWithGrip"
+                                           ShowInTaskbar="False"
+                                           Title="{xaml:Text Choose}"
+                                           Width="500"
+                                           WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <Border BorderThickness="0,1,0,0"
+                BorderBrush="{x:Static SystemColors.ControlDarkBrush}"
+                Background="{x:Static SystemColors.ControlLightBrush}"
+                Padding="5.5,5.5"
+                DockPanel.Dock="Bottom"
+                KeyboardNavigation.TabIndex="1"
+                KeyboardNavigation.TabNavigation="Local">
+            <DockPanel LastChildFill="False">
+                <Button Content="{xaml:Text 'Show Certificate', Table=Keychain}"
+                        DockPanel.Dock="Left"
+                        Height="23"
+                        Margin="5.5"
+                        MinWidth="75"
+                        Name="showCertificateButton"
+                        Padding="11,0" />
+                <Button Content="{xaml:Text Cancel}"
+                        DockPanel.Dock="Right"
+                        Height="23"
+                        IsCancel="true"
+                        Margin="5.5"
+                        MinWidth="75"
+                        Name="cancelButton"
+                        Padding="11,0" />
+                <Button Content="{xaml:Text Choose}"
+                        DockPanel.Dock="Right"
+                        Height="23"
+                        IsDefault="true"
+                        Margin="5.5"
+                        MinWidth="75"
+                        Name="chooseButton"
+                        Padding="11,0" />
+            </DockPanel>
+        </Border>
+
+        <DockPanel Margin="11"
+                   KeyboardNavigation.TabIndex="0"
+                   KeyboardNavigation.TabNavigation="Local">
+            <TextBlock Name="message"
+                       DockPanel.Dock="Top"
+                       Margin="0,0,0,5.5"
+                       TextWrapping="Wrap" />
+
+            <ListBox Name="certificates"
+                     AutomationProperties.LabeledBy="{Binding ElementName=message}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="2,3">
+                            <TextBlock FontWeight="SemiBold"
+                                       Text="{Binding Name}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Foreground="{x:Static SystemColors.GrayTextBrush}"
+                                       Text="{Binding Issuer}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Foreground="{x:Static SystemColors.GrayTextBrush}"
+                                       Text="{Binding Validity}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </DockPanel>
+</local:PromptCertificateIdentityWindowBase>

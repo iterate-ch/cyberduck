@@ -259,6 +259,9 @@ public class OpenSshConfig {
                 else if("IdentityAgent".equalsIgnoreCase(keyword)) {
                     option.identityAgent = noneToDisabled(dequote(argValue));
                 }
+                else if("PKCS11Provider".equalsIgnoreCase(keyword)) {
+                    option.pkcs11Provider = noneToDisabled(dequote(argValue));
+                }
                 else if("SecurityKeyProvider".equalsIgnoreCase(keyword)) {
                     option.securityKeyProvider = noneToNull(dequote(argValue));
                 }
@@ -492,6 +495,7 @@ public class OpenSshConfig {
         int port;
         String identityFile;
         String identityAgent;
+        String pkcs11Provider;
         String securityKeyProvider;
         String user;
         String preferredAuthentications;
@@ -516,6 +520,9 @@ public class OpenSshConfig {
             }
             if(identityAgent == null) {
                 identityAgent = src.identityAgent;
+            }
+            if(pkcs11Provider == null) {
+                pkcs11Provider = src.pkcs11Provider;
             }
             if(securityKeyProvider == null) {
                 securityKeyProvider = src.securityKeyProvider;
@@ -583,6 +590,13 @@ public class OpenSshConfig {
         }
 
         /**
+         * @return Specifies the PKCS#11 shared library to use for authentication with a hardware token.
+         */
+        public String getPKCS11Provider() {
+            return pkcs11Provider;
+        }
+
+        /**
          * @return Specifies the shared library implementing the OpenSSH security key API used to authenticate with a
          * FIDO/U2F security key.
          */
@@ -628,6 +642,7 @@ public class OpenSshConfig {
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", identityAgent=").append(identityAgent);
+            sb.append(", pkcs11Provider=").append(pkcs11Provider);
             sb.append(", securityKeyProvider=").append(securityKeyProvider);
             sb.append(", user='").append(user).append('\'');
             sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');

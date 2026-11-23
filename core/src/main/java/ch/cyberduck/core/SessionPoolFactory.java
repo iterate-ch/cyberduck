@@ -22,7 +22,7 @@ import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -75,7 +75,7 @@ public class SessionPoolFactory {
         final CertificateStore certificates = CertificateStoreFactory.get();
         return create(connect, transcript, bookmark,
                 new KeychainX509TrustManager(CertificateTrustCallbackFactory.get(controller), new DefaultTrustManagerHostnameCallback(bookmark), certificates),
-                new KeychainX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, certificates),
+                new DelegatingCertificateStoreX509KeyManager(CertificateIdentityCallbackFactory.get(controller), bookmark, certificates, login),
                 VaultRegistryFactory.get(login), usage);
     }
 

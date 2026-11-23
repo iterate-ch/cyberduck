@@ -40,7 +40,7 @@ import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -59,6 +59,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -83,6 +84,10 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
+
+    // List of certificates with private key
+    private final Set<String> certificates = new LinkedHashSet<>();
+    private boolean certificatesLoaded;
 
     @Outlet
     private NSTabView tabView;
@@ -181,6 +186,42 @@ public abstract class BookmarkController extends SheetController implements NSTa
         observers.add(observer);
     }
 
+    @Override
+    public void windowDidBecomeKey(final NSNotification notification) {
+        super.windowDidBecomeKey(notification);
+        this.loadCertificateAliases();
+    }
+
+    /**
+     * Load once in background when on screen to allow sheet with PIN prompt to read certificates from hardware token
+     */
+    private void loadCertificateAliases() {
+        if(certificatesLoaded || !options.certificate) {
+            return;
+        }
+        final NSWindow parent = certificatePopup.window();
+        if(null == parent || !parent.isVisible()) {
+            // Not on screen yet
+            return;
+        }
+        certificatesLoaded = true;
+        log.debug("Loading certificate aliases for bookmark {}", bookmark);
+        this.background(new AbstractBackgroundAction<List<String>>() {
+            @Override
+            public List<String> run() {
+                return new DelegatingCertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark,
+                        CertificateStoreFactory.get(), LoginCallbackFactory.get(BookmarkController.this)).list();
+            }
+
+            @Override
+            public void cleanup(final List<String> result, final BackgroundException failure) {
+                certificates.addAll(result);
+                update();
+                super.cleanup(result, failure);
+            }
+        });
+    }
+
     public void focus() {
         if(bookmark.getProtocol().isHostnameConfigurable()) {
             window.makeFirstResponder(hostField);
@@ -194,6 +235,8 @@ public abstract class BookmarkController extends SheetController implements NSTa
             }
         }
         super.focus();
+        // Invoked after popover is shown
+        this.loadCertificateAliases();
     }
 
     @Override
@@ -300,6 +343,9 @@ public abstract class BookmarkController extends SheetController implements NSTa
             }
             bookmark.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(bookmark));
             options.configure(selected);
+            if(options.certificate) {
+                this.loadCertificateAliases();
+            }
             validator.configure(selected);
         }
         this.update();
@@ -630,9 +676,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
-        // List of certificates with private key
-        final List<String> list = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-                CertificateStoreFactory.get()).list();
         this.addObserver(bookmark -> {
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
@@ -640,9 +683,15 @@ public abstract class BookmarkController extends SheetController implements NSTa
             certificatePopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
             if(options.certificate) {
                 certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                for(String certificate : list) {
+                for(String certificate : certificates) {
                     certificatePopup.addItemWithTitle(certificate);
                     certificatePopup.lastItem().setRepresentedObject(certificate);
+                }
+                final String saved = bookmark.getCredentials().getCertificate();
+                if(StringUtils.isNotBlank(saved) && !certificates.contains(saved)) {
+                    // Saved selection not loaded yet or certificate not available
+                    certificatePopup.addItemWithTitle(saved);
+                    certificatePopup.lastItem().setRepresentedObject(saved);
                 }
             }
             if(bookmark.getCredentials().isCertificateAuthentication()) {

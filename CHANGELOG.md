@@ -1,5 +1,10 @@
 # Changelog
 
+[9.7.0](https://github.com/iterate-ch/cyberduck/compare/release-9-6-0...release-9-7-0)
+
+* [Feature] Support authentication with client certificate from PKCS11 hardware token (WebDAV, FTP-SSL)
+* [Feature] Support public key authentication with key from PKCS11 hardware token (SFTP)
+
 [9.6.0](https://github.com/iterate-ch/cyberduck/compare/release-9-5-4...release-9-6-0)
 * [Feature] Support `ProxyCommand` from ssh_config (SFTP) ([#8688](https://trac.cyberduck.io/ticket/8688))
 * [Feature] Sign in with AWS Console browser sign-in (S3) ([#18543](https://trac.cyberduck.io/ticket/18543))
