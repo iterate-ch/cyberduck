@@ -48,13 +48,17 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            var baseImage = GetFileIcon($".{fileIconKey}", path.isDirectory(), size >= 32, false);
-            if (factory is not null)
+            if (GetFileIcon($".{fileIconKey}", path.isDirectory(), size >= 32, false) is not { } baseImage)
             {
-                baseImage = Overlay(baseImage, factory(size), size);
-                IconCache.CacheIcon(key, size, baseImage, Class);
+                return null;
             }
 
+            if (factory?.Invoke(size) is { } overlay)
+            {
+                baseImage = Overlay(baseImage, overlay, size);
+            }
+
+            IconCache.CacheIcon(key, size, baseImage, Class);
             return baseImage;
         }
     }

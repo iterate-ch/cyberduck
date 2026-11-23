@@ -46,6 +46,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
     }
 
     public abstract partial class IconProvider<T> : IconProvider
+        where T : class
     {
         protected static readonly Logger Log = LogManager.getLogger(typeof(T));
 
