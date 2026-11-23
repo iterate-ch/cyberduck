@@ -82,8 +82,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <!-- Default project root. Overridden by directory-maven-plugin in the
-             project-root-jenkins profile. -->
         <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
         <git.buildnumber.skip>false</git.buildnumber.skip>
         <argLine />
@@ -706,11 +704,6 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.commonjava.maven.plugins</groupId>
-                    <artifactId>directory-maven-plugin</artifactId>
-                    <version>1.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.8.0</version>
@@ -991,44 +984,6 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>project-root-jenkins</id>
-            <!-- activate profile for Jenkins builds -->
-            <activation>
-                <property>
-                    <name>env.JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
-                </surefire.group.excluded>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <version>1.0</version>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>directory-of</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                    <project>
-                                        <groupId>ch.cyberduck</groupId>
-                                        <artifactId>parent</artifactId>
-                                    </project>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
