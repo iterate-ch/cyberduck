@@ -167,11 +167,12 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                 }
             }
         }.setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-        if(StringUtils.isBlank(host.getCredentials().getUsername())) {
-            authorizationService.setParameter("prompt", "select_account");
+        if(isUPN(host.getCredentials().getUsername())) {
+            authorizationService.setParameter("prompt", "login")
+                .setParameter("login_hint", host.getCredentials().getUsername().trim());
         }
         else {
-            authorizationService.setParameter("login_hint", host.getCredentials().getUsername());
+            authorizationService.setParameter("prompt", "select_account");
         }
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request
@@ -314,6 +315,14 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphThumbnailFeature(this, fileid);
         }
         return super._getFeature(type);
+    }
+
+    private static boolean isUPN(final String username) {
+        if(StringUtils.isBlank(username)) {
+            return false;
+        }
+
+        return username.contains("@");
     }
 
     public static final class ContainerItem {
