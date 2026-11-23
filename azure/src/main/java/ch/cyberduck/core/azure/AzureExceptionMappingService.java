@@ -44,8 +44,11 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
 
     @Override
     public BackgroundException map(final RuntimeException failure) {
-        if(failure instanceof HttpResponseException) {
-            return this.map((HttpResponseException) failure);
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof HttpResponseException) {
+                // Error response from service possibly wrapped such as by output stream
+                return this.map((HttpResponseException) cause);
+            }
         }
         // Failure without response wrapped by the SDK, such as connection or SSL failure or retrieving access token
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {

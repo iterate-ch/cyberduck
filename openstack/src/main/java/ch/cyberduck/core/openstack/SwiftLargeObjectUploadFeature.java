@@ -51,10 +51,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -172,7 +174,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                             containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
-                    containerService.getKey(file), manifest, Collections.emptyMap());
+                    containerService.getKey(file), manifest, toManifestMetadata(status));
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
@@ -230,5 +232,15 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             size += segment.attributes().getSize();
         }
         return new Write.Append(true).withStatus(status).withOffset(size);
+    }
+
+    /**
+     * @param status Transfer status with metadata of overwritten file or defaults for new file
+     * @return Metadata for manifest without large object header read from metadata of existing file
+     */
+    static Map<String, String> toManifestMetadata(final TransferStatus status) {
+        final Map<String, String> metadata = new HashMap<>(status.getMetadata());
+        metadata.remove(Constants.X_STATIC_LARGE_OBJECT);
+        return metadata;
     }
 }

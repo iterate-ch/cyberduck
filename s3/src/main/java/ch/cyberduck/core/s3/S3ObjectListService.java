@@ -161,4 +161,10 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        // Metadata of every object found read with HEAD request
+        return metadata ? EnumSet.of(Flags.metadata) : EnumSet.noneOf(Flags.class);
+    }
 }

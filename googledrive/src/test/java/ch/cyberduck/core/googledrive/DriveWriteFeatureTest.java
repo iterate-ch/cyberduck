@@ -24,7 +24,9 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -33,6 +35,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -198,5 +201,49 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final Path upload = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertEquals(upload.attributes(), new DriveAttributesFinderFeature(session, fileid).find(upload));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteMetadata() throws Exception {
+        final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
+        final DriveWriteFeature feature = new DriveWriteFeature(session, idProvider);
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        // Metadata only set when creating file
+        assertFalse(feature.features(test).contains(Write.Flags.metadata));
+        {
+            final byte[] content = RandomUtils.nextBytes(128);
+            final TransferStatus status = new TransferStatus().setLength(content.length)
+                    .setMetadata(Collections.singletonMap("user_tags", "Red%0A6"));
+            final HttpResponseOutputStream<File> out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            assertEquals(Collections.singletonMap("user_tags", "Red%0A6"), new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()).getMetadata());
+            assertEquals(Collections.singletonMap("user_tags", "Red%0A6"), new DriveMetadataFeature(session, idProvider).getMetadata(test));
+        }
+        {
+            // Overwrite does not change metadata
+            final byte[] content = RandomUtils.nextBytes(64);
+            final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true)
+                    .setMetadata(Collections.singletonMap("user_tags", "Work"));
+            final HttpResponseOutputStream<File> out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            assertEquals(Collections.singletonMap("user_tags", "Red%0A6"), new DriveMetadataFeature(session, idProvider).getMetadata(test));
+        }
+        new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteMetadataTooLarge() throws Exception {
+        final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
+        final DriveWriteFeature feature = new DriveWriteFeature(session, idProvider);
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(128);
+        // Key and value of property limited to 124 bytes
+        final TransferStatus status = new TransferStatus().setLength(content.length)
+                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 124)));
+        assertThrows(InteroperabilityException.class, () -> {
+            final HttpResponseOutputStream<File> out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        });
+        assertFalse(new DefaultFindFeature(session).find(test));
     }
 }

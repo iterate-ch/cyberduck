@@ -22,7 +22,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -194,9 +193,6 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         }
         if(type == Thumbnail.class) {
             return (T) new DropboxThumbnailFeature(this);
-        }
-        if(type == PathContainerService.class) {
-            return (T) new DropboxPathContainerService();
         }
         return super._getFeature(type);
     }

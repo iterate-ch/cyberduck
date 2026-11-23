@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
@@ -63,8 +64,11 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(-1L);
-            final HttpResponseOutputStream<StorageObject> out = new SwiftLargeUploadWriteFeature(session, regionService,
-                    new SwiftSegmentService(session, ".segments-test/")).write(file, status, ConnectionCallback.noop);
+            status.setMetadata(Collections.singletonMap("C", "duck"));
+            final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
+                    new SwiftSegmentService(session, ".segments-test/"));
+            assertTrue(feature.features(file).contains(Write.Flags.metadata));
+            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
             final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
@@ -78,6 +82,8 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);
+            // Metadata set on manifest
+            assertEquals("duck", new SwiftMetadataFeature(session).getMetadata(file).get("X-Object-Meta-C"));
         }
         {
             final TransferStatus status = new TransferStatus();

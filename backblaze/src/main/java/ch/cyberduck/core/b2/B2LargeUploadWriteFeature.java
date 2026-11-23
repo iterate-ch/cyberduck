@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,11 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 return proxy.getFinishLargeFileResponse();
             }
         };
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.metadata);
     }
 
     private final class LargeUploadOutputStream extends OutputStream {

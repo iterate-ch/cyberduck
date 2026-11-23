@@ -39,13 +39,14 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         {
             if (Path.IsPathRooted(name))
             {
-                return new FileStream(name, FileMode.Open);
+                return File.Exists(name) ? File.OpenRead(name) : null;
             }
             return ImageSource.GetStream(name);
         }
     }
 
     public abstract partial class IconProvider<T> : IconProvider
+        where T : class
     {
         protected static readonly Logger Log = LogManager.getLogger(typeof(T));
 

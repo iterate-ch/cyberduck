@@ -136,7 +136,7 @@ public class SwiftSession extends HttpSession<Client> {
                     break;
                 }
                 catch(GenericException failure) {
-                    final BackgroundException reason = new SwiftExceptionMappingService().map(failure);
+                    final BackgroundException reason = new SwiftAuthenticationExceptionMappingService().map(failure);
                     if(reason instanceof LoginFailureException
                             || reason instanceof AccessDeniedException
                             || reason instanceof InteroperabilityException) {
@@ -152,7 +152,7 @@ public class SwiftSession extends HttpSession<Client> {
             }
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map(e);
+            throw new SwiftAuthenticationExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -182,9 +182,6 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Delete.class) {
             return (T) new SwiftThresholdDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
-        }
-        if(type == Headers.class) {
-            return (T) new SwiftMetadataFeature(this, regionService);
         }
         if(type == Metadata.class) {
             return (T) new SwiftMetadataFeature(this, regionService);

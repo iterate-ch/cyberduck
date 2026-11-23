@@ -36,10 +36,13 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicLineParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,15 +50,21 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineImpl;
 import com.github.sardine.impl.handler.MultiStatusResponseHandler;
 import com.github.sardine.impl.methods.HttpPropFind;
+import com.github.sardine.impl.methods.HttpPropPatch;
 import com.github.sardine.model.Multistatus;
+import com.github.sardine.model.Prop;
+import com.github.sardine.model.Propertyupdate;
 import com.github.sardine.model.Propfind;
 import com.github.sardine.model.Propstat;
+import com.github.sardine.model.Remove;
 import com.github.sardine.model.Response;
+import com.github.sardine.model.Set;
 import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
@@ -147,6 +156,47 @@ public class DAVClient extends SardineImpl {
                         return super.getStatusCode();
                     }
                 });
+            }
+            catch(URISyntaxException e) {
+                log.warn("Ignore resource with invalid URI {}", response.getHref().get(0));
+            }
+        }
+        return resources;
+    }
+
+    /**
+     * Omit empty <code>set</code> element in <code>PROPPATCH</code> request body rejected by some servers with
+     * <code>400 Bad Request</code>
+     */
+    @Override
+    public List<DavResource> patch(final String url, final List<Element> setProps, final List<QName> removeProps, final Map<String, String> headers) throws IOException {
+        final HttpPropPatch patch = new HttpPropPatch(url);
+        for(Map.Entry<String, String> h : headers.entrySet()) {
+            patch.addHeader(new BasicHeader(h.getKey(), h.getValue()));
+        }
+        final Propertyupdate body = new Propertyupdate();
+        if(!setProps.isEmpty()) {
+            final Set set = new Set();
+            final Prop prop = new Prop();
+            prop.getAny().addAll(setProps);
+            set.setProp(prop);
+            body.getRemoveOrSet().add(set);
+        }
+        if(!removeProps.isEmpty()) {
+            final Remove remove = new Remove();
+            final Prop prop = new Prop();
+            for(QName entry : removeProps) {
+                prop.getAny().add(SardineUtil.createElement(entry));
+            }
+            remove.setProp(prop);
+            body.getRemoveOrSet().add(remove);
+        }
+        patch.setEntity(new StringEntity(SardineUtil.toXml(body), StandardCharsets.UTF_8));
+        final Multistatus multistatus = this.execute(patch, new MultiStatusResponseHandler());
+        final List<DavResource> resources = new ArrayList<>(multistatus.getResponse().size());
+        for(Response response : multistatus.getResponse()) {
+            try {
+                resources.add(new DavResource(response));
             }
             catch(URISyntaxException e) {
                 log.warn("Ignore resource with invalid URI {}", response.getHref().get(0));

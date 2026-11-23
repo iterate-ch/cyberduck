@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -36,7 +37,10 @@ import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -226,5 +230,58 @@ public class AbstractUploadFilterTest {
             assertFalse(status.isVerify());
             assertEquals(Checksum.NONE, status.getChecksum());
         }
+    }
+
+    private OverwriteFilter metadata(final AtomicBoolean set, final Write.Flags... flags) {
+        return new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(host) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Write.class) {
+                    return (T) new NullWriteFeature() {
+                        @Override
+                        public EnumSet<Flags> features(final Path file) {
+                            return flags.length == 0 ? EnumSet.noneOf(Flags.class) : EnumSet.copyOf(Arrays.asList(flags));
+                        }
+                    };
+                }
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
+                        @Override
+                        public Map<String, String> getDefault(final Path file) {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            assertEquals(Collections.singletonMap("k", "v"), status.getMetadata());
+                            set.set(true);
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        }, new UploadFilterOptions(host));
+    }
+
+    @Test
+    public void testCompleteSetMetadata() throws Exception {
+        final AtomicBoolean set = new AtomicBoolean();
+        this.metadata(set).complete(file, new NullLocal("f"),
+                new TransferStatus().setMetadata(Collections.singletonMap("k", "v")).setComplete(), ProgressListener.noop);
+        assertTrue(set.get());
+    }
+
+    @Test
+    public void testCompleteMetadataSetByWrite() throws Exception {
+        final AtomicBoolean set = new AtomicBoolean();
+        this.metadata(set, Write.Flags.metadata).complete(file, new NullLocal("f"),
+                new TransferStatus().setMetadata(Collections.singletonMap("k", "v")).setComplete(), ProgressListener.noop);
+        assertFalse(set.get());
     }
 }

@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -33,7 +33,7 @@ import java.util.Map;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.StorageObject;
 
-public class GoogleStorageMetadataFeature implements Headers {
+public class GoogleStorageMetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(GoogleStorageMetadataFeature.class);
 
     private final GoogleStorageSession session;

@@ -70,11 +70,11 @@ public class PlistSerializer implements Serializer<NSDictionary> {
 
     @Override
     public void setMapForKey(final Map<String, String> value, final String key) {
-        final NSMutableDictionary dict = NSMutableDictionary.dictionary();
+        final NSMutableDictionary map = NSMutableDictionary.dictionary();
         for(Map.Entry<String, String> entry : value.entrySet()) {
-            dict.setObjectForKey(entry.getValue(), entry.getKey());
+            map.setObjectForKey(entry.getValue(), entry.getKey());
         }
-        dict.setObjectForKey(dict, key);
+        dict.setObjectForKey(map, key);
     }
 
     @Override

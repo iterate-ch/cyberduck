@@ -22,7 +22,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -39,6 +41,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class AzureExceptionMappingServiceTest {
+
+    @Test
+    public void testMapWrappedByOutputStream() {
+        // Error response from service wrapped by output stream of SDK
+        final BackgroundException e = new AzureExceptionMappingService().map(new UncheckedIOException(new IOException(
+                new HttpResponseException("Status code 400, MetadataTooLarge", new StubResponse(400), Collections.singletonMap("Message",
+                        "The metadata specified exceeds the maximum permissible limit (8KB).")))));
+        assertTrue(e instanceof InteroperabilityException);
+        assertTrue(e.getDetail(false), e.getDetail(false).contains("The metadata specified exceeds the maximum permissible limit"));
+    }
 
     @Test
     public void testMapStructuredMessage() {

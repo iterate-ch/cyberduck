@@ -36,7 +36,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
@@ -144,7 +144,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             }
         }
         if(options.metadata) {
-            final Headers sourceFeature = source.getFeature(Headers.class);
+            final Metadata sourceFeature = source.getFeature(Metadata.class);
             if(sourceFeature != null) {
                 progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                         file.getName()));

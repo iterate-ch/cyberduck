@@ -15,22 +15,16 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -48,38 +42,33 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.local.BrowserLauncher;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.CountDownLatch;
-
 public class BrickSession extends HttpSession<BrickApiClient> {
     private static final Logger log = LogManager.getLogger(BrickSession.class);
 
-    private BrickUnauthorizedRetryStrategy retryHandler;
+    private BrickOAuth2AuthorizationService authorizationService;
 
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
-    protected BrickApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected BrickApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        authorizationService = new BrickOAuth2AuthorizationService(configuration.build(), host, prompt, cancel);
+        authorizationService.setParameter("platform", new PreferencesUseragentProvider().get());
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                retryHandler = new BrickUnauthorizedRetryStrategy(this, prompt, cancel)));
-        configuration.addInterceptorLast(retryHandler);
+                new BrickUnauthorizedRetryStrategy(host, authorizationService, cancel)));
+        configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
         return new BrickApiClient(host, configuration.build());
     }
@@ -87,23 +76,19 @@ public class BrickSession extends HttpSession<BrickApiClient> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
-        if(credentials.isPasswordAuthentication()) {
-            retryHandler.setApiKey(credentials.getPassword());
-            // Test credentials
-            try {
-                final Path home = new DefaultHomeFinderService(this).find();
-                log.debug("Retrieved {}", home);
-            }
-            catch(LoginFailureException e) {
-                throw new LoginCanceledException(e);
-            }
+        if(!credentials.isPasswordAuthentication()) {
+            credentials.setOauth(authorizationService.validate(credentials.getOauth(), cancel));
         }
-        else {
-            // No prompt on explicit connect
-            this.pair(host, ConnectionCallback.noop, prompt, cancel,
-                    LocaleFactory.localizedString("Connect an account", "Brick"),
-                    LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick"));
-            retryHandler.setApiKey(credentials.getPassword());
+        try {
+            final Path home = new DefaultHomeFinderService(this).find();
+            log.debug("Retrieved {}", home);
+        }
+        catch(LoginFailureException e) {
+            if(credentials.isPasswordAuthentication()) {
+                // Explicit API key rejected. Report the failure without the OAuth retry prompt.
+                throw new AccessDeniedException(e.getMessage(), e.getDetail(), e);
+            }
+            throw e;
         }
     }
 
@@ -117,72 +102,6 @@ public class BrickSession extends HttpSession<BrickApiClient> {
         finally {
             super.disconnect();
         }
-    }
-
-    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel,
-                            final String title, final String message) throws BackgroundException {
-        return this.pair(bookmark, alert, prompt, cancel, title, message, BrowserLauncherFactory.get());
-    }
-
-    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel,
-                            final String title, final String message,
-                            final BrowserLauncher browser) throws BackgroundException {
-        final String token = new BrickCredentialsConfigurator().configure(host).getToken();
-        log.debug("Attempt pairing with token {}", token);
-        final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
-        // Operate in background until canceled
-        final ConnectionCallback lock = new DisabledConnectionCallback() {
-            final CountDownLatch lock = new CountDownLatch(1);
-
-            @Override
-            public void close(final String input) {
-                prompt.close(input);
-                // Continue with login
-                lock.countDown();
-            }
-
-            @Override
-            public void warn(final Host bookmark, final String title, final String message,
-                             final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
-                alert.warn(bookmark, title, message, defaultButton, cancelButton, preference);
-                try {
-                    final StringBuilder url = new StringBuilder(String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
-                            new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                            token,
-                            URIEncoder.encode(new PreferencesUseragentProvider().get()),
-                            URIEncoder.encode(InetAddress.getLocalHost().getHostName())));
-                    if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-                        url.append(String.format("&username=%s", URIEncoder.encode(bookmark.getCredentials().getUsername())));
-                    }
-                    if(!browser.open(url.toString())) {
-                        throw new ConnectionCanceledException();
-                    }
-                }
-                catch(UnknownHostException e) {
-                    throw new ConnectionCanceledException(e);
-                }
-                prompt.await(lock, bookmark, title, message);
-                // Check if canceled with null input
-                if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-                    throw new LoginCanceledException();
-                }
-            }
-        };
-        // Poll for pairing key until canceled
-        scheduler.repeat(lock);
-        // Await reply
-        try {
-            lock.warn(bookmark, title, message,
-                    LocaleFactory.localizedString("Login", "Login"),
-                    LocaleFactory.localizedString("Cancel"), null);
-        }
-        finally {
-            // Not canceled
-            scheduler.shutdown();
-        }
-        // When connect attempt is interrupted will throw connection cancel failure
-        cancel.verify();
-        return bookmark.getCredentials();
     }
 
     @Override

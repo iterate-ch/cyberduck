@@ -22,6 +22,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 public class DriveListService implements ListService {
 
     private final DriveSession session;
@@ -53,4 +55,8 @@ public class DriveListService implements ListService {
         }
     }
 
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return EnumSet.of(Flags.metadata);
+    }
 }

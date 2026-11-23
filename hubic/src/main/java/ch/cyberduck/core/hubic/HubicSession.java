@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
+import ch.cyberduck.core.openstack.SwiftAuthenticationExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -71,7 +71,7 @@ public class HubicSession extends SwiftSession {
             client.authenticate(new HubicAuthenticationRequest(credentials.getOauth().getAccessToken()), new HubicAuthenticationResponseHandler());
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map(e);
+            throw new SwiftAuthenticationExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

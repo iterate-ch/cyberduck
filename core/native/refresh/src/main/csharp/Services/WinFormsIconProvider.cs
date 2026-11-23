@@ -28,11 +28,18 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            var baseImage = GetFileIcon(default, true, true, false);
-            var overlay = GetResource("aliasbadge", 32);
-            var overlayed = Overlay(baseImage, overlay, 32);
-            IconCache.CacheIcon("path:folder", 32, overlayed, "alias");
-            return overlayed;
+            if (GetFileIcon(default, true, true, false) is not { } baseImage)
+            {
+                return null;
+            }
+
+            if (GetResource("aliasbadge", 32) is { } overlay)
+            {
+                baseImage = Overlay(baseImage, overlay, 32);
+            }
+
+            IconCache.CacheIcon("path:folder", 32, baseImage, "alias");
+            return baseImage;
         }
 
         public Image DefaultBrowser()
@@ -89,6 +96,12 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                     nearestFit = item;
                 }
             }
+
+            if (nearestFit is null)
+            {
+                return null;
+            }
+
             nearestFit = new Bitmap(nearestFit, size, size);
             cacheCallback(IconCache, size, nearestFit);
             return nearestFit;
@@ -111,7 +124,10 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 var protocol = (Protocol)iterator.next();
                 var key = protocol.disk();
                 removedKeys.Remove(key);
-                ProtocolList.Images.Add(key, GetDisk(protocol, 16));
+                if (GetDisk(protocol, 16) is { } image)
+                {
+                    ProtocolList.Images.Add(key, image);
+                }
             }
             foreach (var item in removedKeys)
             {

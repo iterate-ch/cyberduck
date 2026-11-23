@@ -208,6 +208,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return EnumSet.of(Flags.timestamp);
+        return EnumSet.of(Flags.timestamp, Flags.metadata);
     }
 }

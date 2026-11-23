@@ -1,7 +1,9 @@
 package ch.cyberduck.core.worker;
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -291,5 +293,73 @@ public class WriteMetadataWorkerTest {
             }
         });
         assertTrue(call.get());
+    }
+
+    @Test
+    public void testRunRecursiveNullValue() throws Exception {
+        final Path folder = new Path("/f", EnumSet.of(Path.Type.directory));
+        {
+            final Map<String, String> map = new HashMap<>();
+            map.put("equal", "equal");
+            map.put("different", "folder");
+            folder.attributes().setMetadata(map);
+        }
+        // Child with metadata included in listing
+        final Path listed = new Path(folder, "listed", EnumSet.of(Path.Type.file));
+        {
+            final Map<String, String> map = new HashMap<>();
+            map.put("equal", "equal");
+            map.put("different", "listed");
+            listed.attributes().setMetadata(map);
+        }
+        // Child without metadata in listing such as for S3 and Swift
+        final Path unlisted = new Path(folder, "unlisted", EnumSet.of(Path.Type.file));
+        final Map<String, String> updated = new HashMap<>();
+        updated.put("equal", "equal-changed");
+        updated.put("different", null);
+        final Map<String, Map<String, String>> written = new HashMap<>();
+        new WriteMetadataWorker(Collections.singletonList(folder), updated, true, ProgressListener.noop).run(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
+                        @Override
+                        public Map<String, String> getDefault(final Path file) {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            written.put(file.getName(), status.getMetadata());
+                        }
+                    };
+                }
+                if(type == ListService.class) {
+                    return (T) (ListService) (directory, listener) -> new AttributedList<>(Arrays.asList(listed, unlisted));
+                }
+                return super._getFeature(type);
+            }
+        });
+        {
+            final Map<String, String> expected = new HashMap<>();
+            expected.put("equal", "equal-changed");
+            expected.put("different", "folder");
+            assertEquals(expected, written.get("f"));
+        }
+        {
+            // Own value kept for key with null value
+            final Map<String, String> expected = new HashMap<>();
+            expected.put("equal", "equal-changed");
+            expected.put("different", "listed");
+            assertEquals(expected, written.get("listed"));
+        }
+        // Key with null value removed without last known metadata
+        assertEquals(Collections.singletonMap("equal", "equal-changed"), written.get("unlisted"));
     }
 }

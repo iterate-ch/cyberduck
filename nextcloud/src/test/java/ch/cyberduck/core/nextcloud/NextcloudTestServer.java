@@ -16,6 +16,7 @@ package ch.cyberduck.core.nextcloud;
  */
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -50,10 +51,18 @@ public enum NextcloudTestServer {
                     .withStartupTimeout(Duration.ofMinutes(5)));
             container.start();
             // Advertises files.locking in capabilities
-            final Container.ExecResult result = container.execInContainer("runuser", "-u", "www-data", "--",
+            final Container.ExecResult install = container.execInContainer("runuser", "-u", "www-data", "--",
                 "php", "/var/www/html/occ", "app:install", "files_lock");
-            if(result.getExitCode() != 0) {
-                throw new IOException(String.format("Failure installing files_lock: %s", result.getStderr() + result.getStdout()));
+            if(install.getExitCode() != 0) {
+                if(!StringUtils.contains(install.getStderr() + install.getStdout(), "already installed")) {
+                    throw new IOException(String.format("Failure installing files_lock: %s", install.getStderr() + install.getStdout()));
+                }
+                // Bundled with recent server releases but possibly disabled
+                final Container.ExecResult enable = container.execInContainer("runuser", "-u", "www-data", "--",
+                        "php", "/var/www/html/occ", "app:enable", "files_lock");
+                if(enable.getExitCode() != 0) {
+                    throw new IOException(String.format("Failure enabling files_lock: %s", enable.getStderr() + enable.getStdout()));
+                }
             }
             this.awaitLockingCapability(container);
             return container;

@@ -13,14 +13,12 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
     <PackageVersion Include="ExceptionReporter " Version="2.4.2" />
     <PackageVersion Include="IKVM" Version="8.16.1" />
@@ -49,12 +47,10 @@
     <PackageVersion Include="WixToolset.NetFx.wixext" Version="5.0.2" />
     <PackageVersion Include="WixToolset.Util.wixext" Version="5.0.2" />
   </ItemGroup>
-
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.4" />
   </ItemGroup>
-
   <PropertyGroup>
-    <PackageVersions>@(PackageVersion->'%(Identity)'->Replace('.', '_')->'Pkg%(Identity)Version=%(Version)')</PackageVersions>
+    <PackageVersions>@(PackageVersion-&gt;'%(Identity)'-&gt;Replace('.', '_')-&gt;'Pkg%(Identity)Version=%(Version)')</PackageVersions>
   </PropertyGroup>
 </Project>

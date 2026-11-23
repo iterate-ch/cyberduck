@@ -104,4 +104,9 @@ public class BoxListService implements ListService {
             throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return EnumSet.of(Flags.metadata);
+    }
 }

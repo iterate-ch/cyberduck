@@ -50,7 +50,7 @@ import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 public class DriveAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
     private static final Logger log = LogManager.getLogger(DriveAttributesFinderFeature.class);
 
-    protected static final String DEFAULT_FIELDS = "createdTime,trashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
+    protected static final String DEFAULT_FIELDS = "createdTime,trashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version,properties";
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;

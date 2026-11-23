@@ -77,6 +77,7 @@ public class OAuth2AuthorizationService {
 
     private final Host host;
     private final LoginCallback prompt;
+    private final OAuth2AuthorizationCodeProvider provider;
 
     private String clientid;
     private String clientsecret;
@@ -110,11 +111,20 @@ public class OAuth2AuthorizationService {
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
                                       final LoginCallback prompt) {
+        this(transport, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt,
+                OAuth2AuthorizationCodeProviderFactory.get());
+    }
+
+    public OAuth2AuthorizationService(final HttpTransport transport, final Host host,
+                                      final String tokenServerUrl, final String authorizationServerUrl,
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
+                                      final LoginCallback prompt, final OAuth2AuthorizationCodeProvider provider) {
         this.transport = transport;
         this.host = host;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
+        this.provider = provider;
         this.clientid = clientid;
         this.clientsecret = clientsecret;
         this.scopes = scopes;
@@ -266,8 +276,7 @@ public class OAuth2AuthorizationService {
         // Direct the user to an authorization page to grant access to their protected data.
         final String authorizationCodeUrl = authorizationCodeUrlBuilder.build();
         log.debug("Open browser with URL {}", authorizationCodeUrl);
-        final String authorizationCode = OAuth2AuthorizationCodeProviderFactory.get().prompt(
-                host, prompt, authorizationCodeUrl, redirectUri, state);
+        final String authorizationCode = provider.prompt(host, prompt, authorizationCodeUrl, redirectUri, state);
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
@@ -540,6 +549,7 @@ public class OAuth2AuthorizationService {
                     .setExpiresInSeconds(expiresInSeconds)
                     .setAccessToken(accessToken)
                     .setRefreshToken(refreshToken);
+            response.putAll(this.getUnknownKeys());
             if(null == idToken) {
                 return response;
             }

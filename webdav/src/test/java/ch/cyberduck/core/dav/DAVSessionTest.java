@@ -12,7 +12,7 @@ import ch.cyberduck.core.exception.SSLNegotiateException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -104,7 +104,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         assertNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
         assertNotNull(session.getFeature(Copy.class));
-        assertNotNull(session.getFeature(Headers.class));
+        assertNotNull(session.getFeature(Metadata.class));
         assertNull(session.getFeature(DistributionConfiguration.class));
         assertNotNull(session.getFeature(Touch.class));
     }

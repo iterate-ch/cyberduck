@@ -97,7 +97,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        // Read online metadata (storing non-edited metadata entries)
+        // Start from last known metadata of file to keep entries requested with null value for keys differing or missing between multiple selected files
         final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
         // Purge removed entries
         update.entrySet().removeIf(entry -> !metadata.containsKey(entry.getKey()));

@@ -296,8 +296,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             // Retry immediately
                             return call();
                         }
-                        // Prompt to continue or abort for application errors
-                        else if(error.prompt(new TransferItem(file, local), parent, e, table.size())) {
+                        // Prompt to continue or abort for application errors with status of file instead of parent
+                        else if(error.prompt(new TransferItem(file, local), failed(file, local, e), e, table.size())) {
                             // Continue
                             log.warn("Ignore transfer failure {}", e.getMessage());
                             return null;
@@ -326,6 +326,38 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             log.info("Skip unchecked file {} for transfer {}", file, this);
         }
         return null;
+    }
+
+    /**
+     * Status of file failed to prepare to pass to error callback
+     *
+     * @param file    File to transfer
+     * @param local   Local file
+     * @param failure Failure preparing file
+     * @return Status determined by filter when failure occurred after prepare or new status with length of source file
+     */
+    protected TransferStatus failed(final Path file, final Local local, final BackgroundException failure) {
+        final TransferStatus prepared = table.get(new TransferItem(file, local));
+        if(prepared != null) {
+            // Failure after status was determined by filter. Copy to leave status in table unchanged
+            return new TransferStatus(prepared).setFailure(failure);
+        }
+        final TransferStatus status = new TransferStatus().setFailure(failure);
+        if(file.isFile()) {
+            switch(transfer.getType()) {
+                case upload:
+                    if(local != null) {
+                        status.setLength(local.attributes().getSize());
+                    }
+                    break;
+                case download:
+                case copy:
+                case move:
+                    status.setLength(file.attributes().getSize());
+                    break;
+            }
+        }
+        return status;
     }
 
     /**

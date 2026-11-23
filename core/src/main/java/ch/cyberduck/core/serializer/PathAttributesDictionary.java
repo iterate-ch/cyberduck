@@ -27,7 +27,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.vault.VaultMetadataDictionary;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class PathAttributesDictionary<T> {
@@ -112,7 +111,6 @@ public class PathAttributesDictionary<T> {
         if(trashedObj != null) {
             attributes.setTrashed(Boolean.parseBoolean(trashedObj));
         }
-        attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
         final T vaultMetadataObj = dict.objectForKey("Vault Version");
@@ -122,6 +120,10 @@ public class PathAttributesDictionary<T> {
         final Map<String, String> customObj = dict.mapForKey("Custom");
         if(customObj != null) {
             attributes.setCustom(customObj);
+        }
+        final Map<String, String> metadataObj = dict.mapForKey("Metadata");
+        if(metadataObj != null) {
+            attributes.setMetadata(metadataObj);
         }
         final String verdictObj = dict.stringForKey("Verdict");
         if(verdictObj != null) {
