@@ -48,7 +48,8 @@ namespace Ch.Cyberduck.Core.Local
             }
             else
             {
-                Process process = new Process();
+                Process process = new();
+                process.StartInfo.UseShellExecute = true;
                 if (null == application)
                 {
                     process.StartInfo.FileName = "\"" + local.getAbsolute() + "\"";
@@ -56,7 +57,6 @@ namespace Ch.Cyberduck.Core.Local
                 else
                 {
                     process.StartInfo.FileName = GetExecutableCommand(application.getIdentifier());
-                    process.StartInfo.UseShellExecute = true;
                     process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
                 }
 
