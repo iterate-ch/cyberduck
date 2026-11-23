@@ -28,11 +28,18 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            var baseImage = GetFileIcon(default, true, true, false);
-            var overlay = GetResource("aliasbadge", 32);
-            var overlayed = Overlay(baseImage, overlay, 32);
-            IconCache.CacheIcon("path:folder", 32, overlayed, "alias");
-            return overlayed;
+            if (GetFileIcon(default, true, true, false) is not { } baseImage)
+            {
+                return null;
+            }
+
+            if (GetResource("aliasbadge", 32) is { } overlay)
+            {
+                baseImage = Overlay(baseImage, overlay, 32);
+            }
+
+            IconCache.CacheIcon("path:folder", 32, baseImage, "alias");
+            return baseImage;
         }
 
         public Image DefaultBrowser()
