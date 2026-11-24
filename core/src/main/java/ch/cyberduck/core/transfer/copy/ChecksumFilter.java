@@ -46,12 +46,12 @@ public class ChecksumFilter extends AbstractCopyFilter {
         this(source, destination, files, destination.getFeature(Find.class), destination.getFeature(AttributesFinder.class), options);
     }
 
-    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder attribute) {
-        this(source, destination, files, find, attribute, new UploadFilterOptions(destination.getHost()));
+    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find targetFinder, final AttributesFinder targetAttributesFinder) {
+        this(source, destination, files, targetFinder, targetAttributesFinder, new UploadFilterOptions(destination.getHost()));
     }
 
-    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
-        super(source, destination, files, find, attribute, options);
+    public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find targetFinder, final AttributesFinder targetAttributesFinder, final UploadFilterOptions options) {
+        super(source, destination, files, targetFinder, targetAttributesFinder, options);
     }
 
     @Override
@@ -59,9 +59,9 @@ public class ChecksumFilter extends AbstractCopyFilter {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {
-                if(find.find(target)) {
+                if(targetFinder.find(target)) {
                     if(Checksum.NONE != source.attributes().getChecksum()) {
-                        final PathAttributes targetAttributes = attribute.find(target);
+                        final PathAttributes targetAttributes = targetAttributesFinder.find(target);
                         if(Checksum.NONE != targetAttributes.getChecksum()) {
                             if(Objects.equals(source.attributes().getChecksum(), targetAttributes.getChecksum())) {
                                 log.info("Skip file {} with checksum {}", source, targetAttributes.getChecksum());

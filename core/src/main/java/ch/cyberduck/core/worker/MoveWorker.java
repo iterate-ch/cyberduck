@@ -41,11 +41,11 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.comparator.VersionsComparator;
 
 import org.apache.logging.log4j.LogManager;
@@ -109,8 +109,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 final Map<Path, Path> recursive = this.compile(feature, list, entry.getKey(), entry.getValue());
                 log.debug("Compiled recursive list {}", recursive);
                 final OverwriteFilter filter = new OverwriteFilter(session, destination, recursive,
-                        new CachingFindFeature(session, cache),
-                        new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))));
+                        new CachingFindFeature(destination, cache), new CachingAttributesFinderFeature(destination, cache),
+                        new CachingAttributesFinderFeature(session, cache),
+                        new UploadFilterOptions(destination.getHost()));
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     final Path s = r.getKey();
                     final Path t = r.getValue();

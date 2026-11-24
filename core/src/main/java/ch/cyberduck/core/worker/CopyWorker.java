@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import java.text.MessageFormat;
@@ -87,7 +89,9 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                 }
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 final OverwriteFilter filter = new OverwriteFilter(session, destination, recursive,
-                        new CachingFindFeature(session, cache), destination.getFeature(AttributesFinder.class));
+                        new CachingFindFeature(destination, cache),
+                        new CachingAttributesFinderFeature(destination, cache),
+                        new CachingAttributesFinderFeature(session, cache), new UploadFilterOptions(destination.getHost()));
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     final Path s = r.getKey();
                     final Path t = r.getValue();
