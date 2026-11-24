@@ -102,7 +102,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             }
             log.debug("Upload {} to {}", file, uploadUri);
             for(int partNumber = 1; remaining > 0; partNumber++) {
-                final long length = Math.min(chunksize, remaining);
+                final long length = Math.min(status.alignSegment(chunksize), remaining);
                 parts.add(this.submit(pool, write, file, local, throttle, listener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;

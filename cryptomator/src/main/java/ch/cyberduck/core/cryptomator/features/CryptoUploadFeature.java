@@ -51,6 +51,8 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        // Segments of a segmented upload are encrypted on their own and must contain whole chunks only
+        status.setSegmentAlignment(vault.getCleartextChunkSize());
         return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, listener, status.setParent(new CryptoTransferStatus(vault, file, status) {
             @Override
             public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {

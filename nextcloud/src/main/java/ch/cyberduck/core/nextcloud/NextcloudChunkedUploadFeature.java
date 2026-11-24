@@ -121,7 +121,7 @@ public class NextcloudChunkedUploadFeature extends HttpUploadFeature<Void> {
                 mkcol.setHeader(HttpHeaders.DESTINATION, destination);
                 mkcol.setHeader(NextcloudWriteFeature.HEADER_TOTAL_LENGTH, String.valueOf(status.getLength()));
                 session.getClient().execute(mkcol, new VoidResponseHandler());
-                final long size = Math.max(chunksize, (status.getLength() + MAX_CHUNKS - 1) / MAX_CHUNKS);
+                final long size = status.alignSegment(Math.max(chunksize, (status.getLength() + MAX_CHUNKS - 1) / MAX_CHUNKS));
                 final List<Future<Void>> chunks = new ArrayList<>();
                 long offset = 0;
                 long remaining = status.getLength();
