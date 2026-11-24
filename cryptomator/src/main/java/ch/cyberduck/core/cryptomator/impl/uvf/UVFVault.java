@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.LockedVault;
+import org.cryptomator.cryptolib.api.NameShortener;
 import org.cryptomator.cryptolib.api.UnlockedVault;
 import org.cryptomator.cryptolib.api.UnsupportedVaultFormatException;
 import org.cryptomator.cryptolib.api.UvfLockedVault;
@@ -154,10 +155,11 @@ public class UVFVault extends AbstractVault {
         log.debug("Unlocked vault {} with seeds {}", home, unlocked.seedIds());
         UVFSeedPins.put(this.getPinIdentifier(session), unlocked.seedDigests().values());
         this.vault = unlocked;
-        // TODO Support name shortening for vaults with nameShorteningThreshold() other than NameShortener.DISABLED
-        //  using nameShortener() of the unlocked vault (UVF spec draft PR #37). Such vaults are not rejected for now
-        //  although cryptolib requires applications without name shortening support not to access them.
-        this.filenameProvider = new CryptoFilenameV7Provider(this, Integer.MAX_VALUE);
+        // TODO Support name shortening using nameShortener() of the unlocked vault (UVF spec draft PR #37). Until then
+        //  reject filenames exceeding the threshold of vaults with name shortening enabled as for vault format 8 to
+        //  never write names unshortened. Entries shortened by other clients are not listed.
+        this.filenameProvider = new CryptoFilenameV7Provider(this, NameShortener.DISABLED == unlocked.nameShorteningThreshold() ?
+                Integer.MAX_VALUE : unlocked.nameShorteningThreshold());
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
     }
 
