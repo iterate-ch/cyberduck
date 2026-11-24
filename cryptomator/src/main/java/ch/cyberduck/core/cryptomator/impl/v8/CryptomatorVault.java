@@ -333,7 +333,7 @@ public class CryptomatorVault extends AbstractVault {
     private void init(final Cvf8UnlockedVault unlocked) {
         log.debug("Unlocked vault {} with cipher combo {}", home, unlocked.cipherCombo());
         this.vault = unlocked;
-        this.filenameProvider = new CryptoFilenameV7Provider(unlocked.shorteningThreshold());
+        this.filenameProvider = new CryptoFilenameV7Provider(this, unlocked.shorteningThreshold());
         this.directoryProvider = new CryptoDirectoryV8Provider(this, this.filenameProvider);
     }
 

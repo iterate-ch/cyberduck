@@ -50,7 +50,8 @@ public class CryptoDirectoryV8ProviderTest {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptomatorVault(home), new CryptoFilenameV7Provider());
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider(vault));
         provider.toEncrypted(session, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
@@ -59,7 +60,8 @@ public class CryptoDirectoryV8ProviderTest {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptomatorVault(home), new CryptoFilenameV7Provider());
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider(vault));
         provider.toEncrypted(session, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
@@ -107,7 +109,7 @@ public class CryptoDirectoryV8ProviderTest {
         final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
         vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider());
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider(vault));
         assertNotNull(provider.toEncrypted(session, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
         assertNotNull(provider.toEncrypted(session, f));
