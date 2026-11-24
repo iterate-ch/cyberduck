@@ -40,6 +40,11 @@ import com.nimbusds.jose.jwk.OctetSequenceKey;
  */
 public class JWKSetUVFVaultMetadataProvider implements UVFVaultMetadataProvider {
 
+    /**
+     * Length of member key in bytes
+     */
+    private static final int MEMBER_KEY_LENGTH = 32;
+
     private final JWKSet keys;
 
     public JWKSetUVFVaultMetadataProvider(final JWKSet keys) {
@@ -54,20 +59,29 @@ public class JWKSetUVFVaultMetadataProvider implements UVFVaultMetadataProvider 
     @Override
     public UvfUnlockedVault create() throws BackgroundException {
         final ECKey key = this.find(ECKey.class).orElseThrow(() -> new VaultException("Missing recovery key"));
+        final UvfRecoveryKey recoveryKey;
         try {
-            final UvfRecoveryKey recoveryKey = key.isPrivate() ?
+            recoveryKey = key.isPrivate() ?
                     UvfRecoveryKey.of(key.toKeyPair()) : UvfRecoveryKey.of(key.toECPublicKey());
-            // TODO Enable name shortening once supported, see UVFVault
-            return UvfUnlockedVault.create(FastSecureRandomProvider.get().provide(),
-                    UvfKeyEncryptionKey.memberKey(this.getMemberKey()), recoveryKey, NameShortener.DISABLED);
         }
-        catch(JOSEException e) {
-            throw new VaultException("Invalid recovery key", e);
+        catch(JOSEException | IllegalArgumentException e) {
+            // Not a P-384 key
+            throw new VaultException(String.format("Invalid recovery key. %s", e.getMessage()), e);
         }
+        // TODO Enable name shortening once supported, see UVFVault
+        return UvfUnlockedVault.create(FastSecureRandomProvider.get().provide(),
+                UvfKeyEncryptionKey.memberKey(this.getMemberKey()), recoveryKey, NameShortener.DISABLED);
     }
 
+    /**
+     * @return Symmetric member key with 256 bit
+     */
     private SecretKey getMemberKey() throws VaultException {
-        return this.find(OctetSequenceKey.class).orElseThrow(() -> new VaultException("Missing member key")).toSecretKey("AES");
+        final SecretKey key = this.find(OctetSequenceKey.class).orElseThrow(() -> new VaultException("Missing member key")).toSecretKey("AES");
+        if(MEMBER_KEY_LENGTH != key.getEncoded().length) {
+            throw new VaultException(String.format("Invalid member key with %d bit", key.getEncoded().length * 8));
+        }
+        return key;
     }
 
     private <K extends JWK> Optional<K> find(final Class<K> type) {

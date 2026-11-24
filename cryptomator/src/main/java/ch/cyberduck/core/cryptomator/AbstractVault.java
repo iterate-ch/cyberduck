@@ -94,6 +94,10 @@ public abstract class AbstractVault implements Vault {
         catch(AuthenticationFailedException e) {
             throw new CryptoAuthenticationException("Failure to decrypt file header", e);
         }
+        catch(IllegalArgumentException e) {
+            // Truncated or malformed header, other file format or seed unknown to the unlocked vault metadata
+            throw new CryptoAuthenticationException(String.format("Failure to decrypt file header. %s", e.getMessage()), e);
+        }
     }
 
     /**

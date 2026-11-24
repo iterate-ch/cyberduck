@@ -81,4 +81,22 @@ public class JWKSetUVFVaultMetadataProviderTest {
     public void testCreateMissingMemberKey() throws Exception {
         new JWKSetUVFVaultMetadataProvider(new JWKSet(recoveryKey())).create();
     }
+
+    @Test(expected = VaultException.class)
+    public void testCreateInvalidMemberKey() throws Exception {
+        new JWKSetUVFVaultMetadataProvider(new JWKSet(Arrays.asList(new OctetSequenceKeyGenerator(128).generate(), recoveryKey()))).create();
+    }
+
+    @Test(expected = VaultException.class)
+    public void testUnlockInvalidMemberKey() throws Exception {
+        final UvfUnlockedVault created = new JWKSetUVFVaultMetadataProvider(new JWKSet(Arrays.asList(memberKey(), recoveryKey()))).create();
+        final UvfLockedVault locked = (UvfLockedVault) LockedVault.parse(created.serializeConfig());
+        created.destroy();
+        new JWKSetUVFVaultMetadataProvider(new JWKSet(new OctetSequenceKeyGenerator(128).generate())).unlock(locked);
+    }
+
+    @Test(expected = VaultException.class)
+    public void testCreateInvalidRecoveryKeyCurve() throws Exception {
+        new JWKSetUVFVaultMetadataProvider(new JWKSet(Arrays.asList(memberKey(), new ECKeyGenerator(Curve.P_256).generate()))).create();
+    }
 }

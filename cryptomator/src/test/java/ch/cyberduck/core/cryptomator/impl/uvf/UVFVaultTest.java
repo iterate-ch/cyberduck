@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.VaultDirectory;
@@ -39,6 +40,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
@@ -151,5 +153,46 @@ public class UVFVaultTest {
         final UVFVault vault = new UVFVault(home);
         final DefaultUVFVaultMetadataProvider provider = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase"));
         vault.create(session, null, provider);
+    }
+
+    @Test(expected = VaultException.class)
+    public void testLoadOutdatedMetadata() throws Exception {
+        final UvfUnlockedVault fixture = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).create();
+        final byte[] outdated = fixture.serializeConfig();
+        fixture.addSeed();
+        final byte[] current = fixture.serializeConfig();
+        fixture.destroy();
+        final AtomicReference<byte[]> metadata = new AtomicReference<>(current);
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            if("vault.uvf".equals(file.getName())) {
+                                return new ByteArrayInputStream(metadata.get());
+                            }
+                            throw new NotfoundException(String.format("%s not found", file.getName()));
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final Path home = new Path("/rollback", EnumSet.of(Path.Type.directory));
+        final UVFVault vault = new UVFVault(home);
+        // Pins seeds of current metadata
+        vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
+        vault.close();
+        // Metadata missing the seed added later
+        metadata.set(outdated);
+        new UVFVault(home).load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
     }
 }
