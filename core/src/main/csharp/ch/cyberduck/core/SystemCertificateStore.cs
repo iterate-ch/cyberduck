@@ -118,9 +118,7 @@ namespace Ch.Cyberduck.Core
             if (null == errorFromChainStatus && hostnameMismatch)
             {
                 errorFromChainStatus =
-                    string.Format(LocaleFactory.localizedString(
-                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                        "Keychain"), hostName);
+                    GetMessage("The certificate for this server is invalid.", hostName);
             }
 
             if (null != errorFromChainStatus)
@@ -198,6 +196,17 @@ namespace Ch.Cyberduck.Core
             return false;
         }
 
+        /// <summary>
+        /// Concatenate reason the certificate is not trusted with the question to connect anyway
+        /// </summary>
+        private static string GetMessage(string reason, string hostName)
+        {
+            return LocaleFactory.localizedString(reason, "Keychain") + " " + string.Format(
+                LocaleFactory.localizedString(
+                    "You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                    "Keychain"), hostName);
+        }
+
         private string GetErrorFromChainStatus(X509Chain chain, string hostName)
         {
             string error = null;
@@ -216,9 +225,7 @@ namespace Ch.Cyberduck.Core
                 {
                     //certificate is expired, CSSM_CERT_STATUS_EXPIRED
                     error =
-                        string.Format(LocaleFactory.localizedString(
-                            "The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                            "Keychain"), hostName);
+                        GetMessage("The certificate for this server has expired.", hostName);
                     break;
                 }
 
@@ -227,18 +234,14 @@ namespace Ch.Cyberduck.Core
                 {
                     // untrusted self-signed, !CSSM_CERT_STATUS_IS_IN_ANCHORS && CSSM_CERT_STATUS_IS_ROOT
                     error =
-                        string.Format(LocaleFactory.localizedString(
-                            "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                            "Keychain"), hostName);
+                        GetMessage("The certificate for this server was signed by an unknown certifying authority.", hostName);
                     break;
                 }
 
                 //all other errors we map to !CSSM_CERT_STATUS_IS_IN_ANCHORS
                 Log.debug("Certificate error" + status.StatusInformation);
                 error =
-                    string.Format(LocaleFactory.localizedString(
-                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                        "Keychain"), hostName);
+                    GetMessage("The certificate for this server is invalid.", hostName);
             }
 
             return error;
