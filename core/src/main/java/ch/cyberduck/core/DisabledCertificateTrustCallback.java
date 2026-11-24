@@ -23,7 +23,7 @@ import java.util.List;
 public class DisabledCertificateTrustCallback implements CertificateTrustCallback {
 
     @Override
-    public void prompt(final String hostname, final List<X509Certificate> certificates) throws ConnectionCanceledException {
+    public void prompt(final String message, final List<X509Certificate> certificates) throws ConnectionCanceledException {
         throw new ConnectionCanceledException();
     }
 }

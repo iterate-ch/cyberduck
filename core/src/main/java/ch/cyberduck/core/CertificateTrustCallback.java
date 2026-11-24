@@ -25,9 +25,11 @@ public interface CertificateTrustCallback {
     /**
      * Prompt user to evaluate trust in certificate
      *
-     * @param hostname     Hostname
+     * @param message      Reason why the certificate is not trusted and question to connect anyway. Implementations
+     *                     using the native trust panel of the platform that generates the text itself evaluate trust
+     *                     for the hostname given instead
      * @param certificates Certificate chain
      * @throws ConnectionCanceledException Prompt dismissed by user
      */
-    void prompt(String hostname, List<X509Certificate> certificates) throws ConnectionCanceledException;
+    void prompt(String message, List<X509Certificate> certificates) throws ConnectionCanceledException;
 }
