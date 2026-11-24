@@ -41,7 +41,6 @@ import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class DefaultCertificateStore implements CertificateStore {
     private static final Logger log = LogManager.getLogger(DefaultCertificateStore.class);
@@ -59,7 +58,7 @@ public class DefaultCertificateStore implements CertificateStore {
     }
 
     public DefaultCertificateStore(final X509TrustManager trust) {
-        this.trust = Objects.requireNonNull(trust);
+        this.trust = trust;
     }
 
     private final DefaultHostnameVerifier verifier
