@@ -73,6 +73,6 @@ public class LocalFactoryTest {
         other[0].join(TimeUnit.SECONDS.toMillis(10));
         assertTrue(!other[0].isAlive());
         assertNotNull(created.get());
-        assertEquals("/tmp/test", created.get().getAbsolute());
+        assertEquals("test", created.get().getName());
     }
 }
