@@ -23,6 +23,8 @@ import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
@@ -39,6 +41,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 public class TerminalCertificateStore extends DefaultCertificateStore {
+    private static final Logger log = LogManager.getLogger(TerminalCertificateStore.class);
 
     private final Console console = new Console();
 
@@ -94,12 +97,13 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
             for(TrustManager manager : factory.getTrustManagers()) {
                 if(manager instanceof X509TrustManager) {
                     ((X509TrustManager) manager).checkServerTrusted(
-                        certificates.toArray(new X509Certificate[0]), certificates.get(0).getPublicKey().getAlgorithm());
+                        certificates.toArray(new X509Certificate[0]), "UNKNOWN");
                     return true;
                 }
             }
         }
         catch(NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
+            log.warn("Certificate chain not trusted by default trust managers: {}", e.getMessage());
             return false;
         }
         return false;
