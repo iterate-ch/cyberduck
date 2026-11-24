@@ -54,8 +54,18 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
         this(new InteractiveTerminalPromptReader());
     }
 
+    /**
+     * Trust manager to validate chain or null to use default trust anchors
+     */
+    private final X509TrustManager trust;
+
     public TerminalCertificateStore(final TerminalPromptReader prompt) {
+        this(prompt, null);
+    }
+
+    public TerminalCertificateStore(final TerminalPromptReader prompt, final X509TrustManager trust) {
         this.prompt = prompt;
+        this.trust = trust;
     }
 
     @Override
@@ -92,12 +102,16 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
      */
     private boolean verifyChain(final List<X509Certificate> certificates) {
         try {
+            final X509Certificate[] chain = certificates.toArray(new X509Certificate[0]);
+            if(null != trust) {
+                trust.checkServerTrusted(chain, "UNKNOWN");
+                return true;
+            }
             final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             factory.init((KeyStore) null);
             for(TrustManager manager : factory.getTrustManagers()) {
                 if(manager instanceof X509TrustManager) {
-                    ((X509TrustManager) manager).checkServerTrusted(
-                        certificates.toArray(new X509Certificate[0]), "UNKNOWN");
+                    ((X509TrustManager) manager).checkServerTrusted(chain, "UNKNOWN");
                     return true;
                 }
             }

@@ -25,14 +25,13 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.junit.Test;
 
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import javax.security.auth.x500.X500Principal;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
@@ -92,40 +91,15 @@ public class TerminalCertificateStoreTest {
         final KeyStore store = KeyStore.getInstance("PKCS12");
         store.load(null, null);
         store.setCertificateEntry("test", cert);
-        final File file = File.createTempFile("truststore", ".p12");
-        try (OutputStream out = new FileOutputStream(file)) {
-            store.store(out, "changeit".toCharArray());
-        }
-        final String path = System.getProperty("javax.net.ssl.trustStore");
-        final String password = System.getProperty("javax.net.ssl.trustStorePassword");
-        final String type = System.getProperty("javax.net.ssl.trustStoreType");
-        System.setProperty("javax.net.ssl.trustStore", file.getAbsolutePath());
-        System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
-        System.setProperty("javax.net.ssl.trustStoreType", "PKCS12");
-        try {
-            final AtomicInteger prompts = new AtomicInteger();
-            final TerminalCertificateStore verifier = new TerminalCertificateStore(message -> {
-                prompts.incrementAndGet();
-                return false;
-            });
-            assertTrue(verifier.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
-            assertEquals(0, prompts.get());
-        }
-        finally {
-            restore("javax.net.ssl.trustStore", path);
-            restore("javax.net.ssl.trustStorePassword", password);
-            restore("javax.net.ssl.trustStoreType", type);
-            file.delete();
-        }
-    }
-
-    private static void restore(final String key, final String value) {
-        if(value == null) {
-            System.clearProperty(key);
-        }
-        else {
-            System.setProperty(key, value);
-        }
+        final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        factory.init(store);
+        final AtomicInteger prompts = new AtomicInteger();
+        final TerminalCertificateStore verifier = new TerminalCertificateStore(message -> {
+            prompts.incrementAndGet();
+            return false;
+        }, (X509TrustManager) factory.getTrustManagers()[0]);
+        assertTrue(verifier.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
+        assertEquals(0, prompts.get());
     }
 
     private static X509Certificate selfsigned(final String san) throws Exception {
