@@ -21,6 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.CertificateTrustCallback;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 
@@ -38,23 +39,16 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     private final DefaultHostnameVerifier verifier
         = new DefaultHostnameVerifier();
 
-    private final TerminalPromptReader prompt;
-
     public TerminalCertificateStore() {
-        this(new InteractiveTerminalPromptReader());
+        this(null);
     }
 
-    public TerminalCertificateStore(final TerminalPromptReader prompt) {
-        this(prompt, null);
-    }
-
-    public TerminalCertificateStore(final TerminalPromptReader prompt, final X509TrustManager trust) {
+    public TerminalCertificateStore(final X509TrustManager trust) {
         super(trust);
-        this.prompt = prompt;
     }
 
     @Override
-    public boolean verify(final CertificateTrustCallback callback, final String hostname, final List<X509Certificate> certificates) {
+    public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;
         }
@@ -64,21 +58,34 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
                 c.checkValidity();
             }
             catch(CertificateExpiredException e) {
-                return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
+                return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString("The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname), certificates);
             }
             catch(CertificateNotYetValidException e) {
-                return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
+                return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname), certificates);
             }
         }
         try {
             verifier.verify(hostname, certificates.get(0));
         }
         catch(SSLException e) {
-            return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
+            return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname), certificates);
         }
         if(!this.verifyChain(certificates)) {
-            return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate chain for this server cannot be verified. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
+            return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString("The certificate chain for this server cannot be verified. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname), certificates);
         }
         return true;
+    }
+
+    /**
+     * @return True if user accepted to connect anyway
+     */
+    private boolean confirm(final CertificateTrustCallback prompt, final String message, final List<X509Certificate> certificates) {
+        try {
+            prompt.prompt(message, certificates);
+            return true;
+        }
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
     }
 }

@@ -15,8 +15,6 @@ package ch.cyberduck.cli;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCertificateTrustCallback;
-
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.Extension;
@@ -46,30 +44,27 @@ public class TerminalCertificateStoreTest {
     @Test
     public void testVerifyUntrustedSelfSignedPrompts() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
-        final TerminalCertificateStore store = new TerminalCertificateStore(message -> {
-            prompts.incrementAndGet();
-            return false;
-        });
+        final TerminalCertificateTrustCallback callback = callback(prompts, false);
+        final TerminalCertificateStore store = new TerminalCertificateStore();
         final X509Certificate cert = selfsigned("localhost");
         // Valid dates and matching hostname but not issued by any trusted anchor
-        assertFalse(store.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
+        assertFalse(store.verify(callback, "localhost", Collections.singletonList(cert)));
         assertEquals(1, prompts.get());
     }
 
     @Test
     public void testVerifyUntrustedAcceptedByUser() throws Exception {
-        final TerminalCertificateStore store = new TerminalCertificateStore(message -> true);
-        assertTrue(store.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(selfsigned("localhost"))));
+        final TerminalCertificateTrustCallback callback = callback(new AtomicInteger(), true);
+        final TerminalCertificateStore store = new TerminalCertificateStore();
+        assertTrue(store.verify(callback, "localhost", Collections.singletonList(selfsigned("localhost"))));
     }
 
     @Test
     public void testVerifyHostnameMismatchPrompts() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
-        final TerminalCertificateStore store = new TerminalCertificateStore(message -> {
-            prompts.incrementAndGet();
-            return false;
-        });
-        assertFalse(store.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(selfsigned("wrong.invalid"))));
+        final TerminalCertificateTrustCallback callback = callback(prompts, false);
+        final TerminalCertificateStore store = new TerminalCertificateStore();
+        assertFalse(store.verify(callback, "localhost", Collections.singletonList(selfsigned("wrong.invalid"))));
         assertEquals(1, prompts.get());
     }
 
@@ -94,12 +89,17 @@ public class TerminalCertificateStoreTest {
         final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         factory.init(store);
         final AtomicInteger prompts = new AtomicInteger();
-        final TerminalCertificateStore verifier = new TerminalCertificateStore(message -> {
-            prompts.incrementAndGet();
-            return false;
-        }, (X509TrustManager) factory.getTrustManagers()[0]);
-        assertTrue(verifier.verify(new DisabledCertificateTrustCallback(), "localhost", Collections.singletonList(cert)));
+        final TerminalCertificateTrustCallback callback = callback(prompts, false);
+        final TerminalCertificateStore verifier = new TerminalCertificateStore((X509TrustManager) factory.getTrustManagers()[0]);
+        assertTrue(verifier.verify(callback, "localhost", Collections.singletonList(cert)));
         assertEquals(0, prompts.get());
+    }
+
+    private static TerminalCertificateTrustCallback callback(final AtomicInteger prompts, final boolean accept) {
+        return new TerminalCertificateTrustCallback(message -> {
+            prompts.incrementAndGet();
+            return accept;
+        });
     }
 
     private static X509Certificate selfsigned(final String san) throws Exception {
