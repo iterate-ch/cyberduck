@@ -25,6 +25,13 @@ import ch.cyberduck.core.LocaleFactory;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 
 import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
@@ -71,6 +78,30 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
         catch(SSLException e) {
             return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
         }
+        if(!this.verifyChain(certificates)) {
+            return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate chain for this server cannot be verified. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
+        }
         return true;
+    }
+
+    /**
+     * Validate chain against default trust anchors
+     */
+    private boolean verifyChain(final List<X509Certificate> certificates) {
+        try {
+            final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            factory.init((KeyStore) null);
+            for(TrustManager manager : factory.getTrustManagers()) {
+                if(manager instanceof X509TrustManager) {
+                    ((X509TrustManager) manager).checkServerTrusted(
+                        certificates.toArray(new X509Certificate[0]), certificates.get(0).getPublicKey().getAlgorithm());
+                    return true;
+                }
+            }
+        }
+        catch(NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
+            return false;
+        }
+        return false;
     }
 }
