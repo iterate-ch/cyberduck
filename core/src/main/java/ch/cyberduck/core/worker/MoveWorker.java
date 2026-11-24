@@ -45,6 +45,7 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 import ch.cyberduck.ui.comparator.VersionsComparator;
 
 import org.apache.logging.log4j.LogManager;
@@ -99,12 +100,17 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             final Map<Path, Path> sorted = new TreeMap<>(new VersionsComparator(true));
             sorted.putAll(files);
             final Map<Path, Path> result = new HashMap<>();
+            // Check for existing target
+            final TransferStatus parent = new TransferStatus().setExists(true);
             for(Map.Entry<Path, Path> entry : sorted.entrySet()) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
                 final Map<Path, Path> recursive = this.compile(feature, list, entry.getKey(), entry.getValue());
                 log.debug("Compiled recursive list {}", recursive);
+                final OverwriteFilter filter = new OverwriteFilter(session, destination, recursive,
+                        new CachingFindFeature(session, cache),
+                        new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))));
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     final Path s = r.getKey();
                     final Path t = r.getValue();
@@ -115,21 +121,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                 new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())));
                     }
                     else {
-                        final TransferStatus status = new TransferStatus()
-                                .setLockId(this.getLockId(s))
-                                .setMime(new MappingMimeTypeService().getMime(t.getName()))
-                                .setRegion(s.attributes().getRegion())
-                                .setModified(-1L != s.attributes().getModificationDate() ? s.attributes().getModificationDate() : null)
-                                .setCreated(-1L != s.attributes().getCreationDate() ? s.attributes().getCreationDate() : null)
-                                .setAcl(s.attributes().getAcl())
-                                .setPermission(s.attributes().getPermission())
-                                .setEncryption(s.attributes().getEncryption())
-                                .setStorageClass(s.attributes().getStorageClass())
-                                .setExists(new CachingFindFeature(session, cache).find(t))
-                                .setLength(s.attributes().getSize());
-                        if(status.isExists()) {
-                            status.setRemote(new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(t));
-                        }
+                        // Read attributes, metadata, permission, ACL, encryption and storage class from source
+                        final TransferStatus status = filter.prepare(s, null, parent, listener)
+                                .setLockId(this.getLockId(s));
                         final Delete.Callback delete = new Delete.Callback() {
                             @Override
                             public void delete(final Path file) {
