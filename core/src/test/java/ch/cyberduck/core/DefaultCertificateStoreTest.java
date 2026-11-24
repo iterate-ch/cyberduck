@@ -91,7 +91,7 @@ public class DefaultCertificateStoreTest {
         }, "localhost", Collections.singletonList(cert)));
         assertEquals(1, prompts.get());
         assertTrue(message.toString().contains("has expired"));
-        assertTrue(message.toString().contains("is not valid for localhost"));
+        assertTrue(message.toString().contains("is invalid"));
         assertTrue(message.toString().contains("unknown certifying authority"));
     }
 

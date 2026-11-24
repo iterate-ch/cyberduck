@@ -109,7 +109,7 @@ public class DefaultCertificateStore implements CertificateStore {
             verifier.verify(hostname, certificates.get(0));
         }
         catch(SSLException e) {
-            failures.add(MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is not valid for {0}.", "Keychain"), hostname));
+            failures.add(LocaleFactory.localizedString("The certificate for this server is invalid.", "Keychain"));
         }
         // Validate chain against trust anchors
         try {
