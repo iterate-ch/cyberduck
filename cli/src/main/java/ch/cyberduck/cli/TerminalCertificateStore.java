@@ -23,17 +23,9 @@ import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
@@ -41,8 +33,6 @@ import java.text.MessageFormat;
 import java.util.List;
 
 public class TerminalCertificateStore extends DefaultCertificateStore {
-    private static final Logger log = LogManager.getLogger(TerminalCertificateStore.class);
-
     private final Console console = new Console();
 
     private final DefaultHostnameVerifier verifier
@@ -54,18 +44,13 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
         this(new InteractiveTerminalPromptReader());
     }
 
-    /**
-     * Trust manager to validate chain or null to use default trust anchors
-     */
-    private final X509TrustManager trust;
-
     public TerminalCertificateStore(final TerminalPromptReader prompt) {
         this(prompt, null);
     }
 
     public TerminalCertificateStore(final TerminalPromptReader prompt, final X509TrustManager trust) {
+        super(trust);
         this.prompt = prompt;
-        this.trust = trust;
     }
 
     @Override
@@ -95,31 +80,5 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
             return prompt.prompt(MessageFormat.format(LocaleFactory.localizedString("The certificate chain for this server cannot be verified. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"), hostname));
         }
         return true;
-    }
-
-    /**
-     * Validate chain against default trust anchors
-     */
-    private boolean verifyChain(final List<X509Certificate> certificates) {
-        try {
-            final X509Certificate[] chain = certificates.toArray(new X509Certificate[0]);
-            if(null != trust) {
-                trust.checkServerTrusted(chain, "UNKNOWN");
-                return true;
-            }
-            final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            factory.init((KeyStore) null);
-            for(TrustManager manager : factory.getTrustManagers()) {
-                if(manager instanceof X509TrustManager) {
-                    ((X509TrustManager) manager).checkServerTrusted(chain, "UNKNOWN");
-                    return true;
-                }
-            }
-        }
-        catch(NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
-            log.warn("Certificate chain not trusted by default trust managers: {}", e.getMessage());
-            return false;
-        }
-        return false;
     }
 }

@@ -23,9 +23,18 @@ import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
@@ -33,6 +42,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DefaultCertificateStore implements CertificateStore {
+    private static final Logger log = LogManager.getLogger(DefaultCertificateStore.class);
+
+    /**
+     * Trust manager to validate chain or null to use default trust anchors
+     */
+    private final X509TrustManager trust;
+
+    public DefaultCertificateStore() {
+        this(null);
+    }
+
+    public DefaultCertificateStore(final X509TrustManager trust) {
+        this.trust = trust;
+    }
 
     private final DefaultHostnameVerifier verifier
             = new DefaultHostnameVerifier();
@@ -76,6 +99,35 @@ public class DefaultCertificateStore implements CertificateStore {
         catch(SSLException e) {
             return false;
         }
-        return true;
+        return this.verifyChain(certificates);
+    }
+
+    /**
+     * Validate certificate chain against trust anchors
+     *
+     * @param certificates Chain with server certificate first
+     * @return False if chain cannot be verified
+     */
+    protected boolean verifyChain(final List<X509Certificate> certificates) {
+        try {
+            final X509Certificate[] chain = certificates.toArray(new X509Certificate[0]);
+            if(null != trust) {
+                // Key exchange algorithm is not known. Not evaluated for path validation
+                trust.checkServerTrusted(chain, "UNKNOWN");
+                return true;
+            }
+            final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            factory.init((KeyStore) null);
+            for(TrustManager manager : factory.getTrustManagers()) {
+                if(manager instanceof X509TrustManager) {
+                    ((X509TrustManager) manager).checkServerTrusted(chain, "UNKNOWN");
+                    return true;
+                }
+            }
+        }
+        catch(NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
+            log.warn("Certificate chain not trusted by default trust managers: {}", e.getMessage());
+        }
+        return false;
     }
 }
