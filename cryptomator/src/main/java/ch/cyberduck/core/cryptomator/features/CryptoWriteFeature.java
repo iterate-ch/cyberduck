@@ -68,7 +68,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             if(null == status.getNonces()) {
                 final NonceGenerator nonces = status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                         new RandomNonceGenerator(vault.getNonceSize()) :
-                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength()));
+                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength(), CryptoTransferStatus.isLastSegment(status)));
                 log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }

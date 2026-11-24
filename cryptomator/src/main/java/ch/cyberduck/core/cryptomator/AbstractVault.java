@@ -129,6 +129,20 @@ public abstract class AbstractVault implements Vault {
     }
 
     /**
+     * Number of chunks of a segment of a file
+     *
+     * @param cleartextSize Length of segment
+     * @param last          True for the last segment of a file which includes a trailing empty chunk where required by the vault format
+     * @return Number of chunks that will be encrypted for the segment
+     */
+    public int numberOfChunks(final long cleartextSize, final boolean last) {
+        if(last) {
+            return this.numberOfChunks(cleartextSize);
+        }
+        return (int) ((cleartextSize + this.getCleartextChunkSize() - 1) / this.getCleartextChunkSize());
+    }
+
+    /**
      * @param cleartextOffset Position in cleartext
      * @return Index of chunk containing given position
      */

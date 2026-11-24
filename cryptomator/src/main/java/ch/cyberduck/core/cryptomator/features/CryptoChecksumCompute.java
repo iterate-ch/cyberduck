@@ -84,9 +84,10 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
             status.setHeader(cryptomator.createHeader());
         }
         if(null == status.getNonces()) {
+            // Same number of nonces as chunks encrypted for checksum and upload. No trailing empty chunk in segment followed by other segments
             status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                     new RandomNonceGenerator(cryptomator.getNonceSize()) :
-                    new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
+                    new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength(), CryptoTransferStatus.isLastSegment(status))));
         }
         return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces(),
                 CryptoTransferStatus.isLastSegment(status));
