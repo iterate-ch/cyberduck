@@ -80,6 +80,22 @@ public class DefaultCertificateStoreTest {
     }
 
     @Test
+    public void testVerifyCollectsAllFailuresInSinglePrompt() throws Exception {
+        final AtomicInteger prompts = new AtomicInteger();
+        final StringBuilder message = new StringBuilder();
+        // Expired, for another host and not anchored in trust store
+        final X509Certificate cert = selfsigned("wrong.invalid", "EC", 256, "SHA256withECDSA", -7_200_000, -3_600_000);
+        assertTrue(new DefaultCertificateStore().verify((m, certificates) -> {
+            prompts.incrementAndGet();
+            message.append(m);
+        }, "localhost", Collections.singletonList(cert)));
+        assertEquals(1, prompts.get());
+        assertTrue(message.toString().contains("has expired"));
+        assertTrue(message.toString().contains("is not valid for localhost"));
+        assertTrue(message.toString().contains("unknown certifying authority"));
+    }
+
+    @Test
     public void testVerifyTrustedNoPrompt() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
         final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
@@ -118,13 +134,18 @@ public class DefaultCertificateStoreTest {
     }
 
     private static X509Certificate selfsigned(final String san, final String algorithm, final int size, final String signature) throws Exception {
+        return selfsigned(san, algorithm, size, signature, -60_000, 3_600_000);
+    }
+
+    private static X509Certificate selfsigned(final String san, final String algorithm, final int size, final String signature,
+                                              final long notBefore, final long notAfter) throws Exception {
         final KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
         generator.initialize(size);
         final KeyPair pair = generator.generateKeyPair();
         final X500Principal subject = new X500Principal("CN=" + san);
         final long now = System.currentTimeMillis();
         return new JcaX509CertificateConverter().getCertificate(new JcaX509v3CertificateBuilder(subject,
-            BigInteger.valueOf(now), new Date(now - 60_000), new Date(now + 3_600_000), subject, pair.getPublic())
+            BigInteger.valueOf(now), new Date(now + notBefore), new Date(now + notAfter), subject, pair.getPublic())
             .addExtension(Extension.subjectAlternativeName, false, new GeneralNames(new GeneralName(GeneralName.dNSName, san)))
             .build(new JcaContentSignerBuilder(signature).build(pair.getPrivate())));
     }

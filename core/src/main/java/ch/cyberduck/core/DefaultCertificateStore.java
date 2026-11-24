@@ -40,6 +40,7 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultCertificateStore implements CertificateStore {
@@ -88,29 +89,27 @@ public class DefaultCertificateStore implements CertificateStore {
         if(certificates.isEmpty()) {
             return false;
         }
+        // Run all checks and prompt once with all failures
+        final List<String> failures = new ArrayList<>();
         for(X509Certificate c : certificates) {
             // Checks that the certificate is currently valid.
             try {
                 c.checkValidity();
             }
             catch(CertificateExpiredException e) {
-                return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
-                    "The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
-                    hostname), certificates);
+                failures.add(LocaleFactory.localizedString("The certificate for this server has expired.", "Keychain"));
+                break;
             }
             catch(CertificateNotYetValidException e) {
-                return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
-                    "The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
-                    hostname), certificates);
+                failures.add(LocaleFactory.localizedString("The certificate for this server is not yet valid.", "Keychain"));
+                break;
             }
         }
         try {
             verifier.verify(hostname, certificates.get(0));
         }
         catch(SSLException e) {
-            return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
-                "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
-                hostname), certificates);
+            failures.add(MessageFormat.format(LocaleFactory.localizedString("The certificate for this server is not valid for {0}.", "Keychain"), hostname));
         }
         // Validate chain against trust anchors
         try {
@@ -119,11 +118,15 @@ public class DefaultCertificateStore implements CertificateStore {
         }
         catch(CertificateException e) {
             log.warn("Certificate chain not trusted: {}", e.getMessage());
-            return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
-                "The certificate chain for this server cannot be verified. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
-                hostname), certificates);
+            failures.add(LocaleFactory.localizedString("The certificate for this server was signed by an unknown certifying authority.", "Keychain"));
         }
-        return true;
+        if(failures.isEmpty()) {
+            return true;
+        }
+        failures.add(MessageFormat.format(LocaleFactory.localizedString(
+            "You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
+            hostname));
+        return this.confirm(prompt, String.join(" ", failures), certificates);
     }
 
     /**
