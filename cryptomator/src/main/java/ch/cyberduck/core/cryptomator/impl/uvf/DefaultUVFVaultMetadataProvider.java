@@ -19,6 +19,7 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.vault.VaultCredentials;
 
+import org.cryptomator.cryptolib.api.NameShortener;
 import org.cryptomator.cryptolib.api.UvfKeyEncryptionKey;
 import org.cryptomator.cryptolib.api.UvfLockedVault;
 import org.cryptomator.cryptolib.api.UvfRecoveryKey;
@@ -44,9 +45,11 @@ public class DefaultUVFVaultMetadataProvider implements UVFVaultMetadataProvider
     @Override
     public UvfUnlockedVault create() throws BackgroundException {
         // TODO Display recovery key from serializedRecoveryKey() to the user
+        // TODO Enable name shortening once supported, see UVFVault
         return UvfUnlockedVault.create(FastSecureRandomProvider.get().provide(),
                 UvfKeyEncryptionKey.password(passphrase.getPassword()),
-                UvfRecoveryKey.generate(FastSecureRandomProvider.get().provide()));
+                UvfRecoveryKey.generate(FastSecureRandomProvider.get().provide()),
+                NameShortener.DISABLED);
     }
 
     @Override

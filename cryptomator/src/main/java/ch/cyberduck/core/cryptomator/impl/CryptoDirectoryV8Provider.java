@@ -69,7 +69,7 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
     public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final VaultDirectory dirMetadata = this.getDirectoryId(session, parent);
         // Full ciphertext name. Name shortening is applied by filename provider
-        final String ciphertextName = dirMetadata.encryptName(filename).inflated();
+        final String ciphertextName = dirMetadata.encryptName(filename).name();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }

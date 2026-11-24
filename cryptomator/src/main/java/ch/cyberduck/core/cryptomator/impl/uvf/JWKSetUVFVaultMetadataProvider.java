@@ -19,6 +19,7 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.vault.VaultException;
 
+import org.cryptomator.cryptolib.api.NameShortener;
 import org.cryptomator.cryptolib.api.UvfKeyEncryptionKey;
 import org.cryptomator.cryptolib.api.UvfLockedVault;
 import org.cryptomator.cryptolib.api.UvfRecoveryKey;
@@ -56,8 +57,9 @@ public class JWKSetUVFVaultMetadataProvider implements UVFVaultMetadataProvider 
         try {
             final UvfRecoveryKey recoveryKey = key.isPrivate() ?
                     UvfRecoveryKey.of(key.toKeyPair()) : UvfRecoveryKey.of(key.toECPublicKey());
+            // TODO Enable name shortening once supported, see UVFVault
             return UvfUnlockedVault.create(FastSecureRandomProvider.get().provide(),
-                    UvfKeyEncryptionKey.memberKey(this.getMemberKey()), recoveryKey);
+                    UvfKeyEncryptionKey.memberKey(this.getMemberKey()), recoveryKey, NameShortener.DISABLED);
         }
         catch(JOSEException e) {
             throw new VaultException("Invalid recovery key", e);

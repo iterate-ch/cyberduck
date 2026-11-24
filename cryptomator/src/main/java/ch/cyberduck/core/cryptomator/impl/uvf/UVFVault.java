@@ -154,6 +154,9 @@ public class UVFVault extends AbstractVault {
         log.debug("Unlocked vault {} with seeds {}", home, unlocked.seedIds());
         UVFSeedPins.put(this.getPinIdentifier(session), unlocked.seedDigests().values());
         this.vault = unlocked;
+        // TODO Support name shortening for vaults with nameShorteningThreshold() other than NameShortener.DISABLED
+        //  using nameShortener() of the unlocked vault (UVF spec draft PR #37). Such vaults are not rejected for now
+        //  although cryptolib requires applications without name shortening support not to access them.
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
     }
