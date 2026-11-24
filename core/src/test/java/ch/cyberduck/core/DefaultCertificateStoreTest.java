@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
@@ -33,7 +35,9 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -43,6 +47,44 @@ public class DefaultCertificateStoreTest {
     public void testVerifyUntrustedSelfSigned() throws Exception {
         assertFalse(new DefaultCertificateStore().verify(new DisabledCertificateTrustCallback(), "localhost",
             Collections.singletonList(selfsigned("localhost", "EC", 256, "SHA256withECDSA"))));
+    }
+
+    @Test
+    public void testVerifyUntrustedPromptsAndAccepted() throws Exception {
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
+        assertTrue(new DefaultCertificateStore().verify((message, certificates) -> prompts.incrementAndGet(), "localhost", Collections.singletonList(cert)));
+        assertEquals(1, prompts.get());
+    }
+
+    @Test
+    public void testVerifyUntrustedPromptCancelled() throws Exception {
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
+        assertFalse(new DefaultCertificateStore().verify((message, certificates) -> {
+            prompts.incrementAndGet();
+            throw new ConnectionCanceledException();
+        }, "localhost", Collections.singletonList(cert)));
+        assertEquals(1, prompts.get());
+    }
+
+    @Test
+    public void testVerifyHostnameMismatchPrompts() throws Exception {
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509Certificate cert = selfsigned("wrong.invalid", "EC", 256, "SHA256withECDSA");
+        assertFalse(new DefaultCertificateStore(trust(cert)).verify((message, certificates) -> {
+            prompts.incrementAndGet();
+            throw new ConnectionCanceledException();
+        }, "localhost", Collections.singletonList(cert)));
+        assertEquals(1, prompts.get());
+    }
+
+    @Test
+    public void testVerifyTrustedNoPrompt() throws Exception {
+        final AtomicInteger prompts = new AtomicInteger();
+        final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
+        assertTrue(new DefaultCertificateStore(trust(cert)).verify((message, certificates) -> prompts.incrementAndGet(), "localhost", Collections.singletonList(cert)));
+        assertEquals(0, prompts.get());
     }
 
     @Test

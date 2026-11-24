@@ -38,23 +38,28 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class DefaultCertificateStore implements CertificateStore {
     private static final Logger log = LogManager.getLogger(DefaultCertificateStore.class);
 
     /**
-     * Trust manager to validate chain or null to use default trust anchors
+     * Trust manager to validate chain against trust anchors
      */
     private final X509TrustManager trust;
 
+    /**
+     * Required by factory. Validate against default trust anchors of the JVM
+     */
     public DefaultCertificateStore() {
-        this(null);
+        this(getDefaultTrustManager());
     }
 
     public DefaultCertificateStore(final X509TrustManager trust) {
-        this.trust = trust;
+        this.trust = Objects.requireNonNull(trust);
     }
 
     private final DefaultHostnameVerifier verifier
@@ -89,45 +94,66 @@ public class DefaultCertificateStore implements CertificateStore {
             try {
                 c.checkValidity();
             }
-            catch(CertificateExpiredException | CertificateNotYetValidException e) {
-                return false;
+            catch(CertificateExpiredException e) {
+                return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
+                    "The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
+                    hostname), certificates);
+            }
+            catch(CertificateNotYetValidException e) {
+                return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
+                    "The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
+                    hostname), certificates);
             }
         }
         try {
             verifier.verify(hostname, certificates.get(0));
         }
         catch(SSLException e) {
-            return false;
+            return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
+                "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
+                hostname), certificates);
         }
-        return this.verifyChain(certificates);
+        // Validate chain against trust anchors
+        try {
+            // Key exchange algorithm is not known. Not evaluated for path validation
+            trust.checkServerTrusted(certificates.toArray(new X509Certificate[0]), "UNKNOWN");
+        }
+        catch(CertificateException e) {
+            log.warn("Certificate chain not trusted: {}", e.getMessage());
+            return this.confirm(prompt, MessageFormat.format(LocaleFactory.localizedString(
+                "The certificate chain for this server cannot be verified. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
+                hostname), certificates);
+        }
+        return true;
     }
 
     /**
-     * Validate certificate chain against trust anchors
-     *
-     * @param certificates Chain with server certificate first
-     * @return False if chain cannot be verified
+     * @param message Reason why the certificate is not trusted
+     * @return True if user accepted to connect anyway
      */
-    protected boolean verifyChain(final List<X509Certificate> certificates) {
+    private boolean confirm(final CertificateTrustCallback prompt, final String message, final List<X509Certificate> certificates) {
         try {
-            final X509Certificate[] chain = certificates.toArray(new X509Certificate[0]);
-            if(null != trust) {
-                // Key exchange algorithm is not known. Not evaluated for path validation
-                trust.checkServerTrusted(chain, "UNKNOWN");
-                return true;
-            }
+            prompt.prompt(message, certificates);
+            return true;
+        }
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
+    }
+
+    private static X509TrustManager getDefaultTrustManager() {
+        try {
             final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             factory.init((KeyStore) null);
             for(TrustManager manager : factory.getTrustManagers()) {
                 if(manager instanceof X509TrustManager) {
-                    ((X509TrustManager) manager).checkServerTrusted(chain, "UNKNOWN");
-                    return true;
+                    return (X509TrustManager) manager;
                 }
             }
+            throw new IllegalStateException("No default X509 trust manager available");
         }
-        catch(NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
-            log.warn("Certificate chain not trusted by default trust managers: {}", e.getMessage());
+        catch(NoSuchAlgorithmException | KeyStoreException e) {
+            throw new IllegalStateException(e);
         }
-        return false;
     }
 }
