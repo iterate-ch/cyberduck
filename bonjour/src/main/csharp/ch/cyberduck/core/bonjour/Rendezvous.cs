@@ -17,115 +17,195 @@
 // 
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
-using Bonjour;
-using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
+using org.apache.logging.log4j;
+using Windows.Devices.Enumeration;
 
 namespace Ch.Cyberduck.Core.Bonjour
 {
+    /// <summary>
+    /// Service discovery using the DNS-SD client of Windows 10.
+    /// </summary>
     public class Rendezvous : AbstractRendezvous
     {
-        private readonly Dictionary<string, DNSSDService> _browsers = new Dictionary<string, DNSSDService>();
+        private static readonly Logger Log = LogManager.getLogger(typeof(Rendezvous).FullName);
 
-        private DNSSDEventManager _eventManager;
-        private DNSSDService _service;
+        private const string DnssdProtocolId = "{4526e8c1-8aac-4153-9b16-55e86ada0e54}";
+        private const string Domain = "local.";
+
+        private static readonly string[] Properties =
+        {
+            "System.Devices.Dnssd.HostName",
+            "System.Devices.Dnssd.PortNumber",
+            "System.Devices.Dnssd.TextAttributes",
+            "System.Devices.Dnssd.InstanceName",
+            "System.Devices.Dnssd.ServiceName"
+        };
+
+        private readonly List<Browser> _browsers = new List<Browser>();
 
         public override void init()
         {
             base.init();
-            _eventManager = new DNSSDEventManager();
-            _eventManager.ServiceFound += ServiceFound;
-            _eventManager.ServiceLost += ServiceLost;
-            _eventManager.ServiceResolved += ServiceResolved;
-            _eventManager.OperationFailed += OperationFailed;
-            _service = new DNSSDService();
-            for (int i = 0; i < getServiceTypes().Length; i++)
+            foreach (string type in getServiceTypes())
             {
-                _browsers.Add(getServiceTypes()[i], _service.Browse(0, 0, getServiceTypes()[i], null, _eventManager));
+                try
+                {
+                    Browser browser = new Browser(this, type.TrimEnd('.'));
+                    browser.Start();
+                    _browsers.Add(browser);
+                }
+                catch (Exception e)
+                {
+                    Log.error(string.Format("Failure browsing for service type {0}: {1}", type, e.Message), e);
+                }
             }
         }
 
         public override void quit()
         {
-            if (null == _eventManager)
+            foreach (Browser browser in _browsers)
             {
-                return;
+                browser.Stop();
             }
-            _eventManager.ServiceFound -= ServiceFound;
-            _eventManager.ServiceLost -= ServiceLost;
-            _eventManager.ServiceResolved -= ServiceResolved;
-            _eventManager.OperationFailed -= OperationFailed;
-            for (int i = 0; i < getServiceTypes().Length; i++)
-            {
-                DNSSDService browser;
-                if (_browsers.TryGetValue(getServiceTypes()[i], out browser))
-                {
-                    if (null != browser)
-                    {
-                        browser.Stop();
-                    }
-                }
-            }
-            if (_service != null)
-            {
-                _service.Stop();
-            }
+            _browsers.Clear();
             base.quit();
         }
 
-        //
-        // ServiceFound
-        //
-        // This call is invoked by the DNSService core.  We create
-        // a BrowseData object and invoked the appropriate method
-        // in the GUI thread so we can update the UI
-        //
-        public void ServiceFound(DNSSDService service, DNSSDFlags flags, uint ifIndex, String serviceName,
-                                 String regType, String domain)
+        private static string GetAttribute(IEnumerable<string> attributes, string key)
         {
-            service.Resolve(flags, ifIndex, serviceName, regType, domain, _eventManager);
-        }
-
-        public void ServiceLost(DNSSDService service, DNSSDFlags flags, uint ifIndex, String serviceName, String regType,
-                                String domain)
-        {
-            string fullname = serviceName + "." + regType + domain;
-            base.remove(fullname);
-        }
-
-        public void ServiceResolved(DNSSDService service, DNSSDFlags flags, uint ifIndex, String fullName,
-                                    String hostName, ushort port, TXTRecord txtRecord)
-        {
-            String user = null;
-            String password = null;
-            String path = null;
-            if (txtRecord.ContainsKey("u"))
+            if (null == attributes)
             {
-                user = ByteArrayToString((byte[]) txtRecord.GetValueForKey("u"));
+                return null;
             }
-            if (txtRecord.ContainsKey("p"))
+            foreach (string attribute in attributes)
             {
-                password = ByteArrayToString((byte[]) txtRecord.GetValueForKey("p"));
+                int separator = attribute.IndexOf('=');
+                if (separator > 0 && string.Equals(attribute.Substring(0, separator), key, StringComparison.OrdinalIgnoreCase))
+                {
+                    return attribute.Substring(separator + 1);
+                }
             }
-            if (txtRecord.ContainsKey("path"))
-            {
-                path = ByteArrayToString((byte[]) txtRecord.GetValueForKey("path"));
-            }
-            base.add(fullName, hostName, port, user, password, path);
-            service.Stop();
+            return null;
         }
 
-        private string ByteArrayToString(byte[] input)
+        /// <summary>
+        /// Watch for instances of a single service type.
+        /// </summary>
+        private sealed class Browser
         {
-            UTF8Encoding enc = new UTF8Encoding();
-            return enc.GetString(input);
-        }
+            private readonly Rendezvous _rendezvous;
+            private readonly string _type;
+            private readonly DeviceWatcher _watcher;
 
-        public void OperationFailed(DNSSDService service, DNSSDError error)
-        {
-            service.Stop();
+            /// <summary>
+            /// Device information by identifier of the service instance.
+            /// </summary>
+            private readonly ConcurrentDictionary<string, DeviceInformation> _devices = new ConcurrentDictionary<string, DeviceInformation>();
+
+            /// <summary>
+            /// Full service name by identifier of the service instance.
+            /// </summary>
+            private readonly ConcurrentDictionary<string, string> _names = new ConcurrentDictionary<string, string>();
+
+            public Browser(Rendezvous rendezvous, string type)
+            {
+                _rendezvous = rendezvous;
+                _type = type;
+                string filter = string.Format(
+                    "System.Devices.AepService.ProtocolId:={0} AND System.Devices.Dnssd.Domain:=\"{1}\" AND System.Devices.Dnssd.ServiceName:=\"{2}\"",
+                    DnssdProtocolId, Domain.TrimEnd('.'), type);
+                _watcher = DeviceInformation.CreateWatcher(filter, Properties, DeviceInformationKind.AssociationEndpointService);
+                _watcher.Added += OnAdded;
+                _watcher.Updated += OnUpdated;
+                _watcher.Removed += OnRemoved;
+            }
+
+            public void Start()
+            {
+                Log.info(string.Format("Adding service listener for {0}", _type));
+                _watcher.Start();
+            }
+
+            public void Stop()
+            {
+                Log.info(string.Format("Removing service listener for {0}", _type));
+                _watcher.Added -= OnAdded;
+                _watcher.Updated -= OnUpdated;
+                _watcher.Removed -= OnRemoved;
+                try
+                {
+                    if (_watcher.Status == DeviceWatcherStatus.Started ||
+                        _watcher.Status == DeviceWatcherStatus.EnumerationCompleted)
+                    {
+                        _watcher.Stop();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.warn(string.Format("Failure stopping service listener for {0}: {1}", _type, e.Message), e);
+                }
+            }
+
+            private void OnAdded(DeviceWatcher sender, DeviceInformation device)
+            {
+                _devices[device.Id] = device;
+                Resolve(device);
+            }
+
+            private void OnUpdated(DeviceWatcher sender, DeviceInformationUpdate update)
+            {
+                DeviceInformation device;
+                if (_devices.TryGetValue(update.Id, out device))
+                {
+                    device.Update(update);
+                    Resolve(device);
+                }
+            }
+
+            private void OnRemoved(DeviceWatcher sender, DeviceInformationUpdate update)
+            {
+                DeviceInformation device;
+                _devices.TryRemove(update.Id, out device);
+                string name;
+                if (_names.TryRemove(update.Id, out name))
+                {
+                    _rendezvous.remove(name);
+                }
+            }
+
+            private void Resolve(DeviceInformation device)
+            {
+                try
+                {
+                    string host = Property<string>(device, "System.Devices.Dnssd.HostName");
+                    object port = Property<object>(device, "System.Devices.Dnssd.PortNumber");
+                    if (string.IsNullOrEmpty(host) || null == port)
+                    {
+                        Log.debug(string.Format("Service {0} not yet resolved", device.Name));
+                        return;
+                    }
+                    string instance = Property<string>(device, "System.Devices.Dnssd.InstanceName") ?? device.Name;
+                    // Must contain the service type to identify the protocol
+                    string name = string.Format("{0}.{1}.{2}", instance, _type, Domain);
+                    string[] attributes = Property<string[]>(device, "System.Devices.Dnssd.TextAttributes");
+                    _names[device.Id] = name;
+                    _rendezvous.add(name, host.TrimEnd('.'), Convert.ToInt32(port),
+                        GetAttribute(attributes, "u"), GetAttribute(attributes, "p"), GetAttribute(attributes, "path"));
+                }
+                catch (Exception e)
+                {
+                    Log.error(string.Format("Failure resolving service {0}: {1}", device.Name, e.Message), e);
+                }
+            }
+
+            private static T Property<T>(DeviceInformation device, string key) where T : class
+            {
+                object value;
+                return device.Properties.TryGetValue(key, out value) ? value as T : null;
+            }
         }
     }
 }
