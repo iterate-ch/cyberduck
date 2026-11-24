@@ -16,8 +16,11 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.MemoryPreferences;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -28,6 +31,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class LocalFactoryTest {
+
+    private Preferences previous;
+
+    @Before
+    public void register() {
+        previous = PreferencesFactory.get();
+    }
+
+    @After
+    public void restore() {
+        // Do not leak the preferences set by the test to other tests sharing the JVM
+        PreferencesFactory.set(previous);
+    }
 
     /**
      * Setting preferences must not deadlock with another thread creating a {@link Local}. Creating a {@link Local} reads
