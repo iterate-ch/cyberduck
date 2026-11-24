@@ -41,8 +41,6 @@ import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -71,10 +69,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     private UnixPermission permission;
     private Symlink symlink;
     private Protocol.Case casesensitivity = Protocol.Case.sensitive;
-
-    public FTPSession(final Host h) {
-        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
 
     public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, trust, key);

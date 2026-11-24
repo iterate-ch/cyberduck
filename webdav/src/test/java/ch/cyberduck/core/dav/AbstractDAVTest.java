@@ -24,7 +24,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.TestcontainerTest;
@@ -84,7 +84,7 @@ public abstract class AbstractDAVTest {
     @Before
     public void setup() throws Exception {
         final Host host = new Host(new DAVProtocol(), server.host(), server.port(), new Credentials(DAVTestServer.USER, DAVTestServer.PASSWORD));
-        session = new DAVSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

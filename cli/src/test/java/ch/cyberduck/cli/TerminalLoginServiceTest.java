@@ -36,7 +36,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.cli.CommandLine;
@@ -86,7 +86,7 @@ public class TerminalLoginServiceTest {
         final Profile protocol = mock(Profile.class, delegatesTo(this.protocol()));
         doReturn(Scheme.http).when(protocol).getScheme();
         final Host host = new Host(protocol, "127.0.0.1", server.getAddress().getPort());
-        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        final BrickSession session = new BrickSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final TerminalPromptReader reader = spy(new DisabledTerminalPromptReader());
         final LoginCallback prompt = new TerminalLoginCallback(reader);
         final OAuth2AuthorizationCodeProvider provider = mock(OAuth2AuthorizationCodeProvider.class);

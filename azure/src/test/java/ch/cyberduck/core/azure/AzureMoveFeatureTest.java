@@ -11,6 +11,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -91,7 +93,7 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
         final String token = new AccountSasSignatureValues(OffsetDateTime.now().plusHours(1),
                 AccountSasPermission.parse("rwdlacup"), AccountSasService.parse("b"), AccountSasResourceType.parse("sco"))
                 .generateSasQueryParameters(new StorageSharedKeyCredential(host.getCredentials().getUsername(), host.getCredentials().getPassword())).encode();
-        final AzureSession sas = new AzureSession(new Host(new AzureProtocol(), host.getHostname(), new Credentials(host.getCredentials().getUsername(), null, token)));
+        final AzureSession sas = new AzureSession(new Host(new AzureProtocol(), host.getHostname(), new Credentials(host.getCredentials().getUsername(), null, token)), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop).check(sas, CancelCallback.noop);
         try {

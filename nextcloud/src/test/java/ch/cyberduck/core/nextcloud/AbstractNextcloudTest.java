@@ -25,7 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -68,7 +68,7 @@ public abstract class AbstractNextcloudTest {
                 return Scheme.http;
             }
         }, server.host(), server.port(), new Credentials(NextcloudTestServer.USER, NextcloudTestServer.PASSWORD));
-        session = new NextcloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new NextcloudSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

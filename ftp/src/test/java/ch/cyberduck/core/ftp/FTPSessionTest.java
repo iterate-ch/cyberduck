@@ -28,7 +28,8 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,7 +58,7 @@ public class FTPSessionTest extends AbstractFTPTest {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
-        final FTPSession session = new FTPSession(host);
+        final FTPSession session = new FTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
                 LoginCallback.noop,
                 HostKeyCallback.noop,
@@ -114,7 +115,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final BackgroundException failure = new BackgroundException(new FTPException(500, "f"));
-        final FTPSession session = new FTPSession(host) {
+        final FTPSession session = new FTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             protected void logout() throws BackgroundException {
                 throw failure;
@@ -139,7 +140,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final AtomicBoolean callback = new AtomicBoolean();
-        final FTPSession session = new FTPSession(host, new DefaultX509TrustManager(),
+        final FTPSession session = new FTPSession(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
@@ -172,7 +173,7 @@ public class FTPSessionTest extends AbstractFTPTest {
             });
             t.start();
             final Host host = new Host(new FTPProtocol(), "localhost", server.getLocalPort(), new Credentials("u", "p"));
-            final FTPSession session = new FTPSession(host);
+            final FTPSession session = new FTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             try {
                 session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
                 fail();

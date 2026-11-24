@@ -36,6 +36,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -90,7 +92,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
@@ -131,7 +133,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
                 return super.getProperty(key);
             }
         };
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         session.login(LoginCallback.noop, CancelCallback.noop);
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
@@ -158,7 +160,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     @Test
     public void testEmptyThirdPartyProvider() {
         final Host host = new Host(new S3Protocol(), "mys3");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertTrue(new S3LocationFeature(session).getLocations(Home.root()).isEmpty());
     }
 
@@ -167,7 +169,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Wasabi (us-central-1).cyberduckprofile"));
-        final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final S3LocationFeature feature = new S3LocationFeature(session);
         assertFalse(feature.getLocations(Home.root()).isEmpty());
         assertTrue(feature.getLocations(Home.root()).contains(new Location.Name("us-central-1")));

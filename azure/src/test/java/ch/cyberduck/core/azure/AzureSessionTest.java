@@ -75,7 +75,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
         final Host host = new Host(profile, PROPERTIES.get("azure.hostname"), new Credentials(
                 null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=invalid"));
-        final AzureSession session = new AzureSession(host);
+        final AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -103,7 +103,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
         ));
-        final AzureSession session = new AzureSession(host);
+        final AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
@@ -119,7 +119,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), "6h9B"
         ));
-        final AzureSession session = new AzureSession(host);
+        final AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {

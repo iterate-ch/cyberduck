@@ -13,7 +13,7 @@ import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
 
@@ -34,7 +34,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
     @Test
     public void testGetMethods() {
         assertEquals(Collections.singletonList(Distribution.CUSTOM),
-                new CustomOriginCloudFrontDistributionConfiguration(new Host(new TestProtocol()), new DefaultX509TrustManager(), new DefaultX509KeyManager()).getMethods(
+                new CustomOriginCloudFrontDistributionConfiguration(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()).getMethods(
                         new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
@@ -44,7 +44,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         final Path container = Home.root();
         origin.setWebURL("http://w.example.net");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         origin.setWebURL(null);
         assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
@@ -58,7 +58,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         final Path container = Home.root();
         origin.setWebURL("http://w.example.net:8080");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         assertEquals(8080, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
         origin.setWebURL(null);
@@ -72,7 +72,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         final Path container = Home.root();
         origin.setWebURL("https://w.example.net:4444");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         assertEquals("https", configuration.getOrigin(container, Distribution.CUSTOM).getScheme());
         assertEquals(4444, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
@@ -87,7 +87,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         origin.getCdnCredentials().setUsername(PROPERTIES.get("s3.key"));
         origin.getCdnCredentials().setPassword(PROPERTIES.get("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
+                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledX509TrustManager() {
             @Override
             public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
                 //
@@ -111,7 +111,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         origin.setWebURL("http://example.net");
         origin.setDefaultPath("public_html");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
+            = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledX509TrustManager() {
             @Override
             public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
                 //
@@ -149,7 +149,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
     public void testReadMissingCredentials() throws Exception {
         final Host bookmark = new Host(new TestProtocol(), "myhost.localdomain");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-            = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.CUSTOM, LoginCallback.noop);
     }

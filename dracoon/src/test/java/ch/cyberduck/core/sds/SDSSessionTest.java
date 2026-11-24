@@ -30,7 +30,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -113,7 +112,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
                 PROPERTIES.get("dracoon.user"), PROPERTIES.get("dracoon.key")
         ));
-        final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(

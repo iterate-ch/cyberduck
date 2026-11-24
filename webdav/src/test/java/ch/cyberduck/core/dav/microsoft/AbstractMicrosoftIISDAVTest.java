@@ -28,7 +28,7 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
@@ -56,7 +56,7 @@ public class AbstractMicrosoftIISDAVTest extends VaultTest {
                 this.getClass().getResourceAsStream("/DAV.cyberduckprofile"));
         session = new DAVSession(new Host(profile, "winbuild.iterate.ch", profile.getDefaultPort(), "/WebDAV", new Credentials(
                 PROPERTIES.get("webdav.iis.user")
-        )), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

@@ -22,6 +22,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +60,7 @@ public class S3PresignedUrlProviderTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, hostname, new Credentials(ACCESS_KEY, SECRET));
-        return new S3Session(host) {
+        return new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -124,7 +126,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final Host host = new Host(new S3Protocol(), "h");
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -141,7 +143,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final Host host = new Host(new S3Protocol(), "s3.eu-central-1.wasabisys.com");
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -163,7 +165,7 @@ public class S3PresignedUrlProviderTest {
                 return "wasabisys.com";
             }
         }, "wasabisys.com");
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -185,7 +187,7 @@ public class S3PresignedUrlProviderTest {
                 return "h";
             }
         }, "h");
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -210,7 +212,7 @@ public class S3PresignedUrlProviderTest {
                 return super.getProperty(key);
             }
         };
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -244,7 +246,7 @@ public class S3PresignedUrlProviderTest {
                 return super.getProperty(key);
             }
         };
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
@@ -350,7 +352,7 @@ public class S3PresignedUrlProviderTest {
                 return super.getProperty(property);
             }
         };
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public S3CredentialsStrategy getAuthentication() {
                 return host::getCredentials;
