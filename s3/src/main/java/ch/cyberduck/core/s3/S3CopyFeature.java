@@ -59,7 +59,9 @@ public class S3CopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
-        destination.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+        if(acl.getPermission(containerService.getContainer(target)).isEditable()) {
+            destination.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+        }
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(status.getMetadata()));
