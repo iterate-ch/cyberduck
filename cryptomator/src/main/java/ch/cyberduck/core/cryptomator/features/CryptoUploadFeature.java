@@ -70,7 +70,9 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return proxy.append(vault.encrypt(session, file), status.setParent(new CryptoTransferStatus(vault, file, status)));
+        // Resume is not supported. The file header with the file key of the content already uploaded is not available
+        // and the offset reported for the existing content is in ciphertext
+        return new Write.Append(false).withStatus(status);
     }
 
     @Override
