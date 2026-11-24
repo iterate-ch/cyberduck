@@ -25,11 +25,11 @@ public class TerminalCertificateTrustCallbackTest {
 
     @Test
     public void testPromptAccepted() throws Exception {
-        new TerminalCertificateTrustCallback(message -> true).prompt("message", Collections.emptyList());
+        new TerminalCertificateTrustCallback(message -> true).prompt("localhost", "message", Collections.emptyList());
     }
 
     @Test(expected = ConnectionCanceledException.class)
     public void testPromptDeclined() throws Exception {
-        new TerminalCertificateTrustCallback(message -> false).prompt("message", Collections.emptyList());
+        new TerminalCertificateTrustCallback(message -> false).prompt("localhost", "message", Collections.emptyList());
     }
 }

@@ -36,11 +36,12 @@ public class TerminalCertificateTrustCallback implements CertificateTrustCallbac
     }
 
     /**
+     * @param hostname     Hostname of server
      * @param message      Reason why the certificate is not trusted, shown to the user with the question to connect anyway
      * @param certificates Certificate chain
      */
     @Override
-    public void prompt(final String message, final List<X509Certificate> certificates) throws ConnectionCanceledException {
+    public void prompt(final String hostname, final String message, final List<X509Certificate> certificates) throws ConnectionCanceledException {
         if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException(message);
         }

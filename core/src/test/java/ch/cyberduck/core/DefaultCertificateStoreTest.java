@@ -53,7 +53,7 @@ public class DefaultCertificateStoreTest {
     public void testVerifyUntrustedPromptsAndAccepted() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
         final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
-        assertTrue(new DefaultCertificateStore().verify((message, certificates) -> prompts.incrementAndGet(), "localhost", Collections.singletonList(cert)));
+        assertTrue(new DefaultCertificateStore().verify((hostname, message, certificates) -> prompts.incrementAndGet(), "localhost", Collections.singletonList(cert)));
         assertEquals(1, prompts.get());
     }
 
@@ -61,7 +61,7 @@ public class DefaultCertificateStoreTest {
     public void testVerifyUntrustedPromptCancelled() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
         final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
-        assertFalse(new DefaultCertificateStore().verify((message, certificates) -> {
+        assertFalse(new DefaultCertificateStore().verify((hostname, message, certificates) -> {
             prompts.incrementAndGet();
             throw new ConnectionCanceledException();
         }, "localhost", Collections.singletonList(cert)));
@@ -72,7 +72,7 @@ public class DefaultCertificateStoreTest {
     public void testVerifyHostnameMismatchPrompts() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
         final X509Certificate cert = selfsigned("wrong.invalid", "EC", 256, "SHA256withECDSA");
-        assertFalse(new DefaultCertificateStore(trust(cert)).verify((message, certificates) -> {
+        assertFalse(new DefaultCertificateStore(trust(cert)).verify((hostname, message, certificates) -> {
             prompts.incrementAndGet();
             throw new ConnectionCanceledException();
         }, "localhost", Collections.singletonList(cert)));
@@ -85,8 +85,9 @@ public class DefaultCertificateStoreTest {
         final StringBuilder message = new StringBuilder();
         // Expired, for another host and not anchored in trust store
         final X509Certificate cert = selfsigned("wrong.invalid", "EC", 256, "SHA256withECDSA", -7_200_000, -3_600_000);
-        assertTrue(new DefaultCertificateStore().verify((m, certificates) -> {
+        assertTrue(new DefaultCertificateStore().verify((host, m, certificates) -> {
             prompts.incrementAndGet();
+            assertEquals("localhost", host);
             message.append(m);
         }, "localhost", Collections.singletonList(cert)));
         assertEquals(1, prompts.get());
@@ -99,7 +100,7 @@ public class DefaultCertificateStoreTest {
     public void testVerifyTrustedNoPrompt() throws Exception {
         final AtomicInteger prompts = new AtomicInteger();
         final X509Certificate cert = selfsigned("localhost", "EC", 256, "SHA256withECDSA");
-        assertTrue(new DefaultCertificateStore(trust(cert)).verify((message, certificates) -> prompts.incrementAndGet(), "localhost", Collections.singletonList(cert)));
+        assertTrue(new DefaultCertificateStore(trust(cert)).verify((hostname, message, certificates) -> prompts.incrementAndGet(), "localhost", Collections.singletonList(cert)));
         assertEquals(0, prompts.get());
     }
 

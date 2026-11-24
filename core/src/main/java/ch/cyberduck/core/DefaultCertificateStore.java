@@ -126,16 +126,16 @@ public class DefaultCertificateStore implements CertificateStore {
         failures.add(MessageFormat.format(LocaleFactory.localizedString(
             "You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?", "Keychain"),
             hostname));
-        return this.confirm(prompt, String.join(" ", failures), certificates);
+        return this.confirm(prompt, hostname, String.join(" ", failures), certificates);
     }
 
     /**
      * @param message Reason why the certificate is not trusted
      * @return True if user accepted to connect anyway
      */
-    private boolean confirm(final CertificateTrustCallback prompt, final String message, final List<X509Certificate> certificates) {
+    private boolean confirm(final CertificateTrustCallback prompt, final String hostname, final String message, final List<X509Certificate> certificates) {
         try {
-            prompt.prompt(message, certificates);
+            prompt.prompt(hostname, message, certificates);
             return true;
         }
         catch(ConnectionCanceledException e) {

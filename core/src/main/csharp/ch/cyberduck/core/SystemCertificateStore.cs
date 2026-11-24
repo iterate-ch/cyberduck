@@ -132,7 +132,7 @@ namespace Ch.Cyberduck.Core
                 {
                     try
                     {
-                        prompt.prompt(errorFromChainStatus, certs);
+                        prompt.prompt(hostName, errorFromChainStatus, certs);
                     }
                     catch (ConnectionCanceledException)
                     {

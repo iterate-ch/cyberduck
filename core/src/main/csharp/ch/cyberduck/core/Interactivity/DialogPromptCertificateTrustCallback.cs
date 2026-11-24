@@ -22,7 +22,7 @@ public class DialogPromptCertificateTrustCallback : CertificateTrustCallback
         return new();
     }
 
-    public void prompt(string message, List l)
+    public void prompt(string hostname, string message, List l)
     {
         var serverCert = SystemCertificateStore.ConvertCertificate(l.get(0) as X509Certificate);
         var result = TaskDialog.TaskDialog.Create()
