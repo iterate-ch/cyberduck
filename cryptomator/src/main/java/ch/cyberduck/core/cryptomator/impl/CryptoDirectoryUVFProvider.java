@@ -43,7 +43,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
 
     protected VaultDirectory load(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
-            return vault.getRootDirId();
+            return vault.getRootDirectory();
         }
         final Path parent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();

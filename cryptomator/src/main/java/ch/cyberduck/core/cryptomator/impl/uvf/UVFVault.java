@@ -225,7 +225,7 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public VaultDirectory getRootDirId() {
+    public VaultDirectory getRootDirectory() {
         return vault.rootDirectory();
     }
 

@@ -54,7 +54,7 @@ public class CryptoReadFeature implements Read {
                 vault.getHeaderSize() :
                 vault.toCiphertextSize(0L, status.getLength())), callback);
             final ByteBuffer headerBuffer = ByteBuffer.allocate(vault.getHeaderSize());
-            final int read = IOUtils.read(in, headerBuffer.array());
+            IOUtils.read(in, headerBuffer.array());
             final VaultFile header = vault.openFile(headerBuffer);
             if(status.isAppend()) {
                 IOUtils.closeQuietly(in);

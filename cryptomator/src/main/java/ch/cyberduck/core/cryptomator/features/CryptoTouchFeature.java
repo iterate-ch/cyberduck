@@ -31,7 +31,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Optional;

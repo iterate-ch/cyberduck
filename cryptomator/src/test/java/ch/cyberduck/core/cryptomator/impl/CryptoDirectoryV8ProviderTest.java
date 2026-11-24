@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.CipherCombo;
 import org.junit.Test;
 

@@ -170,7 +170,7 @@ public class CryptomatorVault extends AbstractVault {
     }
 
     @Override
-    public VaultDirectory getRootDirId() {
+    public VaultDirectory getRootDirectory() {
         return vault.rootDirectory();
     }
 

@@ -51,7 +51,20 @@ public interface CryptoDirectory {
 
     void destroy();
 
-    VaultDirectory getDirectoryId(Session<?> session, Path directory) throws BackgroundException;
+    /**
+     * Get directory with its encrypted metadata from path attributes, cache or storage
+     *
+     * @param session   Connection
+     * @param directory Clear text directory or file to get the parent directory for
+     * @return Directory with its ID and for UVF its seed
+     */
+    VaultDirectory getDirectory(Session<?> session, Path directory) throws BackgroundException;
 
-    VaultDirectory createDirectoryId(Path directory);
+    /**
+     * Create new directory metadata to be written for a new directory and add it to the cache
+     *
+     * @param directory Clear text directory
+     * @return New directory or cached directory if already created
+     */
+    VaultDirectory createDirectory(Path directory);
 }

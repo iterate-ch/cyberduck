@@ -67,7 +67,7 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
 
     @Override
     public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final VaultDirectory dirMetadata = this.getDirectoryId(session, parent);
+        final VaultDirectory dirMetadata = this.getDirectory(session, parent);
         // Full ciphertext name. Name shortening is applied by filename provider
         final String ciphertextName = dirMetadata.encryptName(filename).name();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
@@ -85,7 +85,7 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
             attributes.setVersionId(null);
             attributes.setFileId(null);
             // Remember random directory metadata for use in vault
-            final VaultDirectory dirMetadata = this.getDirectoryId(session, directory);
+            final VaultDirectory dirMetadata = this.getDirectory(session, directory);
             log.debug("Use directory ID '{}' for folder {}", dirMetadata, directory);
             attributes.setDirectoryId(dirMetadata.encryptedMetadata());
             attributes.setDecrypted(directory);
@@ -102,9 +102,9 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         throw new NotfoundException(directory.getAbsolute());
     }
 
-    protected VaultDirectory toDirectoryId(final Session<?> session, final Path directory) throws BackgroundException {
+    protected VaultDirectory lookup(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
-            return vault.getRootDirId();
+            return vault.getRootDirectory();
         }
         lock.readLock().lock();
         try {
@@ -159,21 +159,21 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
     }
 
     @Override
-    public VaultDirectory getDirectoryId(final Session<?> session, final Path file) throws BackgroundException {
+    public VaultDirectory getDirectory(final Session<?> session, final Path file) throws BackgroundException {
         final byte[] metadata = file.attributes().getDirectoryId();
         if(metadata != null) {
             if(metadata.length == 0) {
                 // Root directory of vault format 8 with empty directory ID. Only set by vault and not read from storage
-                return vault.getRootDirId();
+                return vault.getRootDirectory();
             }
             return this.toDirectory(metadata);
         }
         final Path decrypted = file.getType().contains(Path.Type.encrypted) ? file.attributes().getDecrypted() : file;
-        return this.toDirectoryId(session, decrypted.getType().contains(Path.Type.file) ? decrypted.getParent() : decrypted);
+        return this.lookup(session, decrypted.getType().contains(Path.Type.file) ? decrypted.getParent() : decrypted);
     }
 
     @Override
-    public VaultDirectory createDirectoryId(final Path directory) {
+    public VaultDirectory createDirectory(final Path directory) {
         lock.writeLock().lock();
         try {
             if(cache.contains(new SimplePathPredicate(directory))) {

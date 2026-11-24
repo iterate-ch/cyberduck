@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-
 import java.util.EnumSet;
 import java.util.Optional;
 

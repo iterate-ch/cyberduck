@@ -139,7 +139,7 @@ public class CryptoBulkFeatureTest {
         files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().setExists(false));
         // Directory ID created when the directory is uploaded. An empty directory file is rejected
-        cryptomator.getDirectoryProvider().createDirectoryId(directory);
+        cryptomator.getDirectoryProvider().createDirectory(directory);
         bulk.post(Transfer.Type.upload, files, ConnectionCallback.noop);
     }
 }

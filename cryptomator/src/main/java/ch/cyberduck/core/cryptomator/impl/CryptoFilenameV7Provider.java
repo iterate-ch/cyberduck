@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilenameException;
@@ -35,18 +34,8 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
     }
 
     @Override
-    public boolean isDeflated(final String filename) {
-        return false;
-    }
-
-    @Override
     public boolean isValid(final String filename) {
         return this.isBelowThreshold(filename);
-    }
-
-    @Override
-    public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
-        return shortName;
     }
 
     @Override
@@ -56,16 +45,6 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
         }
         throw new CryptoInvalidFilenameException(String.format("Filename %s with length %d exceeds maximum of %d characters",
                 filename, filename.length(), DEFAULT_NAME_SHORTENING_THRESHOLD));
-    }
-
-    @Override
-    public Path resolve(final String filename) {
-        return null;
-    }
-
-    @Override
-    public void invalidate(final String filename) {
-        //
     }
 
     @Override

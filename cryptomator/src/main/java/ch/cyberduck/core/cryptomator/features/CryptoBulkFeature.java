@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.download.PathPriorityComparator;
 
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -78,7 +77,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(!status.isExists()) {
                     switch(type) {
                         case upload:
-                            cryptomator.getDirectoryProvider().createDirectoryId(file);
+                            cryptomator.getDirectoryProvider().createDirectory(file);
                             encrypted.put(new TransferItem(cryptomator.encrypt(session, file, false), local), status);
                             break;
                         default:

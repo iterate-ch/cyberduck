@@ -283,14 +283,13 @@ public abstract class AbstractVault implements Vault {
             log.warn("Skip file {} because it is marked as an internal vault path", file);
             return file;
         }
-        final Path inflated = this.inflate(session, file);
         final Pattern pattern = this.getFilenamePattern();
-        final Matcher m = pattern.matcher(inflated.getName());
+        final Matcher m = pattern.matcher(file.getName());
         if(m.matches()) {
             try {
-                final String cleartextFilename = this.getParentDirectory(session, file).decryptName(inflated.getName());
+                final String cleartextFilename = this.getParentDirectory(session, file).decryptName(file.getName());
                 final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
-                if(this.isDirectory(inflated)) {
+                if(this.isDirectory(file)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
                         final StaticPermission permission = new StaticPermission(attributes.getPermission());
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
@@ -308,8 +307,8 @@ public abstract class AbstractVault implements Vault {
                     attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-                type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
-                type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
+                type.remove(this.isDirectory(file) ? Path.Type.file : Path.Type.directory);
+                type.add(this.isDirectory(file) ? Path.Type.directory : Path.Type.file);
                 type.remove(Path.Type.encrypted);
                 type.add(Path.Type.decrypted);
                 final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
@@ -322,31 +321,21 @@ public abstract class AbstractVault implements Vault {
                 throw new CryptoAuthenticationException("Failure to decrypt due to an unauthentic ciphertext", e).withFile(file);
             }
             catch(IllegalArgumentException e) {
-                throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s. %s", inflated.getName(), e.getMessage())).withFile(file);
+                throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s. %s", file.getName(), e.getMessage())).withFile(file);
             }
         }
         else {
-            throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern)).withFile(file);
+            throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s due to missing pattern match for %s", file.getName(), pattern)).withFile(file);
         }
     }
 
     private VaultDirectory getParentDirectory(final Session<?> session, final Path file) throws BackgroundException {
-        // Read directory id from file
-        log.debug("Read directory ID for parent of {}", file);
-        return this.getDirectoryProvider().getDirectoryId(session, file.getParent());
+        log.debug("Get directory metadata for parent of {}", file);
+        return this.getDirectoryProvider().getDirectory(session, file.getParent());
     }
 
     private boolean isDirectory(final Path p) {
         return p.isDirectory();
-    }
-
-    private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
-        final String fileName = file.getName();
-        if(this.getFilenameProvider().isDeflated(fileName)) {
-            final String filename = this.getFilenameProvider().inflate(session, fileName);
-            return new Path(file.getParent(), filename, EnumSet.of(Path.Type.file), file.attributes());
-        }
-        return file;
     }
 
     public synchronized boolean isUnlocked() {
@@ -365,7 +354,7 @@ public abstract class AbstractVault implements Vault {
 
     public abstract String getBackupDirectoryMetadataFilename();
 
-    public abstract VaultDirectory getRootDirId();
+    public abstract VaultDirectory getRootDirectory();
 
     @Override
     public synchronized void close() {

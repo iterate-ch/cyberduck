@@ -38,7 +38,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultUnlockException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.CipherCombo;
 import org.cryptomator.cryptolib.api.CvfMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
