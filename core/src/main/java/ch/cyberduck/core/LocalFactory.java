@@ -30,8 +30,8 @@ import java.lang.reflect.InvocationTargetException;
 public final class LocalFactory extends Factory<Local> {
     private static final Logger log = LogManager.getLogger(LocalFactory.class);
 
-    private Constructor<? extends Local> constructorCreateFromString;
-    private Constructor<? extends Local> constructorCreateFromParentString;
+    private volatile Constructor<? extends Local> constructorCreateFromString;
+    private volatile Constructor<? extends Local> constructorCreateFromParentString;
 
     private LocalFactory() {
         super("factory.local.class");
@@ -68,38 +68,42 @@ public final class LocalFactory extends Factory<Local> {
         }
     }
 
-    private static LocalFactory singleton;
+    private static volatile LocalFactory singleton;
 
-    public static synchronized Local get(final Local parent, final String name) {
-        if(null == singleton) {
-            singleton = new LocalFactory();
-            log.debug("Using implementation {}", singleton.getClass());
-
+    /**
+     * Lazily create the singleton without holding a lock while the factory is constructed or while {@link Local}
+     * instances are created. Both may call {@link PreferencesFactory#get()}, which would otherwise invert the lock
+     * order of {@link PreferencesFactory#set(ch.cyberduck.core.preferences.Preferences)} and deadlock.
+     */
+    private static LocalFactory instance() {
+        LocalFactory factory = singleton;
+        if(null == factory) {
+            final LocalFactory created = new LocalFactory();
+            synchronized(LocalFactory.class) {
+                if(null == singleton) {
+                    singleton = created;
+                    log.debug("Using implementation {}", created.getClass());
+                }
+                factory = singleton;
+            }
         }
-        return singleton.create(parent, name);
+        return factory;
     }
 
-    public static synchronized Local get(final String parent, final String name) {
-        if(null == singleton) {
-            singleton = new LocalFactory();
-            log.debug("Using implementation {}", singleton.getClass());
-        }
-        return singleton.create(singleton.create(parent), name);
+    public static Local get(final Local parent, final String name) {
+        return instance().create(parent, name);
     }
 
-    public static synchronized Local get(final String path) {
-        if(null == singleton) {
-            singleton = new LocalFactory();
-            log.debug("Using implementation {}", singleton.getClass());
-        }
-        return singleton.create(path);
+    public static Local get(final String parent, final String name) {
+        final LocalFactory factory = instance();
+        return factory.create(factory.create(parent), name);
     }
 
-    public static synchronized Local get() {
-        if(null == singleton) {
-            singleton = new LocalFactory();
-            log.debug("Using implementation {}", singleton.getClass());
-        }
-        return singleton.create();
+    public static Local get(final String path) {
+        return instance().create(path);
+    }
+
+    public static Local get() {
+        return instance().create();
     }
 }
