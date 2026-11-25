@@ -25,6 +25,7 @@ import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
@@ -79,13 +80,22 @@ public class UVFVault extends AbstractVault {
      */
     private final Path home;
     private final Path masterkeyPath;
+    /**
+     * Seed digests observed before
+     */
+    private final UVFSeedPins pins;
 
     private UvfUnlockedVault vault;
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
 
     public UVFVault(final Path home) {
+        this(home, new UVFSeedPins());
+    }
+
+    public UVFVault(final Path home, final UVFSeedPins pins) {
         this.home = home;
+        this.pins = pins;
         this.masterkeyPath = new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.config.filename.uvf"),
                 EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
     }
@@ -137,7 +147,7 @@ public class UVFVault extends AbstractVault {
                     throw new VaultException(String.format("Unsupported vault metadata in %s", masterkeyPath.getName())).withFile(masterkeyPath);
                 }
                 // Reject outdated or forged vault metadata missing seeds seen before
-                this.init(session, provider.unlock(((UvfLockedVault) locked).requireSeeds(UVFSeedPins.get(this.getPinIdentifier(session)))));
+                this.init(session, provider.unlock(((UvfLockedVault) locked).requireSeeds(pins.get(session.getHost(), home))));
             }
             catch(VaultKeyInvalidException e) {
                 throw new VaultUnlockException("Failure to decrypt vault metadata", e);
@@ -153,7 +163,12 @@ public class UVFVault extends AbstractVault {
 
     private void init(final Session<?> session, final UvfUnlockedVault unlocked) {
         log.debug("Unlocked vault {} with seeds {}", home, unlocked.seedIds());
-        UVFSeedPins.put(this.getPinIdentifier(session), unlocked.seedDigests().values());
+        try {
+            pins.add(session.getHost(), home, unlocked.seedDigests().values());
+        }
+        catch(AccessDeniedException e) {
+            log.warn("Failure {} saving seed pins for {}", e.getMessage(), home);
+        }
         this.vault = unlocked;
         // TODO Support name shortening using nameShortener() of the unlocked vault (UVF spec draft PR #37). Until then
         //  reject filenames exceeding the threshold of vaults with name shortening enabled as for vault format 8 to
@@ -163,12 +178,6 @@ public class UVFVault extends AbstractVault {
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
     }
 
-    /**
-     * @return Identifier of vault unique for connection and path
-     */
-    private String getPinIdentifier(final Session<?> session) {
-        return String.format("%s%s", session.getHost().getUuid(), home.getAbsolute());
-    }
 
     @Override
     public synchronized void close() {

@@ -187,12 +187,13 @@ public class UVFVaultTest {
             }
         };
         final Path home = new Path("/rollback", EnumSet.of(Path.Type.directory));
-        final UVFVault vault = new UVFVault(home);
+        final UVFSeedPinsTest.InMemoryPasswordStore keychain = new UVFSeedPinsTest.InMemoryPasswordStore();
+        final UVFVault vault = new UVFVault(home, new UVFSeedPins(keychain));
         // Pins seeds of current metadata
         vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
         vault.close();
-        // Metadata missing the seed added later
+        // Metadata missing the seed added later after restart
         metadata.set(outdated);
-        new UVFVault(home).load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
+        new UVFVault(home, new UVFSeedPins(keychain)).load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
     }
 }
