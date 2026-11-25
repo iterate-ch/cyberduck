@@ -86,11 +86,11 @@ public class DefaultVaultProvider implements VaultProvider {
                         new Path(directory, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vaultmetadata)),
                         HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8)
                 );
-                vault.load(session, new MasterkeyVaultMetadataProvider(credentials));
+                vault.load(session, new MasterkeyVaultMetadataProvider(copy(credentials)));
                 break;
             case UVF:
                 vault = new UVFVault(directory);
-                vault.load(session, new DefaultUVFVaultMetadataProvider(credentials));
+                vault.load(session, new DefaultUVFVaultMetadataProvider(copy(credentials)));
                 break;
             default:
                 log.error("Unknown vault type {}", version.type);
@@ -110,17 +110,25 @@ public class DefaultVaultProvider implements VaultProvider {
                         new Path(directory, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vaultmetadata)),
                         HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8)
                 );
-                final MasterkeyVaultMetadataProvider masterkey = new MasterkeyVaultMetadataProvider(credentials);
+                final MasterkeyVaultMetadataProvider masterkey = new MasterkeyVaultMetadataProvider(copy(credentials));
                 vault.create(session, region, masterkey);
                 break;
             case UVF:
                 vault = new UVFVault(directory);
-                vault.create(session, region, new DefaultUVFVaultMetadataProvider(credentials));
+                vault.create(session, region, new DefaultUVFVaultMetadataProvider(copy(credentials)));
                 break;
             default:
                 log.error("Unknown vault type {}", version.type);
                 throw new UnsupportedException(version.type.toString());
         }
         return vault;
+    }
+
+    /**
+     * @return Copy to be reset when the metadata provider is closed. Callers may still save the passphrase of the
+     * given credentials to the keychain.
+     */
+    private static VaultCredentials copy(final VaultCredentials credentials) {
+        return new VaultCredentials(credentials.getPassword()).setSaved(credentials.isSaved());
     }
 }
