@@ -15,6 +15,8 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.cryptomator.cryptolib.api.CryptoException;
@@ -38,6 +40,14 @@ public class CryptoInputStream extends ProxyInputStream {
      * Vault format requires a trailing empty chunk when the size is a multiple of the chunk size
      */
     private final boolean eofChunk;
+    /**
+     * Number of cleartext bytes from the beginning of this stream to the end of the file or unknown
+     */
+    private final long end;
+    /**
+     * Number of cleartext bytes returned or skipped
+     */
+    private long position;
 
     private ByteBuffer buffer = ByteBuffer.allocate(0);
 
@@ -62,6 +72,20 @@ public class CryptoInputStream extends ProxyInputStream {
      * @param chunkIndexOffset Index of first chunk read
      */
     public CryptoInputStream(final InputStream proxy, final AbstractVault vault, final VaultFile file, final long chunkIndexOffset) {
+        this(proxy, vault, file, chunkIndexOffset, TransferStatus.UNKNOWN_LENGTH);
+    }
+
+    /**
+     * @param proxy            Ciphertext positioned at the beginning of the chunk with the given index
+     * @param vault            Vault to determine chunk sizes and whether a trailing empty chunk is required
+     * @param file             File opened with the header of this file. Closed when this stream is closed.
+     * @param chunkIndexOffset Index of first chunk read
+     * @param end              Number of cleartext bytes from the beginning of this stream to the end of the file. The
+     *                         end of the ciphertext is validated when reaching this position, as readers stopping at
+     *                         the expected length would otherwise not read the trailing empty chunk. Unknown if the
+     *                         read ends before the end of the file.
+     */
+    public CryptoInputStream(final InputStream proxy, final AbstractVault vault, final VaultFile file, final long chunkIndexOffset, final long end) {
         super(proxy);
         this.proxy = proxy;
         this.file = file;
@@ -69,6 +93,7 @@ public class CryptoInputStream extends ProxyInputStream {
         this.cleartextChunkSize = vault.getCleartextChunkSize();
         this.eofChunk = vault.numberOfChunks(0L) > 0;
         this.chunkIndex = chunkIndexOffset;
+        this.end = end;
     }
 
     @Override
@@ -99,6 +124,15 @@ public class CryptoInputStream extends ProxyInputStream {
         }
         final int read = Math.min(len, buffer.remaining());
         buffer.get(dst, off, read);
+        position += read;
+        if(TransferStatus.UNKNOWN_LENGTH != end && position >= end) {
+            // Read ahead to validate end of ciphertext before returning the last bytes
+            while(!buffer.hasRemaining()) {
+                if(!this.readNextChunk()) {
+                    break;
+                }
+            }
+        }
         return read;
     }
 

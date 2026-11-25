@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoInputStream;
+import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -60,17 +61,34 @@ public class CryptoReadFeature implements Read {
                 IOUtils.closeQuietly(in);
                 final TransferStatus s = new TransferStatus(status).setLength(-1L);
                 s.setOffset(this.align(status.getOffset()));
-                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(vault.encrypt(session, file), s, callback), vault, header, this.chunk(status.getOffset()));
+                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(vault.encrypt(session, file), s, callback), vault, header, this.chunk(status.getOffset()),
+                        this.end(status, this.position(status.getOffset())));
                 crypto.skip(this.position(status.getOffset()));
                 return crypto;
             }
             else {
-                return new CryptoInputStream(in, vault, header, vault.chunkIndex(status.getOffset()));
+                return new CryptoInputStream(in, vault, header, vault.chunkIndex(status.getOffset()), this.end(status, 0L));
             }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    /**
+     * @param status   Read status
+     * @param position Cleartext bytes skipped at the beginning of the stream
+     * @return Position of the end of the file in the stream or unknown if the read ends before the end of the file
+     */
+    protected long end(final TransferStatus status, final long position) {
+        if(TransferStatus.UNKNOWN_LENGTH == status.getLength()) {
+            // Read until end of ciphertext
+            return TransferStatus.UNKNOWN_LENGTH;
+        }
+        if(!CryptoTransferStatus.isLastSegment(status)) {
+            return TransferStatus.UNKNOWN_LENGTH;
+        }
+        return position + status.getLength();
     }
 
     protected long chunk(final long offset) {
