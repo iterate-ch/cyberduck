@@ -24,10 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -61,18 +58,6 @@ public class WriteTimestampWorker extends Worker<Boolean> {
                 .setCreated(created)
                 .setModified(modified)
                 .setLockId(this.getLockId(file));
-        final AclPermission acl = session.getFeature(AclPermission.class);
-        if(acl != null) {
-            status.setAcl(acl.getPermission(file));
-        }
-        final Encryption encryption = session.getFeature(Encryption.class);
-        if(encryption != null) {
-            status.setEncryption(encryption.getEncryption(file));
-        }
-        final Redundancy redundancy = session.getFeature(Redundancy.class);
-        if(redundancy != null) {
-            status.setStorageClass(redundancy.getClass(file));
-        }
         feature.setTimestamp(file, status);
         if(!PathAttributes.EMPTY.equals(status.getResponse())) {
             file.setAttributes(status.getResponse());

@@ -27,10 +27,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -124,22 +121,10 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
         if(!update.equals(current)) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                file.getName()));
+                    file.getName()));
             final TransferStatus status = new TransferStatus()
                     .setMetadata(update)
                     .setLockId(this.getLockId(file));
-            final AclPermission acl = session.getFeature(AclPermission.class);
-            if(acl != null) {
-                status.setAcl(acl.getPermission(file));
-            }
-            final Encryption encryption = session.getFeature(Encryption.class);
-            if(encryption != null) {
-                status.setEncryption(encryption.getEncryption(file));
-            }
-            final Redundancy redundancy = session.getFeature(Redundancy.class);
-            if(redundancy != null) {
-                status.setStorageClass(redundancy.getClass(file));
-            }
             feature.setMetadata(file, status);
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 file.withAttributes(status.getResponse());

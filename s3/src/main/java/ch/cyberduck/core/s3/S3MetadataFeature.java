@@ -18,11 +18,13 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -78,9 +80,18 @@ public class S3MetadataFeature implements Metadata {
         try {
             final S3Object target = new S3Object(containerService.getKey(file));
             target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
+            if(Acl.EMPTY == status.getAcl()) {
+                status.setAcl(acl.getPermission(file));
+            }
             // Apply non-standard ACL
             target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+            if(null == status.getStorageClass()) {
+                status.setStorageClass(new S3StorageClassFeature(session, acl).getClass(file));
+            }
             target.setStorageClass(status.getStorageClass());
+            if(Encryption.Algorithm.NONE == status.getEncryption()) {
+                status.setEncryption(new S3EncryptionFeature(session, acl).getEncryption(file));
+            }
             target.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
             // Set custom key id stored in KMS
             target.setServerSideEncryptionKmsKeyId(status.getEncryption().key);
