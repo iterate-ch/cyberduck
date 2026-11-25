@@ -167,6 +167,10 @@ public class S3AccessControlListFeature implements AclPermission {
                 // The specified method is not allowed against this resource. The case for delete markers in versioned buckets.
                 return Acl.EMPTY;
             }
+            if(failure instanceof AccessDeniedException) {
+                // Missing s3:GetObjectAcl permission
+                return Acl.EMPTY;
+            }
             throw failure;
         }
     }

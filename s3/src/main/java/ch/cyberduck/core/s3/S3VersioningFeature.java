@@ -176,15 +176,10 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
                 // Set custom key id stored in KMS
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
-                try {
-                    // Apply non standard ACL
-                    final Acl list = acl.getPermission(file);
-                    if(list.isEditable()) {
-                        destination.setAcl(S3AccessControlListFeature.toObjectAccessControlList(list));
-                    }
-                }
-                catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn("Ignore failure {}", e.getMessage());
+                // Apply non-standard ACL
+                final Acl list = acl.getPermission(file);
+                if(list.isEditable()) {
+                    destination.setAcl(S3AccessControlListFeature.toObjectAccessControlList(list));
                 }
                 final Path bucket = containerService.getContainer(file);
                 final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
