@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.41.2</version>
+            <version>0.41.3-pr-1080-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>

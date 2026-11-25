@@ -47,6 +47,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyFileUtil;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.SSHPacket;
+import net.schmizz.sshj.common.SSHRuntimeException;
+import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
@@ -78,6 +81,9 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             final FileKeyProvider provider;
             final AtomicBoolean canceled = new AtomicBoolean();
             final AtomicInteger attempts = new AtomicInteger();
+            // Attached to the key file before reading the private key that captures the signer when parsed
+            final SecurityKeyMiddlewareSigner signer = new SecurityKeyMiddlewareSigner(() -> this.middleware(bookmark),
+                    bookmark, prompt, canceled);
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                         new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8), true);
@@ -100,6 +106,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                     }
                     case OpenSSHv1: {
                         provider = new OpenSSHKeyV1KeyFile.Factory().create();
+                        ((OpenSSHKeyV1KeyFile) provider).setSecurityKeySigner(signer);
                         final File f = OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute()));
                         if(f != null) {
                             pubKey = LocalFactory.get(f.getAbsolutePath());
@@ -165,16 +172,27 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                     case SK_ED25519: {
                         // The private key is on the authenticator and not in the key file. Signing is delegated to the
                         // middleware of the security key, the equivalent of SecurityKeyProvider in ssh_config
-                        final SecurityKeyMiddleware middleware;
                         try {
-                            middleware = this.middleware(bookmark);
+                            // Fail before authenticating when the middleware cannot be loaded
+                            signer.middleware();
                         }
                         catch(IOException e) {
                             log.warn("Failure {} loading middleware for security key {}", e, privKey);
                             throw new LoginFailureException(e.getMessage(), e);
                         }
-                        client.auth(credentials.getUsername(),
-                                new AuthSecurityKeyPublickey(provider, middleware, bookmark, prompt, canceled));
+                        client.auth(credentials.getUsername(), new AuthPublickey(provider) {
+                            @Override
+                            protected SSHPacket putSig(final SSHPacket reqBuf) throws UserAuthException {
+                                try {
+                                    return super.putSig(reqBuf);
+                                }
+                                catch(SSHRuntimeException e) {
+                                    // Fail the authentication method instead of the transport
+                                    throw new UserAuthException(String.format("Failure signing with security key %s",
+                                            privKey), e.getCause());
+                                }
+                            }
+                        });
                         return client.isAuthenticated();
                     }
                 }
