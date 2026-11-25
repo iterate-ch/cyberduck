@@ -17,12 +17,14 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DeleteWorker;
 
@@ -74,6 +76,21 @@ public class FTPDeleteFeatureTest extends AbstractFTPTest {
         // Delete non-empty folder without deleting contents first
         feature.delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new FTPFindFeature(session).find(file));
+        assertFalse(new FTPFindFeature(session).find(folder));
+    }
+
+    @Test
+    public void testDeleteListedDirectoryRecursive() throws Exception {
+        final Path home = new FTPWorkdirService(session).find();
+        final Path folder = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final FTPDeleteFeature feature = new FTPDeleteFeature(session);
+        assumeTrue(feature.features(folder).contains(Delete.Flags.recursive));
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), folder, new TransferStatus());
+        final Path subfolder = new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        // Listing leaves working directory within the tree to delete
+        new FTPListService(session).list(subfolder, new DisabledListProgressListener());
+        feature.delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+        assertEquals(home.getAbsolute(), session.getClient().printWorkingDirectory());
         assertFalse(new FTPFindFeature(session).find(folder));
     }
 

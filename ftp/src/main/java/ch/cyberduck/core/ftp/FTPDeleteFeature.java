@@ -48,6 +48,10 @@ public class FTPDeleteFeature implements Delete {
                     }
                 }
                 else if(file.isDirectory()) {
+                    // Change working directory to parent to not remain within the deleted directory tree
+                    if(!session.getClient().changeWorkingDirectory(file.getParent().getAbsolute())) {
+                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                    }
                     if(this.isRecursive()) {
                         // Remove directory including its contents with SITE RMDIR from ProFTPD mod_site_misc
                         if(!session.getClient().sendSiteCommand(String.format("RMDIR %s", file.getAbsolute()))) {
@@ -55,10 +59,6 @@ public class FTPDeleteFeature implements Delete {
                         }
                     }
                     else {
-                        // Change working directory to parent
-                        if(!session.getClient().changeWorkingDirectory(file.getParent().getAbsolute())) {
-                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                        }
                         if(!session.getClient().removeDirectory(file.getAbsolute())) {
                             throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                         }
