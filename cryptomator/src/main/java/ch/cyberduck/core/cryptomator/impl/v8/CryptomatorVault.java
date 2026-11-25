@@ -42,6 +42,7 @@ import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultUnlockException;
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.CipherCombo;
@@ -62,6 +63,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -98,9 +100,14 @@ public class CryptomatorVault extends AbstractVault {
     private static final String JSON_KEY_VAULTVERSION = "format";
     private static final String JSON_KEY_CIPHERCONFIG = "cipherCombo";
     private static final String JSON_KEY_SHORTENING_THRESHOLD = "shorteningThreshold";
+    private static final String KEY_ID_SCHEME_MASTERKEYFILE = "masterkeyfile";
 
     private final Path home;
-    private final Path masterkeyPath;
+    /**
+     * Master key file configured in preferences, replaced with the file referenced by the key ID of the vault
+     * configuration when loading or creating a vault
+     */
+    private Path masterkeyPath;
     private final byte[] pepper;
 
     private final Path config;
@@ -205,6 +212,8 @@ public class CryptomatorVault extends AbstractVault {
                 }
                 final Write writer = session._getFeature(Write.class);
                 directory.mkdir(writer, home, status);
+                // Write master key file to the location referenced by the key ID of the configuration
+                masterkeyPath = this.toMasterkeyPath(created.keyId());
                 log.debug("Write master key to {}", masterkeyPath);
                 new ContentWriter(session).write(masterkeyPath, masterkeyFile.toByteArray());
                 log.debug("Write vault configuration to {}", config);
@@ -228,21 +237,75 @@ public class CryptomatorVault extends AbstractVault {
 
     @Override
     public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
-        final byte[] masterkeyFile = readMasterkeyFile(session, masterkeyPath);
         byte[] vaultConfig;
         try {
             vaultConfig = new ContentReader(session).readBytes(config);
+            masterkeyPath = this.toMasterkeyPath(vaultConfig);
         }
         catch(NotfoundException e) {
+            // Vault format 7 with master key file configured in preferences
             log.debug("Missing vault configuration {}", config);
             vaultConfig = null;
         }
+        final byte[] masterkeyFile = readMasterkeyFile(session, masterkeyPath);
         try(CvfMasterkey masterkey = loadMasterkey(masterkeyFile, CredentialsVaultMetadataProvider.cast(metadata).getCredentials().getPassword())) {
             if(null == vaultConfig) {
                 vaultConfig = this.toVaultConfig(masterkeyFile, masterkey);
             }
             this.open(vaultConfig, masterkey);
         }
+    }
+
+    /**
+     * @param vaultConfig Contents of vault.cryptomator
+     * @return Master key file referenced by the key ID of the configuration
+     */
+    private Path toMasterkeyPath(final byte[] vaultConfig) throws BackgroundException {
+        final LockedVault locked;
+        try {
+            locked = LockedVault.parse(vaultConfig);
+        }
+        catch(VaultConfigLoadException e) {
+            throw new VaultException(String.format("Failed to verify vault config. %s", e.getMessage()), e).withFile(config);
+        }
+        if(!(locked instanceof Cvf8LockedVault)) {
+            throw new VaultException(String.format("Unsupported vault configuration in %s", config.getName())).withFile(config);
+        }
+        try {
+            return this.toMasterkeyPath(((Cvf8LockedVault) locked).keyId());
+        }
+        catch(IllegalArgumentException e) {
+            throw new VaultException(String.format("Invalid key ID in %s. %s", config.getName(), e.getMessage()), e).withFile(config);
+        }
+    }
+
+    /**
+     * @param keyId Key ID of vault configuration
+     * @return Master key file in vault home
+     */
+    private Path toMasterkeyPath(final URI keyId) throws BackgroundException {
+        if(!KEY_ID_SCHEME_MASTERKEYFILE.equals(keyId.getScheme())) {
+            throw new VaultException(String.format("Unsupported key ID %s in %s", keyId, config.getName())).withFile(config);
+        }
+        final String filename = keyId.getSchemeSpecificPart();
+        if(!isValidFilename(filename)) {
+            throw new VaultException(String.format("Invalid key ID %s in %s", keyId, config.getName())).withFile(config);
+        }
+        return new Path(home, filename, EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
+    }
+
+    /**
+     * @param filename Name from key ID
+     * @return False if not a plain filename in the vault directory
+     */
+    private static boolean isValidFilename(final String filename) {
+        if(StringUtils.isBlank(filename)) {
+            return false;
+        }
+        if(StringUtils.containsAny(filename, '/', '\\')) {
+            return false;
+        }
+        return !".".equals(filename) && !"..".equals(filename);
     }
 
     /**
