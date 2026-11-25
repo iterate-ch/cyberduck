@@ -51,6 +51,8 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        // Segments are encrypted independently and must contain whole chunks
+        status.setSegmentAlignment(cryptomator.getFileContentCryptor().cleartextChunkSize());
         return proxy.upload(write, cryptomator.encrypt(session, file), local, throttle, progress, listener, status.setParent(new CryptoTransferStatus(cryptomator, file, status) {
             @Override
             public Checksum compute(final InputStream local, final HashAlgorithm algorithm, final TransferStatus segment) throws BackgroundException {
