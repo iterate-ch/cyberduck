@@ -59,7 +59,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         assertTrue(metadata.containsKey("mtime"));
         assertTrue(metadata.containsKey("btime"));
         assertTrue(metadata.containsKey("Content-Type"));
-        final S3TimestampFeature feature = new S3TimestampFeature(session);
+        final S3TimestampFeature feature = new S3TimestampFeature(session, acl);
         feature.setTimestamp(test, status.setModified(1630305150672L).setCreated(1530305160672L));
         assertNotEquals(versionId, status.getResponse().getVersionId());
         assertEquals("1630305150", status.getResponse().getMetadata().get("mtime"));

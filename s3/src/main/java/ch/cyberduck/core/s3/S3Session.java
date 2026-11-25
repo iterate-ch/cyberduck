@@ -567,7 +567,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Timestamp.class) {
             if(preferences.getBoolean("s3.timestamp.enable")) {
-                return (T) new S3TimestampFeature(this);
+                return (T) new S3TimestampFeature(this, acl);
             }
             return null;
         }
