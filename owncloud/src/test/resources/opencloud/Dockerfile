@@ -1,1 +1,1 @@
-FROM opencloudeu/opencloud-rolling:9.1.0
+FROM opencloudeu/opencloud-rolling:9.2.0
