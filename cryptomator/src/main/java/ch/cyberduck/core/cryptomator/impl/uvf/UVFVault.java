@@ -141,7 +141,7 @@ public class UVFVault extends AbstractVault {
     @Override
     public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
         try(final UVFVaultMetadataProvider provider = UVFVaultMetadataProvider.cast(metadata)) {
-            final byte[] config = new ContentReader(session).readBytes(masterkeyPath);
+            final byte[] config = this.readMetadata(session);
             try {
                 final LockedVault locked = LockedVault.parse(config);
                 if(!(locked instanceof UvfLockedVault)) {
@@ -160,6 +160,17 @@ public class UVFVault extends AbstractVault {
                 throw new VaultException(String.format("Failure reading vault metadata %s. %s", masterkeyPath.getName(), e.getMessage()), e).withFile(masterkeyPath);
             }
         }
+    }
+
+    /**
+     * Read vault metadata when loading the vault. Override to read the canonical copy from a key management service
+     * such as Cryptomator Hub instead of the copy in the vault directory.
+     *
+     * @param session Connection to storage of vault
+     * @return Contents of vault.uvf
+     */
+    protected byte[] readMetadata(final Session<?> session) throws BackgroundException {
+        return new ContentReader(session).readBytes(masterkeyPath);
     }
 
     private void init(final Session<?> session, final UvfUnlockedVault unlocked) {

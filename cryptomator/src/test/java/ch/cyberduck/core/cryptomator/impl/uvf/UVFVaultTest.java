@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -153,6 +154,57 @@ public class UVFVaultTest {
         final UVFVault vault = new UVFVault(home);
         final DefaultUVFVaultMetadataProvider provider = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase"));
         vault.create(session, null, provider);
+    }
+
+    @Test
+    public void testLoadCanonicalMetadata() throws Exception {
+        final UvfUnlockedVault fixture = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).create();
+        final byte[] outdated = fixture.serializeConfig();
+        fixture.addSeed();
+        final byte[] current = fixture.serializeConfig();
+        final int latestSeedId = fixture.latestSeedId();
+        fixture.destroy();
+        // Storage only has the copy written when the vault was created
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
+                            return new ByteArrayInputStream(outdated);
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final Path home = new Path("/canonical", EnumSet.of(Path.Type.directory));
+        final UVFSeedPinsTest.InMemoryPasswordStore keychain = new UVFSeedPinsTest.InMemoryPasswordStore();
+        // Metadata read from key management service
+        final UVFVault vault = new UVFVault(home, new UVFSeedPins(keychain)) {
+            @Override
+            protected byte[] readMetadata(final Session<?> session) {
+                return current;
+            }
+        };
+        vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
+        assertEquals(latestSeedId, ((UvfUnlockedVault) vault.getUnlockedVault()).latestSeedId());
+        vault.close();
+        // Copy in storage misses the seed seen before
+        try {
+            new UVFVault(home, new UVFSeedPins(keychain)).load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
+            fail();
+        }
+        catch(VaultException e) {
+            // Expected
+        }
     }
 
     @Test(expected = VaultException.class)
