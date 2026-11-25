@@ -1,1 +1,1 @@
-FROM owncloud/ocis:8.2.2
+FROM owncloud/ocis:8.2.3
