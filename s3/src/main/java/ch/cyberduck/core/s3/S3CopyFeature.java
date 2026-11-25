@@ -64,7 +64,6 @@ public class S3CopyFeature implements Copy {
         }
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
-        destination.replaceAllMetadata(new HashMap<>(status.getMetadata()));
         final CopyResult result = this.copy(source, destination, status, listener);
         return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes())
                 .setVersionId(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? result.versionId : null)

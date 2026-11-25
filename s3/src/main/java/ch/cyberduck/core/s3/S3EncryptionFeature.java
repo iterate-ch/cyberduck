@@ -98,8 +98,7 @@ public class S3EncryptionFeature implements Encryption {
                     .setLength(file.attributes().getSize())
                     .setEncryption(setting)
                     .setStorageClass(new S3StorageClassFeature(session, acl).getClass(file))
-                    .setAcl(acl.getPermission(file))
-                    .setMetadata(new S3MetadataFeature(session, acl).getMetadata(file));
+                    .setAcl(acl.getPermission(file));
             copy.copy(file, file, status, ConnectionCallback.noop, StreamListener.noop);
         }
         catch(NotfoundException e) {

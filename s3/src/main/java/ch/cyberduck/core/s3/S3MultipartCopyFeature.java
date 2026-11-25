@@ -40,6 +40,7 @@ import org.jets3t.service.model.S3Object;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -56,6 +57,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
      * A split smaller than 5M is not allowed
      */
     private final Long partsize;
+    private final S3AccessControlListFeature acl;
 
     public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(session, acl);
@@ -63,15 +65,16 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
         this.containerService = new S3PathContainerService(session.getHost());
         this.pool = ThreadPoolFactory.get("multipart", HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
         this.partsize = HostPreferencesFactory.get(session.getHost()).getLong("s3.copy.multipart.size");
+        this.acl = acl;
     }
 
     @Override
     protected CopyResult copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             final List<MultipartPart> completed = new ArrayList<>();
+            destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
             // ID for the initiated multipart upload.
-            final MultipartUpload multipart = session.getClient().multipartStartUpload(
-                    destination.getBucketName(), destination);
+            final MultipartUpload multipart = session.getClient().multipartStartUpload(destination.getBucketName(), destination);
             log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());
             final long size = status.getLength();
             long remaining = size;

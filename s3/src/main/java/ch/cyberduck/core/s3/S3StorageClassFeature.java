@@ -80,8 +80,7 @@ public class S3StorageClassFeature implements Redundancy {
                     .setLength(file.attributes().getSize())
                     .setStorageClass(redundancy)
                     .setEncryption(new S3EncryptionFeature(session, acl).getEncryption(file))
-                    .setAcl(acl.getPermission(file))
-                    .setMetadata(new S3MetadataFeature(session, acl).getMetadata(file));
+                    .setAcl(acl.getPermission(file));
             copy.copy(file, file, status, ConnectionCallback.noop, StreamListener.noop);
         }
         catch(NotfoundException e) {
