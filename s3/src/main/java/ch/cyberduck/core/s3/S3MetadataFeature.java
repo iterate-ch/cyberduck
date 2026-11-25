@@ -18,17 +18,12 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -83,27 +78,12 @@ public class S3MetadataFeature implements Metadata {
         try {
             final S3Object target = new S3Object(containerService.getKey(file));
             target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
-            try {
-                // Apply non-standard ACL
-                final Acl list = acl.getPermission(file);
-                if(list.isEditable()) {
-                    target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(list));
-                }
-            }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn("Ignore failure {}", e.getMessage());
-            }
-            final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
-            if(storageClassFeature != null) {
-                target.setStorageClass(storageClassFeature.getClass(file));
-            }
-            final Encryption encryptionFeature = session.getFeature(Encryption.class);
-            if(encryptionFeature != null) {
-                final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
-                target.setServerSideEncryptionAlgorithm(encryption.algorithm);
-                // Set custom key id stored in KMS
-                target.setServerSideEncryptionKmsKeyId(encryption.key);
-            }
+            // Apply non-standard ACL
+            target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+            target.setStorageClass(status.getStorageClass());
+            target.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
+            // Set custom key id stored in KMS
+            target.setServerSideEncryptionKmsKeyId(status.getEncryption().key);
             final Path bucket = containerService.getContainer(file);
             final Map<String, Object> result = session.getClient().updateObjectMetadata(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
             final PathAttributes attributes = new S3AttributesAdapter(session.getHost()).toAttributes(target);
