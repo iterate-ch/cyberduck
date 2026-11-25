@@ -1,1 +1,1 @@
-FROM localstack/localstack:2026.10.7
+FROM localstack/localstack:2026.10.8
