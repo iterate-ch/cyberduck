@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -36,7 +37,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 
 import org.apache.commons.lang3.StringUtils;
@@ -171,11 +171,11 @@ public class S3VersioningFeature implements Versioning {
             try {
                 final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class
-                destination.setStorageClass(file.attributes().getStorageClass());
-                final Encryption.Algorithm encryption = file.attributes().getEncryption();
-                destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(file);
+                destination.setStorageClass(attributes.getStorageClass());
+                destination.setServerSideEncryptionAlgorithm(attributes.getEncryption().algorithm);
                 // Set custom key id stored in KMS
-                destination.setServerSideEncryptionKmsKeyId(encryption.key);
+                destination.setServerSideEncryptionKmsKeyId(attributes.getEncryption().key);
                 // Apply non-standard ACL
                 final Acl list = acl.getPermission(file);
                 if(list.isEditable()) {
