@@ -242,14 +242,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Encryption feature = session.getFeature(Encryption.class);
             if(feature != null) {
                 if(status.isExists()) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setEncryption(feature.getEncryption(file));
-                    }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setEncryption(feature.getDefault(file));
-                    }
+                    // Already set when reading attributes of file
+                    status.setEncryption(status.getRemote().getEncryption());
                 }
                 else {
                     status.setEncryption(feature.getDefault(file));
@@ -261,14 +255,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Redundancy feature = session.getFeature(Redundancy.class);
                 if(feature != null) {
                     if(status.isExists()) {
-                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                                file.getName()));
-                        try {
-                            status.setStorageClass(feature.getClass(file));
-                        }
-                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                            status.setStorageClass(feature.getDefault(file));
-                        }
+                        // Already set when reading attributes of file
+                        status.setStorageClass(status.getRemote().getStorageClass());
                     }
                     else {
                         status.setStorageClass(feature.getDefault(file));
