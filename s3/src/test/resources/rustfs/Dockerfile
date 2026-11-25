@@ -1,1 +1,1 @@
-FROM rustfs/rustfs:1.0.5
+FROM rustfs/rustfs:1.0.6
