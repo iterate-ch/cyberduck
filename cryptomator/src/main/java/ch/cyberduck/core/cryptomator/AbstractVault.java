@@ -46,6 +46,8 @@ import java.util.regex.Pattern;
 public abstract class AbstractVault implements Vault {
     private static final Logger log = LogManager.getLogger(AbstractVault.class);
 
+    private final CleartextFilenameValidator validator = new CleartextFilenameValidator();
+
     public abstract Path getMasterkeyPath();
 
     public abstract Path getConfig();
@@ -292,6 +294,9 @@ public abstract class AbstractVault implements Vault {
         if(m.matches()) {
             try {
                 final String cleartextFilename = this.getParentDirectory(session, file).decryptName(file.getName());
+                if(!this.isValidCleartextFilename(cleartextFilename)) {
+                    throw new CryptoInvalidFilenameException(String.format("Decrypted filename of %s is not valid on the local file system", file.getName())).withFile(file);
+                }
                 final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
                 if(this.isDirectory(file)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
@@ -331,6 +336,16 @@ public abstract class AbstractVault implements Vault {
         else {
             throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s due to missing pattern match for %s", file.getName(), pattern)).withFile(file);
         }
+    }
+
+    /**
+     * Decrypted names are untrusted input
+     *
+     * @param filename Decrypted filename
+     * @return False if the decrypted filename must not be exposed
+     */
+    protected boolean isValidCleartextFilename(final String filename) {
+        return validator.isValid(filename);
     }
 
     private VaultDirectory getParentDirectory(final Session<?> session, final Path file) throws BackgroundException {

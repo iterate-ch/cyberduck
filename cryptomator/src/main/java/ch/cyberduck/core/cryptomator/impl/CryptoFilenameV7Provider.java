@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator.impl;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.AbstractVault;
+import ch.cyberduck.core.cryptomator.CleartextFilenameValidator;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilenameException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,6 +31,7 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
      * Maximum length of encrypted filenames
      */
     private final int threshold;
+    private final CleartextFilenameValidator validator = new CleartextFilenameValidator();
 
     public CryptoFilenameV7Provider(final AbstractVault vault) {
         this(vault, DEFAULT_NAME_SHORTENING_THRESHOLD);
@@ -42,6 +44,10 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
 
     @Override
     public boolean isValid(final String filename) {
+        // Reject names that would be hidden when listing the vault
+        if(!validator.isValid(filename)) {
+            return false;
+        }
         // The length of the encrypted name does not depend on the directory, encrypt with root directory to avoid lookup of parent
         return this.isBelowThreshold(vault.getRootDirectory().encryptName(filename).name());
     }

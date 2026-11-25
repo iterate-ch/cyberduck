@@ -21,10 +21,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 public interface CryptoFilename {
 
     /**
-     * Check if a filename can be encrypted without exceeding the length of encrypted filenames supported by the vault
+     * Check if a filename is valid on the local file system and can be encrypted without exceeding the length of
+     * encrypted filenames supported by the vault
      *
      * @param filename Clear text filename
-     * @return True if the filename can be encrypted
+     * @return True if the filename can be encrypted and is listed when decrypted
      */
     boolean isValid(String filename);
 

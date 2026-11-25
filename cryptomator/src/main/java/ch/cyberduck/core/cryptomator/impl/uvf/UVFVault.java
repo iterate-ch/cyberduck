@@ -52,6 +52,7 @@ import org.cryptomator.cryptolib.api.VaultDirectory;
 import org.cryptomator.cryptolib.api.VaultKeyInvalidException;
 import org.cryptomator.cryptolib.api.VaultRollbackException;
 
+import java.text.Normalizer;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -178,6 +179,17 @@ public class UVFVault extends AbstractVault {
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
     }
 
+
+    /**
+     * Names are normalized to NFC before encryption. A name stored in another normalization form can never be looked
+     * up, created over, renamed or deleted.
+     *
+     * @see <a href="https://github.com/encryption-alliance/unified-vault-format/blob/develop/implementation-notes.md#decrypted-names">Decrypted Names</a>
+     */
+    @Override
+    protected boolean isValidCleartextFilename(final String filename) {
+        return super.isValidCleartextFilename(filename) && Normalizer.isNormalized(filename, Normalizer.Form.NFC);
+    }
 
     @Override
     public synchronized void close() {
