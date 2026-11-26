@@ -96,4 +96,30 @@ public class TransferStatusTest {
         // Parent of overall status
         assertSame(transformed, new TransferStatus().setParent(new TransferStatus().setParent(overall)).compute(local, HashAlgorithm.md5));
     }
+
+    @Test
+    public void testAlignSegmentDefault() {
+        final TransferStatus status = new TransferStatus();
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getSegmentAlignment());
+        assertEquals(10485760L, status.alignSegment(10485760L));
+        assertEquals(1L, status.alignSegment(1L));
+    }
+
+    @Test
+    public void testAlignSegment() {
+        // Universal Vault Format with 32740 bytes cleartext per chunk
+        final TransferStatus status = new TransferStatus().setSegmentAlignment(32740L);
+        assertEquals(321L * 32740L, status.alignSegment(10485760L));
+        assertEquals(320L * 32740L, status.alignSegment(320L * 32740L));
+        assertEquals(32740L, status.alignSegment(1L));
+        // Vault format 8 with 32768 bytes cleartext per chunk keeps default part size
+        assertEquals(10485760L, new TransferStatus().setSegmentAlignment(32768L).alignSegment(10485760L));
+        // Copied to segment status
+        assertEquals(32740L, new TransferStatus(status).getSegmentAlignment());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidSegmentAlignment() {
+        new TransferStatus().setSegmentAlignment(0L);
+    }
 }

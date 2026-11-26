@@ -31,11 +31,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
-import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.CipherCombo;
+import org.cryptomator.cryptolib.api.UvfUnlockedVault;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 import static ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVaultTest.createJWT;
@@ -91,13 +93,13 @@ public class CryptoReadFeatureTest {
         }
 
         {
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(1));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(88));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(89));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(15342));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(32767));
-            assertEquals(vault.getFileHeaderCryptor().headerSize() + 48 + 32768, read.align(32768));
-            assertEquals(vault.getFileHeaderCryptor().headerSize() + 48 + 32768, read.align(32769));
+            assertEquals(vault.getHeaderSize(), read.align(1));
+            assertEquals(vault.getHeaderSize(), read.align(88));
+            assertEquals(vault.getHeaderSize(), read.align(89));
+            assertEquals(vault.getHeaderSize(), read.align(15342));
+            assertEquals(vault.getHeaderSize(), read.align(32767));
+            assertEquals(vault.getHeaderSize() + 48 + 32768, read.align(32768));
+            assertEquals(vault.getHeaderSize() + 48 + 32768, read.align(32769));
         }
 
         {
@@ -132,7 +134,7 @@ public class CryptoReadFeatureTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -157,13 +159,13 @@ public class CryptoReadFeatureTest {
             assertEquals(1, read.chunk(32769));
         }
         {
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(1));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(88));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(89));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(15342));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(32767));
-            assertEquals(vault.getFileHeaderCryptor().headerSize() + 28 + 32768, read.align(32768));
-            assertEquals(vault.getFileHeaderCryptor().headerSize() + 28 + 32768, read.align(32769));
+            assertEquals(vault.getHeaderSize(), read.align(1));
+            assertEquals(vault.getHeaderSize(), read.align(88));
+            assertEquals(vault.getHeaderSize(), read.align(89));
+            assertEquals(vault.getHeaderSize(), read.align(15342));
+            assertEquals(vault.getHeaderSize(), read.align(32767));
+            assertEquals(vault.getHeaderSize() + 28 + 32768, read.align(32768));
+            assertEquals(vault.getHeaderSize() + 28 + 32768, read.align(32769));
         }
         {
             assertEquals(24, read.position(24));
@@ -176,6 +178,9 @@ public class CryptoReadFeatureTest {
 
     @Test
     public void testCalculations_UVF() throws Exception {
+        final UvfUnlockedVault fixture = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).create();
+        final String vaultUVF = new String(fixture.serializeConfig(), StandardCharsets.US_ASCII);
+        fixture.destroy();
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -184,7 +189,6 @@ public class CryptoReadFeatureTest {
                     return (T) new Read() {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            final String vaultUVF = "eyJwMnMiOiJSSE5FQ2xxSWlqSSIsInAyYyI6MTAwMCwiamt1Ijoiandrcy5qc29uIiwia2lkIjoib3JnLmNyeXB0b21hdG9yLnV2Zi52YXVsdHBhc3N3b3JkIiwiY3R5IjoianNvbiIsImVuYyI6IkEyNTZHQ00iLCJhbGciOiJQQkVTMi1IUzUxMitBMjU2S1cifQ.Vy4KNvINWBF3wvmfZzrXdjv2Xer1tR6-SY8Dz0R-abCyR4HH9AMh9g.t8nwlY6eJ2KOmHhu.gInAlb1PhzwVqUUPA10v_86G7Ezg-W08cvgDlZGfGVpqRM1iH3TyE89-fiSvYU7NqV-9Eus5ulhA5YXW0mfr9SOecm4l_ZxXVBvsyYdZt8o_kpXho3w-DmSzPn8JG2hzkpVZPOqOeltc9ATosUGk_zw2M30POBqGF02RjFj5pbchQmpo539LIzyQQ7alYOlR3QdACxIM7ZsXrCsM-5BN_zIpBQXNEXrehbKtDYUchr-jB-ZMHHn9q13EhLFOeSXF1kje482c3H5ZbKDFJMNzyHqZLyPPrafrcStPolrd4Rcwl84ZidCnfnEcuLP8vr0sw9fqyxsJKuTDFhwEmGq47aZUHiQ.2PRDGEDRlC3sffJOhRYzyg";
 
                             if("vault.uvf".equals(file.getName())) {
                                 return IOUtils.toInputStream(vaultUVF, Charset.defaultCharset());
@@ -205,26 +209,26 @@ public class CryptoReadFeatureTest {
         final UVFVault vault = new UVFVault(home);
         vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
+        // AES-256-GCM-32k with 32740 bytes payload per chunk
         {
             assertEquals(0, read.chunk(0));
             assertEquals(0, read.chunk(1));
-            assertEquals(1, read.chunk(32768));
-            assertEquals(1, read.chunk(32769));
+            assertEquals(0, read.chunk(32739));
+            assertEquals(1, read.chunk(32740));
+            assertEquals(1, read.chunk(32741));
         }
         {
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(1));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(88));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(89));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(15342));
-            assertEquals(vault.getFileHeaderCryptor().headerSize(), read.align(32767));
-            assertEquals(vault.getFileHeaderCryptor().headerSize() + 28 + 32768, read.align(32768));
-            assertEquals(vault.getFileHeaderCryptor().headerSize() + 28 + 32768, read.align(32769));
+            assertEquals(vault.getHeaderSize(), read.align(1));
+            assertEquals(vault.getHeaderSize(), read.align(88));
+            assertEquals(vault.getHeaderSize(), read.align(32739));
+            assertEquals(vault.getHeaderSize() + 28 + 32740, read.align(32740));
+            assertEquals(vault.getHeaderSize() + 28 + 32740, read.align(32741));
         }
         {
             assertEquals(24, read.position(24));
             assertEquals(0, read.position(0));
-            assertEquals(0, read.position(32768));
-            assertEquals(1, read.position(32769));
+            assertEquals(0, read.position(32740));
+            assertEquals(1, read.position(32741));
         }
         vault.close();
     }

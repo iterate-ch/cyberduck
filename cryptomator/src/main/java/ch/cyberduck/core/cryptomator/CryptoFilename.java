@@ -15,60 +15,30 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface CryptoFilename {
 
     /**
-     * Check if a filename is deflated due to its length
+     * Check if a filename is valid on the local file system and can be encrypted without exceeding the length of
+     * encrypted filenames supported by the vault
      *
-     * @param filename Encrypted filename
-     * @return true if deflated, false otherwise
-     */
-    boolean isDeflated(String filename);
-
-    /**
-     * Check if a filename can be encrypted
-     *
-     * @param filename Encrypted filename
-     * @return true if filenamed can be encrypted, false otherwise
+     * @param filename Clear text filename
+     * @return True if the filename can be encrypted and is listed when decrypted
      */
     boolean isValid(String filename);
 
     /**
-     * Inflate a deflated filename
-     *
-     * @param session   Connection
-     * @param shortName Deflated filename
-     * @return Inflated filename
-     */
-    String inflate(Session<?> session, String shortName) throws BackgroundException;
-
-    /**
-     * Deflate a filename if it exceeds a threshold
+     * Name to store an encrypted filename with. Name shortening is not supported and filenames exceeding the
+     * threshold of the vault are rejected.
      *
      * @param session  Connection
-     * @param filename Filename
-     * @return Deflated filename
+     * @param filename Encrypted filename
+     * @return Filename to store
+     * @throws CryptoInvalidFilenameException If the filename exceeds the threshold
      */
     String deflate(Session<?> session, String filename) throws BackgroundException;
-
-    /**
-     * Resolve metadata file for a deflated filename
-     *
-     * @param filename Filename
-     * @return Path of metadata file
-     */
-    Path resolve(String filename);
-
-    /**
-     * Invalidate cache
-     *
-     * @param filename Filename to remove from cache
-     */
-    void invalidate(String filename);
 
     /**
      * Clear filename cache

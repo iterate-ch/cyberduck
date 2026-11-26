@@ -17,20 +17,43 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
 
 import ch.cyberduck.core.vault.VaultCredentials;
 
+import org.apache.commons.lang3.StringUtils;
+import org.cryptomator.cryptolib.api.LockedVault;
+import org.cryptomator.cryptolib.api.NameShortener;
+import org.cryptomator.cryptolib.api.UvfLockedVault;
+import org.cryptomator.cryptolib.api.UvfUnlockedVault;
+import org.cryptomator.cryptolib.api.VaultKeyInvalidException;
 import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class DefaultUVFVaultMetadataProviderTest extends TestCase {
+public class DefaultUVFVaultMetadataProviderTest {
 
     @Test
-    public void testGetMetadata() throws Exception {
-        final DefaultUVFVaultMetadataProvider provider = new DefaultUVFVaultMetadataProvider(new VaultCredentials("test"));
-        final String b1 = provider.decrypt();
-        assertEquals(b1, provider.decrypt());
-        assertEquals(provider.computeRootDirIdHash(), provider.computeRootDirIdHash());
-        provider.encrypt();
-        assertEquals(b1, provider.decrypt());
-        assertEquals(provider.computeRootDirIdHash(), provider.computeRootDirIdHash());
+    public void testCreateAndUnlock() throws Exception {
+        final UvfUnlockedVault created = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).create();
+        assertEquals(NameShortener.DISABLED, created.nameShorteningThreshold());
+        final LockedVault locked = LockedVault.parse(created.serializeConfig());
+        assertTrue(locked instanceof UvfLockedVault);
+        final UvfUnlockedVault unlocked = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).unlock((UvfLockedVault) locked);
+        assertEquals(created.seedIds(), unlocked.seedIds());
+        assertEquals(created.rootDirectory().dirPath(), unlocked.rootDirectory().dirPath());
+        created.destroy();
+        unlocked.destroy();
+    }
+
+    @Test(expected = VaultKeyInvalidException.class)
+    public void testUnlockWrongPassphrase() throws Exception {
+        final UvfUnlockedVault created = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")).create();
+        final UvfLockedVault locked = (UvfLockedVault) LockedVault.parse(created.serializeConfig());
+        created.destroy();
+        new DefaultUVFVaultMetadataProvider(new VaultCredentials("other")).unlock(locked);
+    }
+
+    @Test
+    public void testCloseResetsPassphrase() {
+        final VaultCredentials credentials = new VaultCredentials("mypassphrase");
+        new DefaultUVFVaultMetadataProvider(credentials).close();
+        assertTrue(StringUtils.isEmpty(credentials.getPassword()));
     }
 }

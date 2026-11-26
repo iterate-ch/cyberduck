@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.DirectoryMetadata;
+import org.cryptomator.cryptolib.api.VaultDirectory;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -48,13 +48,13 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        DirectoryMetadata dirMetadata;
+        VaultDirectory dirMetadata;
         try {
-            dirMetadata = vault.getDirectoryProvider().getDirectoryId(session, folder);
+            dirMetadata = vault.getDirectoryProvider().getDirectory(session, folder);
         }
         catch(NotfoundException e) {
             log.warn("Missing directory ID for folder {}", folder);
-            dirMetadata = vault.getDirectoryProvider().createDirectoryId(folder);
+            dirMetadata = vault.getDirectoryProvider().createDirectory(folder);
         }
         // Create metadata file for directory
         final Write write = session._getFeature(Write.class);
@@ -64,7 +64,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        final byte[] encryptedMetadata = vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata);
+        final byte[] encryptedMetadata = dirMetadata.encryptedMetadata();
         directoryMetadataFile.setAttributes(new ContentWriter(session).write(directoryMetadataFile, encryptedMetadata, new TransferStatus()));
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
@@ -76,7 +76,8 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
                 vault.getBackupDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write recovery metadata {} for folder {}", recoveryDirectoryMetadataFile, folder);
-        new ContentWriter(session).write(recoveryDirectoryMetadataFile, vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata));
+        // Backup is encrypted for all vault formats
+        new ContentWriter(session).write(recoveryDirectoryMetadataFile, dirMetadata.encryptedMetadataBackup());
         // Implementation may return new copy of attributes without encryption attributes
         target.attributes().setDirectoryId(encryptedMetadata);
         target.attributes().setDecrypted(folder);
@@ -95,7 +96,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
-        filename.ifPresent(s -> vault.getDirectoryProvider().createDirectoryId(new Path(workdir, s, EnumSet.of(Path.Type.directory))));
+        filename.ifPresent(s -> vault.getDirectoryProvider().createDirectory(new Path(workdir, s, EnumSet.of(Path.Type.directory))));
         delegate.preflight(vault.encrypt(session, workdir), filename);
     }
 

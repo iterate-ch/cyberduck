@@ -92,7 +92,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
                 final FileUploadPartEntity uploadPartEntity = this.continueUpload(file, ref, partNumber);
                 final long length;
                 if(uploadPartEntity.isParallelParts()) {
-                    length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
+                    length = Math.min(status.alignSegment(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize)), remaining);
                 }
                 else {
                     length = remaining;

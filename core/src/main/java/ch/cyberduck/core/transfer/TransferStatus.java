@@ -217,6 +217,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      */
     private NonceGenerator nonces;
 
+    /**
+     * Length of segments except the last must be a multiple of this value. {@link #UNKNOWN_LENGTH} when segments are not aligned
+     */
+    private long segmentAlignment = UNKNOWN_LENGTH;
+
     private Object lockId;
 
     /**
@@ -263,6 +268,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.header = copy.header;
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
+        this.segmentAlignment = copy.segmentAlignment;
         this.lockId = copy.lockId;
         this.region = copy.region;
     }
@@ -728,6 +734,39 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     public TransferStatus setNonces(final NonceGenerator nonces) {
         this.nonces = nonces;
         return this;
+    }
+
+    /**
+     * @return Required multiple for the length of segments or {@link #UNKNOWN_LENGTH} when segments are not aligned
+     */
+    public long getSegmentAlignment() {
+        return segmentAlignment;
+    }
+
+    /**
+     * @param segmentAlignment Length of segments except the last must be a multiple of this value such as the chunk
+     *                         size of an encrypted vault where each segment is encrypted on its own
+     */
+    public TransferStatus setSegmentAlignment(final long segmentAlignment) {
+        if(segmentAlignment < 1L) {
+            throw new IllegalArgumentException(String.format("Invalid segment alignment %d", segmentAlignment));
+        }
+        this.segmentAlignment = segmentAlignment;
+        return this;
+    }
+
+    /**
+     * Round segment length up to the next multiple of the segment alignment. Rounding up keeps segments above the
+     * minimum length required by the server and does not increase the number of segments.
+     *
+     * @param length Preferred length of segments
+     * @return Length aligned to segment alignment or unchanged when segments are not aligned
+     */
+    public long alignSegment(final long length) {
+        if(UNKNOWN_LENGTH == segmentAlignment) {
+            return length;
+        }
+        return (length + segmentAlignment - 1) / segmentAlignment * segmentAlignment;
     }
 
     public Object getLockId() {

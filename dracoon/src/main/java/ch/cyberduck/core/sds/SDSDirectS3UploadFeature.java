@@ -139,7 +139,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
                 long offset = 0;
                 long remaining = status.getLength();
                 for(int partNumber = 1; remaining >= 0; partNumber++) {
-                    final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
+                    final long length = Math.min(status.alignSegment(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)), remaining);
                     final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
                     if(status.getFilekey() != null) {
                         final Local temporary = temp.create(String.format("%s-%d", random, partNumber));
@@ -212,8 +212,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
             long remaining = status.getLength();
             // Determine number of parts
             for(int partNumber = 1; remaining >= 0; partNumber++) {
-                final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                if(partNumber > 1 && length < Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)) {
+                final long length = Math.min(status.alignSegment(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)), remaining);
+                if(partNumber > 1 && length < status.alignSegment(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize))) {
                     // Separate last part with non default part size
                     presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
                             new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),

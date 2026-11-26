@@ -96,14 +96,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
     @Override
     public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle,
                                  final ProgressListener progress, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final long partSize;
-        if(file.getType().contains(Path.Type.encrypted)) {
-            // For uploads to vault part size must be a multiple of 32 * 1024. Recommended partsize from B2 API may not meet that requirement.
-            partSize = PreferencesFactory.get().getLong("b2.upload.largeobject.size");
-        }
-        else {
-            partSize = this.partSize;
-        }
         return this.upload(write, file, local, throttle, progress, listener, status, callback,
                 partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
     }
@@ -168,7 +160,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                     }
                 }
                 if(!skip) {
-                    final long length = Math.min(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
+                    final long length = Math.min(status.alignSegment(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize)), remaining);
                     // Submit to queue
                     parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, fileId, partNumber, offset, length, callback));
                     log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);

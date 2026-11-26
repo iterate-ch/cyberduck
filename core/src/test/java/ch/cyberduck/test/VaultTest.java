@@ -39,7 +39,7 @@ public class VaultTest {
     private static final long VAULT_RENEW_THRESHOLD = 2592000; // Renew if TTL is less than 30 days
     private static final int VAULT_OPEN_TIMEOUT = 5; // Seconds
     private static final int VAULT_READ_TIMEOUT = 15; // Seconds
-    private static final String[] TRANSIENT_PASSWORD_PREFIXES = {"Cryptomator Passphrase", "Triple-Crypt Encryption Password"};
+    private static final String[] TRANSIENT_PASSWORD_PREFIXES = {"Cryptomator Passphrase", "Cryptomator Seed Pins", "Triple-Crypt Encryption Password"};
 
     protected static Vault VAULT;
     protected static Map<String, String> PROPERTIES;

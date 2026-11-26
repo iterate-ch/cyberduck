@@ -15,9 +15,21 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
+import ch.cyberduck.core.cryptomator.impl.uvf.DefaultUVFVaultMetadataProvider;
+import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.cryptomator.cryptolib.api.Cvf8UnlockedVault;
+import org.cryptomator.cryptolib.api.CvfMasterkey;
 import org.junit.runners.Parameterized;
+
+import java.util.EnumSet;
 
 public abstract class AbstractCryptoTests {
 
@@ -29,4 +41,26 @@ public abstract class AbstractCryptoTests {
     @Parameterized.Parameter
     public VaultVersion.Type vaultVersion;
 
+    /**
+     * @return New vault of the parameterized version unlocked in memory without storage. Only file content encryption
+     * and directory metadata in memory are available.
+     */
+    protected AbstractVault unlockedVault() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        switch(vaultVersion) {
+            case UVF: {
+                final AbstractVault vault = new UVFVault(home);
+                FieldUtils.writeField(vault, "vault", new DefaultUVFVaultMetadataProvider(new VaultCredentials("test")).create(), true);
+                return vault;
+            }
+            default: {
+                final AbstractVault vault = new CryptomatorVault(home);
+                try(CvfMasterkey masterkey = CvfMasterkey.generate(FastSecureRandomProvider.get().provide())) {
+                    FieldUtils.writeField(vault, "vault", Cvf8UnlockedVault.create(masterkey,
+                            CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD, FastSecureRandomProvider.get().provide()), true);
+                }
+                return vault;
+            }
+        }
+    }
 }

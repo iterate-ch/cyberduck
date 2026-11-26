@@ -126,7 +126,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
         long offset = status.getOffset();
         long remaining = status.getLength();
         while(remaining > 0) {
-            final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
+            final long length = Math.min(status.alignSegment(preferences.getInteger("tus.chunk.size")), remaining);
             chunks.add(this.submit(write, file, local, throttle, listener, status,
                     uploadUrl, offset, length, callback));
             remaining -= length;

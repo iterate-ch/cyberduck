@@ -27,7 +27,6 @@ import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
@@ -35,7 +34,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,13 +62,12 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 return proxy.write(vault.encrypt(session, file), status, callback);
             }
             if(null == status.getHeader()) {
-                final FileHeader header = vault.getFileHeaderCryptor().create();
-                status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
+                status.setHeader(vault.createHeader());
             }
             if(null == status.getNonces()) {
                 final NonceGenerator nonces = status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                         new RandomNonceGenerator(vault.getNonceSize()) :
-                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength()));
+                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength(), CryptoTransferStatus.isLastSegment(status)));
                 log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }
@@ -86,8 +83,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 ciphertext.write(status.getHeader().array());
             }
             return new StatusOutputStream<Reply>(new CryptoOutputStream(ciphertext,
-                    vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
-                    status.getNonces(), vault.numberOfChunks(status.getOffset()))) {
+                    vault, vault.openFile(status.getHeader()),
+                    status.getNonces(), vault.chunkIndex(status.getOffset()), CryptoTransferStatus.isLastSegment(status))) {
                 // Digest can only be completed once. Cleared when the stream is closed.
                 private MessageDigest pending = digest;
 

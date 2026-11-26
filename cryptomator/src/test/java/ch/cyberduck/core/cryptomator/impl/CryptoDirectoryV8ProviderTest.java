@@ -31,10 +31,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
-import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.CipherCombo;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
@@ -48,20 +48,20 @@ public class CryptoDirectoryV8ProviderTest {
     @Test(expected = NotfoundException.class)
     public void testToEncryptedInvalidArgument() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptomatorVault(home), new CryptoFilenameV7Provider());
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider(vault));
         provider.toEncrypted(session, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = NotfoundException.class)
     public void testToEncryptedInvalidPath() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptomatorVault(home), new CryptoFilenameV7Provider());
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider(vault));
         provider.toEncrypted(session, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
@@ -89,10 +89,10 @@ public class CryptoDirectoryV8ProviderTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(CryptomatorVaultTest.createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(CryptomatorVaultTest.createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CipherCombo.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             if("dir.c9r".equals(file.getName())) {
-                                return new NullInputStream();
+                                return IOUtils.toInputStream("1d4e1b46-7b31-4a5e-9e3a-6c7d2b8f0a11", StandardCharsets.UTF_8);
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -109,7 +109,7 @@ public class CryptoDirectoryV8ProviderTest {
         final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
         vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider());
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider(vault));
         assertNotNull(provider.toEncrypted(session, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
         assertNotNull(provider.toEncrypted(session, f));

@@ -19,12 +19,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.AbstractVault;
+import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
-import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
@@ -32,20 +33,26 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
+import ch.cyberduck.core.vault.VaultUnlockException;
 import ch.cyberduck.core.vault.VaultVersion;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.DirectoryMetadata;
-import org.cryptomator.cryptolib.api.FileContentCryptor;
-import org.cryptomator.cryptolib.api.FileHeaderCryptor;
-import org.cryptomator.cryptolib.api.RevolvingMasterkey;
-import org.cryptomator.cryptolib.api.UVFMasterkey;
+import org.cryptomator.cryptolib.api.LockedVault;
+import org.cryptomator.cryptolib.api.NameShortener;
+import org.cryptomator.cryptolib.api.UnlockedVault;
+import org.cryptomator.cryptolib.api.UnsupportedVaultFormatException;
+import org.cryptomator.cryptolib.api.UvfLockedVault;
+import org.cryptomator.cryptolib.api.UvfUnlockedVault;
+import org.cryptomator.cryptolib.api.VaultConfigLoadException;
+import org.cryptomator.cryptolib.api.VaultDirectory;
+import org.cryptomator.cryptolib.api.VaultKeyInvalidException;
+import org.cryptomator.cryptolib.api.VaultRollbackException;
 
-import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -65,99 +72,145 @@ public class UVFVault extends AbstractVault {
     private static final Pattern FILENAME_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
 
     /**
+     * Length of AES-GCM chunk nonces
+     */
+    private static final int NONCE_SIZE = 12;
+
+    /**
      * Root of vault directory
      */
     private final Path home;
-    private RevolvingMasterkey masterKey;
     private final Path masterkeyPath;
+    /**
+     * Seed digests observed before
+     */
+    private final UVFSeedPins pins;
 
-    private Cryptor cryptor;
+    private UvfUnlockedVault vault;
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
 
-    private int nonceSize;
-
     public UVFVault(final Path home) {
+        this(home, new UVFSeedPins());
+    }
+
+    public UVFVault(final Path home, final UVFSeedPins pins) {
         this.home = home;
+        this.pins = pins;
         this.masterkeyPath = new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.config.filename.uvf"),
                 EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
     }
 
     @Override
     public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
-        // Generic vault creation with provided metadata
         try(final UVFVaultMetadataProvider provider = UVFVaultMetadataProvider.cast(metadata)) {
-            final byte[] rootDirectoryMetadata = provider.computeRootDirUvf();
-            final String rootDirectoryIdHash = provider.computeRootDirIdHash();
-            this.uploadTemplate(session, region, provider.encrypt(), rootDirectoryMetadata, rootDirectoryIdHash);
+            final UvfUnlockedVault created = provider.create();
+            try {
+                this.uploadTemplate(session, region, created);
+                this.init(session, created);
+            }
+            catch(BackgroundException e) {
+                created.destroy();
+                throw e;
+            }
         }
     }
 
-    /**
-     * Uploads a template to create the vault's root directory with associated metadata and directory structure.
-     *
-     * @param session               The session used for the interaction with the backend.
-     * @param region                The region identifier used to associate the uploaded data.
-     * @param vaultMetadata         Metadata as JWE of the vault to be uploaded
-     * @param rootDirectoryMetadata The encrypted directory metadata file, represented as a byte array.
-     * @param rootDirectoryIdHash   The hash of the root directory ID used to create the directory structure.
-     * @throws BackgroundException If an error occurs during the upload process.
-     */
-    private void uploadTemplate(final Session<?> session, final String region,
-                                final String vaultMetadata, final byte[] rootDirectoryMetadata, final String rootDirectoryIdHash) throws BackgroundException {
-
+    private void uploadTemplate(final Session<?> session, final String region, final UvfUnlockedVault created) throws BackgroundException {
         log.debug("Create vault root directory at {}", home);
-        // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().setRegion(region);
         final Encryption encryption = session._getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        final Write writer = session._getFeature(Write.class);
-        final Path vault = directory.mkdir(writer, home, status);
-
-        final Path dataDir = new Path(vault, "d", EnumSet.of(Path.Type.directory));
-        final Path firstLevel = new Path(dataDir, rootDirectoryIdHash.substring(0, 2), EnumSet.of(Path.Type.directory));
-        final Path secondLevel = new Path(firstLevel, rootDirectoryIdHash.substring(2), EnumSet.of(Path.Type.directory));
-
-        directory.mkdir(writer, dataDir, status);
-        directory.mkdir(writer, firstLevel, status);
-        directory.mkdir(writer, secondLevel, status);
-
-        // vault.uvf
-        new ContentWriter(session).write(this.getConfig(), vaultMetadata.getBytes(StandardCharsets.US_ASCII));
-        // dir.uvf
-        new ContentWriter(session).write(new Path(secondLevel, "dir.uvf", EnumSet.of(Path.Type.file)), rootDirectoryMetadata);
+        final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
+        final VaultDirectory root = created.rootDirectory();
+        // d/XX/YYYY
+        final String[] segments = StringUtils.split(root.dirPath(), '/');
+        final Path dataDir = new Path(vault, segments[0], EnumSet.of(Path.Type.directory));
+        final Path firstLevel = new Path(dataDir, segments[1], EnumSet.of(Path.Type.directory));
+        final Path secondLevel = new Path(firstLevel, segments[2], EnumSet.of(Path.Type.directory));
+        directory.mkdir(session._getFeature(Write.class), dataDir, status);
+        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
+        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+        new ContentWriter(session).write(this.getConfig(), created.serializeConfig());
+        new ContentWriter(session).write(new Path(secondLevel, BACKUP_DIRECTORY_METADATA_FILENAME, EnumSet.of(Path.Type.file)), root.encryptedMetadataBackup());
     }
 
     @Override
     public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
         try(final UVFVaultMetadataProvider provider = UVFVaultMetadataProvider.cast(metadata)) {
-            this.masterKey = UVFMasterkey.fromDecryptedPayload(provider.decrypt());
-            final CryptorProvider cryptorProvider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
-            log.debug("Initialized crypto provider {}", cryptorProvider);
-            this.cryptor = cryptorProvider.provide(masterKey, FastSecureRandomProvider.get().provide());
-            this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
-            this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
-            this.nonceSize = 12;
+            final byte[] config = this.readMetadata(session);
+            try {
+                final LockedVault locked = LockedVault.parse(config);
+                if(!(locked instanceof UvfLockedVault)) {
+                    throw new VaultException(String.format("Unsupported vault metadata in %s", masterkeyPath.getName())).withFile(masterkeyPath);
+                }
+                // Reject outdated or forged vault metadata missing seeds seen before
+                this.init(session, provider.unlock(((UvfLockedVault) locked).requireSeeds(pins.get(session.getHost(), home))));
+            }
+            catch(VaultKeyInvalidException e) {
+                throw new VaultUnlockException("Failure to decrypt vault metadata", e);
+            }
+            catch(VaultRollbackException e) {
+                throw new VaultException(String.format("Vault metadata %s is outdated or forged. %s", masterkeyPath.getName(), e.getMessage()), e).withFile(masterkeyPath);
+            }
+            catch(VaultConfigLoadException | UnsupportedVaultFormatException e) {
+                throw new VaultException(String.format("Failure reading vault metadata %s. %s", masterkeyPath.getName(), e.getMessage()), e).withFile(masterkeyPath);
+            }
         }
+    }
+
+    /**
+     * Read vault metadata when loading the vault. Override to read the canonical copy from a key management service
+     * such as Cryptomator Hub instead of the copy in the vault directory.
+     *
+     * @param session Connection to storage of vault
+     * @return Contents of vault.uvf
+     */
+    protected byte[] readMetadata(final Session<?> session) throws BackgroundException {
+        return new ContentReader(session).readBytes(masterkeyPath);
+    }
+
+    private void init(final Session<?> session, final UvfUnlockedVault unlocked) {
+        log.debug("Unlocked vault {} with seeds {}", home, unlocked.seedIds());
+        try {
+            pins.add(session.getHost(), home, unlocked.seedDigests().values());
+        }
+        catch(AccessDeniedException e) {
+            log.warn("Failure {} saving seed pins for {}", e.getMessage(), home);
+        }
+        this.vault = unlocked;
+        // TODO Support name shortening using nameShortener() of the unlocked vault (UVF spec draft PR #37). Until then
+        //  reject filenames exceeding the threshold of vaults with name shortening enabled as for vault format 8 to
+        //  never write names unshortened. Entries shortened by other clients are not listed.
+        this.filenameProvider = new CryptoFilenameV7Provider(this, NameShortener.DISABLED == unlocked.nameShorteningThreshold() ?
+                Integer.MAX_VALUE : unlocked.nameShorteningThreshold());
+        this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
+    }
+
+
+    /**
+     * Names are normalized to NFC before encryption. A name stored in another normalization form can never be looked
+     * up, created over, renamed or deleted.
+     *
+     * @see <a href="https://github.com/encryption-alliance/unified-vault-format/blob/develop/implementation-notes.md#decrypted-names">Decrypted Names</a>
+     */
+    @Override
+    protected boolean isValidCleartextFilename(final String filename) {
+        return super.isValidCleartextFilename(filename) && Normalizer.isNormalized(filename, Normalizer.Form.NFC);
     }
 
     @Override
     public synchronized void close() {
         super.close();
-        cryptor = null;
+        vault = null;
     }
 
     @Override
     public Path getMasterkeyPath() {
         return masterkeyPath;
-    }
-
-    @Override
-    public RevolvingMasterkey getMasterkey() {
-        return masterKey;
     }
 
     @Override
@@ -171,13 +224,8 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public FileHeaderCryptor getFileHeaderCryptor() {
-        return cryptor.fileHeaderCryptor();
-    }
-
-    @Override
-    public FileContentCryptor getFileContentCryptor() {
-        return cryptor.fileContentCryptor();
+    public UnlockedVault getUnlockedVault() {
+        return vault;
     }
 
     @Override
@@ -191,13 +239,8 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public Cryptor getCryptor() {
-        return cryptor;
-    }
-
-    @Override
     public int getNonceSize() {
-        return nonceSize;
+        return NONCE_SIZE;
     }
 
     @Override
@@ -215,8 +258,9 @@ public class UVFVault extends AbstractVault {
         return BACKUP_DIRECTORY_METADATA_FILENAME;
     }
 
-    public DirectoryMetadata getRootDirId() {
-        return this.cryptor.directoryContentCryptor().rootDirectoryMetadata();
+    @Override
+    public VaultDirectory getRootDirectory() {
+        return vault.rootDirectory();
     }
 
     @Override
@@ -245,7 +289,7 @@ public class UVFVault extends AbstractVault {
     public String toString() {
         final StringBuilder sb = new StringBuilder("UVFVault{");
         sb.append("home=").append(home);
-        sb.append(", cryptor=").append(cryptor);
+        sb.append(", vault=").append(vault);
         sb.append('}');
         return sb.toString();
     }

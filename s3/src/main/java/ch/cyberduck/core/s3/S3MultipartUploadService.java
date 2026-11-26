@@ -147,7 +147,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
                 }
                 if(!skip) {
                     // Last part can be less than 5 MB. Adjust part size.
-                    final long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
+                    final long length = Math.min(status.alignSegment(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize)), remaining);
                     // Submit to queue
                     parts.add(this.submit(pool, write, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                     remaining -= length;

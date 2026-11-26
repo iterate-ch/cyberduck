@@ -34,13 +34,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
-import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.DirectoryContentCryptor;
-import org.cryptomator.cryptolib.api.DirectoryMetadata;
-import org.cryptomator.cryptolib.api.FileContentCryptor;
-import org.cryptomator.cryptolib.api.FileHeaderCryptor;
-import org.cryptomator.cryptolib.api.Masterkey;
+import org.cryptomator.cryptolib.api.UnlockedVault;
+import org.cryptomator.cryptolib.api.VaultDirectory;
+import org.cryptomator.cryptolib.api.VaultFile;
 
+import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,47 +46,156 @@ import java.util.regex.Pattern;
 public abstract class AbstractVault implements Vault {
     private static final Logger log = LogManager.getLogger(AbstractVault.class);
 
+    private final CleartextFilenameValidator validator = new CleartextFilenameValidator();
+
     public abstract Path getMasterkeyPath();
 
-    public abstract Masterkey getMasterkey();
-
     public abstract Path getConfig();
-
-    public abstract FileHeaderCryptor getFileHeaderCryptor();
-
-    public abstract FileContentCryptor getFileContentCryptor();
 
     public abstract CryptoFilename getFilenameProvider();
 
     public abstract CryptoDirectory getDirectoryProvider();
 
-    public abstract Cryptor getCryptor();
+    /**
+     * @return Unlocked vault or null when locked
+     */
+    public abstract UnlockedVault getUnlockedVault();
 
+    /**
+     * @return Length of chunk nonces in bytes
+     */
     public abstract int getNonceSize();
 
     public abstract Pattern getFilenamePattern();
 
-    public int numberOfChunks(long cleartextFileSize) {
-        return (int) (cleartextFileSize / this.getFileContentCryptor().cleartextChunkSize() +
-                ((cleartextFileSize % this.getFileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
+    /**
+     * @return New encrypted header to be used for a single file
+     */
+    public ByteBuffer createHeader() {
+        try(VaultFile file = this.getUnlockedVault().createFile()) {
+            // Copy from read-only view to allow access to backing array
+            final ByteBuffer encrypted = file.encryptedHeader();
+            final ByteBuffer header = ByteBuffer.allocate(encrypted.remaining());
+            header.put(encrypted);
+            header.flip();
+            return header;
+        }
+    }
+
+    /**
+     * Open file for encryption and decryption of chunks
+     *
+     * @param header Encrypted file header previously created with {@link #createHeader()} or read from the beginning of a file
+     * @return File to encrypt and decrypt chunks with. Must be closed after use to destroy the file key.
+     */
+    public VaultFile openFile(final ByteBuffer header) throws CryptoAuthenticationException {
+        try {
+            // Size of empty file because the cleartext size is not used when working with chunks only
+            return this.getUnlockedVault().openFile(header.duplicate(), this.getUnlockedVault().ciphertextSize(0L));
+        }
+        catch(AuthenticationFailedException e) {
+            throw new CryptoAuthenticationException("Failure to decrypt file header", e);
+        }
+        catch(IllegalArgumentException e) {
+            // Truncated or malformed header, other file format or seed unknown to the unlocked vault metadata
+            throw new CryptoAuthenticationException(String.format("Failure to decrypt file header. %s", e.getMessage()), e);
+        }
+    }
+
+    /**
+     * @return Size of encrypted file header in bytes
+     */
+    public int getHeaderSize() {
+        return this.getUnlockedVault().headerSize();
+    }
+
+    /**
+     * @return Number of cleartext bytes per chunk
+     */
+    public int getCleartextChunkSize() {
+        return this.getUnlockedVault().cleartextChunkSize();
+    }
+
+    /**
+     * @return Number of ciphertext bytes per chunk
+     */
+    public int getCiphertextChunkSize() {
+        return this.getUnlockedVault().ciphertextChunkSize();
+    }
+
+    /**
+     * Number of chunks of a complete file. Includes a trailing empty chunk where required by the vault format.
+     *
+     * @param cleartextFileSize Size of complete file
+     * @return Number of chunks that will be encrypted for the file
+     */
+    public int numberOfChunks(final long cleartextFileSize) {
+        final long ciphertextBodySize = this.getUnlockedVault().ciphertextSize(cleartextFileSize) - this.getHeaderSize();
+        return (int) ((ciphertextBodySize + this.getCiphertextChunkSize() - 1) / this.getCiphertextChunkSize());
+    }
+
+    /**
+     * Number of chunks of a segment of a file
+     *
+     * @param cleartextSize Length of segment
+     * @param last          True for the last segment of a file which includes a trailing empty chunk where required by the vault format
+     * @return Number of chunks that will be encrypted for the segment
+     */
+    public int numberOfChunks(final long cleartextSize, final boolean last) {
+        if(last) {
+            return this.numberOfChunks(cleartextSize);
+        }
+        return (int) ((cleartextSize + this.getCleartextChunkSize() - 1) / this.getCleartextChunkSize());
+    }
+
+    /**
+     * @param cleartextOffset Position in cleartext
+     * @return Index of chunk containing given position
+     */
+    public long chunkIndex(final long cleartextOffset) {
+        return cleartextOffset / this.getCleartextChunkSize();
+    }
+
+    /**
+     * @param cleartextOffset Position in cleartext at the beginning of a chunk
+     * @return Position of the chunk in ciphertext including the file header
+     */
+    public long toCiphertextOffset(final long cleartextOffset) {
+        if(0L == cleartextOffset) {
+            return 0L;
+        }
+        return this.getHeaderSize() + this.chunkIndex(cleartextOffset) * this.getCiphertextChunkSize();
+    }
+
+    /**
+     * Ciphertext size of a segment of a file
+     *
+     * @param cleartextOffset Offset of segment in cleartext at the beginning of a chunk
+     * @param cleartextSize   Length of segment
+     * @param last            True for the last segment of a file which includes a trailing empty chunk where required by the vault format
+     * @return Ciphertext size including the file header for the first segment
+     */
+    public long toCiphertextSize(final long cleartextOffset, final long cleartextSize, final boolean last) {
+        if(last || TransferStatus.UNKNOWN_LENGTH == cleartextSize) {
+            return this.toCiphertextSize(cleartextOffset, cleartextSize);
+        }
+        final long chunks = cleartextSize / this.getCleartextChunkSize();
+        final long remainder = cleartextSize % this.getCleartextChunkSize();
+        final long body = chunks * this.getCiphertextChunkSize() +
+                (remainder > 0 ? remainder + this.getCiphertextChunkSize() - this.getCleartextChunkSize() : 0L);
+        return (0L == cleartextOffset ? this.getHeaderSize() : 0L) + body;
     }
 
     public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
         if(TransferStatus.UNKNOWN_LENGTH == ciphertextFileSize) {
             return TransferStatus.UNKNOWN_LENGTH;
         }
-        final int headerSize;
-        if(0L == cleartextFileOffset) {
-            headerSize = this.getFileHeaderCryptor().headerSize();
-        }
-        else {
-            headerSize = 0;
-        }
         try {
-            return this.getFileContentCryptor().cleartextSize(ciphertextFileSize - headerSize);
-        }
-        catch(AssertionError e) {
-            throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
+            if(0L == cleartextFileOffset) {
+                return this.getUnlockedVault().cleartextSize(ciphertextFileSize);
+            }
+            // Partial content without header
+            return this.getUnlockedVault().cleartextSize(ciphertextFileSize + this.getHeaderSize());
         }
         catch(IllegalArgumentException e) {
             throw new CryptoInvalidFilesizeException(String.format("Invalid file size. %s", e.getMessage()));
@@ -105,14 +212,12 @@ public abstract class AbstractVault implements Vault {
         if(TransferStatus.UNKNOWN_LENGTH == cleartextFileSize) {
             return TransferStatus.UNKNOWN_LENGTH;
         }
-        final int headerSize;
+        final long ciphertextFileSize = this.getUnlockedVault().ciphertextSize(cleartextFileSize);
         if(0L == cleartextFileOffset) {
-            headerSize = this.getCryptor().fileHeaderCryptor().headerSize();
+            return ciphertextFileSize;
         }
-        else {
-            headerSize = 0;
-        }
-        return headerSize + this.getCryptor().fileContentCryptor().ciphertextSize(cleartextFileSize);
+        // Partial content without header
+        return ciphertextFileSize - this.getHeaderSize();
     }
 
     @Override
@@ -184,15 +289,16 @@ public abstract class AbstractVault implements Vault {
             log.warn("Skip file {} because it is marked as an internal vault path", file);
             return file;
         }
-        final Path inflated = this.inflate(session, file);
         final Pattern pattern = this.getFilenamePattern();
-        final Matcher m = pattern.matcher(inflated.getName());
+        final Matcher m = pattern.matcher(file.getName());
         if(m.matches()) {
             try {
-                final DirectoryContentCryptor.Decrypting decrypting = this.getFilenameDecryptor(session, file);
-                final String cleartextFilename = decrypting.decrypt(inflated.getName());
+                final String cleartextFilename = this.getParentDirectory(session, file).decryptName(file.getName());
+                if(!this.isValidCleartextFilename(cleartextFilename)) {
+                    throw new CryptoInvalidFilenameException(String.format("Decrypted filename of %s is not valid on the local file system", file.getName())).withFile(file);
+                }
                 final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
-                if(this.isDirectory(inflated)) {
+                if(this.isDirectory(file)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
                         final StaticPermission permission = new StaticPermission(attributes.getPermission());
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
@@ -210,8 +316,8 @@ public abstract class AbstractVault implements Vault {
                     attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-                type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
-                type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
+                type.remove(this.isDirectory(file) ? Path.Type.file : Path.Type.directory);
+                type.add(this.isDirectory(file) ? Path.Type.directory : Path.Type.file);
                 type.remove(Path.Type.encrypted);
                 type.add(Path.Type.decrypted);
                 final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
@@ -223,34 +329,36 @@ public abstract class AbstractVault implements Vault {
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException("Failure to decrypt due to an unauthentic ciphertext", e).withFile(file);
             }
+            catch(IllegalArgumentException e) {
+                throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s. %s", file.getName(), e.getMessage())).withFile(file);
+            }
         }
         else {
-            throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern)).withFile(file);
+            throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s due to missing pattern match for %s", file.getName(), pattern)).withFile(file);
         }
     }
 
-    private DirectoryContentCryptor.Decrypting getFilenameDecryptor(final Session<?> session, final Path directory) throws BackgroundException {
-        // Read directory id from file
-        log.debug("Read directory ID from {}", directory);
-        final DirectoryMetadata metadata = this.getDirectoryProvider().getDirectoryId(session, directory.getParent());
-        return this.getCryptor().directoryContentCryptor().fileNameDecryptor(metadata);
+    /**
+     * Decrypted names are untrusted input
+     *
+     * @param filename Decrypted filename
+     * @return False if the decrypted filename must not be exposed
+     */
+    protected boolean isValidCleartextFilename(final String filename) {
+        return validator.isValid(filename);
+    }
+
+    private VaultDirectory getParentDirectory(final Session<?> session, final Path file) throws BackgroundException {
+        log.debug("Get directory metadata for parent of {}", file);
+        return this.getDirectoryProvider().getDirectory(session, file.getParent());
     }
 
     private boolean isDirectory(final Path p) {
         return p.isDirectory();
     }
 
-    private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
-        final String fileName = file.getName();
-        if(this.getFilenameProvider().isDeflated(fileName)) {
-            final String filename = this.getFilenameProvider().inflate(session, fileName);
-            return new Path(file.getParent(), filename, EnumSet.of(Path.Type.file), file.attributes());
-        }
-        return file;
-    }
-
     public synchronized boolean isUnlocked() {
-        return this.getCryptor() != null;
+        return this.getUnlockedVault() != null;
     }
 
     @Override
@@ -265,13 +373,13 @@ public abstract class AbstractVault implements Vault {
 
     public abstract String getBackupDirectoryMetadataFilename();
 
-    public abstract DirectoryMetadata getRootDirId();
+    public abstract VaultDirectory getRootDirectory();
 
     @Override
     public synchronized void close() {
         if(this.isUnlocked()) {
-            if(this.getCryptor() != null) {
-                getCryptor().destroy();
+            if(this.getUnlockedVault() != null) {
+                this.getUnlockedVault().destroy();
             }
             if(this.getDirectoryProvider() != null) {
                 this.getDirectoryProvider().destroy();

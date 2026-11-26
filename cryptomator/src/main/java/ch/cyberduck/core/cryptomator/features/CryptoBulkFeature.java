@@ -29,8 +29,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.download.PathPriorityComparator;
 
-import org.cryptomator.cryptolib.api.FileHeader;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -66,8 +64,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             if(file.isFile()) {
                 if(null == status.getHeader()) {
                     // Write header to be reused in writer
-                    final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-                    status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+                    status.setHeader(cryptomator.createHeader());
                 }
                 if(null == status.getNonces()) {
                     status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
@@ -80,7 +77,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(!status.isExists()) {
                     switch(type) {
                         case upload:
-                            cryptomator.getDirectoryProvider().createDirectoryId(file);
+                            cryptomator.getDirectoryProvider().createDirectory(file);
                             encrypted.put(new TransferItem(cryptomator.encrypt(session, file, false), local), status);
                             break;
                         default:

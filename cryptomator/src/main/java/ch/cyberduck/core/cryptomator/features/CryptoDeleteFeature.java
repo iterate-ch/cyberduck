@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.AbstractVault;
-import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -46,13 +45,11 @@ public class CryptoDeleteFeature implements Delete, Trash {
     private final Session<?> session;
     private final Delete proxy;
     private final AbstractVault vault;
-    private final CryptoFilename filenameProvider;
 
     public CryptoDeleteFeature(final Session<?> session, final Delete proxy, final AbstractVault vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;
-        this.filenameProvider = vault.getFilenameProvider();
     }
 
     @Override
@@ -93,12 +90,6 @@ public class CryptoDeleteFeature implements Delete, Trash {
                     metadataFiles.add(metadata);
                     log.debug("Add metadata folder {}", metadata);
                     vault.getDirectoryProvider().delete(f);
-                }
-                if(filenameProvider.isDeflated(metadata.getName())) {
-                    filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
-                    final Path metadataFile = filenameProvider.resolve(metadata.getName());
-                    log.debug("Add metadata file {}", metadata);
-                    metadataFiles.add(metadataFile);
                 }
             }
             if(!metadataFiles.isEmpty()) {
