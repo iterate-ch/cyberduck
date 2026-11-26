@@ -22,14 +22,21 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.net.ProtocolCommandEvent;
+import org.apache.commons.net.ProtocolCommandListener;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assume.assumeTrue;
 
 public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
 
@@ -50,5 +57,43 @@ public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
             // MDTM advertised to read the time only
         }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampFileAfterDirectoryFailure() throws Exception {
+        assumeTrue("Setting time with MDTM supported for files only", server == FTPTestServer.VSFTPD);
+        final Path home = new FTPWorkdirService(session).find();
+        final long modified = System.currentTimeMillis();
+        final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), directory, new TransferStatus());
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
+        final FTPMDTMTimestampFeature feature = new FTPMDTMTimestampFeature(session);
+        assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
+        // Remembered failure for directory
+        final List<String> commands = new ArrayList<>();
+        final ProtocolCommandListener listener = new ProtocolCommandListener() {
+            @Override
+            public void protocolCommandSent(final ProtocolCommandEvent event) {
+                commands.add(event.getMessage());
+            }
+
+            @Override
+            public void protocolReplyReceived(final ProtocolCommandEvent event) {
+                //
+            }
+        };
+        session.getClient().addProtocolCommandListener(listener);
+        try {
+            assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
+        }
+        finally {
+            session.getClient().removeProtocolCommandListener(listener);
+        }
+        assertEquals(Collections.emptyList(), commands);
+        feature.setTimestamp(test, modified);
+        assertEquals(new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")),
+                session.getClient().getModificationTime(test.getAbsolute()));
+        new FTPDeleteFeature(session).delete(Arrays.asList(test, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
