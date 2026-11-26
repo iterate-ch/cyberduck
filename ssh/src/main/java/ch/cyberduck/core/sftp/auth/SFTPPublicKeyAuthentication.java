@@ -47,9 +47,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyFileUtil;
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.common.SSHPacket;
-import net.schmizz.sshj.common.SSHRuntimeException;
-import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
@@ -181,20 +178,6 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                             log.warn("Failure {} loading middleware for security key {}", e, privKey);
                             throw new LoginFailureException(e.getMessage(), e);
                         }
-                        client.auth(credentials.getUsername(), new AuthPublickey(provider) {
-                            @Override
-                            protected SSHPacket putSig(final SSHPacket reqBuf) throws UserAuthException {
-                                try {
-                                    return super.putSig(reqBuf);
-                                }
-                                catch(SSHRuntimeException e) {
-                                    // Fail the authentication method instead of the transport
-                                    throw new UserAuthException(String.format("Failure signing with security key %s",
-                                            privKey), e.getCause());
-                                }
-                            }
-                        });
-                        return client.isAuthenticated();
                     }
                 }
                 client.auth(credentials.getUsername(), new AuthPublickey(provider));
