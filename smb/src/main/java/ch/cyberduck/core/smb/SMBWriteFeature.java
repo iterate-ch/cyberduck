@@ -173,8 +173,13 @@ public class SMBWriteFeature implements Write<Void> {
                     super.close();
                 }
                 finally {
-                    handle.flush();
-                    handle.close();
+                    try {
+                        handle.flush();
+                    }
+                    finally {
+                        // Always close handle to not leave file locked on server
+                        handle.close();
+                    }
                 }
             }
             catch(SMBRuntimeException e) {
