@@ -24,12 +24,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assume.assumeTrue;
 
 public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
 
@@ -50,5 +53,24 @@ public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
             // MDTM advertised to read the time only
         }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampFileAfterDirectoryFailure() throws Exception {
+        assumeTrue("Setting time with MDTM supported for files only", server == FTPTestServer.VSFTPD);
+        final Path home = new FTPWorkdirService(session).find();
+        final long modified = System.currentTimeMillis();
+        final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), directory, new TransferStatus());
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
+        final FTPMDTMTimestampFeature feature = new FTPMDTMTimestampFeature(session);
+        assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
+        // Remembered failure for directory
+        assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
+        feature.setTimestamp(test, modified);
+        assertEquals(new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")),
+                session.getClient().getModificationTime(test.getAbsolute()));
+        new FTPDeleteFeature(session).delete(Arrays.asList(test, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

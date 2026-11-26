@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,6 +32,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
 
@@ -42,6 +44,22 @@ public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
+        assertEquals(modified / 1000 * 1000, new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampAfterFailureForOtherFile() throws Exception {
+        this.assumeFeature("MFMT");
+        final Path home = new FTPWorkdirService(session).find();
+        final long modified = System.currentTimeMillis();
+        final FTPMFMTTimestampFeature feature = new FTPMFMTTimestampFeature(session);
+        // Failure for single path must not disable setting timestamp for other files
+        assertThrows(NotfoundException.class, () -> feature.setTimestamp(
+                new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), modified));
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
+        feature.setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }

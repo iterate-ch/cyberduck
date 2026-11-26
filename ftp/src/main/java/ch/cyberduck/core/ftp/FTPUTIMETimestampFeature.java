@@ -19,54 +19,29 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class FTPUTIMETimestampFeature implements Timestamp {
-    private static final Logger log = LogManager.getLogger(FTPUTIMETimestampFeature.class);
-
-    private final FTPSession session;
-
-    private FTPException failure;
+public class FTPUTIMETimestampFeature extends AbstractFTPTimestampFeature {
 
     public FTPUTIMETimestampFeature(final FTPSession session) {
-        this.session = session;
+        super(session);
     }
 
     @Override
-    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        if(failure != null) {
-            log.debug("Skip setting timestamp for {} due to previous failure {}", file, failure.getMessage());
-            throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", failure, file);
-        }
-        try {
-            if(null != status.getModified()) {
-                final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
-                // The utime() function sets the access and modification times of the named
-                // file from the structures in the argument array timep.
-                // The access time is set to the value of the first element,
-                // and the modification time is set to the value of the second element
-                // Accessed date, modified date, created date
-                if(!session.getClient().sendSiteCommand(String.format("UTIME %s %s %s %s UTC",
-                        file.getAbsolute(),
-                        formatter.format(new Date(System.currentTimeMillis()), TimeZone.getTimeZone("UTC")),
-                        formatter.format(new Date(status.getModified()), TimeZone.getTimeZone("UTC")),
-                        formatter.format(new Date(status.getModified()), TimeZone.getTimeZone("UTC"))))) {
-                    throw failure = new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
-        }
+    protected boolean send(final Path file, final long modified) throws IOException {
+        final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
+        // The utime() function sets the access and modification times of the named
+        // file from the structures in the argument array timep.
+        // The access time is set to the value of the first element,
+        // and the modification time is set to the value of the second element
+        // Accessed date, modified date, created date
+        return session.getClient().sendSiteCommand(String.format("UTIME %s %s %s %s UTC",
+                file.getAbsolute(),
+                formatter.format(new Date(System.currentTimeMillis()), TimeZone.getTimeZone("UTC")),
+                formatter.format(new Date(modified), TimeZone.getTimeZone("UTC")),
+                formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))));
     }
 }

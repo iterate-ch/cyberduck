@@ -17,59 +17,34 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.TimeZone;
 
-public class FTPMDTMTimestampFeature extends DefaultTimestampFeature implements Timestamp {
-    private static final Logger log = LogManager.getLogger(FTPMDTMTimestampFeature.class);
-
-    private final FTPSession session;
-
-    private FTPException failure;
+public class FTPMDTMTimestampFeature extends AbstractFTPTimestampFeature {
 
     public FTPMDTMTimestampFeature(final FTPSession session) {
-        this.session = session;
+        super(session);
     }
 
     @Override
-    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        if(failure != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Skip setting timestamp for {} due to previous failure {}", file, failure.getMessage());
-            }
-            throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", failure, file);
+    protected boolean send(final Path file, final long modified) throws IOException {
+        return FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MDTM, String.format("%s %s",
+                new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")), file.getAbsolute())));
+    }
+
+    @Override
+    protected boolean isUnsupported(final int reply) {
+        switch(reply) {
+            case FTPReply.FILE_UNAVAILABLE:
+                // Setting the time with MDTM is a non-standard extension. Servers advertising MDTM only to
+                // read the time handle the timestamp as part of the path and reply with a generic failure.
+                // Servers may also support setting the time for files only and reject directories.
+                return true;
         }
-        try {
-            if(null != status.getModified()) {
-                final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
-                final String modified = formatter.format(status.getModified(), TimeZone.getTimeZone("UTC"));
-                if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MDTM, String.format("%s %s", modified, file.getAbsolute())))) {
-                    final String reply = session.getClient().getReplyString();
-                    switch(session.getClient().getReplyCode()) {
-                        case FTPReply.UNRECOGNIZED_COMMAND:
-                        case FTPReply.SYNTAX_ERROR_IN_ARGUMENTS:
-                        case FTPReply.FILE_UNAVAILABLE:
-                            // Setting the time with MDTM is a non-standard extension. Servers advertising MDTM only to
-                            // read the time handle the timestamp as part of the path and reply with a generic failure.
-                            log.warn("Server does not support setting modification time with MDTM: {}", reply);
-                            throw failure = new FTPException(FTPReply.COMMAND_NOT_IMPLEMENTED, reply);
-                    }
-                    throw failure = new FTPException(session.getClient().getReplyCode(), reply);
-                }
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
-        }
+        return super.isUnsupported(reply);
     }
 }
