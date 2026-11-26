@@ -22,11 +22,15 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.net.ProtocolCommandEvent;
+import org.apache.commons.net.ProtocolCommandListener;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -67,7 +71,26 @@ public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
         final FTPMDTMTimestampFeature feature = new FTPMDTMTimestampFeature(session);
         assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
         // Remembered failure for directory
-        assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
+        final List<String> commands = new ArrayList<>();
+        final ProtocolCommandListener listener = new ProtocolCommandListener() {
+            @Override
+            public void protocolCommandSent(final ProtocolCommandEvent event) {
+                commands.add(event.getMessage());
+            }
+
+            @Override
+            public void protocolReplyReceived(final ProtocolCommandEvent event) {
+                //
+            }
+        };
+        session.getClient().addProtocolCommandListener(listener);
+        try {
+            assertThrows(InteroperabilityException.class, () -> feature.setTimestamp(directory, modified));
+        }
+        finally {
+            session.getClient().removeProtocolCommandListener(listener);
+        }
+        assertEquals(Collections.emptyList(), commands);
         feature.setTimestamp(test, modified);
         assertEquals(new MDTMSecondsDateFormatter().format(modified, TimeZone.getTimeZone("UTC")),
                 session.getClient().getModificationTime(test.getAbsolute()));
