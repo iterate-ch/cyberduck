@@ -127,7 +127,7 @@ public class SMBWriteFeature implements Write<Void> {
                 session.releaseShare(share);
             }
             catch(BackgroundException r) {
-                r.addSuppressed(e);
+                e.addSuppressed(r);
                 throw e;
             }
             finally {
