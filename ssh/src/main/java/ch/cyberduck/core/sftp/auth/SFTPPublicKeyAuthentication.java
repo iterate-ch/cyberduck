@@ -105,8 +105,9 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         break;
                     }
                     case OpenSSHv1: {
-                        provider = new OpenSSHKeyV1KeyFile.Factory().create();
-                        ((OpenSSHKeyV1KeyFile) provider).setSecurityKeySigner(signer);
+                        final OpenSSHKeyV1KeyFile v1 = new OpenSSHKeyV1KeyFile();
+                        v1.setSecurityKeySigner(signer);
+                        provider = v1;
                         final File f = OpenSSHKeyFileUtil.getPublicKeyFile(new File(privKey.getAbsolute()));
                         if(f != null) {
                             pubKey = LocalFactory.get(f.getAbsolutePath());
