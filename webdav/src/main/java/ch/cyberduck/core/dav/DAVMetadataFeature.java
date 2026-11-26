@@ -85,7 +85,11 @@ public class DAVMetadataFeature implements Metadata {
 
     @Override
     public Map<String, String> getDefault(final Path file) {
-        return HostPreferencesFactory.get(session.getHost()).getMap("webdav.metadata.default");
+        final Map<String, String> metadata = HostPreferencesFactory.get(session.getHost()).getMap("webdav.metadata.default");
+        if(metadata.isEmpty()) {
+            return Metadata.EMPTY;
+        }
+        return metadata;
     }
 
     @Override

@@ -24,7 +24,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class VaultRegistryMetadataFeature implements Metadata {
@@ -48,7 +47,7 @@ public class VaultRegistryMetadataFeature implements Metadata {
             return proxy.getDefault(file);
         }
         catch(UnsupportedException e) {
-            return Collections.emptyMap();
+            return Metadata.EMPTY;
         }
     }
 

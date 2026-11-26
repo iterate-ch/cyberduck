@@ -59,7 +59,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         assertTrue(metadata.containsKey("mtime"));
         assertTrue(metadata.containsKey("btime"));
         assertTrue(metadata.containsKey("Content-Type"));
-        final S3TimestampFeature feature = new S3TimestampFeature(session);
+        final S3TimestampFeature feature = new S3TimestampFeature(session, acl);
         feature.setTimestamp(test, status.setModified(1630305150672L).setCreated(1530305160672L));
         assertNotEquals(versionId, status.getResponse().getVersionId());
         assertEquals("1630305150", status.getResponse().getMetadata().get("mtime"));
@@ -81,6 +81,42 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         assertEquals(1630305150000L, moved.attributes().getModificationDate());
         assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(moved), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampPreservesMetadata() throws Exception {
+        this.assumeNot(S3TestServer.CEPH, "Version ID of copy is not returned");
+        final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Map<String, String> custom = new HashMap<>();
+        custom.put("key", "value");
+        custom.put("other", "something");
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl),
+                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
+                new TransferStatus().setMetadata(custom));
+        test.attributes().setMetadata(new S3MetadataFeature(session, acl).getMetadata(test));
+        final TransferStatus status = new TransferStatus().setModified(1630305150672L).setCreated(1530305160672L);
+        new S3TimestampFeature(session, acl).setTimestamp(test, status);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test.withAttributes(status.getResponse()));
+        // Existing metadata kept in addition to timestamps
+        assertEquals("value", attributes.getMetadata().get("key"));
+        assertEquals("something", attributes.getMetadata().get("other"));
+        assertEquals("1630305150", attributes.getMetadata().get("mtime"));
+        assertEquals("1530305160", attributes.getMetadata().get("btime"));
+        assertEquals(1630305150000L, attributes.getModificationDate());
+        assertEquals(1530305160000L, attributes.getCreationDate());
+        // Existing metadata also kept when attributes of file from listing are not retrieved with metadata
+        final Path found = new S3ObjectListService(session, acl, true).list(bucket, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
+        assertNotNull(found);
+        final TransferStatus second = new TransferStatus().setModified(1640305150672L);
+        new S3TimestampFeature(session, acl).setTimestamp(found, second);
+        // Read version written by second update
+        final Map<String, String> after = new S3MetadataFeature(session, acl).getMetadata(new Path(test).withAttributes(second.getResponse()));
+        assertEquals("value", after.get("key"));
+        assertEquals("something", after.get("other"));
+        assertEquals("1640305150", after.get("mtime"));
+        assertEquals("1530305160", after.get("btime"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

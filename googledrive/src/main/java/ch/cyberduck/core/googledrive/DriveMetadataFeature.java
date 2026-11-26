@@ -42,7 +42,7 @@ public class DriveMetadataFeature implements Metadata {
 
     @Override
     public Map<String, String> getDefault(final Path file) {
-        return Collections.emptyMap();
+        return Metadata.EMPTY;
     }
 
     @Override

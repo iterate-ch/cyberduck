@@ -40,9 +40,11 @@ public class S3TimestampFeature implements Timestamp {
     public static final String METADATA_CREATION_DATE = "Btime";
 
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3TimestampFeature(final S3Session session) {
+    public S3TimestampFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
+        this.acl = acl;
     }
 
     @Override
@@ -51,9 +53,9 @@ public class S3TimestampFeature implements Timestamp {
             log.warn("Skip setting timestamp for {}", file);
             return;
         }
-        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
+        final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
         // Copy existing metadata in addition to timestamp
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
         final Map<String, String> metadata = attr.getMetadata();
         if(status.getModified() != null) {
             final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_MODIFICATION_DATE, status.getModified());

@@ -17,11 +17,11 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -36,6 +36,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.copy.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import java.text.MessageFormat;
@@ -79,11 +81,17 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
             final Copy copy = session.getFeature(Copy.class).withTarget(destination);
             final ListService list = session.getFeature(ListService.class);
             final Map<Path, Path> result = new HashMap<>();
+            // Check for existing target
+            final TransferStatus parent = new TransferStatus().setExists(true);
             for(Map.Entry<Path, Path> entry : files.entrySet()) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
+                final OverwriteFilter filter = new OverwriteFilter(session, destination, recursive,
+                        new CachingFindFeature(destination, cache),
+                        new CachingAttributesFinderFeature(destination, cache),
+                        new CachingAttributesFinderFeature(session, cache), new UploadFilterOptions(destination.getHost()));
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     final Path s = r.getKey();
                     final Path t = r.getValue();
@@ -94,17 +102,8 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                                 new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())));
                     }
                     else {
-                        final TransferStatus status = new TransferStatus()
-                                .setMime(new MappingMimeTypeService().getMime(t.getName()))
-                                .setRegion(s.attributes().getRegion())
-                                .setModified(-1L != s.attributes().getModificationDate() ? s.attributes().getModificationDate() : null)
-                                .setCreated(-1L != s.attributes().getCreationDate() ? s.attributes().getCreationDate() : null)
-                                .setAcl(s.attributes().getAcl())
-                                .setPermission(s.attributes().getPermission())
-                                .setEncryption(s.attributes().getEncryption())
-                                .setStorageClass(s.attributes().getStorageClass())
-                                .setExists(new CachingFindFeature(session, cache).find(t))
-                                .setLength(s.attributes().getSize());
+                        // Read attributes, metadata, permission, ACL, encryption and storage class from source
+                        final TransferStatus status = filter.prepare(s, null, parent, listener);
                         final Path copied = copy.copy(s, t, status, callback, StreamListener.noop);
                         if(PathAttributes.EMPTY.equals(copied.attributes())) {
                             copied.withAttributes(session.getFeature(AttributesFinder.class).find(copied));

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Optional;
 
 import com.google.api.services.drive.model.File;
@@ -46,9 +47,13 @@ public class DriveCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
+            // Properties are not copied by server. Set from metadata of source read in copy filter
+            final Map<String, String> properties = status.getMetadata();
             final File copy = session.getClient().files().copy(fileid.getFileId(source), new File()
                             .setParents(Collections.singletonList(fileid.getFileId(target.getParent())))
-                            .setName(target.getName()))
+                            .setName(target.getName())
+                            .setProperties(properties.isEmpty() ? null : properties))
+                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
                     .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             listener.sent(status.getLength());
             fileid.cache(target, copy.getId());

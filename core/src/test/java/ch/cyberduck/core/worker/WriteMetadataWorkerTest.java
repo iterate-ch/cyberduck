@@ -212,6 +212,42 @@ public class WriteMetadataWorkerTest {
     }
 
     @Test
+    public void testRunResponseWithoutMetadata() throws Exception {
+        final Path p = new Path("a", EnumSet.of(Path.Type.file));
+        p.attributes().setMetadata(Collections.singletonMap("k1", "v1"));
+        new WriteMetadataWorker(Collections.singletonList(p), Collections.emptyMap(), false, ProgressListener.noop).run(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
+                        @Override
+                        public Map<String, String> getDefault(final Path file) {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            // Response with attributes but no metadata
+                            status.setResponse(new DefaultPathAttributes().setVersionId("v"));
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        });
+        assertEquals("v", p.attributes().getVersionId());
+        // Removal of all entries applied
+        assertTrue(p.attributes().getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY, p.attributes().getMetadata());
+    }
+
+    @Test
     public void testRunDifferent() throws Exception {
         final PathAttributes attributesA = new
                 DefaultPathAttributes();
@@ -331,7 +367,12 @@ public class WriteMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) {
-                            throw new UnsupportedOperationException();
+                            // Only read for file with metadata not retrieved
+                            assertEquals(unlisted, file);
+                            final Map<String, String> map = new HashMap<>();
+                            map.put("equal", "equal");
+                            map.put("different", "unlisted");
+                            return map;
                         }
 
                         @Override
@@ -359,7 +400,12 @@ public class WriteMetadataWorkerTest {
             expected.put("different", "listed");
             assertEquals(expected, written.get("listed"));
         }
-        // Key with null value removed without last known metadata
-        assertEquals(Collections.singletonMap("equal", "equal-changed"), written.get("unlisted"));
+        {
+            // Own value read from server kept for key with null value when metadata not retrieved in listing
+            final Map<String, String> expected = new HashMap<>();
+            expected.put("equal", "equal-changed");
+            expected.put("different", "unlisted");
+            assertEquals(expected, written.get("unlisted"));
+        }
     }
 }
