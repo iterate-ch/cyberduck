@@ -26,7 +26,6 @@ import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultCertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
@@ -38,7 +37,6 @@ import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.Principal;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -113,7 +111,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     @Ignore
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore() {
                     @Override
                     public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
@@ -169,7 +167,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     public void testRedirectHttpsAlert() throws Exception {
         final Host host = new Host(new DAVProtocol(), "svn.cyberduck.io");
         final AtomicBoolean warning = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
@@ -193,7 +191,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     @Test(expected = ConnectionRefusedException.class)
     public void testProxyNoConnect() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
@@ -216,7 +214,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     @Test(expected = ProxyLoginFailureException.class)
     public void testConnectProxyInvalidCredentials() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
@@ -245,9 +243,9 @@ public class DAVSessionTest extends AbstractDAVTest {
     public void testConnectProxy() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager() {
             @Override
-            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) {
                 assertNotNull(hostname);
                 verified.set(true);
                 super.verify(hostname, certs, cipher);
@@ -295,9 +293,9 @@ public class DAVSessionTest extends AbstractDAVTest {
     public void testConnectProxyHttps() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager() {
             @Override
-            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) {
                 assertNotNull(hostname);
                 verified.set(true);
                 super.verify(hostname, certs, cipher);

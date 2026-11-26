@@ -18,6 +18,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 
@@ -117,7 +119,7 @@ public class IRODSProtocolTest {
                 return "DowZone01:MidlandResc";
             }
         });
-        assertEquals("DowZone01", new IRODSSession(bookmark).getRegion());
-        assertEquals("MidlandResc", new IRODSSession(bookmark).getResource());
+        assertEquals("DowZone01", new IRODSSession(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getRegion());
+        assertEquals("MidlandResc", new IRODSSession(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getResource());
     }
 }

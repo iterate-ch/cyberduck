@@ -41,8 +41,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -70,10 +68,6 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     }
 
     private static final Logger log = LogManager.getLogger(IRODSSession.class);
-
-    public IRODSSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
 
     public IRODSSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, trust, key);

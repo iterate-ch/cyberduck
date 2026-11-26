@@ -22,14 +22,14 @@ public class DialogPromptCertificateTrustCallback : CertificateTrustCallback
         return new();
     }
 
-    public void prompt(string str, List l)
+    public void prompt(string hostname, string message, List l)
     {
         var serverCert = SystemCertificateStore.ConvertCertificate(l.get(0) as X509Certificate);
         var result = TaskDialog.TaskDialog.Create()
             .Title(LocaleFactory.localizedString("Certificate Error", "Keychain"))
             .Instruction(LocaleFactory.localizedString("Certificate Error", "Keychain"))
             .VerificationText(LocaleFactory.localizedString("Always Trust", "Keychain"), false)
-            .Content(str)
+            .Content(message)
             .CommandLinks(c =>
             {
                 c(IDCONTINUE, LocaleFactory.localizedString("Continue", "Credentials"), false);

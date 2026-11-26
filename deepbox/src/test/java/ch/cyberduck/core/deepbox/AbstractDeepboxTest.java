@@ -27,7 +27,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
@@ -82,7 +82,7 @@ public class AbstractDeepboxTest extends VaultTest {
                 return super.getProperty(key);
             }
         };
-        DeepboxSession session = new DeepboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        DeepboxSession session = new DeepboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

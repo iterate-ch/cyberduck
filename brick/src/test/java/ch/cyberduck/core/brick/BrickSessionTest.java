@@ -39,7 +39,7 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationCodeProviderFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpHost;
@@ -106,7 +106,7 @@ public class BrickSessionTest {
             if(password) {
                 host.getCredentials().setPassword("manual-key").setOauth(OAuthTokens.EMPTY);
             }
-            final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+            final BrickSession session = new BrickSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T> T _getFeature(final Class<T> type) {
@@ -143,7 +143,7 @@ public class BrickSessionTest {
         final Host host = this.httpHost(server);
         host.getCredentials().setPassword("manual-key").setOauth(OAuthTokens.EMPTY);
         final OAuth2AuthorizationCodeProvider provider = mock(OAuth2AuthorizationCodeProvider.class);
-        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        final BrickSession session = new BrickSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         try(MockedStatic<PasswordStoreFactory> passwords = mockStatic(PasswordStoreFactory.class, withSettings().mockMaker("mock-maker-inline"));
             MockedStatic<OAuth2AuthorizationCodeProviderFactory> codes = mockStatic(OAuth2AuthorizationCodeProviderFactory.class, withSettings().mockMaker("mock-maker-inline"))) {
             passwords.when(PasswordStoreFactory::get).thenReturn(mock(HostPasswordStore.class));
@@ -380,7 +380,7 @@ public class BrickSessionTest {
         host.getCredentials().setOauth(OAuthTokens.EMPTY);
         final OAuth2AuthorizationCodeProvider provider = mock(OAuth2AuthorizationCodeProvider.class);
         when(provider.prompt(any(), any(), anyString(), anyString(), anyString())).thenReturn("code");
-        final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+        final BrickSession session = new BrickSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {

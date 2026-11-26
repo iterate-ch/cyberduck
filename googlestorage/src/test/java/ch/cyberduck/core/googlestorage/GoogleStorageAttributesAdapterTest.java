@@ -20,7 +20,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 public class GoogleStorageAttributesAdapterTest {
 
     private final GoogleStorageAttributesFinderFeature f = new GoogleStorageAttributesFinderFeature(
-            new GoogleStorageSession(new Host(new GoogleStorageProtocol()), new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+            new GoogleStorageSession(new Host(new GoogleStorageProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()));
 
     @Test
     public void testChecksumBase64Md5Hash() throws Exception {

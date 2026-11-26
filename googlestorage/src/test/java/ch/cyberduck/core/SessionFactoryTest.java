@@ -17,7 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class SessionFactoryTest {
     @Test
     public void testCreateSession() {
         assertNotNull(SessionFactory.create(new Host(new GoogleStorageProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()
+                new DisabledX509TrustManager(), new DefaultX509KeyManager()
         ));
     }
 }

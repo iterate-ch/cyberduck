@@ -10,6 +10,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -32,7 +34,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             public String getAuthorization() {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
             }
-        }, new S3Protocol().getDefaultHostname())) {
+        }, new S3Protocol().getDefaultHostname()), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
@@ -103,7 +105,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     @Test
     public void testHttpURLUnknownRegion() {
         // Not connected and region cannot be determined
-        final S3Session unconnected = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final S3Session unconnected = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Iterator<DescriptiveUrl> http = new S3UrlProvider(unconnected, Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
         assertEquals("https://test-eu-west-1-cyberduck.s3.amazonaws.com/key", http.next().getUrl());
@@ -114,7 +116,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testHttpURLConfiguredRegion() {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setRegion("eu-west-1");
-        final Iterator<DescriptiveUrl> http = new S3UrlProvider(new S3Session(host), Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
+        final Iterator<DescriptiveUrl> http = new S3UrlProvider(new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()), Collections.emptyMap()).toUrl(new Path("/test-eu-west-1-cyberduck/key",
                 EnumSet.of(Path.Type.file)), EnumSet.of(DescriptiveUrl.Type.http)).iterator();
         assertEquals("https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/key", http.next().getUrl());
     }
@@ -134,7 +136,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     @Test
     public void testToSignedUrlAnonymous() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials("anonymous", null))) {
+                new Credentials("anonymous", null)), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
@@ -154,7 +156,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     @Test
     public void testToSignedUrlThirdparty() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "s.greenqloud.com",
-                new Credentials("k", "s"))) {
+                new Credentials("k", "s")), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {

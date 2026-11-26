@@ -19,6 +19,8 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.VaultTest;
@@ -49,7 +51,7 @@ public class AbstractAzureTest extends VaultTest {
         final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user")
         ));
-        session = new AzureSession(host);
+        session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop).check(session, CancelCallback.noop);
     }

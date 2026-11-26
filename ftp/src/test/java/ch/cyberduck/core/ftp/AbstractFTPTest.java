@@ -27,7 +27,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.TestcontainerTest;
@@ -110,7 +110,7 @@ public abstract class AbstractFTPTest {
                 return super.getProperty(key);
             }
         };
-        session = new FTPSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new FTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

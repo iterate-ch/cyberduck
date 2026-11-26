@@ -225,8 +225,8 @@ public class Terminal {
                     login, new TerminalHostKeyVerifier(reader), progress);
             final VaultRegistry registry = VaultRegistryFactory.get(login);
             source = SessionPoolFactory.create(connect, transcript, host,
-                    new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), registry);
+                    new CertificateStoreX509TrustManager(new TerminalCertificateTrustCallback(reader), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
+                    new PreferencesX509KeyManager(host, new DefaultCertificateStore()), registry);
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
@@ -313,8 +313,8 @@ public class Terminal {
                 case copy: {
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, target,
-                            new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
-                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)), registry);
+                            new CertificateStoreX509TrustManager(new TerminalCertificateTrustCallback(reader), new DefaultTrustManagerHostnameCallback(target), new DefaultCertificateStore()),
+                            new PreferencesX509KeyManager(target, new DefaultCertificateStore()), registry);
                     final CopyTransfer transfer = new CopyTransfer(host, target,
                             Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1])));
                     return this.transfer(login, transfer.withCache(cache), source, destination);

@@ -97,7 +97,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                         host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override
                     public Session create() {
-                        return new FTPSession(session.getHost()) {
+                        return new FTPSession(session.getHost(), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
                             final FTPWriteFeature write = new FTPWriteFeature(this) {
                                 @Override
                                 public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {

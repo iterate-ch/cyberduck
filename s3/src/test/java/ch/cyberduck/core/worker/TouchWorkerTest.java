@@ -24,12 +24,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.s3.AbstractS3Test;
-import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.RunOn;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.S3TestServer;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -49,7 +51,7 @@ public class TouchWorkerTest extends AbstractS3Test {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
-        final S3Session session = new S3Session(host) {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {

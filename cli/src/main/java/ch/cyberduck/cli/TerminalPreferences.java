@@ -14,6 +14,7 @@
 
 package ch.cyberduck.cli;
 
+import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.DisabledConnectionTimeout;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
@@ -49,7 +50,7 @@ public class TerminalPreferences extends Preferences {
         super.setFactories();
 
         this.setDefault("factory.local.class", Local.class.getName());
-        this.setDefault("factory.certificatestore.class", TerminalCertificateStore.class.getName());
+        this.setDefault("factory.certificatestore.class", DefaultCertificateStore.class.getName());
         this.setDefault("factory.logincallback.class", TerminalLoginCallback.class.getName());
         this.setDefault("factory.passwordcallback.class", TerminalPasswordCallback.class.getName());
         this.setDefault("factory.alertcallback.class", TerminalAlertCallback.class.getName());

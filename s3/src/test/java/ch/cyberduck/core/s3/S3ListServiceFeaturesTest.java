@@ -18,6 +18,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 
@@ -32,7 +34,7 @@ public class S3ListServiceFeaturesTest {
 
     @Test
     public void testObjectListServiceMetadata() {
-        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         assertTrue(new S3ObjectListService(session, acl, true).features(bucket).contains(ListService.Flags.metadata));
         assertFalse(new S3ObjectListService(session, acl, false).features(bucket).contains(ListService.Flags.metadata));
@@ -44,7 +46,7 @@ public class S3ListServiceFeaturesTest {
     public void testListServiceMetadataEnabled() {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setProperty("s3.listing.metadata.enable", String.valueOf(true));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final S3ListService list = new S3ListService(session, new S3AccessControlListFeature(session));
         assertTrue(list.features(bucket).contains(ListService.Flags.metadata));
         // Listing of buckets
@@ -55,7 +57,7 @@ public class S3ListServiceFeaturesTest {
     public void testListServiceMetadataDisabled() {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setProperty("s3.listing.metadata.enable", String.valueOf(false));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(new S3ListService(session, new S3AccessControlListFeature(session)).features(bucket).contains(ListService.Flags.metadata));
     }
 }
