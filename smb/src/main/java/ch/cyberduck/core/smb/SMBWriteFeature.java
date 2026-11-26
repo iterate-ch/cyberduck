@@ -168,24 +168,48 @@ public class SMBWriteFeature implements Write<Void> {
 
         @Override
         public void close() throws IOException {
+            IOException failure = null;
             try {
-                try {
-                    super.close();
-                }
-                finally {
-                    try {
-                        handle.flush();
-                    }
-                    finally {
-                        // Always close handle to not leave file locked on server
-                        handle.close();
-                    }
-                }
+                super.close();
+            }
+            catch(IOException e) {
+                failure = e;
             }
             catch(SMBRuntimeException e) {
-                // Release share if not yet released after last write
-                handleIOException(new IOException(new SMBExceptionMappingService().map(e)));
+                failure = this.failure(null, e);
             }
+            try {
+                handle.flush();
+            }
+            catch(SMBRuntimeException e) {
+                failure = this.failure(failure, e);
+            }
+            finally {
+                try {
+                    // Always close handle to not leave file locked on server
+                    handle.close();
+                }
+                catch(SMBRuntimeException e) {
+                    failure = this.failure(failure, e);
+                }
+            }
+            if(failure != null) {
+                throw failure;
+            }
+        }
+
+        /**
+         * @param failure Previous failure or null
+         * @param e       Failure to map
+         * @return Previous failure with mapped failure added as suppressed or mapped failure if no previous failure
+         */
+        private IOException failure(final IOException failure, final SMBRuntimeException e) {
+            final IOException mapped = new IOException(new SMBExceptionMappingService().map("Upload {0} failed", e, file));
+            if(null == failure) {
+                return mapped;
+            }
+            failure.addSuppressed(mapped);
+            return failure;
         }
     }
 }
