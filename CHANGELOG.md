@@ -2,7 +2,7 @@
 
 [9.7.0](https://github.com/iterate-ch/cyberduck/compare/release-9-6-0...release-9-7-0)
 * [Feature] Support authentication with client certificate from PKCS11 hardware token (WebDAV, FTP-SSL)
-* [Feature] Support public key authentication with key from PKCS11 hardware token (SFTP)
+* [Feature] Support public key authentication with key from PKCS11 hardware token (SFTP) ([#8401](https://trac.cyberduck.io/ticket/8401))
 * [Feature] Support public key authentication with FIDO/U2F security key including Touch ID (SFTP) ([#14732](https://trac.cyberduck.io/ticket/14732))
 * [Feature] Support chunked file upload (Nextcloud) ([#10925](https://trac.cyberduck.io/ticket/10925))
 * [Feature] Add text view to edit notes for bookmarks ([#18388](https://trac.cyberduck.io/ticket/18388))
