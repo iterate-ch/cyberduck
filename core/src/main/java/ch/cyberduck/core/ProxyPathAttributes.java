@@ -33,7 +33,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setSize(final long size) {
-        return proxy.setSize(size);
+        proxy.setSize(size);
+        return this;
     }
 
     @Override
@@ -43,27 +44,32 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setQuota(final Quota.Space quota) {
-        return proxy.setQuota(quota);
+        proxy.setQuota(quota);
+        return this;
     }
 
     @Override
     public PathAttributes setModificationDate(final long millis) {
-        return proxy.setModificationDate(millis);
+        proxy.setModificationDate(millis);
+        return this;
     }
 
     @Override
     public PathAttributes setCreationDate(final long millis) {
-        return proxy.setCreationDate(millis);
+        proxy.setCreationDate(millis);
+        return this;
     }
 
     @Override
     public PathAttributes setAccessedDate(final long millis) {
-        return proxy.setAccessedDate(millis);
+        proxy.setAccessedDate(millis);
+        return this;
     }
 
     @Override
     public PathAttributes setPermission(final Permission p) {
-        return proxy.setPermission(p);
+        proxy.setPermission(p);
+        return this;
     }
 
     @Override
@@ -73,17 +79,20 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setAcl(final Acl acl) {
-        return proxy.setAcl(acl);
+        proxy.setAcl(acl);
+        return this;
     }
 
     @Override
     public PathAttributes setOwner(final String o) {
-        return proxy.setOwner(o);
+        proxy.setOwner(o);
+        return this;
     }
 
     @Override
     public PathAttributes setGroup(final String g) {
-        return proxy.setGroup(g);
+        proxy.setGroup(g);
+        return this;
     }
 
     @Override
@@ -93,7 +102,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setChecksum(final Checksum checksum) {
-        return proxy.setChecksum(checksum);
+        proxy.setChecksum(checksum);
+        return this;
     }
 
     @Override
@@ -103,7 +113,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setETag(final String etag) {
-        return proxy.setETag(etag);
+        proxy.setETag(etag);
+        return this;
     }
 
     @Override
@@ -113,7 +124,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setStorageClass(final String storageClass) {
-        return proxy.setStorageClass(storageClass);
+        proxy.setStorageClass(storageClass);
+        return this;
     }
 
     @Override
@@ -123,7 +135,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setEncryption(final Encryption.Algorithm encryption) {
-        return proxy.setEncryption(encryption);
+        proxy.setEncryption(encryption);
+        return this;
     }
 
     @Override
@@ -133,7 +146,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setVersionId(final String versionId) {
-        return proxy.setVersionId(versionId);
+        proxy.setVersionId(versionId);
+        return this;
     }
 
     @Override
@@ -143,7 +157,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setFileId(final String fileId) {
-        return proxy.setFileId(fileId);
+        proxy.setFileId(fileId);
+        return this;
     }
 
     @Override
@@ -153,7 +168,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setLockId(final String lockId) {
-        return proxy.setLockId(lockId);
+        proxy.setLockId(lockId);
+        return this;
     }
 
     @Override
@@ -163,7 +179,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setDirectoryId(final byte[] directoryId) {
-        return proxy.setDirectoryId(directoryId);
+        proxy.setDirectoryId(directoryId);
+        return this;
     }
 
     @Override
@@ -173,7 +190,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setRevision(final Long revision) {
-        return proxy.setRevision(revision);
+        proxy.setRevision(revision);
+        return this;
     }
 
     @Override
@@ -183,7 +201,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setDecrypted(final Path decrypted) {
-        return proxy.setDecrypted(decrypted);
+        proxy.setDecrypted(decrypted);
+        return this;
     }
 
     @Override
@@ -193,7 +212,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setVaultVersion(final VaultVersion version) {
-        return proxy.setVaultVersion(version);
+        proxy.setVaultVersion(version);
+        return this;
     }
 
     @Override
@@ -203,7 +223,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setDuplicate(final boolean duplicate) {
-        return proxy.setDuplicate(duplicate);
+        proxy.setDuplicate(duplicate);
+        return this;
     }
 
     @Override
@@ -213,7 +234,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setHidden(final boolean hidden) {
-        return proxy.setHidden(hidden);
+        proxy.setHidden(hidden);
+        return this;
     }
 
     @Override
@@ -223,7 +245,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setTrashed(final boolean trashed) {
-        return proxy.setTrashed(trashed);
+        proxy.setTrashed(trashed);
+        return this;
     }
 
     @Override
@@ -233,7 +256,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setMetadata(final Map<String, String> metadata) {
-        return proxy.setMetadata(metadata);
+        proxy.setMetadata(metadata);
+        return this;
     }
 
     @Override
@@ -243,7 +267,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setRegion(final String region) {
-        return proxy.setRegion(region);
+        proxy.setRegion(region);
+        return this;
     }
 
     @Override
@@ -253,7 +278,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setDisplayname(final String displayname) {
-        return proxy.setDisplayname(displayname);
+        proxy.setDisplayname(displayname);
+        return this;
     }
 
     @Override
@@ -263,7 +289,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setLink(final DescriptiveUrl link) {
-        return proxy.setLink(link);
+        proxy.setLink(link);
+        return this;
     }
 
     @Override
@@ -273,12 +300,14 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setCustom(final Map<String, String> custom) {
-        return proxy.setCustom(custom);
+        proxy.setCustom(custom);
+        return this;
     }
 
     @Override
     public PathAttributes setCustom(final String key, final String value) {
-        return proxy.setCustom(key, value);
+        proxy.setCustom(key, value);
+        return this;
     }
 
     @Override
@@ -288,7 +317,8 @@ public class ProxyPathAttributes implements PathAttributes {
 
     @Override
     public PathAttributes setVerdict(final Verdict verdict) {
-        return proxy.setVerdict(verdict);
+        proxy.setVerdict(verdict);
+        return this;
     }
 
     @Override
