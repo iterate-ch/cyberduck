@@ -190,7 +190,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
             case windows:
                 if(preferences.getBoolean("ssh.authentication.gssapi.mit")) {
                     // Java cannot read the in-memory default cache of MIT Kerberos for Windows. Export to a file cache.
-                    final Local directory = MitKerberosTicketCache.locate(preferences.getProperty("ssh.authentication.gssapi.mit.path"));
+                    final Local directory = MitKerberosTicketCache.locate();
                     log.debug("Use MIT Kerberos directory {}", directory);
                     if(null == directory) {
                         log.warn("MIT Kerberos for Windows not found");

@@ -61,14 +61,12 @@ public final class MitKerberosTicketCache {
     }
 
     /**
-     * @param configured Location configured by the user or empty to look in the default installation folder
+     * Look up the executables in the default installation folder only. The location must never be configurable from a
+     * bookmark or connection profile as this would allow to run arbitrary executables.
+     *
      * @return Directory with the MIT Kerberos executables or null when not found
      */
-    public static Local locate(final String configured) {
-        if(StringUtils.isNotBlank(configured)) {
-            final Local directory = LocalFactory.get(configured);
-            return LocalFactory.get(directory, "klist.exe").exists() ? directory : null;
-        }
+    public static Local locate() {
         for(String variable : new String[]{"ProgramW6432", "ProgramFiles", "ProgramFiles(x86)"}) {
             final String root = System.getenv(variable);
             if(StringUtils.isBlank(root)) {

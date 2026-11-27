@@ -68,11 +68,6 @@ public class MitKerberosTicketCacheTest {
         assertEquals(0, in.available());
     }
 
-    @Test
-    public void testLocateNotFound() {
-        assertNull(MitKerberosTicketCache.locate("C:\\does\\not\\exist"));
-    }
-
     private static String read(final DataInputStream in) throws IOException {
         final byte[] bytes = new byte[in.readInt()];
         in.readFully(bytes);
