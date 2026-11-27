@@ -99,6 +99,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
 
     private final class SparklePeriodicUpdateCheckerDelegate extends ProxyController implements SPUUpdaterDelegate, SPUStandardUserDriverDelegate {
         private final Logger log = LogManager.getLogger(SparklePeriodicUpdateCheckerDelegate.class);
+        private boolean quit;
 
         @Override
         public boolean supportsGentleScheduledUpdateReminders() {
@@ -128,6 +129,18 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         }
 
         @Override
+        public void updater_didAbortWithError(final SPUUpdater updater, final NSError error) {
+            log.debug("Did abort with error {}", error);
+            if(quit) {
+                quit = false;
+                for(Handler handler : handlers) {
+                    log.debug("Notify handler {} for aborted update", handler);
+                    handler.abort();
+                }
+            }
+        }
+
+        @Override
         public void updater_didFindValidUpdate(final SPUUpdater updater, final SUAppcastItem item) {
             if(updater.automaticallyDownloadsUpdates()) {
                 for(Handler handler : handlers) {
@@ -141,6 +154,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
 
         @Override
         public void updaterWillRelaunchApplication(final SPUUpdater updater) {
+            quit = true;
             for(Handler handler : handlers) {
                 log.debug("Notify handler {} for application relaunch", handler);
                 handler.quit();
