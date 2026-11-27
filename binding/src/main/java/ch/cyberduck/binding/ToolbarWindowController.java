@@ -127,6 +127,8 @@ public abstract class ToolbarWindowController extends WindowController implement
         final int index = preferences.getInteger(String.format("%s.selected", this.getToolbarName()));
         this.setSelectedPanel(index < panels.size() ? index : 0);
         this.setWindowTitle(this.getWindowTitleForSelectedTab(tabView.selectedTabViewItem()));
+        // Delegate callback for initial selection is ignored as not yet awaked
+        this.resize();
         super.awakeFromNib();
     }
 
