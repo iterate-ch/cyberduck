@@ -193,7 +193,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedTransferEvent = delegate { };
         public event VoidHandler ChangedWebURLEvent = delegate { };
         public event VoidHandler ChangedKerberosRealmEvent = delegate { };
-        public event VoidHandler ChangedUseMitKerberosEvent = delegate { };
         public event VoidHandler ChangedCommentEvent = delegate { };
         public event VoidHandler ChangedBrowserDownloadPathEvent = delegate { };
         public event VoidHandler OpenWebUrl = delegate { };
@@ -391,17 +390,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { textBoxKerberosRealm.Enabled = value; }
         }
 
-        public bool UseMitKerberos
-        {
-            get { return checkBoxUseMitKerberos.Checked; }
-            set { checkBoxUseMitKerberos.Checked = value; }
-        }
-
-        public bool UseMitKerberosFieldEnabled
-        {
-            set { checkBoxUseMitKerberos.Enabled = value; }
-        }
-
         public string Notes
         {
             get { return richTextBoxNotes.Text; }
@@ -505,11 +493,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void textBoxKerberosRealm_TextChanged(object sender, EventArgs e)
         {
             ChangedKerberosRealmEvent();
-        }
-
-        private void checkBoxUseMitKerberos_CheckedChanged(object sender, EventArgs e)
-        {
-            ChangedUseMitKerberosEvent();
         }
 
         private void richTextBoxNotes_TextChanged(object sender, EventArgs e)

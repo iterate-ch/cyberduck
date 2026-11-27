@@ -48,8 +48,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string WebURL { get; set; }
         string KerberosRealm { get; set; }
         bool KerberosRealmFieldEnabled { set; }
-        bool UseMitKerberos { get; set; }
-        bool UseMitKerberosFieldEnabled { set; }
         string WebUrlButtonToolTip { set; }
         string Notes { get; set; }
         string SelectedTimezone { get; set; }
@@ -94,7 +92,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ChangedTransferEvent;
         event VoidHandler ChangedWebURLEvent;
         event VoidHandler ChangedKerberosRealmEvent;
-        event VoidHandler ChangedUseMitKerberosEvent;
         event VoidHandler ChangedCommentEvent;
         event VoidHandler ChangedBrowserDownloadPathEvent;
         event VoidHandler ChangedProtocolEvent;
