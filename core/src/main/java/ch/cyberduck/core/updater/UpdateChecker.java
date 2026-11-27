@@ -42,6 +42,13 @@ public interface UpdateChecker {
      */
     interface Handler {
         /**
+         * Notification that the update failed or was cancelled after {@link #quit()}
+         */
+        default void abort() {
+            // No-op
+        }
+
+        /**
          * Handle update found
          *
          * @param item Update description
