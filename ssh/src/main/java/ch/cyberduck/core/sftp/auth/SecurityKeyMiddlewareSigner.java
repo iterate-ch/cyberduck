@@ -27,36 +27,36 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.hierynomus.sshj.userauth.fido.SecurityKeyPrivateKey;
-import com.hierynomus.sshj.userauth.fido.SecurityKeyPublicKey;
-import net.schmizz.sshj.common.Buffer;
+import com.hierynomus.sshj.userauth.fido.SecurityKeySignatureData;
+import com.hierynomus.sshj.userauth.fido.SecurityKeySigner;
+import com.hierynomus.sshj.userauth.fido.SecurityKeySigningRequest;
 import net.schmizz.sshj.common.KeyType;
-import net.schmizz.sshj.common.SSHPacket;
-import net.schmizz.sshj.userauth.UserAuthException;
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
-import net.schmizz.sshj.userauth.method.AuthPublickey;
 
 /**
- * Public key authentication with a FIDO/U2F security key signing through the middleware of the authenticator.
+ * Sign with a FIDO/U2F security key through the middleware of the authenticator. The middleware expects the message
+ * to sign and computes the client data hash itself, hence {@link SecurityKeySigningRequest#getData()} is passed and
+ * not the challenge.
  * <p>
- * Signing is not delegated to {@link com.hierynomus.sshj.signature.AbstractSecurityKeySignature} because the
- * middleware expects the message to sign and computes the client data hash itself, whereas the
- * {@link com.hierynomus.sshj.userauth.fido.SecurityKeySigner} interface only passes the digest. Signing the digest
- * makes the authenticator sign a hash of the hash, which no server accepts.
+ * The middleware is loaded on first use. The signer must be attached to the key file before its private key is read,
+ * which is before the key is known to be a security key that requires a middleware.
  *
  * @see <a href="https://github.com/openssh/openssh-portable/blob/master/sk-api.h">sk-api.h</a>
  */
-public class AuthSecurityKeyPublickey extends AuthPublickey {
+public class SecurityKeyMiddlewareSigner implements SecurityKeySigner {
 
-    private final KeyProvider keys;
-    private final SecurityKeyMiddleware middleware;
+    /**
+     * Load the middleware library of the authenticator
+     */
+    @FunctionalInterface
+    public interface Loader {
+        SecurityKeyMiddleware load() throws IOException;
+    }
+
+    private final Loader loader;
     private final Host bookmark;
     private final LoginCallback prompt;
     /**
@@ -64,53 +64,50 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
      */
     private final AtomicBoolean canceled;
 
-    public AuthSecurityKeyPublickey(final KeyProvider keys, final SecurityKeyMiddleware middleware,
-                                    final Host bookmark, final LoginCallback prompt, final AtomicBoolean canceled) {
-        super(keys);
-        this.keys = keys;
-        this.middleware = middleware;
+    private SecurityKeyMiddleware middleware;
+
+    public SecurityKeyMiddlewareSigner(final Loader loader, final Host bookmark,
+                                       final LoginCallback prompt, final AtomicBoolean canceled) {
+        this.loader = loader;
         this.bookmark = bookmark;
         this.prompt = prompt;
         this.canceled = canceled;
     }
 
-    @Override
-    protected SSHPacket putSig(final SSHPacket reqBuf) throws UserAuthException {
-        try {
-            final PublicKey publicKey = keys.getPublic();
-            if(!(publicKey instanceof SecurityKeyPublicKey)) {
-                throw new UserAuthException(String.format("Expected security key but got %s", publicKey));
-            }
-            final PrivateKey privateKey = keys.getPrivate();
-            if(!(privateKey instanceof SecurityKeyPrivateKey)) {
-                throw new UserAuthException(String.format("Expected security key but got %s", privateKey));
-            }
-            final SecurityKeyPrivateKey key = (SecurityKeyPrivateKey) privateKey;
-            final KeyType type = KeyType.fromKey(publicKey);
-            // Message the authenticator hashes to obtain the client data hash
-            final byte[] data = new Buffer.PlainBuffer()
-                    .putString(params.getTransport().getSessionID())
-                    .putBuffer(reqBuf) // & rest of the data for sig
-                    .getCompactData();
-            final SecurityKeyMiddleware.Response response = this.sign(type, data,
-                    ((SecurityKeyPublicKey) publicKey).getApplication(), key.getKeyHandle(), key.getFlags());
-            // Signature already encodes the key type, flags and counter and is written as one string
-            reqBuf.putString(encode(type, response));
-            return reqBuf;
+    /**
+     * @return Middleware library, loaded on first call
+     * @throws IOException Middleware library not found or not implementing the expected API version
+     */
+    public synchronized SecurityKeyMiddleware middleware() throws IOException {
+        if(null == middleware) {
+            middleware = loader.load();
         }
-        catch(IOException e) {
-            throw new UserAuthException(String.format("Failure signing with security key %s",
-                    bookmark.getCredentials().getIdentity()), e);
+        return middleware;
+    }
+
+    @Override
+    public SecurityKeySignatureData sign(final SecurityKeySigningRequest request) throws IOException {
+        final boolean ed25519 = KeyType.SK_ED25519.toString().equals(request.getKeyTypeName());
+        final SecurityKeyMiddleware.Response response = this.sign(
+                ed25519 ? SecurityKeyMiddleware.SSH_SK_ED25519 : SecurityKeyMiddleware.SSH_SK_ECDSA,
+                request.getData(), request.getApplication(), request.getKeyHandle(), request.getMinFlags());
+        try {
+            if(ed25519) {
+                // Entire signature is returned in r
+                return SecurityKeySignatureData.ed25519(response.getFlags(), response.getCounter(), response.getR());
+            }
+            return SecurityKeySignatureData.ecdsa(response.getFlags(), response.getCounter(), response.getR(), response.getS());
+        }
+        catch(IllegalArgumentException e) {
+            throw new IOException(String.format("Invalid signature from security key. %s", e.getMessage()), e);
         }
     }
 
     /**
      * Ask the authenticator for an assertion, prompting for the PIN when the device requires user verification
      */
-    private SecurityKeyMiddleware.Response sign(final KeyType type, final byte[] data, final String application,
+    private SecurityKeyMiddleware.Response sign(final int algorithm, final byte[] data, final String application,
                                                 final byte[] keyHandle, final byte flags) throws IOException {
-        final int algorithm = KeyType.SK_ED25519 == type
-                ? SecurityKeyMiddleware.SSH_SK_ED25519 : SecurityKeyMiddleware.SSH_SK_ECDSA;
         try {
             return this.sign(algorithm, data, application, keyHandle, flags, null);
         }
@@ -143,6 +140,7 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
     private SecurityKeyMiddleware.Response sign(final int algorithm, final byte[] data, final String application,
                                                 final byte[] keyHandle, final byte flags, final String pin)
             throws IOException {
+        final SecurityKeyMiddleware middleware = this.middleware();
         if(0 == (flags & SecurityKeyMiddleware.SSH_SK_USER_PRESENCE_REQD)) {
             return middleware.sign(algorithm, data, application, keyHandle, flags, pin);
         }
@@ -178,37 +176,8 @@ public class AuthSecurityKeyPublickey extends AuthPublickey {
             throw (IOException) e;
         }
         if(e != null) {
-            throw new IOException(String.format("Failure signing with security key %s", keys), e);
+            throw new IOException(String.format("Failure signing with security key %s", bookmark.getCredentials().getIdentity()), e);
         }
         return response.get();
-    }
-
-    /**
-     * Assemble the signature value as <code>string keytype || string signature || byte flags || uint32 counter</code>
-     * where the signature holds the two integers r and s for ECDSA and the signature as is for Ed25519.
-     */
-    protected static byte[] encode(final KeyType type, final SecurityKeyMiddleware.Response response)
-            throws IOException {
-        final byte[] signature;
-        if(KeyType.SK_ED25519 == type) {
-            // Entire signature is returned in r
-            signature = response.getR();
-        }
-        else {
-            if(null == response.getS()) {
-                throw new IOException("Missing s in signature from security key");
-            }
-            signature = new Buffer.PlainBuffer()
-                    // Integers as returned from the authenticator are unsigned
-                    .putMPInt(new BigInteger(1, response.getR()))
-                    .putMPInt(new BigInteger(1, response.getS()))
-                    .getCompactData();
-        }
-        return new Buffer.PlainBuffer()
-                .putString(type.toString())
-                .putBytes(signature)
-                .putByte(response.getFlags())
-                .putUInt32(response.getCounter())
-                .getCompactData();
     }
 }
