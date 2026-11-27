@@ -64,8 +64,26 @@ public enum SFTPTestServer {
      * further server configuration by copying files to <code>/config/sshd/sshd_config.d/</code>.
      */
     public static GenericContainer<?> openssh() {
-        return new GenericContainer<>(new ImageFromDockerfile("cyberduck-openssh-sftp", false)
-                .withFileFromClasspath("Dockerfile", "openssh/Dockerfile"))
+        return openssh(new ImageFromDockerfile("cyberduck-openssh-sftp", false)
+                .withFileFromClasspath("Dockerfile", "openssh/Dockerfile"));
+    }
+
+    /**
+     * Copy a keytab with the service principal <code>host/&lt;hostname&gt;@EXAMPLE.COM</code> for the hostname used to
+     * connect to <code>/config/sshd/krb5.keytab</code> after starting. Password authentication is not supported.
+     *
+     * @return New OpenSSH container with GSS-API authentication using MIT Kerberos for principals in realm
+     * <code>EXAMPLE.COM</code> mapped to local users
+     */
+    public static GenericContainer<?> opensshKerberos() {
+        return openssh(new ImageFromDockerfile("cyberduck-openssh-krb5-sftp", false)
+                .withFileFromClasspath("Dockerfile", "openssh-krb5/Dockerfile"))
+                .withCopyToContainer(MountableFile.forClasspathResource("openssh-krb5/krb5.conf", 0644), "/etc/krb5.conf")
+                .withCopyToContainer(MountableFile.forClasspathResource("openssh-krb5/sshd.conf", 0644), "/config/sshd/sshd_config.d/gssapi.conf");
+    }
+
+    private static GenericContainer<?> openssh(final ImageFromDockerfile image) {
+        return new GenericContainer<>(image)
                 .withEnv("PUID", "1000")
                 .withEnv("PGID", "1000")
                 .withEnv("PASSWORD_ACCESS", "true")

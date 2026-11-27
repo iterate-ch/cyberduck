@@ -33,11 +33,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kerby.kerberos.kerb.client.KrbClient;
-import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
-import org.apache.kerby.util.NetworkUtil;
 import org.apache.sshd.common.config.keys.writer.openssh.OpenSSHKeyPairResourceWriter;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.core.CoreModuleProperties;
@@ -55,7 +51,6 @@ import org.junit.experimental.categories.Category;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -72,13 +67,8 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class SFTPGssApiAuthenticationTest {
 
-    private static final String KERBEROS_REALM = "EXAMPLE.COM";
-    private static final String KERBEROS_PRINCIPAL = String.format("test@%s", KERBEROS_REALM);
-    private static final String KERBEROS_SERVICE_PRINCIPAL = String.format("host/localhost@%s", KERBEROS_REALM);
-
-    private static File kerberos;
-    private static SimpleKdcServer kdc;
-    private static String krb5conf;
+    private static KerberosTestKdc kdc;
+    private static File keytab;
 
     private SshServer sshServer;
     private SFTPSession session;
@@ -88,57 +78,13 @@ public class SFTPGssApiAuthenticationTest {
      */
     @BeforeClass
     public static void startKdc() throws Exception {
-        kerberos = Files.createTempDirectory("kdc").toFile();
-        final int port = NetworkUtil.getServerPort();
-        kdc = new SimpleKdcServer();
-        kdc.setWorkDir(kerberos);
-        kdc.setKdcHost("localhost");
-        kdc.setKdcRealm(KERBEROS_REALM);
-        kdc.setAllowUdp(false);
-        kdc.setAllowTcp(true);
-        kdc.setKdcTcpPort(port);
-        kdc.init();
-        kdc.start();
-        final String password = UUID.randomUUID().toString();
-        kdc.createPrincipal(KERBEROS_PRINCIPAL, password);
-        kdc.createAndExportPrincipals(new File(kerberos, "sshd.keytab"), KERBEROS_SERVICE_PRINCIPAL);
-        // Configuration shared by the client and the server running in this JVM. No default realm and no mapping of
-        // the host to a realm which must be determined from the bookmark or the client principal
-        final File config = new File(kerberos, "client-krb5.conf");
-        try(PrintWriter w = new PrintWriter(config)) {
-            w.println("[libdefaults]");
-            w.println("    udp_preference_limit = 1");
-            w.println("    dns_lookup_kdc = false");
-            w.println("    dns_lookup_realm = false");
-            // Service ticket must be requested for host/localhost matching the keytab
-            w.println("    dns_canonicalize_hostname = false");
-            w.println("    rdns = false");
-            w.println("[realms]");
-            w.println("    " + KERBEROS_REALM + " = {");
-            w.println("        kdc = localhost:" + port);
-            w.println("    }");
-        }
-        krb5conf = System.getProperty("java.security.krb5.conf");
-        System.setProperty("java.security.krb5.conf", config.getAbsolutePath());
-        // Equivalent to kinit
-        final KrbClient client = kdc.getKrbClient();
-        client.storeTicket(client.requestTgt(KERBEROS_PRINCIPAL, password), new File(kerberos, "krb5cc"));
+        kdc = new KerberosTestKdc();
+        keytab = kdc.keytab("localhost");
     }
 
     @AfterClass
     public static void stopKdc() throws Exception {
-        try {
-            kdc.stop();
-        }
-        finally {
-            if(null == krb5conf) {
-                System.clearProperty("java.security.krb5.conf");
-            }
-            else {
-                System.setProperty("java.security.krb5.conf", krb5conf);
-            }
-            FileUtils.deleteQuietly(kerberos);
-        }
+        kdc.close();
     }
 
     /**
@@ -156,11 +102,11 @@ public class SFTPGssApiAuthenticationTest {
             @Override
             public boolean validateIdentity(final ServerSession session, final String identity) {
                 // Username is not yet set on the session while authentication is in progress
-                return KERBEROS_PRINCIPAL.equals(identity);
+                return KerberosTestKdc.PRINCIPAL.equals(identity);
             }
         };
-        gss.setKeytabFile(new File(kerberos, "sshd.keytab").getAbsolutePath());
-        gss.setServicePrincipalName(KERBEROS_SERVICE_PRINCIPAL);
+        gss.setKeytabFile(keytab.getAbsolutePath());
+        gss.setServicePrincipalName(KerberosTestKdc.service("localhost"));
         sshServer.setGSSAuthenticator(gss);
         sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
         sshServer.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
@@ -179,7 +125,7 @@ public class SFTPGssApiAuthenticationTest {
                     return value;
                 }
                 if("ssh.authentication.gssapi.ticketcache".equals(key)) {
-                    return new File(kerberos, "krb5cc").getAbsolutePath();
+                    return kdc.ticketCache().getAbsolutePath();
                 }
                 return null;
             }
@@ -213,7 +159,7 @@ public class SFTPGssApiAuthenticationTest {
     public void testAuthenticateRealm() throws Exception {
         final String config = System.getProperty("java.security.krb5.conf");
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, new DisabledLoginCallback(), CancelCallback.noop);
-        session.getHost().setProperty(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY, KERBEROS_REALM);
+        session.getHost().setProperty(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY, KerberosTestKdc.REALM);
         assertTrue(new SFTPGssApiAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback(), CancelCallback.noop));
         assertTrue(session.getClient().isAuthenticated());
         // No JVM-wide configuration changed
@@ -249,7 +195,7 @@ public class SFTPGssApiAuthenticationTest {
                 results.add(executor.submit(() -> {
                     final Host host = this.host();
                     if(realm) {
-                        host.setProperty(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY, KERBEROS_REALM);
+                        host.setProperty(SFTPGssApiAuthentication.KERBEROS_REALM_PROPERTY, KerberosTestKdc.REALM);
                     }
                     final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
                     try {
