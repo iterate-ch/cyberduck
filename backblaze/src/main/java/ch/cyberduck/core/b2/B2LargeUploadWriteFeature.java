@@ -138,7 +138,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                             containerService.getKey(file),
                             new ByteArrayEntity(content, off, len),
                             checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                            overall.getMime(), fileinfo);
+                            overall.getMime(), B2MetadataFeature.filter(file, fileinfo));
                     log.debug("Upload finished for {} with response {}", file, response);
                     fileid.cache(file, response.getFileId());
                     finishLargeFileResponse.set(response);
@@ -147,7 +147,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 else {
                     if(0 == partNumber) {
                         startLargeFileResponse.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
-                                containerService.getKey(file), overall.getMime(), fileinfo));
+                                containerService.getKey(file), overall.getMime(), B2MetadataFeature.filter(file, fileinfo)));
                         log.debug("Multipart upload started for {} with ID {}", file, startLargeFileResponse.get().getFileId());
                     }
                     final int segment = ++partNumber;

@@ -25,20 +25,42 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.shared.MetadataSizeFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.EncoderException;
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerMetadata;
 
 public class SwiftMetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(SwiftMetadataFeature.class);
+
+    /**
+     * Maximum number of bytes of metadata name with default cluster constraints
+     */
+    public static final int MAXIMUM_NAME_SIZE = 128;
+    /**
+     * Maximum number of bytes of metadata value with default cluster constraints
+     */
+    public static final int MAXIMUM_VALUE_SIZE = 256;
+    /**
+     * Maximum number of metadata entries with default cluster constraints
+     */
+    public static final int MAXIMUM_COUNT = 90;
+    /**
+     * Maximum number of bytes of all metadata names and values with default cluster constraints
+     */
+    public static final int MAXIMUM_TOTAL_SIZE = 4096;
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();
@@ -88,21 +110,28 @@ public class SwiftMetadataFeature implements Metadata {
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
+                final Map<String, String> removal = new HashMap<>();
                 for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
                     // Choose metadata values to remove
                     if(!status.getMetadata().containsKey(entry.getKey())) {
                         log.debug("Remove metadata with key {}", entry.getKey());
-                        status.getMetadata().put(entry.getKey(), StringUtils.EMPTY);
+                        removal.put(entry.getKey(), StringUtils.EMPTY);
                     }
+                }
+                if(!removal.isEmpty()) {
+                    // Separate request to not count removals for limits of new metadata
+                    log.debug("Remove metadata {} for file {}", removal.keySet(), file);
+                    session.getClient().updateContainerMetadata(regionService.lookup(file),
+                        containerService.getContainer(file).getName(), removal);
                 }
                 log.debug("Write metadata {} for file {}", status, file);
                 session.getClient().updateContainerMetadata(regionService.lookup(file),
-                    containerService.getContainer(file).getName(), status.getMetadata());
+                    containerService.getContainer(file).getName(), filter(file, status.getMetadata()));
             }
             else {
                 log.debug("Write metadata {} for file {}", status, file);
                 session.getClient().updateObjectMetadata(regionService.lookup(file),
-                    containerService.getContainer(file).getName(), containerService.getKey(file), status.getMetadata());
+                    containerService.getContainer(file).getName(), containerService.getKey(file), filter(file, status.getMetadata()));
             }
         }
         catch(GenericException e) {
@@ -111,5 +140,31 @@ public class SwiftMetadataFeature implements Metadata {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
+    }
+
+    /**
+     * @param file     File
+     * @param metadata Metadata to write
+     * @return Metadata with entries exceeding limits removed. Editable HTTP headers are not subject to limits
+     */
+    public static Map<String, String> filter(final Path file, final Map<String, String> metadata) {
+        return new MetadataSizeFilter()
+                .withMaximumKeySize(MAXIMUM_NAME_SIZE)
+                .withMaximumValueSize(MAXIMUM_VALUE_SIZE)
+                .withMaximumCount(MAXIMUM_COUNT)
+                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
+                .withExcluded(key -> Constants.HTTP_HEADER_EDITABLE_NAMES.contains(StringUtils.lowerCase(key)))
+                // Limits apply to name without prefix of header read back from server
+                .withName(key -> StringUtils.removeStartIgnoreCase(StringUtils.removeStartIgnoreCase(key, Constants.X_OBJECT_META), Constants.X_CONTAINER_META))
+                // Values are percent encoded in headers
+                .withEncoder(value -> {
+                    try {
+                        return new URLCodec().encode(value).replaceAll("\\+", "%20");
+                    }
+                    catch(EncoderException e) {
+                        return value;
+                    }
+                })
+                .filter(file, metadata);
     }
 }

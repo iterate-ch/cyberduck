@@ -191,7 +191,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                                     containerService.getContainer(file)),
                             containerService.getContainer(file).getName(),
                             overall.getMime(),
-                            containerService.getKey(file), manifest, SwiftLargeObjectUploadFeature.toManifestMetadata(overall));
+                            containerService.getKey(file), manifest, SwiftMetadataFeature.filter(file, SwiftLargeObjectUploadFeature.toManifestMetadata(overall)));
                     final StorageObject object = new StorageObject(containerService.getKey(file));
                     object.setMd5sum(checksum);
                     Long length = 0L;

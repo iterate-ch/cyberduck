@@ -6,7 +6,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -23,6 +22,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -70,13 +70,17 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
-        // Metadata value limited to 256 bytes and 4096 bytes in total by default
-        final TransferStatus status = new TransferStatus().setLength(content.length)
-                .setMetadata(Collections.singletonMap("K", StringUtils.repeat('a', 8 * 1024)));
-        assertThrows(InteroperabilityException.class, () -> {
-            final StatusOutputStream<StorageObject> out = feature.write(test, status, ConnectionCallback.noop);
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-        });
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 8 * 1024));
+        metadata.put("small", "v");
+        final TransferStatus status = new TransferStatus().setLength(content.length).setMetadata(metadata);
+        final StatusOutputStream<StorageObject> out = feature.write(test, status, ConnectionCallback.noop);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        final Map<String, String> result = new SwiftMetadataFeature(session).getMetadata(test);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

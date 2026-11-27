@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -146,9 +145,14 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid),
                 new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveMetadataFeature feature = new DriveMetadataFeature(session, fileid);
-        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 124));
-        // Same limit as when writing metadata with upload
-        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 124));
+        metadata.put("small", "v");
+        feature.setMetadata(test, metadata);
+        final Map<String, String> result = feature.getMetadata(test);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

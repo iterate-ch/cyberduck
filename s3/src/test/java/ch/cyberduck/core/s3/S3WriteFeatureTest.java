@@ -14,7 +14,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -36,6 +35,8 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 
 import static org.junit.Assert.*;
@@ -228,12 +229,18 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
         // User-defined metadata limited to 2 KB
-        final TransferStatus status = new TransferStatus().setLength(content.length)
-                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 4096)));
-        assertThrows(InteroperabilityException.class, () -> {
-            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-        });
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("k", StringUtils.repeat('a', 4096));
+        metadata.put("small", "v");
+        final TransferStatus status = new TransferStatus().setLength(content.length).setMetadata(metadata);
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        // Entry exceeding limit of user-defined metadata is skipped
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Map<String, String> result = new S3MetadataFeature(session, acl).getMetadata(file);
+        assertFalse(result.containsKey("k"));
+        assertEquals("v", result.get("small"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

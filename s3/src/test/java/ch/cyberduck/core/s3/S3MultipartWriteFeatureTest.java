@@ -6,7 +6,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -28,6 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -174,12 +175,17 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         // User-defined metadata limited to 2 KB
-        final TransferStatus status = new TransferStatus().setLength(-1L)
-                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 4096)));
-        assertThrows(InteroperabilityException.class, () -> {
-            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(1024)), out);
-            out.close();
-        });
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("k", StringUtils.repeat('a', 4096));
+        metadata.put("small", "v");
+        final TransferStatus status = new TransferStatus().setLength(-1L).setMetadata(metadata);
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(1024)), out);
+        out.close();
+        // Entry exceeding limit of user-defined metadata is skipped
+        final Map<String, String> result = new S3MetadataFeature(session, acl).getMetadata(file);
+        assertFalse(result.containsKey("k"));
+        assertEquals("v", result.get("small"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

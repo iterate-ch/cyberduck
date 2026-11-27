@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -38,6 +37,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import synapticloop.b2.response.B2FileResponse;
@@ -135,13 +136,17 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertTrue(feature.features(null).contains(Write.Flags.metadata));
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        // File info limited to 7000 bytes in total
-        final TransferStatus status = new TransferStatus().setLength(-1L)
-                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 8 * 1024)));
-        assertThrows(InteroperabilityException.class, () -> {
-            final StatusOutputStream<BaseB2Response> out = feature.write(file, status, ConnectionCallback.noop);
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(6 * 1024 * 1024)), out);
-            out.close();
-        });
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 8 * 1024));
+        metadata.put("small", "v");
+        final TransferStatus status = new TransferStatus().setLength(-1L).setMetadata(metadata);
+        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, ConnectionCallback.noop);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(6 * 1024 * 1024)), out);
+        out.close();
+        final Map<String, String> result = new B2MetadataFeature(session, fileid).getMetadata(file);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -21,8 +21,10 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.shared.MetadataSizeFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 
 import java.util.HashMap;
@@ -33,6 +35,11 @@ import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.BlobProperties;
 
 public class AzureMetadataFeature implements Metadata {
+
+    /**
+     * Maximum number of bytes of names and values of all metadata
+     */
+    public static final int MAXIMUM_TOTAL_SIZE = 8192;
 
     private final AzureSession session;
 
@@ -75,7 +82,7 @@ public class AzureMetadataFeature implements Metadata {
         try {
             if(containerService.isContainer(file)) {
                 session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
-                        .setMetadata(new HashMap<>(status.getMetadata()));
+                        .setMetadata(filter(file, status.getMetadata()));
             }
             else {
                 final BlobClient client = session.getClient().getBlobServiceClient().getBlobContainerClient(containerService.getContainer(file).getName())
@@ -94,11 +101,23 @@ public class AzureMetadataFeature implements Metadata {
                     }
                     pruned.put(m.getKey(), m.getValue());
                 }
-                client.setMetadata(pruned);
+                client.setMetadata(filter(file, pruned));
             }
         }
         catch(RuntimeException e) {
             throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
+    }
+
+    /**
+     * @param file     File
+     * @param metadata Metadata to write
+     * @return Metadata with entries exceeding limits removed. Properties set as HTTP headers are not subject to limits
+     */
+    public static Map<String, String> filter(final Path file, final Map<String, String> metadata) {
+        return new MetadataSizeFilter()
+                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
+                .withExcluded(key -> StringUtils.equalsAnyIgnoreCase(key, HttpHeaders.CACHE_CONTROL, HttpHeaders.CONTENT_TYPE))
+                .filter(file, metadata);
     }
 }

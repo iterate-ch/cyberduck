@@ -5,7 +5,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -27,6 +26,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.azure.storage.blob.BlobClient;
@@ -176,13 +176,17 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(513);
-        // Metadata limited to 8 KB in total
-        final TransferStatus status = new TransferStatus().setLength(content.length)
-                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 10 * 1024)));
-        assertThrows(InteroperabilityException.class, () -> {
-            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
-            new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-        });
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 10 * 1024));
+        metadata.put("small", "v");
+        final TransferStatus status = new TransferStatus().setLength(content.length).setMetadata(metadata);
+        final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
+        new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        final Map<String, String> result = new AzureMetadataFeature(session).getMetadata(test);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

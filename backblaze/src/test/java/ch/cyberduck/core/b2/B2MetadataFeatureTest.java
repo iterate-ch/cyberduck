@@ -23,7 +23,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
@@ -85,10 +84,14 @@ public class B2MetadataFeatureTest extends AbstractB2Test {
         final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid),
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final B2MetadataFeature feature = new B2MetadataFeature(session, fileid);
-        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 8 * 1024));
-        final TransferStatus status = new TransferStatus().setMetadata(metadata);
-        // Same limit as when writing metadata with upload
-        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, status));
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 8 * 1024));
+        metadata.put("small", "v");
+        feature.setMetadata(test, new TransferStatus().setMetadata(metadata));
+        final Map<String, String> result = feature.getMetadata(test);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

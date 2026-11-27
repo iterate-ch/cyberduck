@@ -127,12 +127,12 @@ public class AzureWriteFeature implements Write<Void> {
                 else {
                     // Overwrite existing blob retaining its type. Type of existing blob cannot be changed in place.
                     final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
-                    out = this.create(client, BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE)), metadata, headers, file);
+                    out = this.create(client, BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE)), AzureMetadataFeature.filter(file, metadata), headers, file);
                 }
             }
             else {
                 // Create new blob with default type set in defaults
-                out = this.create(client, blobType, metadata, headers, file);
+                out = this.create(client, blobType, AzureMetadataFeature.filter(file, metadata), headers, file);
             }
             return new VoidStatusOutputStream(out) {
                 @Override
