@@ -228,6 +228,22 @@ public class SFTPGssApiAuthenticationTest {
     }
 
     @Test
+    public void testLoginGssApi() throws Exception {
+        CoreModuleProperties.AUTH_METHODS.set(sshServer, "gssapi-with-mic");
+        new LoginConnectionService(new DisabledLoginCallback(), HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
+        assertTrue(session.getClient().isAuthenticated());
+    }
+
+    @Test
+    public void testLoginGssApiDisabled() throws Exception {
+        CoreModuleProperties.AUTH_METHODS.set(sshServer, "gssapi-with-mic");
+        session.getHost().setProperty("ssh.authentication.gssapi.enable", String.valueOf(false));
+        assertThrows(BackgroundException.class, () -> new LoginConnectionService(new DisabledLoginCallback(), HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop));
+    }
+
+    @Test
     public void testLoginPublicKeyAndGssApi() throws Exception {
         final KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(2048);

@@ -322,7 +322,9 @@ public class SFTPSession extends Session<SSHClient> {
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
-        defaultMethods.add(new SFTPGssApiAuthentication(client));
+        if(preferences.getBoolean("ssh.authentication.gssapi.enable")) {
+            defaultMethods.add(new SFTPGssApiAuthentication(client));
+        }
         if(credentials.isPasswordAuthentication()) {
             defaultMethods.add(0, new SFTPPasswordAuthentication(client));
             defaultMethods.add(0, new SFTPChallengeResponseAuthentication(client));
