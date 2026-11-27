@@ -19,10 +19,12 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.shared.MetadataSizeFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +46,16 @@ public class B2MetadataFeature implements Metadata {
     public static final String X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS = "src_last_modified_millis";
     public static final String X_BZ_INFO_SRC_CREATION_DATE_MILLIS = "src_creation_date_millis";
     public static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
+
+    /**
+     * Maximum number of file info entries
+     */
+    public static final int MAXIMUM_COUNT = 10;
+    /**
+     * Maximum number of bytes of all file info headers including header names with prefix X-Bz-Info-
+     */
+    public static final int MAXIMUM_TOTAL_SIZE = 7000;
+    private static final String X_BZ_INFO_PREFIX = "X-Bz-Info-";
 
     /**
      * Maximum size of source file for b2_copy_file
@@ -110,7 +122,7 @@ public class B2MetadataFeature implements Metadata {
             }
             log.debug("Replace metadata of {} with {}", file, fileInfo);
             final B2FileResponse response = new B2CopyFileReplaceMetadataRequest(session.getHttpClient(), session.getAuthorization(),
-                    info.getFileId(), info.getBucketId(), info.getFileName(), contentType, fileInfo).getResponse();
+                    info.getFileId(), info.getBucketId(), info.getFileName(), contentType, filter(file, fileInfo)).getResponse();
             fileid.cache(file, response.getFileId());
             status.setResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }
@@ -120,5 +132,22 @@ public class B2MetadataFeature implements Metadata {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
+    }
+
+    /**
+     * @param file     File
+     * @param fileinfo File info to write
+     * @return File info with entries exceeding limits removed. Timestamps and checksum are always kept
+     */
+    public static Map<String, String> filter(final Path file, final Map<String, String> fileinfo) {
+        return new MetadataSizeFilter()
+                .withMaximumCount(MAXIMUM_COUNT)
+                // Reserve prefix of header name for each entry
+                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE - MAXIMUM_COUNT * X_BZ_INFO_PREFIX.length())
+                .withRequired(key -> StringUtils.equalsAny(key,
+                        X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, X_BZ_INFO_SRC_CREATION_DATE_MILLIS, X_BZ_INFO_LARGE_FILE_SHA1))
+                // Values are percent encoded in headers
+                .withEncoder(URIEncoder::encode)
+                .filter(file, fileinfo);
     }
 }

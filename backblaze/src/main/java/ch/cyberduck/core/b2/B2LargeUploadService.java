@@ -137,7 +137,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
                     fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
-                            containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                            containerService.getKey(file), status.getMime(), B2MetadataFeature.filter(file, fileinfo)).getFileId();
                 }
                 else {
                     fileId = uploads.iterator().next().getFileId();
@@ -146,7 +146,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
             }
             else {
                 fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
-                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                        containerService.getKey(file), status.getMime(), B2MetadataFeature.filter(file, fileinfo)).getFileId();
             }
             // Full size of file
             final long size = status.getLength() + status.getOffset();

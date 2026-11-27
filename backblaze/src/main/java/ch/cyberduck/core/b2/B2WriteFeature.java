@@ -124,7 +124,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                         containerService.getKey(file),
                         entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                        status.getMime(), fileinfo);
+                        status.getMime(), B2MetadataFeature.filter(file, fileinfo));
                 fileid.cache(file, response.getFileId());
                 return response;
             }

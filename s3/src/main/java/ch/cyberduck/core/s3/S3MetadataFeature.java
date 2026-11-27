@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.shared.MetadataSizeFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.utils.RestUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +45,13 @@ import java.util.TreeMap;
 
 public class S3MetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(S3MetadataFeature.class);
+
+    /**
+     * Maximum number of bytes of keys and values of all user-defined metadata
+     */
+    public static final int MAXIMUM_TOTAL_SIZE = 2048;
+
+    private static final String METADATA_PREFIX = "x-amz-meta-";
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -79,7 +88,7 @@ public class S3MetadataFeature implements Metadata {
         log.debug("Write metadata {} for file {}", status, file);
         try {
             final S3Object target = new S3Object(containerService.getKey(file));
-            target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
+            target.replaceAllMetadata(new HashMap<>(filter(file, status.getMetadata())));
             if(Acl.EMPTY == status.getAcl()) {
                 status.setAcl(acl.getPermission(file));
             }
@@ -114,5 +123,31 @@ public class S3MetadataFeature implements Metadata {
             }
             throw failure;
         }
+    }
+
+    /**
+     * @param file     File
+     * @param metadata Metadata to write
+     * @return Metadata with user-defined entries exceeding limits removed. Timestamps are always kept
+     */
+    public static Map<String, String> filter(final Path file, final Map<String, String> metadata) {
+        return new MetadataSizeFilter()
+                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
+                .withExcluded(S3MetadataFeature::isHeader)
+                .withRequired(key -> StringUtils.equalsAnyIgnoreCase(StringUtils.removeStartIgnoreCase(key, METADATA_PREFIX),
+                        S3TimestampFeature.METADATA_MODIFICATION_DATE, S3TimestampFeature.METADATA_CREATION_DATE))
+                .filter(file, metadata);
+    }
+
+    /**
+     * @param key Metadata key
+     * @return True for standard HTTP header or header with prefix x-amz- not counted as user-defined metadata
+     */
+    private static boolean isHeader(final String key) {
+        final String name = StringUtils.lowerCase(key);
+        if(RestUtils.HTTP_HEADER_METADATA_NAMES.contains(name)) {
+            return true;
+        }
+        return StringUtils.startsWith(name, "x-amz-") && !StringUtils.startsWith(name, METADATA_PREFIX);
     }
 }

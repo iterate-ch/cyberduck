@@ -94,7 +94,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                     final StringBuilder metadata = new StringBuilder();
                     metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
                     metadata.append(",\"metadata\": {");
-                    for(Iterator<Map.Entry<String, String>> iter = status.getMetadata().entrySet().iterator(); iter.hasNext(); ) {
+                    for(Iterator<Map.Entry<String, String>> iter = GoogleStorageMetadataFeature.filter(file, status.getMetadata()).entrySet().iterator(); iter.hasNext(); ) {
                         final Map.Entry<String, String> item = iter.next();
                         metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
                         if(iter.hasNext()) {

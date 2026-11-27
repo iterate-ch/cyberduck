@@ -21,7 +21,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -34,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -171,9 +171,14 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl),
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
-        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 4096));
-        // Same limit as when writing metadata with upload
-        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("k", StringUtils.repeat('a', 4096));
+        metadata.put("small", "v");
+        // Entry exceeding limit of user-defined metadata is skipped
+        feature.setMetadata(test, metadata);
+        final Map<String, String> result = feature.getMetadata(test);
+        assertFalse(result.containsKey("k"));
+        assertEquals("v", result.get("small"));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

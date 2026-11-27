@@ -70,7 +70,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             public StorageObject call(final HttpEntity entity) throws BackgroundException {
                 try {
                     // Previous
-                    final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
+                    final HashMap<String, String> headers = new HashMap<>(SwiftMetadataFeature.filter(file, status.getMetadata()));
                     if(status.isExists()) {
                         // Remove any large object header read from metadata of existing file. Header names are
                         // case-insensitive and may be returned in lower case

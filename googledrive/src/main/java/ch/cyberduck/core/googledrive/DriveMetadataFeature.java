@@ -19,11 +19,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.shared.MetadataSizeFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.google.api.services.drive.model.File;
@@ -31,6 +31,15 @@ import com.google.api.services.drive.model.File;
 import static com.google.api.client.util.Data.NULL_STRING;
 
 public class DriveMetadataFeature implements Metadata {
+
+    /**
+     * Maximum number of bytes of key and value of a property in UTF-8
+     */
+    public static final int MAXIMUM_PROPERTY_SIZE = 124;
+    /**
+     * Maximum number of public properties of a file
+     */
+    public static final int MAXIMUM_PROPERTIES = 30;
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -66,7 +75,7 @@ public class DriveMetadataFeature implements Metadata {
         try {
             final String fileid = this.fileid.getFileId(file);
             final File body = new File();
-            final Map<String, String> properties = new HashMap<>(status.getMetadata());
+            final Map<String, String> properties = filter(file, status.getMetadata());
             for(String key : file.attributes().getMetadata().keySet()) {
                 if(!properties.containsKey(key)) {
                     // Entries with null values are cleared in update and copy requests
@@ -82,5 +91,17 @@ public class DriveMetadataFeature implements Metadata {
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
+    }
+
+    /**
+     * @param file     File
+     * @param metadata Properties to write
+     * @return Properties with entries exceeding limits removed
+     */
+    public static Map<String, String> filter(final Path file, final Map<String, String> metadata) {
+        return new MetadataSizeFilter()
+                .withMaximumEntrySize(MAXIMUM_PROPERTY_SIZE)
+                .withMaximumCount(MAXIMUM_PROPERTIES)
+                .filter(file, metadata);
     }
 }

@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.shared.MetadataSizeFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,11 @@ import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageMetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(GoogleStorageMetadataFeature.class);
+
+    /**
+     * Maximum number of bytes of keys and values of all custom metadata
+     */
+    public static final int MAXIMUM_TOTAL_SIZE = 8192;
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
@@ -72,7 +78,7 @@ public class GoogleStorageMetadataFeature implements Metadata {
         log.debug("Write metadata {} for file {}", status, file);
         try {
             final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setMetadata(status.getMetadata()));
+                    new StorageObject().setMetadata(filter(file, status.getMetadata())));
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
@@ -89,5 +95,16 @@ public class GoogleStorageMetadataFeature implements Metadata {
             }
             throw failure;
         }
+    }
+
+    /**
+     * @param file     File
+     * @param metadata Custom metadata to write
+     * @return Metadata with entries exceeding limits removed
+     */
+    public static Map<String, String> filter(final Path file, final Map<String, String> metadata) {
+        return new MetadataSizeFilter()
+                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
+                .filter(file, metadata);
     }
 }

@@ -43,6 +43,7 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -138,9 +139,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         // If the x-amz-server-side-encryption is present and has the value of aws:kms, this header specifies the ID of the
         // AWS Key Management Service (KMS) master encryption key that was used for the object.
         object.setServerSideEncryptionKmsKeyId(encryption.key);
-        for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
-            object.addMetadata(m.getKey(), m.getValue());
-        }
+        final Map<String, String> metadata = new HashMap<>(status.getMetadata());
         if(status.getAcl().isCanned()) {
             log.debug("Set canned ACL {} for {}", status.getAcl(), file);
             object.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
@@ -150,12 +149,15 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(status.getModified() != null) {
             // Interoperable with rsync
             final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_MODIFICATION_DATE, status.getModified());
-            object.addMetadata(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
+            metadata.put(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
         }
         if(status.getCreated() != null) {
             // Interoperable with rsync
             final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
-            object.addMetadata(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
+            metadata.put(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
+        }
+        for(Map.Entry<String, String> m : S3MetadataFeature.filter(file, metadata).entrySet()) {
+            object.addMetadata(m.getKey(), m.getValue());
         }
         return object;
     }

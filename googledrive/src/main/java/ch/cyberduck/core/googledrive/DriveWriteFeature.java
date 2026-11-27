@@ -105,7 +105,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                         }
                         metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent())));
                         if(!status.getMetadata().isEmpty()) {
-                            metadata.append(String.format(",\"properties\":%s", session.getClient().getJsonFactory().toString(status.getMetadata())));
+                            metadata.append(String.format(",\"properties\":%s", session.getClient().getJsonFactory().toString(DriveMetadataFeature.filter(file, status.getMetadata()))));
                         }
                         metadata.append("}");
                         request.setEntity(new StringEntity(metadata.toString(),
