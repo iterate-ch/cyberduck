@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -29,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -67,9 +67,14 @@ public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         final SwiftMetadataFeature feature = new SwiftMetadataFeature(session);
-        final Map<String, String> metadata = Collections.singletonMap("K", StringUtils.repeat('a', 8 * 1024));
-        // Same limit as when writing metadata with upload
-        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 8 * 1024));
+        metadata.put("small", "v");
+        feature.setMetadata(test, metadata);
+        final Map<String, String> result = feature.getMetadata(test);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

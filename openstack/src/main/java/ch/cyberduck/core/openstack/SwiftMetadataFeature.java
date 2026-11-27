@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import ch.iterate.openstack.swift.Constants;
@@ -109,12 +110,19 @@ public class SwiftMetadataFeature implements Metadata {
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
+                final Map<String, String> removal = new HashMap<>();
                 for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
                     // Choose metadata values to remove
                     if(!status.getMetadata().containsKey(entry.getKey())) {
                         log.debug("Remove metadata with key {}", entry.getKey());
-                        status.getMetadata().put(entry.getKey(), StringUtils.EMPTY);
+                        removal.put(entry.getKey(), StringUtils.EMPTY);
                     }
+                }
+                if(!removal.isEmpty()) {
+                    // Separate request to not count removals for limits of new metadata
+                    log.debug("Remove metadata {} for file {}", removal.keySet(), file);
+                    session.getClient().updateContainerMetadata(regionService.lookup(file),
+                        containerService.getContainer(file).getName(), removal);
                 }
                 log.debug("Write metadata {} for file {}", status, file);
                 session.getClient().updateContainerMetadata(regionService.lookup(file),
@@ -146,6 +154,8 @@ public class SwiftMetadataFeature implements Metadata {
                 .withMaximumCount(MAXIMUM_COUNT)
                 .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
                 .withExcluded(key -> Constants.HTTP_HEADER_EDITABLE_NAMES.contains(StringUtils.lowerCase(key)))
+                // Limits apply to name without prefix of header read back from server
+                .withName(key -> StringUtils.removeStartIgnoreCase(StringUtils.removeStartIgnoreCase(key, Constants.X_OBJECT_META), Constants.X_CONTAINER_META))
                 // Values are percent encoded in headers
                 .withEncoder(value -> {
                     try {

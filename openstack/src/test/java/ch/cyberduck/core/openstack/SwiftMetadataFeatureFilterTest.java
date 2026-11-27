@@ -42,4 +42,12 @@ public class SwiftMetadataFeatureFilterTest {
         assertTrue(filtered.containsKey("user_tags"));
         assertTrue(filtered.containsKey("xattr_fits"));
     }
+
+    @Test
+    public void testFilterPrefixNotCounted() {
+        final Map<String, String> metadata = new HashMap<>();
+        // Name of maximum length read back from server with prefix
+        metadata.put("X-Object-Meta-" + StringUtils.repeat('k', SwiftMetadataFeature.MAXIMUM_NAME_SIZE), "v");
+        assertEquals(metadata, SwiftMetadataFeature.filter(new Path("/c/f", EnumSet.of(Path.Type.file)), metadata));
+    }
 }

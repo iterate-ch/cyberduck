@@ -41,4 +41,11 @@ public class S3MetadataFeatureFilterTest {
         assertTrue(filtered.containsKey("x-amz-meta-Mtime"));
         assertTrue(filtered.containsKey("user_tags"));
     }
+
+    @Test
+    public void testFilterPrefixNotCounted() {
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("x-amz-meta-k", StringUtils.repeat('v', S3MetadataFeature.MAXIMUM_TOTAL_SIZE - 1));
+        assertEquals(metadata, S3MetadataFeature.filter(new Path("/b/f", EnumSet.of(Path.Type.file)), metadata));
+    }
 }

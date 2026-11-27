@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -44,6 +43,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.google.api.services.drive.model.File;
@@ -237,13 +238,17 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final DriveWriteFeature feature = new DriveWriteFeature(session, idProvider);
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(128);
-        // Key and value of property limited to 124 bytes
-        final TransferStatus status = new TransferStatus().setLength(content.length)
-                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 124)));
-        assertThrows(InteroperabilityException.class, () -> {
-            final HttpResponseOutputStream<File> out = feature.write(test, status, ConnectionCallback.noop);
-            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        });
-        assertFalse(new DefaultFindFeature(session).find(test));
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("large", StringUtils.repeat('a', 124));
+        metadata.put("small", "v");
+        final TransferStatus status = new TransferStatus().setLength(content.length).setMetadata(metadata);
+        final HttpResponseOutputStream<File> out = feature.write(test, status, ConnectionCallback.noop);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        assertTrue(new DefaultFindFeature(session).find(test));
+        final Map<String, String> result = new DriveMetadataFeature(session, idProvider).getMetadata(test);
+        // Entry exceeding limit is skipped
+        assertFalse(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "large")));
+        assertTrue(result.keySet().stream().anyMatch(key -> StringUtils.endsWithIgnoreCase(key, "small")));
+        new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

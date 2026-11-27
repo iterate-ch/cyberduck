@@ -118,4 +118,23 @@ public class MetadataSizeFilterTest {
         assertEquals(metadata, new MetadataSizeFilter().withMaximumValueSize(3).filter(file, metadata));
         assertTrue(new MetadataSizeFilter().withMaximumValueSize(3).withEncoder(value -> value.replace("+", "%2B")).filter(file, metadata).isEmpty());
     }
+
+    @Test
+    public void testName() {
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("x-amz-meta-k", StringUtils.repeat('v', 9));
+        // Prefix not counted and key kept in result
+        assertEquals(metadata, new MetadataSizeFilter().withMaximumTotalSize(10).withMaximumKeySize(1)
+                .withName(key -> StringUtils.removeStart(key, "x-amz-meta-")).filter(file, metadata));
+        assertTrue(new MetadataSizeFilter().withMaximumTotalSize(10).filter(file, metadata).isEmpty());
+    }
+
+    @Test
+    public void testOverhead() {
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("k", StringUtils.repeat('v', 4));
+        assertEquals(metadata, new MetadataSizeFilter().withMaximumTotalSize(10).withOverhead(5).filter(file, metadata));
+        metadata.put("k", StringUtils.repeat('v', 5));
+        assertTrue(new MetadataSizeFilter().withMaximumTotalSize(10).withOverhead(5).filter(file, metadata).isEmpty());
+    }
 }

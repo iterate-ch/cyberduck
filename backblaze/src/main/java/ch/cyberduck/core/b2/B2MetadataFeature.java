@@ -142,8 +142,9 @@ public class B2MetadataFeature implements Metadata {
     public static Map<String, String> filter(final Path file, final Map<String, String> fileinfo) {
         return new MetadataSizeFilter()
                 .withMaximumCount(MAXIMUM_COUNT)
-                // Reserve prefix of header name for each entry
-                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE - MAXIMUM_COUNT * X_BZ_INFO_PREFIX.length())
+                .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
+                // Prefix of header name counted for each entry
+                .withOverhead(X_BZ_INFO_PREFIX.length())
                 .withRequired(key -> StringUtils.equalsAny(key,
                         X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, X_BZ_INFO_SRC_CREATION_DATE_MILLIS, X_BZ_INFO_LARGE_FILE_SHA1))
                 // Values are percent encoded in headers

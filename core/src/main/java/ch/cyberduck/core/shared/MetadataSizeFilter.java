@@ -60,6 +60,14 @@ public final class MetadataSizeFilter {
      * Encoding applied to values when sent to the server
      */
     private Function<String, String> encoder = Function.identity();
+    /**
+     * Key as counted by the protocol, such as without a prefix added for transport in headers
+     */
+    private Function<String, String> name = Function.identity();
+    /**
+     * Number of bytes added to the size of each entry, such as a prefix of header names
+     */
+    private int overhead = 0;
 
     /**
      * @param size Maximum number of bytes of key
@@ -126,6 +134,23 @@ public final class MetadataSizeFilter {
     }
 
     /**
+     * @param name Key as counted by the protocol, such as without a prefix added for transport in headers. The
+     *             original key is kept in the result
+     */
+    public MetadataSizeFilter withName(final Function<String, String> name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * @param overhead Number of bytes added to the size of each entry, such as a prefix of header names
+     */
+    public MetadataSizeFilter withOverhead(final int overhead) {
+        this.overhead = overhead;
+        return this;
+    }
+
+    /**
      * @param file     File to write metadata for
      * @param metadata Metadata to write
      * @return Metadata with entries exceeding limits removed
@@ -146,7 +171,7 @@ public final class MetadataSizeFilter {
                 total += this.size(entry);
                 continue;
             }
-            final int key = size(entry.getKey());
+            final int key = size(name.apply(entry.getKey()));
             if(maximumKeySize != UNLIMITED && key > maximumKeySize) {
                 log.warn("Skip metadata {} for {} with key size {} exceeding limit {}", entry.getKey(), file, key, maximumKeySize);
                 continue;
@@ -156,8 +181,8 @@ public final class MetadataSizeFilter {
                 log.warn("Skip metadata {} for {} with value size {} exceeding limit {}", entry.getKey(), file, value, maximumValueSize);
                 continue;
             }
-            if(maximumEntrySize != UNLIMITED && key + value > maximumEntrySize) {
-                log.warn("Skip metadata {} for {} with size {} exceeding limit {}", entry.getKey(), file, key + value, maximumEntrySize);
+            if(maximumEntrySize != UNLIMITED && overhead + key + value > maximumEntrySize) {
+                log.warn("Skip metadata {} for {} with size {} exceeding limit {}", entry.getKey(), file, overhead + key + value, maximumEntrySize);
                 continue;
             }
             candidates.add(entry);
@@ -182,7 +207,7 @@ public final class MetadataSizeFilter {
     }
 
     private int size(final Map.Entry<String, String> entry) {
-        return size(entry.getKey()) + size(encoder.apply(entry.getValue()));
+        return overhead + size(name.apply(entry.getKey())) + size(encoder.apply(entry.getValue()));
     }
 
     private static int size(final String value) {

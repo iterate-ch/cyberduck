@@ -133,6 +133,8 @@ public class S3MetadataFeature implements Metadata {
     public static Map<String, String> filter(final Path file, final Map<String, String> metadata) {
         return new MetadataSizeFilter()
                 .withMaximumTotalSize(MAXIMUM_TOTAL_SIZE)
+                // Prefix added for transport is not part of user-defined key
+                .withName(key -> StringUtils.removeStartIgnoreCase(key, METADATA_PREFIX))
                 .withExcluded(S3MetadataFeature::isHeader)
                 .withRequired(key -> StringUtils.equalsAnyIgnoreCase(StringUtils.removeStartIgnoreCase(key, METADATA_PREFIX),
                         S3TimestampFeature.METADATA_MODIFICATION_DATE, S3TimestampFeature.METADATA_CREATION_DATE))
