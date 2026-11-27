@@ -35,6 +35,7 @@ import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPGssApiAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPNoneAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPPKCS11Authentication;
 import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.compression.JcraftDelayedZlibCompression;
@@ -42,8 +43,9 @@ import ch.cyberduck.core.sftp.compression.JcraftZlibCompression;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPKCS11ProviderConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHProxyCommandConnector;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
@@ -138,7 +140,7 @@ public class SFTPSession extends Session<SSHClient> {
             heartbeat = KeepAliveProvider.KEEP_ALIVE;
         }
         else {
-            heartbeat = KeepAliveProvider.HEARTBEAT;
+            heartbeat = AuthenticatedHeartbeater.PROVIDER;
         }
         configuration.setKeepAliveProvider(heartbeat);
         configuration.setCipherFactories(this.lowestPriorityForCBC(configuration.getCipherFactories()));
@@ -308,6 +310,17 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
         }
+        if(preferences.getBoolean("ssh.authentication.pkcs11.enable")) {
+            // Equivalent to PKCS11Provider in ssh_config respectively ssh -I
+            String library = new OpenSSHPKCS11ProviderConfigurator().getProvider(host.getHostname());
+            if(null == library) {
+                library = preferences.getProperty("connection.keystore.pkcs11.library");
+            }
+            if(StringUtils.isNotBlank(library)) {
+                log.debug("Determined PKCS11 library {} for {}", library, host.getHostname());
+                defaultMethods.add(new SFTPPKCS11Authentication(client, library));
+            }
+        }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
         defaultMethods.add(new SFTPGssApiAuthentication(client));
         if(credentials.isPasswordAuthentication()) {
@@ -427,7 +440,9 @@ public class SFTPSession extends Session<SSHClient> {
     @Override
     public void disconnect() throws BackgroundException {
         try {
-            client.close();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             log.warn("Ignore disconnect failure {}", e.getMessage());
@@ -521,7 +536,7 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new SFTPUploadFeature(this);
+            return (T) new SFTPUploadFeature();
         }
         if(type == Write.class) {
             return (T) new SFTPWriteFeature(this);

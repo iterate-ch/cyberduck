@@ -34,6 +34,8 @@ import org.irods.irods4j.low_level.api.IRODSException;
 
 import javax.net.ssl.TrustManager;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 final class IRODSConnectionUtils {
 
@@ -109,7 +111,9 @@ final class IRODSConnectionUtils {
         String password = session.getHost().getCredentials().getPassword();
         IRODSConnection conn = new IRODSConnection(initConnectionOptions(session));
         conn.connect(host, port, new QualifiedUsername(username, zone));
-        conn.authenticate(newAuthPlugin(session), password);
+        Map<String, Object> authInput = new HashMap<>();
+        authInput.put(AuthPlugin.AUTH_PASSWORD_KEY, password);
+        conn.authenticate(newAuthPlugin(session), authInput);
         return conn;
     }
 
@@ -119,6 +123,8 @@ final class IRODSConnectionUtils {
         String zone = session.getRegion();
         String username = session.getHost().getCredentials().getUsername();
         String password = session.getHost().getCredentials().getPassword();
+        Map<String, Object> authInput = new HashMap<>();
+        authInput.put(AuthPlugin.AUTH_PASSWORD_KEY, password);
 
         connPool.start(
                 host,
@@ -126,7 +132,7 @@ final class IRODSConnectionUtils {
                 new QualifiedUsername(username, zone),
                 conn -> {
                     try {
-                        IRODSApi.rcAuthenticateClient(conn, newAuthPlugin(session), password);
+                        IRODSApi.rcAuthenticateClient(conn, newAuthPlugin(session), authInput);
                         return true;
                     }
                     catch(Exception e) {

@@ -167,6 +167,10 @@ public interface Write<Reply> {
         /**
          * Set MIME type on upload
          */
-        mime
+        mime,
+        /**
+         * Set metadata on upload replacing existing metadata of file
+         */
+        metadata
     }
 }

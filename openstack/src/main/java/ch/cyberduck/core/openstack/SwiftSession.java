@@ -36,7 +36,10 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -133,7 +136,7 @@ public class SwiftSession extends HttpSession<Client> {
                     break;
                 }
                 catch(GenericException failure) {
-                    final BackgroundException reason = new SwiftExceptionMappingService().map(failure);
+                    final BackgroundException reason = new SwiftAuthenticationExceptionMappingService().map(failure);
                     if(reason instanceof LoginFailureException
                             || reason instanceof AccessDeniedException
                             || reason instanceof InteroperabilityException) {
@@ -149,7 +152,7 @@ public class SwiftSession extends HttpSession<Client> {
             }
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map(e);
+            throw new SwiftAuthenticationExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -179,9 +182,6 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Delete.class) {
             return (T) new SwiftThresholdDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
-        }
-        if(type == Headers.class) {
-            return (T) new SwiftMetadataFeature(this, regionService);
         }
         if(type == Metadata.class) {
             return (T) new SwiftMetadataFeature(this, regionService);
@@ -229,6 +229,15 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Scheduler.class) {
             return (T) scheduler;
+        }
+        if(type == Home.class) {
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new SwiftHomeFeature(host));
+        }
+        if(type == Quota.class) {
+            final Path container = new SwiftHomeFeature(host).find();
+            if(container != null) {
+                return (T) new SwiftContainerQuotaFeature(this, regionService, container);
+            }
         }
         return super._getFeature(type);
     }

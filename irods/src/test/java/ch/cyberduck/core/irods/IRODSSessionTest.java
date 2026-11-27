@@ -29,6 +29,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -52,7 +54,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
-        final IRODSSession session = new IRODSSession(host);
+        final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
 
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
@@ -71,7 +73,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
-        final IRODSSession session = new IRODSSession(host);
+        final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
 
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
@@ -97,7 +99,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
         ));
         host.setDefaultPath("/cyber duck");
 
-        final IRODSSession session = new IRODSSession(host);
+        final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
 
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
@@ -117,7 +119,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
                 this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("a", "a"));
 
-        final IRODSSession session = new IRODSSession(host);
+        final IRODSSession session = new IRODSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());

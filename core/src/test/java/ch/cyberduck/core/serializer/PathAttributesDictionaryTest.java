@@ -21,9 +21,14 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.StaticPermission;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -46,6 +51,46 @@ public class PathAttributesDictionaryTest {
         assertTrue(clone.isHidden());
         assertTrue(clone.isTrashed());
         assertFalse(clone.isDuplicate());
+    }
+
+    @Test
+    public void testSerializeMetadata() {
+        final PathAttributes attributes = new DefaultPathAttributes();
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("user_tags", "Red%0A6,Work");
+        metadata.put("Content-Type", "text/plain");
+        attributes.setMetadata(metadata);
+        final PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
+        assertEquals(metadata, clone.getMetadata());
+        // Not mixed with custom properties
+        assertTrue(clone.getCustom().isEmpty());
+    }
+
+    @Test
+    public void testSerializeMetadataAndCustom() {
+        final PathAttributes attributes = new DefaultPathAttributes();
+        attributes.setMetadata(Collections.singletonMap("user_tags", "Work"));
+        attributes.setCustom(Collections.singletonMap("set_tags", "true"));
+        final PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
+        assertEquals(Collections.singletonMap("user_tags", "Work"), clone.getMetadata());
+        assertEquals(Collections.singletonMap("set_tags", "true"), clone.getCustom());
+    }
+
+    @Test
+    public void testSerializeNoMetadata() {
+        final PathAttributes clone = new PathAttributesDictionary<>().deserialize(new DefaultPathAttributes()
+                .setCustom(Collections.singletonMap("k", "v")).serialize(SerializerFactory.get()));
+        assertTrue(clone.getMetadata().isEmpty());
+        assertSame(Metadata.EMPTY, clone.getMetadata());
+    }
+
+    @Test
+    public void testSerializeEmptyMetadata() {
+        // Retrieved without any metadata on server
+        final PathAttributes clone = new PathAttributesDictionary<>().deserialize(new DefaultPathAttributes()
+                .setMetadata(Collections.emptyMap()).serialize(SerializerFactory.get()));
+        assertTrue(clone.getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY, clone.getMetadata());
     }
 
     @Test

@@ -5,7 +5,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
@@ -15,6 +17,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -164,5 +167,22 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         // Each write of the SDK stream would otherwise be committed as a separate block, limiting the blob to 50,000 blocks
         assertEquals(1, client.getProperties().getCommittedBlockCount().intValue());
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteMetadataTooLarge() throws Exception {
+        final AzureWriteFeature feature = new AzureWriteFeature(session);
+        assertTrue(feature.features(null).contains(Write.Flags.metadata));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(513);
+        // Metadata limited to 8 KB in total
+        final TransferStatus status = new TransferStatus().setLength(content.length)
+                .setMetadata(Collections.singletonMap("k", StringUtils.repeat('a', 10 * 1024)));
+        assertThrows(InteroperabilityException.class, () -> {
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+        });
     }
 }

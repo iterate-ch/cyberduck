@@ -15,27 +15,24 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Share;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class OwncloudShareFeatureTest {
+public class OwncloudShareFeatureTest extends AbstractOwncloudTest {
 
-    private final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("u")),
-            new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    private final OwncloudShareFeature feature = new OwncloudShareFeature(session);
+    private OwncloudShareFeature feature;
 
-    {
+    @Before
+    public void feature() {
+        feature = new OwncloudShareFeature(session);
         session.ocs.withSpaces(true);
     }
 

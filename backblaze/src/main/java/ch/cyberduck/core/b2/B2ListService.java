@@ -21,6 +21,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 public class B2ListService implements ListService {
 
     private final B2Session session;
@@ -48,5 +50,10 @@ public class B2ListService implements ListService {
             return buckets;
         }
         return new B2ObjectListService(session, fileid).list(directory, listener);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return EnumSet.of(Flags.metadata);
     }
 }

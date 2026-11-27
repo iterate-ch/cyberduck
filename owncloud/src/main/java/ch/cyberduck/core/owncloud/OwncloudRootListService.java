@@ -23,6 +23,8 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.nextcloud.NextcloudListService;
 
+import java.util.EnumSet;
+
 /**
  * List virtual folders for personal space, project spaces and shares in root when spaces are supported
  */
@@ -66,5 +68,10 @@ public class OwncloudRootListService implements ListService {
             }
         }
         return delegate.list(directory, listener);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return delegate.features(directory);
     }
 }

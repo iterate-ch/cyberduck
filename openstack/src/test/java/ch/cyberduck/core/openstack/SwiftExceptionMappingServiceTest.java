@@ -19,6 +19,9 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
@@ -61,5 +64,24 @@ public class SwiftExceptionMappingServiceTest {
                     return "reason";
                 }
             })).getDetail());
+    }
+
+    @Test
+    public void testBadRequest() {
+        final GenericException f = new GenericException(
+            "Header Line Too Long", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 400, "Header Line Too Long"));
+        assertTrue(new SwiftExceptionMappingService().map(f) instanceof InteroperabilityException);
+    }
+
+    @Test
+    public void testBadRequestAuthentication() {
+        final GenericException f = new GenericException(
+            "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 400, "Bad Request"));
+        final BackgroundException failure = new SwiftAuthenticationExceptionMappingService().map(f);
+        assertTrue(failure instanceof LoginFailureException);
+        assertEquals("Message. 400 Bad Request.", failure.getDetail(false));
+        // Other failures mapped as before
+        assertTrue(new SwiftAuthenticationExceptionMappingService().map(new GenericException(
+            "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"))) instanceof AccessDeniedException);
     }
 }

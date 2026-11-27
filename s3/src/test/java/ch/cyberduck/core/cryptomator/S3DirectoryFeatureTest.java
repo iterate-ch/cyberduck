@@ -52,7 +52,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -85,7 +84,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertNotNull(attributes.getVersionId());
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault)
-                .toStream().filter(f -> !f.attributes().isDuplicate() && !f.attributes().isTrashed()).collect(Collectors.toList()).isEmpty());
+                .toStream().noneMatch(f -> !f.attributes().isDuplicate() && !f.attributes().isTrashed()));
         session.getRegistry().clear();
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }

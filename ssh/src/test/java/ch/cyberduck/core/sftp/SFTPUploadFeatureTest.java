@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class SFTPUploadFeatureTest extends AbstractSFTPTest {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
-        assertTrue(new SFTPUploadFeature(session).append(test, new TransferStatus().setExists(true).setLength(1L).setRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
+        assertTrue(new SFTPUploadFeature().append(test, new TransferStatus().setExists(true).setLength(1L).setRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

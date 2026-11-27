@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -182,7 +183,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
             = Collections.emptyMap();
 
     private Map<String, String> metadata
-            = Collections.emptyMap();
+            = Metadata.EMPTY;
 
     /**
      * Overall transfer status for this segment

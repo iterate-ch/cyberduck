@@ -76,9 +76,11 @@ public class S3StorageClassFeature implements Redundancy {
         }
         try {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-            final TransferStatus status = new TransferStatus();
-            status.setLength(file.attributes().getSize());
-            status.setStorageClass(redundancy);
+            final TransferStatus status = new TransferStatus()
+                    .setLength(file.attributes().getSize())
+                    .setStorageClass(redundancy)
+                    .setEncryption(new S3EncryptionFeature(session, acl).getEncryption(file))
+                    .setAcl(acl.getPermission(file));
             copy.copy(file, file, status, ConnectionCallback.noop, StreamListener.noop);
         }
         catch(NotfoundException e) {

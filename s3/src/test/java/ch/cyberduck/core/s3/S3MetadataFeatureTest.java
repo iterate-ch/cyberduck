@@ -21,10 +21,12 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
@@ -158,6 +160,20 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Map<String, String> metadata = feature.getMetadata(test);
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    @RunOn({S3TestServer.AWS, S3TestServer.CLOUDSERVER})
+    public void testSetMetadataTooLarge() throws Exception {
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session, acl),
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
+        final Map<String, String> metadata = Collections.singletonMap("k", StringUtils.repeat('a', 4096));
+        // Same limit as when writing metadata with upload
+        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

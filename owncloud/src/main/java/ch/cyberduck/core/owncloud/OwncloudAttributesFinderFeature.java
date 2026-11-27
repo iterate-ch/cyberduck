@@ -19,6 +19,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.dav.DAVMetadataFeature;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -67,6 +68,7 @@ public class OwncloudAttributesFinderFeature extends NextcloudAttributesFinderFe
         return session.getClient().list(path, 0,
                 Stream.of(OC_FILEID_CUSTOM_NAMESPACE, OC_CHECKSUMS_CUSTOM_NAMESPACE, OC_SIZE_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
+                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
+                        DAVMetadataFeature.METADATA_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
     }
 }

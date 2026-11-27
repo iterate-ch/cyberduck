@@ -338,8 +338,8 @@ public abstract class AbstractVault implements Vault {
             if(type == Symlink.class) {
                 return (T) new CryptoSymlinkFeature(session, (Symlink) delegate, this);
             }
-            if(type == Headers.class || type == Metadata.class) {
-                return (T) new CryptoHeadersFeature(session, (Headers) delegate, this);
+            if(type == Metadata.class) {
+                return (T) new CryptoMetadataFeature(session, (Metadata) delegate, this);
             }
             if(type == Compress.class) {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);

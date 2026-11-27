@@ -37,10 +37,12 @@ import java.util.stream.IntStream;
  */
 public enum FTPTestServer {
     VSFTPD("/ftp/test", 21000, 21010, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-vsftpd", false)
-            .withFileFromClasspath("Dockerfile", "vsftpd/Dockerfile"))
-            .withEnv("USERS", String.format("%s|%s", FTPTestServer.USER, FTPTestServer.PASSWORD))
-            // Run vsftpd in foreground. The default startup script monitors the newest process matching vsftpd which is a
-            // connection handler when a client connects early and stops the container once that connection is closed.
+            .withFileFromClasspath("Dockerfile", "vsftpd/Dockerfile")
+            .withFileFromClasspath("vsftpd.conf", "vsftpd/vsftpd.conf")
+            .withFileFromClasspath("pam", "vsftpd/pam")
+            .withBuildArg("FTP_USER", FTPTestServer.USER)
+            .withBuildArg("FTP_PASSWORD", FTPTestServer.PASSWORD)
+            .withBuildArg("FTP_HOME", "/ftp/test"))
             // Configuration file must be first as it would otherwise override options on the command line
             .withCommand("vsftpd", "/etc/vsftpd/vsftpd.conf", "-obackground=NO",
                     "-opasv_min_port=21000",
@@ -54,7 +56,7 @@ public enum FTPTestServer {
             .withFileFromPath("proftpd.conf", Paths.get("src/test/resources/proftpd/proftpd.conf")))
             .withExposedPorts(FTPTestServer.PORT)
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)))),
-    PUREFTPD("/home/test", 21040, 21050, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-pure-ftpd", false)
+    PUREFTPD("/home/test", 21100, 21299, () -> new GenericContainer<>(new ImageFromDockerfile("cyberduck-pure-ftpd", false)
             .withFileFromPath("Dockerfile", Paths.get("src/test/resources/pure-ftpd/Dockerfile")))
             // Required to drop privileges
             .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.SYS_NICE, Capability.DAC_READ_SEARCH))

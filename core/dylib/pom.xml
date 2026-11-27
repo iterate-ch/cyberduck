@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>9.6.1-SNAPSHOT</version>
+        <version>9.7.0-SNAPSHOT</version>
     </parent>
     <artifactId>libcore</artifactId>
 
@@ -126,6 +126,20 @@
             <artifactId>libjnidispatch</artifactId>
             <type>dylib</type>
             <version>${jna-version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>opensc</groupId>
+            <artifactId>opensc-pkcs11</artifactId>
+            <type>so</type>
+            <version>0.27.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>opensc</groupId>
+            <artifactId>libopensc</artifactId>
+            <type>dylib</type>
+            <version>0.27.1</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

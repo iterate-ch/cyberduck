@@ -25,9 +25,14 @@ namespace Ch.Cyberduck.Core.Local
     {
         public bool open(string url)
         {
-            Process process = new Process();
-            process.StartInfo.FileName = url;
-            return Utils.StartProcess(process);
+            return Utils.StartProcess(new()
+            {
+                StartInfo =
+                {
+                    UseShellExecute = true,
+                    FileName = url
+                }
+            });
         }
     }
 }

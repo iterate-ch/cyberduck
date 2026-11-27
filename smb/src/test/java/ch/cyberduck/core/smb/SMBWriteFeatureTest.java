@@ -101,4 +101,35 @@ public class SMBWriteFeatureTest extends AbstractSMBTest {
         }
         new SMBDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testWriteAppend() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Write writer = new SMBWriteFeature(session);
+        // Exceed write buffer size to send multiple write requests
+        final byte[] content = RandomUtils.nextBytes(2 * 1024 * 1024 + 512);
+        final long offset = 1024 * 1024 + 3;
+        {
+            // Interrupted upload with partial content only
+            final TransferStatus status = new TransferStatus().setLength(offset);
+            final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(status, status).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+        }
+        assertEquals(offset, new SMBAttributesFinderFeature(session).find(test).getSize());
+        {
+            // Resume upload with remaining content at offset
+            final TransferStatus status = new TransferStatus().setExists(true).setAppend(true)
+                    .setOffset(offset).setLength(content.length - offset);
+            final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
+        }
+        assertEquals(content.length, new SMBAttributesFinderFeature(session).find(test).getSize());
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        final InputStream in = new SMBReadFeature(session).read(test, status, ConnectionCallback.noop);
+        new StreamCopier(status, status).transfer(in, buffer);
+        assertArrayEquals(content, buffer.toByteArray());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
 }

@@ -15,13 +15,9 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.owncloud.model.Drives;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -33,20 +29,27 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class OwncloudDrivesListServiceTest {
+public class OwncloudDrivesListServiceTest extends AbstractOwncloudTest {
 
-    private static OwncloudSession session(final boolean spaces) {
-        final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("jane")),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    private OwncloudSession session(final boolean spaces) {
         session.ocs.withSpaces(spaces);
         return session;
     }
 
-    private static OwncloudDrivesListService spaces() throws Exception {
+    private OwncloudDrivesListService spaces() throws Exception {
         final OwncloudDrivesListService spaces = new OwncloudDrivesListService(session(true));
         spaces.withDrives(new OwncloudDrivesResponseHandler().handleEntity(
                 new StringEntity(OwncloudDrivesResponseHandlerTest.JSON, ContentType.APPLICATION_JSON)));
         return spaces;
+    }
+
+    @Test
+    public void testRefresh() throws Exception {
+        final OwncloudDrivesListService spaces = new OwncloudDrivesListService(session(true));
+        assertFalse(spaces.refresh().isEmpty() && null == spaces.getPersonal());
+        assertNotNull(spaces.getPersonal());
+        assertNotNull(spaces.getShares());
+        assertEquals(spaces.getPersonal(), spaces.toServer(OwncloudPathContainerService.PERSONAL_FOLDER).getAbsolute());
     }
 
     @Test

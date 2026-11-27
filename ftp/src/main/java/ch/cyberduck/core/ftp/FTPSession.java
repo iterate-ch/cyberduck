@@ -41,8 +41,6 @@ import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -71,10 +69,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     private UnixPermission permission;
     private Symlink symlink;
     private Protocol.Case casesensitivity = Protocol.Case.sensitive;
-
-    public FTPSession(final Host h) {
-        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
 
     public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, trust, key);
@@ -168,7 +162,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return client;
         }
         catch(FTPConnectionClosedException e) {
-            if(client != null && FTPReply.SERVICE_NOT_AVAILABLE == client.getReplyCode()) {
+            if(FTPReply.SERVICE_NOT_AVAILABLE == client.getReplyCode()) {
                 // Server rejected the connection in place of the greeting. Preserve the reply text
                 throw new FTPExceptionMappingService().map(new FTPException(client.getReplyCode(), StringUtils.trim(client.getReplyString())));
             }
@@ -301,7 +295,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     EnumSet.of(Read.Flags.offset) : EnumSet.noneOf(Read.Flags.class));
         }
         if(type == Upload.class) {
-            return (T) new FTPUploadFeature(this);
+            return (T) new FTPUploadFeature();
         }
         if(type == Write.class) {
             return (T) new FTPWriteFeature(this);

@@ -25,22 +25,20 @@ import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :72</i>
 
 public abstract class NSTextView extends NSText {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextView", _Class.class);
 
-    public static NSTextView create() {
-        return CLASS.alloc().init();
+    public static NSTextView create(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame(frameRect);
     }
 
     public interface _Class extends ObjCClass {
         NSTextView alloc();
     }
-
-    @Override
-    public abstract NSTextView init();
 
     /**
      * <i>native declaration : :80</i><br>
@@ -48,10 +46,11 @@ public abstract class NSTextView extends NSText {
      * - (null)initWithFrame:(null)frameRect textContainer:(NSTextContainer*)container; (Argument frameRect cannot be converted)
      */
     /**
-     * <i>native declaration : :83</i><br>
-     * Conversion Error : /// Original signature : <code>initWithFrame(null)</code><br>
-     * - (null)initWithFrame:(null)frameRect; (Argument frameRect cannot be converted)
+     * Original signature : <code>initWithFrame(NSRect)</code><br>
+     * <i>native declaration : :83</i>
      */
+    public abstract NSTextView initWithFrame(NSRect frameRect);
+
     /**
      * Original signature : <code>NSTextContainer* textContainer()</code><br>
      * <i>native declaration : :88</i>

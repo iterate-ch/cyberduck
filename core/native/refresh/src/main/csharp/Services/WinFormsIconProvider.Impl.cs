@@ -34,6 +34,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                         }
                         IconCache.CacheIcon(key, s, i, classifier);
                     });
+
+                    if (isDefault)
+                    {
+                        Log.warn($"No {classifier} image found for {key}");
+                    }
                 }
             }
 
@@ -46,7 +51,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             if (!TryGetBase64Images(name, getCache, cacheIcon, out var images))
             {
                 using var stream = GetStream(name);
-                _ = TryGetImages(stream, getCache, cacheIcon, out images);
+                images = stream is not null && TryGetImages(stream, getCache, cacheIcon, out var decoded) ? decoded : [];
             }
 
             return images;

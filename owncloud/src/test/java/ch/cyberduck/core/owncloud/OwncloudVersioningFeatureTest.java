@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -41,7 +40,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-@Ignore
 public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
 
     @Test
@@ -69,26 +67,23 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
             final byte[] contentLatest = RandomUtils.nextBytes(13247);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.setLength(contentLatest.length).setExists(true), ConnectionCallback.noop));
         }
-        final AttributedList<Path> versions = new AttributedList<>();
-        do {
-            versions.addAll(feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()));
-        }
-        while(versions.size() != 2);
+        final AttributedList<Path> versions = feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
         assertEquals(2, versions.size());
-        final Path initialVersion = versions.get(1);
+        // Modification dates of versions have a resolution of seconds, so the order is not guaranteed. Lookup by size
+        final Path initialVersion = versions.toList().stream().filter(v -> v.attributes().getSize() == initialContent.length).findFirst().orElseThrow(AssertionError::new);
         {
             assertEquals(initialAttributes.getSize(), initialVersion.attributes().getSize());
             assertEquals(initialAttributes.getModificationDate(), initialVersion.attributes().getModificationDate());
             assertNotNull(initialVersion.attributes().getVersionId());
             assertNotEquals(initialAttributes, new OwncloudAttributesFinderFeature(session).find(test));
-            assertEquals(initialVersion.attributes(), new OwncloudAttributesFinderFeature(session).find(initialVersion));
+            // Infinite Scale and OpenCloud do not respond to PROPFIND for a version
             {
                 final InputStream reader = new OwncloudReadFeature(session).read(initialVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(initialContent, IOUtils.readFully(reader, initialContent.length));
                 reader.close();
             }
-            final Path updatedVersion = versions.get(0);
-            assertEquals(contentUpdate.length, new OwncloudAttributesFinderFeature(session).find(updatedVersion).getSize());
+            final Path updatedVersion = versions.toList().stream().filter(v -> v.attributes().getSize() == contentUpdate.length).findFirst().orElseThrow(AssertionError::new);
+            assertEquals(contentUpdate.length, updatedVersion.attributes().getSize());
             {
                 final InputStream reader = new OwncloudReadFeature(session).read(updatedVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(contentUpdate, IOUtils.readFully(reader, contentUpdate.length));

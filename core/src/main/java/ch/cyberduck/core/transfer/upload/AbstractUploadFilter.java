@@ -42,7 +42,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
@@ -172,8 +172,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final UnixPermission feature = session.getFeature(UnixPermission.class);
             if(feature != null) {
                 if(status.isExists()) {
-                    // Already set when reading attributes of file
-                    status.setPermission(status.getRemote().getPermission());
+                    if(Permission.EMPTY == status.getRemote().getPermission()) {
+                        status.setPermission(feature.getUnixPermission(file));
+                    }
+                    else {
+                        // Already set when reading attributes of file
+                        status.setPermission(status.getRemote().getPermission());
+                    }
                 }
                 else {
                     if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
@@ -194,13 +199,18 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final AclPermission feature = session.getFeature(AclPermission.class);
             if(feature != null) {
                 if(status.isExists()) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setAcl(feature.getPermission(file));
+                    if(Acl.EMPTY == status.getRemote().getAcl()) {
+                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
+                                file.getName()));
+                        try {
+                            status.setAcl(feature.getPermission(file));
+                        }
+                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+                            status.setAcl(feature.getDefault(file));
+                        }
                     }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setAcl(feature.getDefault(file));
+                    else {
+                        status.setAcl(status.getRemote().getAcl());
                     }
                 }
                 else {
@@ -221,16 +231,21 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.metadata) {
-            final Headers feature = session.getFeature(Headers.class);
+            final Metadata feature = session.getFeature(Metadata.class);
             if(feature != null) {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                             file.getName()));
-                    try {
-                        status.setMetadata(feature.getMetadata(file));
+                    if(Metadata.EMPTY == status.getRemote().getMetadata()) {
+                        try {
+                            status.setMetadata(feature.getMetadata(file));
+                        }
+                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+                            status.setMetadata(feature.getDefault(file));
+                        }
                     }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setMetadata(feature.getDefault(file));
+                    else {
+                        status.setMetadata(status.getRemote().getMetadata());
                     }
                 }
                 else {
@@ -242,13 +257,18 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Encryption feature = session.getFeature(Encryption.class);
             if(feature != null) {
                 if(status.isExists()) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                            file.getName()));
-                    try {
-                        status.setEncryption(feature.getEncryption(file));
+                    if(Encryption.Algorithm.NONE == status.getRemote().getEncryption()) {
+                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                                file.getName()));
+                        try {
+                            status.setEncryption(feature.getEncryption(file));
+                        }
+                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+                            status.setEncryption(feature.getDefault(file));
+                        }
                     }
-                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setEncryption(feature.getDefault(file));
+                    else {
+                        status.setEncryption(status.getRemote().getEncryption());
                     }
                 }
                 else {
@@ -261,13 +281,18 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Redundancy feature = session.getFeature(Redundancy.class);
                 if(feature != null) {
                     if(status.isExists()) {
-                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                                file.getName()));
-                        try {
-                            status.setStorageClass(feature.getClass(file));
+                        if(null == status.getRemote().getStorageClass()) {
+                            progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                                    file.getName()));
+                            try {
+                                status.setStorageClass(feature.getClass(file));
+                            }
+                            catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+                                status.setStorageClass(feature.getDefault(file));
+                            }
                         }
-                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                            status.setStorageClass(feature.getDefault(file));
+                        else {
+                            status.setStorageClass(status.getRemote().getStorageClass());
                         }
                     }
                     else {
@@ -392,6 +417,23 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                                     file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getModified())));
                             feature.setTimestamp(file, status);
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
+                    }
+                }
+            }
+            if(Metadata.EMPTY != status.getMetadata()) {
+                if(!session.getFeature(Write.class).features(file).contains(Write.Flags.metadata)) {
+                    // Set with additional request when not set with upload
+                    final Metadata feature = session.getFeature(Metadata.class);
+                    if(feature != null) {
+                        try {
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                                    file.getName()));
+                            feature.setMetadata(file, status);
                         }
                         catch(BackgroundException e) {
                             // Ignore

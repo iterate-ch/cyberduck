@@ -24,6 +24,8 @@ import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,8 +38,10 @@ import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.share.File;
+import com.hierynomus.smbj.share.SMB2Writer;
 
 public class SMBWriteFeature implements Write<Void> {
+    private static final Logger log = LogManager.getLogger(SMBWriteFeature.class);
 
     private final SMBSession session;
 
@@ -49,13 +53,30 @@ public class SMBWriteFeature implements Write<Void> {
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final SMBSession.DiskShareWrapper share = session.openShare(file);
         try {
+            final SMB2CreateDisposition disposition;
+            if(status.isAppend()) {
+                // Open existing file without truncating to resume at offset
+                disposition = status.isExists() ? SMB2CreateDisposition.FILE_OPEN : SMB2CreateDisposition.FILE_CREATE;
+            }
+            else {
+                disposition = status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE;
+            }
             final File entry = share.get().openFile(new SMBPathContainerService(session).getKey(file),
                     Collections.singleton(AccessMask.FILE_WRITE_DATA),
                     Collections.singleton(FileAttributes.FILE_ATTRIBUTE_NORMAL),
                     Collections.singleton(SMB2ShareAccess.FILE_SHARE_READ),
-                    status.isExists() ? SMB2CreateDisposition.FILE_OVERWRITE : SMB2CreateDisposition.FILE_CREATE,
+                    disposition,
                     Collections.singleton(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE));
-            return new VoidStatusOutputStream(new SMBOutputStream(file, entry.getOutputStream(), entry));
+            final OutputStream stream;
+            if(status.isAppend()) {
+                log.debug("Skipping {} bytes", status.getOffset());
+                // Open stream at offset
+                stream = new SMB2Writer(entry.getDiskShare(), entry.getFileId(), entry.getUncPath()).getOutputStream(null, status.getOffset());
+            }
+            else {
+                stream = entry.getOutputStream();
+            }
+            return new VoidStatusOutputStream(new SMBOutputStream(file, stream, entry));
         }
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
@@ -106,7 +127,7 @@ public class SMBWriteFeature implements Write<Void> {
                 session.releaseShare(share);
             }
             catch(BackgroundException r) {
-                r.addSuppressed(e);
+                e.addSuppressed(r);
                 throw e;
             }
             finally {
@@ -147,18 +168,48 @@ public class SMBWriteFeature implements Write<Void> {
 
         @Override
         public void close() throws IOException {
+            IOException failure = null;
             try {
-                try {
-                    super.close();
-                }
-                finally {
-                    handle.flush();
-                    handle.close();
-                }
+                super.close();
+            }
+            catch(IOException e) {
+                failure = e;
             }
             catch(SMBRuntimeException e) {
-                throw new IOException(e);
+                failure = this.failure(null, e);
             }
+            try {
+                handle.flush();
+            }
+            catch(SMBRuntimeException e) {
+                failure = this.failure(failure, e);
+            }
+            finally {
+                try {
+                    // Always close handle to not leave file locked on server
+                    handle.close();
+                }
+                catch(SMBRuntimeException e) {
+                    failure = this.failure(failure, e);
+                }
+            }
+            if(failure != null) {
+                throw failure;
+            }
+        }
+
+        /**
+         * @param failure Previous failure or null
+         * @param e       Failure to map
+         * @return Previous failure with mapped failure added as suppressed or mapped failure if no previous failure
+         */
+        private IOException failure(final IOException failure, final SMBRuntimeException e) {
+            final IOException mapped = new IOException(new SMBExceptionMappingService().map("Upload {0} failed", e, file));
+            if(null == failure) {
+                return mapped;
+            }
+            failure.addSuppressed(mapped);
+            return failure;
         }
     }
 }

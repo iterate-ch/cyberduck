@@ -22,11 +22,9 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpRequestBase;
 
@@ -79,10 +77,7 @@ public class DAVDeleteFeature implements Delete {
 
     protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
         final HttpDelete request = new HttpDelete(new DAVPathEncoder(session).encode(file));
-        if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
-            // Indicate that the client has knowledge of that state token
-            request.setHeader(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId()));
-        }
+        DAVLockFeature.toHeaders(session, file, status).forEach(request::setHeader);
         return request;
     }
 

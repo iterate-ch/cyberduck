@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -127,7 +126,7 @@ public class S3SessionTest extends AbstractS3Test {
                         return false;
                     }
                 }));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -144,7 +143,7 @@ public class S3SessionTest extends AbstractS3Test {
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         host.setDefaultPath("/test-eu-west-1-cyberduck");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         session.close();
@@ -159,7 +158,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Host host = new Host(profile, "testu.cyberduck.ch", new Credentials(
                 PROPERTIES.get("s3.key"), "s"
         ));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         try {
             session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
             session.login(LoginCallback.noop, CancelCallback.noop);
@@ -173,7 +172,7 @@ public class S3SessionTest extends AbstractS3Test {
 
     @Test
     public void testFeatures() {
-        final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(aws.getFeature(Copy.class));
         assertNotNull(aws.getFeature(AclPermission.class));
         assertNotNull(aws.getFeature(Versioning.class));
@@ -184,7 +183,7 @@ public class S3SessionTest extends AbstractS3Test {
         assertNotNull(aws.getFeature(Logging.class));
         assertNotNull(aws.getFeature(DistributionConfiguration.class));
         assertEquals(S3ThresholdDeleteFeature.class, aws.getFeature(Delete.class).getClass());
-        final S3Session o = new S3Session(new Host(new S3Protocol(), "o"));
+        final S3Session o = new S3Session(new Host(new S3Protocol(), "o"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(o.getFeature(Copy.class));
         assertNotNull(o.getFeature(AclPermission.class));
         assertNotNull(o.getFeature(Versioning.class));
@@ -200,7 +199,7 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testBucketVirtualHostStyleCustomHost() throws Exception {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop)
                 .getDisableDnsBuckets());
     }
@@ -211,7 +210,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop)
                 .getDisableDnsBuckets());
         session.login(LoginCallback.noop, CancelCallback.noop);
@@ -224,9 +223,9 @@ public class S3SessionTest extends AbstractS3Test {
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final AtomicBoolean verified = new AtomicBoolean();
-        final S3Session session = new S3Session(host, new DefaultX509TrustManager() {
+        final S3Session session = new S3Session(host, new DisabledX509TrustManager() {
             @Override
-            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) {
                 verified.set(true);
                 super.verify(hostname, certs, cipher);
             }

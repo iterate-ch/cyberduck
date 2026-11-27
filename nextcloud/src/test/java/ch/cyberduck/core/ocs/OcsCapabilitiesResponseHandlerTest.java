@@ -19,6 +19,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -58,5 +59,53 @@ public class OcsCapabilitiesResponseHandlerTest {
         assertFalse(capabilities.spaces);
         assertFalse(capabilities.projects);
         assertFalse(capabilities.sharejail);
+    }
+
+    @Test
+    public void testHandleEntityLockingSupport() throws Exception {
+        final String xml = "<?xml version=\"1.0\"?>\n" +
+                "<ocs>\n" +
+                " <meta><status>ok</status><statuscode>100</statuscode><message>OK</message></meta>\n" +
+                " <data>\n" +
+                "  <capabilities>\n" +
+                "   <files><file_locking_support>1</file_locking_support><file_locking_enable_file_action></file_locking_enable_file_action></files>\n" +
+                "  </capabilities>\n" +
+                " </data>\n" +
+                "</ocs>";
+        final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+        assertTrue(capabilities.locking);
+    }
+
+    @Test
+    public void testHandleEntityNoLocking() throws Exception {
+        final String xml = "<?xml version=\"1.0\"?>\n" +
+                "<ocs>\n" +
+                " <meta><status>ok</status><statuscode>100</statuscode><message>OK</message></meta>\n" +
+                " <data>\n" +
+                "  <capabilities>\n" +
+                "   <files><versioning>true</versioning></files>\n" +
+                "  </capabilities>\n" +
+                " </data>\n" +
+                "</ocs>";
+        final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+        assertFalse(capabilities.locking);
+    }
+
+    @Test
+    public void testHandleEntityChunking() throws Exception {
+        final String xml = "<?xml version=\"1.0\"?>\n" +
+                "<ocs>\n" +
+                " <meta><status>ok</status><statuscode>100</statuscode><message>OK</message></meta>\n" +
+                " <data>\n" +
+                "  <capabilities>\n" +
+                "   <files><chunked_upload><max_size>104857600</max_size><max_parallel_count>5</max_parallel_count></chunked_upload></files>\n" +
+                "   <dav><chunking>1.0</chunking></dav>\n" +
+                "  </capabilities>\n" +
+                " </data>\n" +
+                "</ocs>";
+        final OcsCapabilities capabilities = new OcsCapabilitiesResponseHandler(new OcsCapabilities()).handleEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+        assertTrue(capabilities.chunking);
+        assertEquals(104857600L, capabilities.chunksize);
+        assertEquals(5, capabilities.chunkconcurrency);
     }
 }

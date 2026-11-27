@@ -33,7 +33,6 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
@@ -44,8 +43,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -83,10 +80,6 @@ public class AzureSession extends HttpSession<AzureClient> {
      * Set when authenticating with Microsoft Entra ID
      */
     private OAuth2RequestInterceptor authorizationService;
-
-    public AzureSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
 
     public AzureSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, trust, key);
@@ -177,9 +170,6 @@ public class AzureSession extends HttpSession<AzureClient> {
         }
         if(type == Delete.class) {
             return (T) new AzureDeleteFeature(this);
-        }
-        if(type == Headers.class) {
-            return (T) new AzureMetadataFeature(this);
         }
         if(type == Metadata.class) {
             return (T) new AzureMetadataFeature(this);

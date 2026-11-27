@@ -51,8 +51,6 @@ import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.signin.AWSConsoleLoginCredentialsStrategy;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sso.IdentityCenterAuthorizationService;
@@ -63,6 +61,7 @@ import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
 import ch.cyberduck.core.sts.STSGetSessionTokenCredentialsStrategy;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.xml.SecureXMLReaderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -82,6 +81,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.utils.SignatureUtils;
+import org.xml.sax.SAXException;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -145,10 +145,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
-    public S3Session(final Host host) {
-        super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
-    }
-
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new S3BucketHostnameTrustManager(trust, host.getHostname()), key);
     }
@@ -175,7 +171,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(client.getConfiguration(), false);
+        try {
+            return new XmlResponsesSaxParser(client.getConfiguration(), false, SecureXMLReaderFactory.create());
+        }
+        catch(SAXException e) {
+            throw new ServiceException("Failed to initialize a SAX XMLReader", e);
+        }
     }
 
     public S3CredentialsStrategy getAuthentication() {
@@ -492,9 +493,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == AclPermission.class) {
             return (T) acl;
         }
-        if(type == Headers.class) {
-            return (T) new S3MetadataFeature(this, acl);
-        }
         if(type == Metadata.class) {
             return (T) new S3MetadataFeature(this, acl);
         }
@@ -563,7 +561,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Timestamp.class) {
             if(preferences.getBoolean("s3.timestamp.enable")) {
-                return (T) new S3TimestampFeature(this);
+                return (T) new S3TimestampFeature(this, acl);
             }
             return null;
         }

@@ -180,8 +180,8 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == Symlink.class) {
             return (T) new VaultRegistrySymlinkFeature(session, (Symlink) proxy, this);
         }
-        if(type == Headers.class) {
-            return (T) new VaultRegistryHeadersFeature(session, (Headers) proxy, this);
+        if(type == Metadata.class) {
+            return (T) new VaultRegistryMetadataFeature(session, (Metadata) proxy, this);
         }
         if(type == Compress.class) {
             return (T) new VaultRegistryCompressFeature(session, (Compress) proxy, this);

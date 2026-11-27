@@ -49,7 +49,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -77,7 +76,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         assertEquals(versionId, cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(test).getVersionId());
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()), cryptomator).list(vault, new DisabledListProgressListener())
-                .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
+                .toStream().allMatch(f -> f.attributes().isDuplicate()));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Collections.singletonList(vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

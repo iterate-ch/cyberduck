@@ -15,6 +15,8 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.xml.SecureXMLReaderFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,9 +30,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -43,18 +42,15 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
     @Override
     protected Multistatus getMultistatus(final InputStream stream) throws IOException {
-        final SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setNamespaceAware(true);
         try {
-            final SAXParser saxParser = spf.newSAXParser();
-            final XMLReader xmlReader = saxParser.getXMLReader();
+            final XMLReader xmlReader = SecureXMLReaderFactory.create();
             final SaxHandler handler = new SaxHandler();
             xmlReader.setContentHandler(handler);
             xmlReader.setErrorHandler(new LoggingErrorHandler());
             xmlReader.parse(new InputSource(stream));
             return handler.getMultistatus();
         }
-        catch(IOException | SAXException | ParserConfigurationException e) {
+        catch(IOException | SAXException e) {
             throw new IOException("Not a valid DAV response", e);
         }
     }

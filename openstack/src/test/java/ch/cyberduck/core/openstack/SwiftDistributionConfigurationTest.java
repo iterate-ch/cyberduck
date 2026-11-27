@@ -23,6 +23,9 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
     public void testFeatures() throws Exception {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
+        assertNull(configuration.getFeature(Purge.class, Distribution.WEBSITE_CDN));
+        assertNull(configuration.getFeature(Purge.class, Distribution.CUSTOM));
+        assertNull(configuration.getFeature(Purge.class, Distribution.STREAMING));
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));

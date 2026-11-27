@@ -164,16 +164,14 @@ public class OpenSshConfig {
                     continue;
                 }
                 final String keyword = parts[0].trim();
-                // Arguments may be followed by a comment, except for the command passed to the user's shell
-                final String argValue = "ProxyCommand".equalsIgnoreCase(keyword) ? parts[1].trim() : uncomment(parts[1].trim());
-                if(argValue.isEmpty()) {
+                // Arguments may be followed by a comment, removed by tokenize except for the command passed to the user's shell
+                final String argValue = parts[1].trim();
+                if(argValue.isEmpty() || argValue.startsWith("#")) {
                     continue;
                 }
                 if("Host".equalsIgnoreCase(keyword)) {
                     final List<String> patterns = new ArrayList<>();
-                    for(final String pattern : argValue.split("[ \t]+")) {
-                        patterns.add(dequote(pattern));
-                    }
+                    patterns.addAll(tokenize(argValue));
                     // Host patterns are matched against the host name given, same as Match originalhost
                     block = new Block(enclosing, Collections.emptyList(), patterns, Collections.emptyList());
                     blocks.add(block);
@@ -185,9 +183,9 @@ public class OpenSshConfig {
                     final List<String> userPatterns = new ArrayList<>();
                     boolean all = false;
                     boolean unknown = false;
-                    final String[] tokens = argValue.split("[ \t]+");
-                    for(int i = 0; i < tokens.length && !unknown; i++) {
-                        final String criterion = tokens[i];
+                    final List<String> tokens = tokenize(argValue);
+                    for(int i = 0; i < tokens.size() && !unknown; i++) {
+                        final String criterion = tokens.get(i);
                         if("all".equalsIgnoreCase(criterion)) {
                             all = true;
                             continue;
@@ -197,8 +195,8 @@ public class OpenSshConfig {
                             log.warn("Unknown Match criterion: {}", criterion);
                             unknown = true;
                         }
-                        else if(++i < tokens.length) {
-                            patterns(tokens[i], patterns);
+                        else if(++i < tokens.size()) {
+                            patterns(tokens.get(i), patterns);
                         }
                     }
                     block = new Block(enclosing, hostPatterns, originalHostPatterns, userPatterns);
@@ -210,8 +208,8 @@ public class OpenSshConfig {
                     continue;
                 }
                 if("Include".equalsIgnoreCase(keyword)) {
-                    for(final String pattern : argValue.split("[ \t]+")) {
-                        for(final Local included : resolve(file.getParent(), dequote(pattern))) {
+                    for(final String pattern : tokenize(argValue)) {
+                        for(final Local included : resolve(file.getParent(), pattern)) {
                             if(including.contains(included)) {
                                 log.warn("Skipping recursive include of SSH config {}", included);
                                 continue;
@@ -261,6 +259,12 @@ public class OpenSshConfig {
                 else if("IdentityAgent".equalsIgnoreCase(keyword)) {
                     option.identityAgent = noneToDisabled(dequote(argValue));
                 }
+                else if("PKCS11Provider".equalsIgnoreCase(keyword)) {
+                    option.pkcs11Provider = noneToDisabled(dequote(argValue));
+                }
+                else if("SecurityKeyProvider".equalsIgnoreCase(keyword)) {
+                    option.securityKeyProvider = noneToNull(dequote(argValue));
+                }
                 else if("PreferredAuthentications".equalsIgnoreCase(keyword)) {
                     option.preferredAuthentications = noneToNull(StringUtils.deleteWhitespace(dequote(argValue)));
                 }
@@ -280,7 +284,7 @@ public class OpenSshConfig {
      */
     private static void patterns(final String value, final List<String> patterns) {
         for(final String p : StringUtils.split(value, ',')) {
-            final String trimmed = dequote(p.trim());
+            final String trimmed = p.trim();
             if(!trimmed.isEmpty()) {
                 patterns.add(trimmed);
             }
@@ -383,28 +387,66 @@ public class OpenSshConfig {
         return fn.isMatch();
     }
 
-    private static String dequote(final String value) {
-        if(value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
-            return value.substring(1, value.length() - 1);
+    /**
+     * Split arguments the way OpenSSH does. Whitespace separates arguments unless escaped with a backslash or enclosed
+     * in single or double quotes. Backslash escapes a space outside of quotes, a quote or another backslash. Any other
+     * backslash is kept as is to preserve Windows paths. A {@code #} at the start of an argument begins a comment.
+     */
+    static List<String> tokenize(final String value) {
+        final List<String> tokens = new ArrayList<>();
+        final StringBuilder current = new StringBuilder();
+        boolean started = false;
+        char quote = 0;
+        for(int i = 0; i < value.length(); i++) {
+            final char c = value.charAt(i);
+            if(c == '\\' && i + 1 < value.length()) {
+                final char next = value.charAt(i + 1);
+                if(next == '"' || next == '\'' || next == '\\' || (quote == 0 && next == ' ')) {
+                    current.append(next);
+                    started = true;
+                    i++;
+                    continue;
+                }
+                current.append(c);
+                started = true;
+            }
+            else if(quote == 0 && (c == ' ' || c == '\t')) {
+                if(started) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                    started = false;
+                }
+            }
+            else if(quote == 0 && !started && c == '#') {
+                break;
+            }
+            else if(quote == 0 && (c == '"' || c == '\'')) {
+                quote = c;
+                started = true;
+            }
+            else if(quote != 0 && c == quote) {
+                quote = 0;
+            }
+            else {
+                current.append(c);
+                started = true;
+            }
         }
-        return value;
+        if(quote != 0) {
+            // Unterminated quote is invalid in OpenSSH. Use the argument as is.
+            return Collections.singletonList(value);
+        }
+        if(started) {
+            tokens.add(current.toString());
+        }
+        return tokens;
     }
 
     /**
-     * Remove a trailing comment starting with {@code #} at the beginning of an unquoted argument
+     * Remove quotes and resolve escapes of a single argument
      */
-    private static String uncomment(final String value) {
-        boolean quoted = false;
-        for(int i = 0; i < value.length(); i++) {
-            final char c = value.charAt(i);
-            if(c == '"') {
-                quoted = !quoted;
-            }
-            else if(c == '#' && !quoted && (i == 0 || Character.isWhitespace(value.charAt(i - 1)))) {
-                return value.substring(0, i).trim();
-            }
-        }
-        return value;
+    private static String dequote(final String value) {
+        return String.join(" ", tokenize(value));
     }
 
     /**
@@ -453,6 +495,8 @@ public class OpenSshConfig {
         int port;
         String identityFile;
         String identityAgent;
+        String pkcs11Provider;
+        String securityKeyProvider;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -476,6 +520,12 @@ public class OpenSshConfig {
             }
             if(identityAgent == null) {
                 identityAgent = src.identityAgent;
+            }
+            if(pkcs11Provider == null) {
+                pkcs11Provider = src.pkcs11Provider;
+            }
+            if(securityKeyProvider == null) {
+                securityKeyProvider = src.securityKeyProvider;
             }
             if(user == null) {
                 user = src.user;
@@ -540,6 +590,21 @@ public class OpenSshConfig {
         }
 
         /**
+         * @return Specifies the PKCS#11 shared library to use for authentication with a hardware token.
+         */
+        public String getPKCS11Provider() {
+            return pkcs11Provider;
+        }
+
+        /**
+         * @return Specifies the shared library implementing the OpenSSH security key API used to authenticate with a
+         * FIDO/U2F security key.
+         */
+        public String getSecurityKeyProvider() {
+            return securityKeyProvider;
+        }
+
+        /**
          * @return the real user name to connect as; never null.
          */
         public String getUser() {
@@ -577,6 +642,8 @@ public class OpenSshConfig {
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", identityAgent=").append(identityAgent);
+            sb.append(", pkcs11Provider=").append(pkcs11Provider);
+            sb.append(", securityKeyProvider=").append(securityKeyProvider);
             sb.append(", user='").append(user).append('\'');
             sb.append(", preferredAuthentications='").append(preferredAuthentications).append('\'');
             sb.append(", identitiesOnly=").append(identitiesOnly);

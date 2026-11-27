@@ -22,16 +22,17 @@
 <project name="Cyberduck Native Libraries" basedir=".">
 
     <import file="../../build.xml"/>
+    <import file="../../runtime.xml"/>
 
     <property name="app.runtime.archs" value="'x86_64 arm64'"/>
-    <property name="app.runtime.system.min" value="10.13"/>
+    <property name="app.runtime.system.min" value="11.0"/>
     <property name="build.xcodeoptions"
               value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JAVA_HOME=${java.home} OTHER_LDFLAGS=-headerpad_max_install_names SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="libcore"/>
 
-    <target name="dylib" if="platform.mac">
+    <target name="dylib">
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
@@ -41,5 +42,5 @@
         </exec>
     </target>
 
-    <target name="build" depends="version,dylib" />
+    <target name="build" depends="version,dylib"/>
 </project>

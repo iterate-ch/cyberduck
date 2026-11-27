@@ -22,13 +22,10 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class S3MetadataFeature implements Headers {
+public class S3MetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(S3MetadataFeature.class);
 
     private final S3Session session;
@@ -59,7 +56,11 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Path file) {
-        return HostPreferencesFactory.get(session.getHost()).getMap("s3.metadata.default");
+        final Map<String, String> metadata = HostPreferencesFactory.get(session.getHost()).getMap("s3.metadata.default");
+        if(metadata.isEmpty()) {
+            return Metadata.EMPTY;
+        }
+        return metadata;
     }
 
     @Override
@@ -79,27 +80,21 @@ public class S3MetadataFeature implements Headers {
         try {
             final S3Object target = new S3Object(containerService.getKey(file));
             target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
-            try {
-                // Apply non-standard ACL
-                final Acl list = acl.getPermission(file);
-                if(list.isEditable()) {
-                    target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(list));
-                }
+            if(Acl.EMPTY == status.getAcl()) {
+                status.setAcl(acl.getPermission(file));
             }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn("Ignore failure {}", e.getMessage());
+            // Apply non-standard ACL
+            target.setAcl(S3AccessControlListFeature.toObjectAccessControlList(status.getAcl()));
+            if(null == status.getStorageClass()) {
+                status.setStorageClass(new S3StorageClassFeature(session, acl).getClass(file));
             }
-            final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
-            if(storageClassFeature != null) {
-                target.setStorageClass(storageClassFeature.getClass(file));
+            target.setStorageClass(status.getStorageClass());
+            if(Encryption.Algorithm.NONE == status.getEncryption()) {
+                status.setEncryption(new S3EncryptionFeature(session, acl).getEncryption(file));
             }
-            final Encryption encryptionFeature = session.getFeature(Encryption.class);
-            if(encryptionFeature != null) {
-                final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
-                target.setServerSideEncryptionAlgorithm(encryption.algorithm);
-                // Set custom key id stored in KMS
-                target.setServerSideEncryptionKmsKeyId(encryption.key);
-            }
+            target.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
+            // Set custom key id stored in KMS
+            target.setServerSideEncryptionKmsKeyId(status.getEncryption().key);
             final Path bucket = containerService.getContainer(file);
             final Map<String, Object> result = session.getClient().updateObjectMetadata(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
             final PathAttributes attributes = new S3AttributesAdapter(session.getHost()).toAttributes(target);

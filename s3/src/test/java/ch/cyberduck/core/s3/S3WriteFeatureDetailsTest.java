@@ -20,6 +20,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.S3Object;
@@ -37,7 +39,7 @@ public class S3WriteFeatureDetailsTest {
     private static final String SHA256_EMPTY_BASE64 = "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
 
     private S3Object details(final TransferStatus status) {
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
+        final S3Session session = new S3Session(new Host(new S3Protocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         return new S3WriteFeature(session, new S3AccessControlListFeature(session)).getDetails(
                 new Path("/bucket/key", EnumSet.of(Path.Type.file)), status);
     }

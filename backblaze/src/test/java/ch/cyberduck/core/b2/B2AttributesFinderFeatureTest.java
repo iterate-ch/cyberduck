@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -65,6 +66,48 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         assertNotNull(attributes.getVersionId());
         assertNull(attributes.getFileId());
         assertNotEquals(Checksum.NONE, attributes.getChecksum());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindWithoutMetadata() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        // No timestamp to have empty file info
+        final Path file = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, new TransferStatus());
+        // Response from upload
+        assertTrue(file.attributes().getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY, file.attributes().getMetadata());
+        // Response from file info
+        final PathAttributes attributes = new B2AttributesFinderFeature(session, fileid).find(test);
+        assertTrue(attributes.getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY, attributes.getMetadata());
+        // Response from listing
+        final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
+                new SimplePathPredicate(test));
+        assertNotNull(found);
+        assertTrue(found.attributes().getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY, found.attributes().getMetadata());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindWithMetadata() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test,
+                new TransferStatus().setMetadata(Collections.singletonMap("key", "value")));
+        // Response from upload
+        assertEquals(Collections.singletonMap("key", "value"), file.attributes().getMetadata());
+        // Response from file info
+        assertEquals(Collections.singletonMap("key", "value"), new B2AttributesFinderFeature(session, fileid).find(test).getMetadata());
+        // Response from listing
+        final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
+                new SimplePathPredicate(test));
+        assertNotNull(found);
+        assertEquals(Collections.singletonMap("key", "value"), found.attributes().getMetadata());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

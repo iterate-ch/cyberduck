@@ -291,6 +291,8 @@ public class ApplicationPreferences<T> : DefaultPreferences
         // SSL Keystore
         this.setDefault("connection.ssl.keystore.type", "Windows-MY");
         this.setDefault("connection.ssl.keystore.provider", "SunMSCAPI");
+        // No PKCS#11 module bundled. Set to the path of the module for the smartcard to use a key or certificate on a token
+        this.setDefault("connection.keystore.pkcs11.library", string.Empty);
 
         // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
         this.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");

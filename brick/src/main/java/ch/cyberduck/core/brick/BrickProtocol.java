@@ -17,11 +17,9 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.features.Pairing;
 
 import com.google.auto.service.AutoService;
 
@@ -60,24 +58,12 @@ public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
-        // Will get new pairing key if missing credentials
+        // Authorize in the browser if no API key is saved.
         return true;
     }
 
     @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.storage;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
-        if(type == Pairing.class) {
-            return (T) new BrickPairingFeature();
-        }
-        if(type == CredentialsConfigurator.class) {
-            return (T) new BrickCredentialsConfigurator();
-        }
-        return super.getFeature(type);
     }
 }

@@ -32,6 +32,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Shell.ASSOC_FILTER;
 using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
@@ -248,7 +249,8 @@ namespace Ch.Cyberduck.Core.Local
                     lpClass = PCWSTR.DangerousFromString(getIdentifier()),
                     fMask = SEE_MASK_CLASSNAME | SEE_MASK_NOASYNC,
                     lpVerb = PCWSTR.DangerousFromString("open"),
-                    lpFile = PCWSTR.DangerousFromString(local.NativePath())
+                    lpFile = PCWSTR.DangerousFromString(local.NativePath()),
+                    nShow = (int)SHOW_WINDOW_CMD.SW_NORMAL,
                 };
                 ShellExecuteEx(ref info);
             }

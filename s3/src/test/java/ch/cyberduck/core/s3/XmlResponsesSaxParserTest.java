@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.xml.SecureXMLReaderFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.jets3t.service.Jets3tProperties;
@@ -25,6 +26,7 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class XmlResponsesSaxParserTest {
 
@@ -44,6 +46,23 @@ public class XmlResponsesSaxParserTest {
             final BackgroundException f = new S3ExceptionMappingService().map("m", e);
             assertEquals("M.", f.getMessage());
             assertEquals("The element type \"ListBucketResult\" must be terminated by the matching end-tag \"</ListBucketResult>\". Please contact your web hosting service provider for assistance.", f.getDetail());
+        }
+    }
+
+    @Test
+    public void testRejectDoctype() throws Exception {
+        try {
+            new XmlResponsesSaxParser(new Jets3tProperties(), false, SecureXMLReaderFactory.create()).parseListBucketResponse(
+                IOUtils.toInputStream(
+                    "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<!DOCTYPE ListBucketResult [<!ENTITY % dtd SYSTEM \"http://127.0.0.1:1/exfil.dtd\"> %dtd;]>\n" +
+                        "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"></ListBucketResult>"
+                )
+            );
+            fail("Expected failure for DOCTYPE declaration");
+        }
+        catch(ServiceException e) {
+            // Expected
         }
     }
 

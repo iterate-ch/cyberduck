@@ -108,6 +108,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testReplaceContent() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
+        this.assumeNot(DAVTestServer.NGINX, "No support for partial uploads");
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path folder = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -148,6 +149,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testWriteContentRange() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
+        this.assumeNot(DAVTestServer.NGINX, "No support for partial uploads");
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
@@ -222,6 +224,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testWriteContentRangeTwoBytes() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
+        this.assumeNot(DAVTestServer.NGINX, "No support for partial uploads");
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(2);
@@ -251,6 +254,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testWriteContentRangeThreeBytes() throws Exception {
         this.assumeNot(DAVTestServer.SFTPGO, "No support for partial uploads");
+        this.assumeNot(DAVTestServer.NGINX, "No support for partial uploads");
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(3);

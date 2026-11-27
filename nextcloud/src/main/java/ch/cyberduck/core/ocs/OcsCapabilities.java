@@ -20,6 +20,18 @@ public final class OcsCapabilities {
     public boolean versioning;
     public boolean locking;
     /**
+     * Chunked upload (v2) at dav/uploads
+     */
+    public boolean chunking;
+    /**
+     * Maximum size of a chunk in bytes advertised by the server. Zero if unknown.
+     */
+    public long chunksize;
+    /**
+     * Maximum number of chunks uploaded in parallel advertised by the server. Zero if unknown.
+     */
+    public int chunkconcurrency;
+    /**
      * Storage spaces with project spaces and share jail
      */
     public boolean spaces;
@@ -38,6 +50,21 @@ public final class OcsCapabilities {
 
     public OcsCapabilities withLocking(final boolean locking) {
         this.locking = locking;
+        return this;
+    }
+
+    public OcsCapabilities withChunking(final boolean chunking) {
+        this.chunking = chunking;
+        return this;
+    }
+
+    public OcsCapabilities withChunkSize(final long chunksize) {
+        this.chunksize = chunksize;
+        return this;
+    }
+
+    public OcsCapabilities withChunkConcurrency(final int chunkconcurrency) {
+        this.chunkconcurrency = chunkconcurrency;
         return this;
     }
 
@@ -61,6 +88,9 @@ public final class OcsCapabilities {
         final String sb = "OcsCapabilities{" + "webdav='" + webdav + '\'' +
                 ", versioning=" + versioning +
                 ", locking=" + locking +
+                ", chunking=" + chunking +
+                ", chunksize=" + chunksize +
+                ", chunkconcurrency=" + chunkconcurrency +
                 ", spaces=" + spaces +
                 ", projects=" + projects +
                 ", sharejail=" + sharejail +

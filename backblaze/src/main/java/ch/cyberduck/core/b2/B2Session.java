@@ -35,6 +35,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +52,8 @@ public class B2Session extends HttpSession<B2ApiClient> {
     private static final Logger log = LogManager.getLogger(B2Session.class);
 
     private B2ErrorResponseInterceptor retryHandler;
+    private CloseableHttpClient http;
+    private B2AuthorizeAccountResponse authorization;
 
     private final B2VersionIdProvider fileid = new B2VersionIdProvider(this);
     private final AttributedList<Path> buckets = new AttributedList<>();
@@ -65,14 +68,31 @@ public class B2Session extends HttpSession<B2ApiClient> {
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(
                 host, retryHandler = new B2ErrorResponseInterceptor(this, fileid)));
         configuration.addInterceptorLast(retryHandler);
-        return new B2ApiClient(configuration.build());
+        http = configuration.build();
+        return new B2ApiClient(http);
+    }
+
+    /**
+     * @return HTTP client to execute requests not supported by {@link B2ApiClient}
+     */
+    public CloseableHttpClient getHttpClient() {
+        return http;
+    }
+
+    /**
+     * @return Account authorization with API URL. The authorization token is replaced when expired by {@link B2ErrorResponseInterceptor}
+     */
+    public B2AuthorizeAccountResponse getAuthorization() {
+        return authorization;
     }
 
     @Override
     public void disconnect() throws BackgroundException {
         try {
             fileid.clear();
-            client.close();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -88,7 +108,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             final String accountId = host.getCredentials().getUsername();
             final String applicationKey = host.getCredentials().getPassword();
             // Save tokens for 401 error response when expired
-            final B2AuthorizeAccountResponse response = client.authenticate(accountId, applicationKey);
+            final B2AuthorizeAccountResponse response = authorization = client.authenticate(accountId, applicationKey);
             // When present, access is restricted to one bucket
             if(!response.getBuckets().isEmpty()) {
                 buckets.addAll(response.getBuckets().entrySet().stream().map(entry ->
@@ -173,9 +193,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == Search.class) {
             return (T) new B2SearchFeature(this, fileid);
-        }
-        if(type == Headers.class) {
-            return (T) new B2MetadataFeature(this, fileid);
         }
         if(type == Metadata.class) {
             return (T) new B2MetadataFeature(this, fileid);

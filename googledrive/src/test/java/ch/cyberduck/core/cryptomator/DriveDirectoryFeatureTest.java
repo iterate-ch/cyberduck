@@ -51,7 +51,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -80,7 +79,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         assertEquals(attributes, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener())
-                .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
+                .toStream().allMatch(f -> f.attributes().isDuplicate()));
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

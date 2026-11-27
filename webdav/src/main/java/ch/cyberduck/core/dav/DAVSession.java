@@ -130,7 +130,9 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void disconnect() throws BackgroundException {
         try {
-            client.shutdown();
+            if(client != null) {
+                client.shutdown();
+            }
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
@@ -345,9 +347,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Move.class) {
             return (T) new DAVMoveFeature(this);
-        }
-        if(type == Headers.class) {
-            return (T) new DAVMetadataFeature(this);
         }
         if(type == Metadata.class) {
             return (T) new DAVMetadataFeature(this);

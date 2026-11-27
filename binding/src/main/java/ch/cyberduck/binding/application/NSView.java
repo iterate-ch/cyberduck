@@ -891,7 +891,7 @@ public abstract class NSView extends NSResponder implements NSUserInterfaceItemI
      * Original signature : <code>NSScrollView* enclosingScrollView()</code><br>
      * <i>native declaration : :308</i>
      */
-    public abstract NSView enclosingScrollView();
+    public abstract NSScrollView enclosingScrollView();
 
     /**
      * Original signature : <code>NSMenu* menuForEvent(NSEvent*)</code><br>

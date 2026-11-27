@@ -16,13 +16,9 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.owncloud.model.Drives;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 
@@ -31,7 +27,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class OwncloudRootListServiceTest {
+public class OwncloudRootListServiceTest extends AbstractOwncloudTest {
 
     private static Drives.Drive drive(final String type, final String id) {
         final Drives.Drive drive = new Drives.Drive();
@@ -44,11 +40,17 @@ public class OwncloudRootListServiceTest {
         return drive;
     }
 
-    private static OwncloudSession session() {
-        final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("u")),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    private OwncloudSession session() {
         session.ocs.withSpaces(true).withProjects(true).withSharejail(true);
         return session;
+    }
+
+    @Test
+    public void testListRootFromServer() throws Exception {
+        final AttributedList<Path> list = new OwncloudRootListService(session, session.drives).list(
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        assertTrue(list.contains(OwncloudPathContainerService.PERSONAL_FOLDER));
+        assertTrue(list.contains(OwncloudPathContainerService.SHARES_FOLDER));
     }
 
     @Test

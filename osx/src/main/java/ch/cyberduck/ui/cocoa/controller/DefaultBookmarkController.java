@@ -19,6 +19,7 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSTokenField;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -147,5 +148,11 @@ public abstract class DefaultBookmarkController extends BookmarkController {
     public void setKerberosRealmField(final NSTextField field) {
         this.addObserver(host -> field.superview().setHidden(!host.getProtocol().isKerberosConfigurable()));
         super.setKerberosRealmField(field);
+    }
+
+    @Override
+    public void setCommentField(final NSTextView f) {
+        f.enclosingScrollView().superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.comment.configurable"));
+        super.setCommentField(f);
     }
 }

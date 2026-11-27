@@ -19,21 +19,24 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ocs.OcsCapabilities;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class OwncloudHomeFeatureTest {
+public class OwncloudHomeFeatureTest extends AbstractOwncloudTest {
 
-    private final OwncloudSession session = new OwncloudSession(new Host(new OwncloudProtocol(), "example.com", new Credentials("jane")),
-            new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    private final OcsCapabilities ocs = session.ocs.withSpaces(true);
-    private final OwncloudDrivesListService mapper = new OwncloudDrivesListService(session, "/dav/spaces/s$p", "/dav/spaces/j$j");
+    private OcsCapabilities ocs;
+    private OwncloudDrivesListService mapper;
+
+    @Before
+    public void mapper() {
+        ocs = session.ocs.withSpaces(true);
+        mapper = new OwncloudDrivesListService(session, "/dav/spaces/s$p", "/dav/spaces/j$j");
+    }
 
     private Path find(final String defaultPath) throws Exception {
         return this.find(mapper, defaultPath);

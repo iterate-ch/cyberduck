@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVMetadataFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 
@@ -50,7 +51,8 @@ public class NextcloudListService extends DAVListService {
                                 NextcloudAttributesFinderFeature.OC_CHECKSUMS_CUSTOM_NAMESPACE,
                                 NextcloudAttributesFinderFeature.OC_SIZE_CUSTOM_NAMESPACE,
                                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
+                                DAVMetadataFeature.METADATA_CUSTOM_NAMESPACE).
                         collect(Collectors.toSet()));
     }
 }

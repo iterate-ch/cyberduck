@@ -21,6 +21,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,10 +31,14 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -51,6 +56,39 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyFileWithMetadata() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test,
+                new TransferStatus().setMetadata(Collections.singletonMap("key", "value")));
+        assertEquals(Collections.singletonMap("key", "value"), new DriveAttributesFinderFeature(session, fileid).find(test).getMetadata());
+        // Properties from metadata of source read in copy filter
+        final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy,
+                new TransferStatus().setMetadata(new DriveMetadataFeature(session, fileid).getMetadata(test)), ConnectionCallback.noop, StreamListener.noop);
+        assertEquals(Collections.singletonMap("key", "value"), target.attributes().getMetadata());
+        assertEquals(Collections.singletonMap("key", "value"), new DriveAttributesFinderFeature(session, fileid).find(copy).getMetadata());
+        // Properties not copied when metadata is not set in status
+        final Path other = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        assertSame(Metadata.EMPTY, new TransferStatus().getMetadata());
+        assertTrue(new DriveCopyFeature(session, fileid).copy(test, other, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getMetadata().isEmpty());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy, other), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyFileWithoutMetadata() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
+        final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
+        // Properties requested in response but none set
+        assertTrue(target.attributes().getMetadata().isEmpty());
+        assertNotSame(Metadata.EMPTY, target.attributes().getMetadata());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

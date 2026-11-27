@@ -1,1 +1,1 @@
-FROM nextcloud:32-apache
+FROM nextcloud:35-apache

@@ -46,6 +46,10 @@ public class OverwriteFilter extends AbstractCopyFilter {
         super(source, destination, files, find, attribute, options);
     }
 
+    public OverwriteFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder targetAttributesFinder, final AttributesFinder sourceAttributesFinder, final UploadFilterOptions options) {
+        super(source, destination, files, find, targetAttributesFinder, sourceAttributesFinder, options);
+    }
+
     @Override
     public boolean accept(final Path source, final Local local, final TransferStatus parent, final ProgressListener progress) {
         return true;

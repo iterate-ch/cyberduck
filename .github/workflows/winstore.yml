@@ -1,0 +1,101 @@
+name: Publish Microsoft Store
+on:
+  push:
+    tags: [ '*' ]
+  # Dispatched by prepare.yml on the release tag, whose push does not trigger this
+  workflow_dispatch:
+# Queue instead of running in parallel
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+jobs:
+  # Dispatched runs must be on a tag, as the version is derived from the ref name
+  check:
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Require Tag
+        if: ${{ github.ref_type != 'tag' }}
+        shell: bash
+        run: |
+          echo "::error::Dispatch on a release tag, not on ${GITHUB_REF}"
+          exit 1
+
+  # Builds its own APPX so the Store package can use different signing options
+  # than the installers published by release.yml.
+  deploy:
+    needs: check
+    permissions:
+      checks: write
+      contents: read
+      packages: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      # Release artifacts are already published by the release workflow;
+      # this run only needs to build the APPX for upload.
+      MAVEN_GOAL: install
+      RUNNER_OS: windows
+      RUNNER_ARCH: x64
+      SIGNTOOL_CSP: 'Google Cloud KMS Provider'
+      SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'
+    secrets: inherit
+
+  # Submit the APPX to the Microsoft Store. Creates a new submission from the built
+  # package and commits it for certification.
+  store:
+    needs: deploy
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ self-hosted, windows, x64 ]
+    steps:
+      - name: Clean
+        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
+
+      - name: Download APPX
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck_*.appx
+          path: release
+          merge-multiple: true
+          skip-decompress: true
+
+      - name: Setup Microsoft Store Developer CLI
+        uses: microsoft/microsoft-store-apppublisher@v1.4
+
+      - name: Configure Microsoft Store credentials
+        env:
+          MSSTORE_SELLER_ID: ${{ vars.MSSTORE_SELLER_ID }}
+          MSSTORE_TENANT_ID: ${{ vars.MSSTORE_TENANT_ID }}
+          MSSTORE_CLIENT_ID: ${{ vars.MSSTORE_CLIENT_ID }}
+          MSSTORE_CLIENT_SECRET: ${{ secrets.MSSTORE_CLIENT_SECRET }}
+        run: msstore reconfigure --tenantId $env:MSSTORE_TENANT_ID --sellerId $env:MSSTORE_SELLER_ID --clientId $env:MSSTORE_CLIENT_ID --clientSecret $env:MSSTORE_CLIENT_SECRET
+
+      # msstore publish only recognizes .msix, .msixbundle and .msixupload. An
+      # .msixupload is a zip containing the package, which the Store accepts for APPX.
+      - name: Publish to Microsoft Store
+        env:
+          MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
+        run: |
+          Get-ChildItem "release\Cyberduck_*.appx" | ForEach-Object {
+            $upload = Join-Path $_.DirectoryName ($_.BaseName + ".zip")
+            Compress-Archive -Path $_.FullName -DestinationPath $upload -Force
+            $msixupload = [System.IO.Path]::ChangeExtension($upload, ".msixupload")
+            Move-Item $upload $msixupload -Force
+            msstore publish $msixupload -id $env:MSSTORE_PRODUCT_ID --noCommit
+          }
+
+      # The self-hosted runner account persists the CLI configuration and token cache
+      # beyond the job. Remove them unconditionally, including on failure.
+      - name: Remove Microsoft Store credentials
+        if: ${{ always() }}
+        run: |
+          msstore reconfigure --reset 2>$null
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Microsoft\msstore" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\.IdentityService" -ErrorAction SilentlyContinue
+          cmdkey /list | Select-String -Pattern 'msstore' | ForEach-Object {
+            if ($_ -match 'Target:\s*(\S+)') { cmdkey /delete:$Matches[1] }
+          }
+          exit 0

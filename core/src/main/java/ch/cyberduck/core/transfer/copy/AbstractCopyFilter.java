@@ -36,14 +36,13 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
@@ -65,8 +64,12 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
 
     private final Filter<Path> hidden = SearchFilterFactory.HIDDEN_FILTER;
 
-    protected final Find find;
-    protected final AttributesFinder attribute;
+    protected final Find targetFinder;
+    protected final AttributesFinder targetAttributesFinder;
+    /**
+     * Lookup of attributes of source
+     */
+    protected final AttributesFinder sourceAttributesFinder;
     protected final UploadFilterOptions options;
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
@@ -77,12 +80,17 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
         this(source, destination, files, destination.getFeature(Find.class), destination.getFeature(AttributesFinder.class), options);
     }
 
-    public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
+    public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find targetFinder, final AttributesFinder targetAttributesFinder, final UploadFilterOptions options) {
+        this(source, destination, files, targetFinder, targetAttributesFinder, source.getFeature(AttributesFinder.class), options);
+    }
+
+    public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files, final Find targetFinder, final AttributesFinder targetAttributesFinder, final AttributesFinder sourceAttributesFinder, final UploadFilterOptions options) {
         this.source = source;
         this.destination = destination;
         this.files = files;
-        this.find = find;
-        this.attribute = attribute;
+        this.targetFinder = targetFinder;
+        this.targetAttributesFinder = targetAttributesFinder;
+        this.sourceAttributesFinder = sourceAttributesFinder;
         this.options = options;
     }
 
@@ -93,15 +101,15 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 .setLockId(parent.getLockId());
         if(parent.isExists()) {
             final Path target = files.get(file);
-            if(find.find(target)) {
+            if(targetFinder.find(target)) {
                 // Do not attempt to create a directory that already exists
                 status.setExists(true);
                 // Read remote attributes
-                status.setRemote(attribute.find(target));
+                status.setRemote(targetAttributesFinder.find(target));
             }
         }
         // Read remote attributes from source
-        final PathAttributes attributes = source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)).find(file);
+        final PathAttributes attributes = sourceAttributesFinder.find(file);
         if(file.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
@@ -144,7 +152,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             }
         }
         if(options.metadata) {
-            final Headers sourceFeature = source.getFeature(Headers.class);
+            final Metadata sourceFeature = source.getFeature(Metadata.class);
             if(sourceFeature != null) {
                 progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                         file.getName()));

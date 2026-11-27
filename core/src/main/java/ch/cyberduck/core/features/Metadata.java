@@ -19,10 +19,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @Optional
 public interface Metadata {
+    /**
+     * Marker for metadata not retrieved. Compare by identity to distinguish from file without metadata on server
+     */
+    Map<String, String> EMPTY = Collections.unmodifiableMap(new HashMap<>());
+
     Map<String, String> getDefault(Path file);
 
     Map<String, String> getMetadata(Path file) throws BackgroundException;

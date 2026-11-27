@@ -27,6 +27,8 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
+
 public class VaultFinderListService implements ListService {
     private static final Logger log = LogManager.getLogger(VaultFinderListService.class);
 
@@ -61,5 +63,10 @@ public class VaultFinderListService implements ListService {
     @Override
     public void preflight(final Path directory) throws BackgroundException {
         delegate.preflight(directory);
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        return delegate.features(directory);
     }
 }

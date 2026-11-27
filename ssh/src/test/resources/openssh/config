@@ -35,4 +35,10 @@ Host quote
 Host comment # comment
     User alice # comment
     IdentityAgent "/tmp/a # b"
+    IdentityFile /tmp/a\ #b.pem # it's a comment
+    HostName 'a # b'
     ProxyCommand nc %h %p # passed to the shell
+
+Host comment-only
+    User # comment
+    User bob#alice

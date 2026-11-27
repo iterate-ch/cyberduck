@@ -16,13 +16,21 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 
+import java.util.Date;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class S3AttributesAdapterTest {
 
@@ -32,6 +40,20 @@ public class S3AttributesAdapterTest {
         object.addMetadata("ETag", "a43c1b0aa53a0c908810c06ab1ff3967");
         object.addMetadata("Mtime", "1647683127.160620746");
         assertEquals(1647683127000L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
+    }
+
+    @Test
+    public void testLastModified() {
+        final StorageObject object = new StorageObject();
+        object.setLastModifiedDate(new Date(1647683127000L));
+        assertEquals(1647683127000L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
+    }
+
+    @Test
+    public void testIgnoreDateHeader() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("Date", new Date(1647683127000L));
+        assertEquals(-1L, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getModificationDate());
     }
 
     @Test
@@ -66,5 +88,79 @@ public class S3AttributesAdapterTest {
         object.setETag("\"a43c1b0aa53a0c908810c06ab1ff3967\"");
         object.setServerSideEncryptionAlgorithm("aws:kms");
         assertEquals(Checksum.NONE, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getChecksum());
+    }
+
+    @Test
+    public void testMetadataEmpty() {
+        assertTrue(S3AttributesAdapter.metadata(new StorageObject()).isEmpty());
+    }
+
+    @Test
+    public void testMetadataUserDefined() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("my-key", "value");
+        object.addMetadata("Another", "other");
+        final Map<String, String> metadata = S3AttributesAdapter.metadata(object);
+        assertEquals(2, metadata.size());
+        assertEquals("value", metadata.get("my-key"));
+        assertEquals("other", metadata.get("Another"));
+    }
+
+    @Test
+    public void testMetadataHttpHeaderNamesNormalized() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("content-type", "text/plain");
+        object.addMetadata("CACHE-CONTROL", "no-cache");
+        final Map<String, String> metadata = S3AttributesAdapter.metadata(object);
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        assertEquals("no-cache", metadata.get("Cache-Control"));
+        assertFalse(metadata.containsKey("content-type"));
+        assertFalse(metadata.containsKey("CACHE-CONTROL"));
+    }
+
+    @Test
+    public void testMetadataCustomKeyCaseUnchanged() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("My-Custom-Key", "value");
+        assertEquals("value", S3AttributesAdapter.metadata(object).get("My-Custom-Key"));
+    }
+
+    @Test
+    public void testMetadataFilterManagedHeaders() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("storage-class", "STANDARD");
+        object.addMetadata("Server-Side-Encryption", "AES256");
+        object.addMetadata("expiration", "never");
+        object.addMetadata("Checksum-SHA256", "abc");
+        object.addMetadata("version-id", "1");
+        object.addMetadata("keep", "me");
+        final Map<String, String> metadata = S3AttributesAdapter.metadata(object);
+        assertEquals(1, metadata.size());
+        assertEquals("me", metadata.get("keep"));
+    }
+
+    @Test
+    public void testMetadataNotRetrieved() {
+        // Object from listing without metadata
+        final StorageObject object = new StorageObject();
+        assertSame(Metadata.EMPTY, new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getMetadata());
+    }
+
+    @Test
+    public void testMetadataCompleteWithoutUserMetadata() {
+        // Object from HEAD request without metadata
+        final StorageObject object = new StorageObject();
+        object.addMetadata("storage-class", "STANDARD");
+        object.setMetadataComplete(true);
+        final Map<String, String> metadata = new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getMetadata();
+        assertTrue(metadata.isEmpty());
+        assertNotSame(Metadata.EMPTY, metadata);
+    }
+
+    @Test
+    public void testMetadataAdvertisedInAttributes() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("my-key", "value");
+        assertEquals("value", new S3AttributesAdapter(new Host(new S3Protocol())).toAttributes(object).getMetadata().get("my-key"));
     }
 }

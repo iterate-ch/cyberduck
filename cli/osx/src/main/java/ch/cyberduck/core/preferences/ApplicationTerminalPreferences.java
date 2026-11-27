@@ -78,6 +78,8 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
 
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");
         this.setDefault("connection.ssl.keystore.provider", "Apple");
+        // Middleware library for keys in the Secure Enclave of a FIDO/U2F security key
+        this.setDefault("ssh.authentication.securitykey.provider", "/usr/lib/ssh-keychain.dylib");
 
         this.setDefault("keychain.secure", String.valueOf(true));
     }

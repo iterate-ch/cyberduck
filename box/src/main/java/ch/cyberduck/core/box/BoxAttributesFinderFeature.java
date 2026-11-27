@@ -34,11 +34,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class BoxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
 
     public static final List<String> DEFAULT_FIELDS = Arrays.asList(
-            "id", "etag", "name", "size", "content_modified_at", "content_created_at", "file_version", "file_id", "sha1");
+            "id", "etag", "name", "size", "content_modified_at", "content_created_at", "file_version", "file_id", "sha1", BoxMetadataFeature.FIELD);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -78,6 +79,10 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
         attrs.setFileId(f.getId());
         attrs.setChecksum(new Checksum(HashAlgorithm.sha1, f.getSha1()));
         attrs.setETag(f.getEtag());
+        final Map<String, String> metadata = BoxMetadataFeature.fromInstances(f.getMetadata());
+        if(null != metadata) {
+            attrs.setMetadata(metadata);
+        }
         return attrs;
     }
 
@@ -94,6 +99,10 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
         }
         attrs.setSize(f.getSize());
         attrs.setFileId(f.getId());
+        final Map<String, String> metadata = BoxMetadataFeature.fromInstances(f.getMetadata());
+        if(null != metadata) {
+            attrs.setMetadata(metadata);
+        }
         return attrs;
     }
 }

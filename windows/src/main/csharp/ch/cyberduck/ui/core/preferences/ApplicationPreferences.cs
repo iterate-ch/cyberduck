@@ -103,6 +103,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             this.setDefault("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
             this.setDefault("factory.certificatetrustcallback.class", typeof(DialogPromptCertificateTrustCallback).AssemblyQualifiedName);
+            this.setDefault("factory.certificateidentitycallback.class", typeof(PromptCertificateIdentityController).AssemblyQualifiedName);
 
             if (Cyberduck.Core.Utils.IsWin10FallCreatorsUpdate)
             {

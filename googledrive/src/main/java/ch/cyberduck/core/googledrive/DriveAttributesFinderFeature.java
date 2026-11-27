@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.ListFilteringFeature;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -41,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Collections;
 
 import com.google.api.services.drive.model.File;
 
@@ -49,7 +51,7 @@ import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 public class DriveAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
     private static final Logger log = LogManager.getLogger(DriveAttributesFinderFeature.class);
 
-    protected static final String DEFAULT_FIELDS = "createdTime,trashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
+    protected static final String DEFAULT_FIELDS = "createdTime,trashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version,properties";
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -94,7 +96,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
         if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
             final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
             try {
-                return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId()).setFields(DEFAULT_FIELDS).execute());
+                return this.toAttributes(session.getClient().files().get(shortcutDetails.getTargetId())
+                        .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .setFields(DEFAULT_FIELDS).execute());
             }
             catch(IOException e) {
                 log.warn("Failure {} resolving shortcut for {}", e, f);
@@ -130,9 +134,8 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
                         .getBytes(Charset.defaultCharset()).length);
             }
         }
-        if(null != f.getProperties()) {
-            attributes.setMetadata(f.getProperties());
-        }
+        // Properties requested in fields are omitted in response when not set
+        attributes.setMetadata(null != f.getProperties() ? f.getProperties() : Collections.emptyMap());
         return attributes;
     }
 }

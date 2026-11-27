@@ -63,7 +63,7 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
     }
 
     @Override
-    public void prompt(final String hostname, final List<X509Certificate> certificates) throws ConnectionCanceledException {
+    public void prompt(final String hostname, final String message, final List<X509Certificate> certificates) throws ConnectionCanceledException {
         final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
         final PointerByReference reference = new PointerByReference();
         SecurityFunctions.library.SecTrustCreateWithCertificates(KeychainCertificateStore.toDEREncodedCertificates(certificates), policyRef, reference);

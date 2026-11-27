@@ -29,8 +29,6 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -39,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import ch.iterate.openstack.swift.Constants;
@@ -73,8 +72,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
                     if(status.isExists()) {
-                        // Remove any large object header read from metadata of existing file
-                        headers.remove(Constants.X_STATIC_LARGE_OBJECT);
+                        // Remove any large object header read from metadata of existing file. Header names are
+                        // case-insensitive and may be returned in lower case
+                        headers.keySet().removeIf(key -> Constants.X_STATIC_LARGE_OBJECT.equalsIgnoreCase(key)
+                                || Constants.MANIFEST_HEADER.equalsIgnoreCase(key));
                     }
                     final Checksum checksum = status.getChecksum();
                     final String etag = session.getClient().storeObject(
@@ -103,4 +104,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         return this.write(file, status, command);
     }
 
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.of(Flags.metadata);
+    }
 }

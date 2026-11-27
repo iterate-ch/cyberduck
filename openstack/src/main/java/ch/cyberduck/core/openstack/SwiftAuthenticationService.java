@@ -25,6 +25,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -65,6 +67,7 @@ public class SwiftAuthenticationService {
                 bookmark.getCredentials().getUsername(), bookmark.getCredentials().getPassword(), null)
             );
         }
+        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         final LoginOptions options = new LoginOptions(bookmark.getProtocol()).password(false).anonymous(false).publickey(false);
         if(context.contains("1.0")) {
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
@@ -82,6 +85,11 @@ public class SwiftAuthenticationService {
                 final String[] parts = StringUtils.splitPreserveAllTokens(bookmark.getCredentials().getUsername(), ':');
                 tenant = parts[0];
                 user = parts[1];
+            }
+            else if(StringUtils.isNotBlank(preferences.getProperty("openstack.authentication.tenant"))) {
+                // Tenant set in connection profile
+                user = bookmark.getCredentials().getUsername();
+                tenant = preferences.getProperty("openstack.authentication.tenant");
             }
             else {
                 user = bookmark.getCredentials().getUsername();
@@ -118,6 +126,12 @@ public class SwiftAuthenticationService {
                     domain = parts[1];
                     user = parts[2];
                 }
+                else if(StringUtils.isNotBlank(preferences.getProperty("openstack.authentication.domain"))) {
+                    // Domain set in connection profile
+                    project = parts[0];
+                    user = parts[1];
+                    domain = preferences.getProperty("openstack.authentication.domain");
+                }
                 else {
                     project = parts[0];
                     user = parts[1];
@@ -129,12 +143,22 @@ public class SwiftAuthenticationService {
                     bookmark.getCredentials().setUsername(String.format("%s:%s:%s", project, domain, bookmark.getCredentials().getUsername()));
                 }
             }
+            else if(StringUtils.isNotBlank(preferences.getProperty("openstack.authentication.tenant"))
+                    && StringUtils.isNotBlank(preferences.getProperty("openstack.authentication.domain"))) {
+                // Project and domain set in connection profile
+                user = bookmark.getCredentials().getUsername();
+                project = preferences.getProperty("openstack.authentication.tenant");
+                domain = preferences.getProperty("openstack.authentication.domain");
+            }
             else {
                 user = bookmark.getCredentials().getUsername();
-                final Credentials projectName = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Project Name", "Mosso"), options
-                                .usernamePlaceholder(LocaleFactory.localizedString("Project Name", "Mosso")));
+                // Only prompt for the value not set in connection profile
+                final Credentials projectName = StringUtils.isNotBlank(preferences.getProperty("openstack.authentication.tenant")) ?
+                        new Credentials(preferences.getProperty("openstack.authentication.tenant")) :
+                        prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                LocaleFactory.localizedString("Project Name", "Mosso"), options
+                                        .usernamePlaceholder(LocaleFactory.localizedString("Project Name", "Mosso")));
                 if(StringUtils.contains(bookmark.getCredentials().getUsername(), ':')) {
                     final String[] parts = StringUtils.splitPreserveAllTokens(projectName.getUsername(), ':');
                     project = parts[0];
@@ -142,10 +166,12 @@ public class SwiftAuthenticationService {
                 }
                 else {
                     project = projectName.getUsername();
-                    domain = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options
-                                    .usernamePlaceholder(LocaleFactory.localizedString("Project Domain Name", "Mosso"))).getUsername();
+                    domain = StringUtils.isNotBlank(preferences.getProperty("openstack.authentication.domain")) ?
+                            preferences.getProperty("openstack.authentication.domain") :
+                            prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                    LocaleFactory.localizedString("Project Domain Name", "Mosso"), options
+                                            .usernamePlaceholder(LocaleFactory.localizedString("Project Domain Name", "Mosso"))).getUsername();
                 }
                 // Save project name and domain in username
                 bookmark.getCredentials().setUsername(String.format("%s:%s:%s", project, domain, bookmark.getCredentials().getUsername()));
@@ -163,5 +189,16 @@ public class SwiftAuthenticationService {
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                 bookmark.getCredentials().getUsername(), bookmark.getCredentials().getPassword()));
         }
+    }
+
+    /**
+     * @param username Username as saved in bookmark with optional {@code tenant:} or {@code project:domain:} prefix
+     * @return Username without tenant, project or domain prefix
+     */
+    public static String toUser(final String username) {
+        if(StringUtils.contains(username, ':')) {
+            return StringUtils.substringAfterLast(username, ":");
+        }
+        return username;
     }
 }

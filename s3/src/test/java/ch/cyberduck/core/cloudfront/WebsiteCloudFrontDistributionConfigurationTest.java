@@ -11,10 +11,10 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.RunOn;
-import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.S3TestServer;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.TestcontainerTest;
@@ -32,7 +32,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
 
     @Test
     public void testGetMethodsAWS() {
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
+        final S3Session session = new S3Session(new Host(new S3Protocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()
         );
         assertTrue(configuration.getMethods(
@@ -51,7 +51,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
 
     @Test
     public void testGetMethodsNonAWS() {
-        final S3Session session = new S3Session(new Host(new S3Protocol(), "s3.cyberduck.io"));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), "s3.cyberduck.io"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()
         );
         assertFalse(configuration.getMethods(
@@ -103,7 +103,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     @Test
     public void testFeatures() {
         final WebsiteCloudFrontDistributionConfiguration d = new WebsiteCloudFrontDistributionConfiguration(
-            new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())), new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()
+            new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()), new DisabledX509TrustManager(), new DefaultX509KeyManager()), new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()
         );
         assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));

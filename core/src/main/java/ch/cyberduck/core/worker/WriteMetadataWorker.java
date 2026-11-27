@@ -97,8 +97,17 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        // Read online metadata (storing non-edited metadata entries)
-        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
+        final Map<String, String> current;
+        if(Metadata.EMPTY == file.attributes().getMetadata() && metadata.containsValue(null)) {
+            // Metadata not retrieved such as for children in listing. Read current metadata to keep entries requested with null value
+            log.debug("Read metadata for {} to keep existing values", file);
+            current = feature.getMetadata(file);
+        }
+        else {
+            current = file.attributes().getMetadata();
+        }
+        // Start from last known metadata of file to keep entries requested with null value for keys differing or missing between multiple selected files
+        final Map<String, String> update = new HashMap<>(current);
         // Purge removed entries
         update.entrySet().removeIf(entry -> !metadata.containsKey(entry.getKey()));
         // iterate all metadata entries and
@@ -110,13 +119,19 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             }
         }
         // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
-        if(!update.equals(file.attributes().getMetadata())) {
+        if(!update.equals(current)) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                file.getName()));
-            final TransferStatus status = new TransferStatus();
-            feature.setMetadata(file, status.setMetadata(update).setLockId(this.getLockId(file)));
+                    file.getName()));
+            final TransferStatus status = new TransferStatus()
+                    .setMetadata(update)
+                    .setLockId(this.getLockId(file));
+            feature.setMetadata(file, status);
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 file.withAttributes(status.getResponse());
+                if(Metadata.EMPTY == file.attributes().getMetadata()) {
+                    // Metadata missing in response
+                    file.attributes().setMetadata(update);
+                }
             }
             else {
                 file.attributes().setMetadata(update);

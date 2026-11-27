@@ -85,7 +85,9 @@ public class DriveSearchListService extends AbstractDriveListService {
     private Set<Path> parents(String fileId, final Deque<File> dequeue) throws IOException {
         final Set<Path> tree = new HashSet<>();
         while(true) {
-            final File f = session.getClient().files().get(fileId).setFields(String.format("parents,%s", DriveAttributesFinderFeature.DEFAULT_FIELDS)).execute();
+            final File f = session.getClient().files().get(fileId)
+                    .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                    .setFields(String.format("parents,%s", DriveAttributesFinderFeature.DEFAULT_FIELDS)).execute();
             dequeue.push(f);
             if(null == f.getParents()) {
                 break;

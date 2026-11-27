@@ -172,6 +172,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
             }
             // Only objects stored as plaintext or encrypted with SSE-S3 have an ETag derived from the MD5 of the data
             object.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
+            object.setServerSideEncryptionKmsKeyId(status.getEncryption().key);
             // Mark parent status as complete
             status.setResponse(new S3AttributesAdapter(session.getHost()).toAttributes(object)).setComplete();
             return object;

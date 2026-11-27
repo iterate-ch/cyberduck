@@ -94,9 +94,11 @@ public class S3EncryptionFeature implements Encryption {
         try {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
-            final TransferStatus status = new TransferStatus();
-            status.setEncryption(setting);
-            status.setLength(file.attributes().getSize());
+            final TransferStatus status = new TransferStatus()
+                    .setLength(file.attributes().getSize())
+                    .setEncryption(setting)
+                    .setStorageClass(new S3StorageClassFeature(session, acl).getClass(file))
+                    .setAcl(acl.getPermission(file));
             copy.copy(file, file, status, ConnectionCallback.noop, StreamListener.noop);
         }
         catch(NotfoundException e) {

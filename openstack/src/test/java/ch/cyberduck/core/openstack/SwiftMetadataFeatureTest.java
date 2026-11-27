@@ -20,9 +20,11 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -56,6 +58,18 @@ public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
         assertEquals("text/plain", metadata.get("Content-Type"));
         feature.setMetadata(test, Collections.emptyMap());
         assertFalse(feature.getMetadata(test).containsKey("Test"));
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetMetadataTooLarge() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
+        final SwiftMetadataFeature feature = new SwiftMetadataFeature(session);
+        final Map<String, String> metadata = Collections.singletonMap("K", StringUtils.repeat('a', 8 * 1024));
+        // Same limit as when writing metadata with upload
+        assertThrows(InteroperabilityException.class, () -> feature.setMetadata(test, metadata));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

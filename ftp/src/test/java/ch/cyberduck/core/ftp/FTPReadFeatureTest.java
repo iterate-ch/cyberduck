@@ -133,7 +133,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final Path workdir = new FTPWorkdirService(session).find();
         final InputStream in = new FTPReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
-        assertTrue(in.read() > 0);
+        assertNotEquals(-1, in.read());
         // Send ABOR because stream was not read completly
         in.close();
         // Make sure subsequent PWD command works

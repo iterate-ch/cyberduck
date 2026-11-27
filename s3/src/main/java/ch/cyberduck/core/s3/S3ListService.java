@@ -108,4 +108,17 @@ public class S3ListService implements ListService {
         }
         return objects;
     }
+
+    @Override
+    public EnumSet<Flags> features(final Path directory) {
+        if(directory.isRoot()) {
+            if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                // Listing of buckets without metadata
+                return EnumSet.noneOf(Flags.class);
+            }
+        }
+        // Metadata of every object found read with HEAD request
+        return HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable") ?
+                EnumSet.of(Flags.metadata) : EnumSet.noneOf(Flags.class);
+    }
 }

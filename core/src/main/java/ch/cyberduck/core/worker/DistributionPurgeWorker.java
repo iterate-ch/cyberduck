@@ -67,6 +67,10 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
+                if(!cdn.getMethods(file).contains(method)) {
+                    log.debug("Skip purge for unsupported method {} in {} for {}", method, cdn, file);
+                    continue;
+                }
                 feature.invalidate(file, method, files, prompt);
             }
         }

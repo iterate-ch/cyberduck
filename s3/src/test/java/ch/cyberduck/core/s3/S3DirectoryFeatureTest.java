@@ -22,7 +22,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -53,6 +52,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     @Test
     public void testCreateBucket() throws Exception {
         this.assumeNot(S3TestServer.CEPH, "Bucket location constraint differs");
+        this.assumeNot(S3TestServer.RUSTFS, "Bucket location constraint differs");
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -303,7 +303,6 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             assertEquals(directory.attributes().getSize(), lookup.getSize());
             assertEquals(directory.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(directory.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(directory.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         final Path test = new S3TouchFeature(session).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

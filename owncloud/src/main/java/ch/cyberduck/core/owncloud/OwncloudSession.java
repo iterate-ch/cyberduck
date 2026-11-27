@@ -108,8 +108,12 @@ public class OwncloudSession extends DAVSession {
         ocs.withSpaces(false);
         super.login(prompt, cancel);
         try {
-            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs))
-                    .withSpaces(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable"));
+            client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
+            if(ocs.spaces) {
+                // Infinite Scale and OpenCloud implement WebDAV locking but do not advertise files.locking
+                ocs.withLocking(true);
+            }
+            ocs.withSpaces(ocs.spaces && preferences.getBoolean("owncloud.spaces.enable"));
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(e);
@@ -166,7 +170,7 @@ public class OwncloudSession extends DAVSession {
         }
         if(type == Upload.class) {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new OcisUploadFeature(this, tus);
+                return (T) new OwncloudUploadFeature(this, tus);
             }
             return (T) new HttpUploadFeature<>(EnumSet.of(Upload.Flags.checksumOptional), HashAlgorithm.sha1);
         }
@@ -193,6 +197,9 @@ public class OwncloudSession extends DAVSession {
         }
         if(type == Timestamp.class) {
             return (T) new OwncloudTimestampFeature(this);
+        }
+        if(type == Thumbnail.class) {
+            return (T) new OwncloudThumbnailFeature(this);
         }
         return super._getFeature(type);
     }

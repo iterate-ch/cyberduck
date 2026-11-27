@@ -1,0 +1,112 @@
+package ch.cyberduck.core.cryptomator;
+
+/*
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
+import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
+import ch.cyberduck.core.dav.DAVFindFeature;
+import ch.cyberduck.core.dav.DAVReadFeature;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
+import ch.cyberduck.core.owncloud.AbstractOwncloudTest;
+import ch.cyberduck.core.owncloud.OwncloudAttributesFinderFeature;
+import ch.cyberduck.core.owncloud.OwncloudHomeFeature;
+import ch.cyberduck.core.owncloud.OwncloudUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.tus.TusCapabilities;
+import ch.cyberduck.core.tus.TusWriteFeature;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultVersion;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
+import org.cryptomator.cryptolib.api.FileHeader;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
+
+public class OwncloudUploadFeatureTest extends AbstractOwncloudTest {
+
+    @Parameterized.Parameters(name = "server = {0}, vaultVersion = {1}")
+    public static Object[][] data() {
+        return parameterMatrix();
+    }
+
+    @Test
+    public void testUploadVault() throws Exception {
+        // 5L * 1024L * 1024L
+        final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(new OwncloudHomeFeature(session.getHost()).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path vault = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
+        final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1)
+                .withExtension(TusCapabilities.Extension.checksum)
+                .withExtension(TusCapabilities.Extension.creation);
+        final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
+                new OwncloudUploadFeature(session,
+                        capabilities),
+                cryptomator);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = RandomUtils.nextBytes(5242885);
+        IOUtils.write(content, local.getOutputStream(false));
+        final TransferStatus writeStatus = new TransferStatus();
+        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
+        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+        writeStatus.setLength(content.length);
+        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final BytecountStreamListener counter = new BytecountStreamListener();
+        service.upload(new CryptoWriteFeature<>(session, new TusWriteFeature(session, capabilities), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, counter, writeStatus, ConnectionCallback.noop);
+        assertEquals(content.length, counter.getSent());
+        assertTrue(writeStatus.isComplete());
+        assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new OwncloudAttributesFinderFeature(session)).find(test).getSize());
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        final TransferStatus readStatus = new TransferStatus().setLength(content.length);
+        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, readStatus, ConnectionCallback.noop);
+        new StreamCopier(readStatus, readStatus).transfer(in, buffer);
+        assertArrayEquals(content, buffer.toByteArray());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
+        local.delete();
+    }
+}

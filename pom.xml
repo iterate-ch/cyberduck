@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.6.1-SNAPSHOT</version>
+    <version>9.7.0-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -82,17 +82,16 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <!-- Default project root. Overridden by directory-maven-plugin in the
-             project-root-jenkins profile. -->
         <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
+        <git.buildnumber.skip>false</git.buildnumber.skip>
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
-        <jackson-version>2.22.4</jackson-version>
-        <jackson-annotations-version>2.22</jackson-annotations-version>
+        <jackson-version>2.23.0</jackson-version>
+        <jackson-annotations-version>2.23</jackson-annotations-version>
         <slf4j-version>2.0.0</slf4j-version>
         <log4j-version>2.26.1</log4j-version>
-        <bouncycastle-version>1.86</bouncycastle-version>
+        <bouncycastle-version>1.87</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>2.2.0</google-http-client.version>
         <jwt.version>4.6.2</jwt.version>
@@ -135,7 +134,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.40</version>
+                <version>0.9.41</version>
             </dependency>
             <dependency>
                 <groupId>com.auth0</groupId>
@@ -505,7 +504,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -585,6 +584,7 @@
                             <exclude>${surefire.exclude}</exclude>
                         </excludes>
                         <trimStackTrace>false</trimStackTrace>
+                        <useManifestOnlyJar>false</useManifestOnlyJar>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -704,11 +704,6 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.commonjava.maven.plugins</groupId>
-                    <artifactId>directory-maven-plugin</artifactId>
-                    <version>1.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.8.0</version>
@@ -732,12 +727,12 @@
                 <plugin>
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>2.4.53</version>
+                    <version>2.4.54</version>
                 </plugin>
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>3.0.84</version>
+                    <version>3.0.85</version>
                     <configuration>
                         <configOptions>
                             <sourceFolder>src/main/java</sourceFolder>
@@ -812,7 +807,7 @@
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.12.1</version>
+                        <version>1.13.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -844,6 +839,7 @@
                 <configuration>
                     <repositoryDirectory>${main.basedir}</repositoryDirectory>
                     <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                    <skip>${git.buildnumber.skip}</skip>
                 </configuration>
             </plugin>
             <plugin>
@@ -995,44 +991,6 @@
             </build>
         </profile>
         <profile>
-            <id>project-root-jenkins</id>
-            <!-- activate profile for Jenkins builds -->
-            <activation>
-                <property>
-                    <name>env.JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
-                </surefire.group.excluded>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <version>1.0</version>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>directory-of</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                    <project>
-                                        <groupId>ch.cyberduck</groupId>
-                                        <artifactId>parent</artifactId>
-                                    </project>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>no-testcontainers</id>
             <properties>
                 <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
@@ -1130,6 +1088,19 @@
                     </plugins>
                 </pluginManagement>
             </build>
+        </profile>
+        <profile>
+            <id>git-worktree</id>
+            <activation>
+                <file>
+                    <missing>${maven.multiModuleProjectDirectory}/.git/HEAD</missing>
+                </file>
+            </activation>
+            <properties>
+                <git.buildnumber.skip>true</git.buildnumber.skip>
+                <git.revision>0</git.revision>
+                <git.commitsCount>0</git.commitsCount>
+            </properties>
         </profile>
     </profiles>
 </project>

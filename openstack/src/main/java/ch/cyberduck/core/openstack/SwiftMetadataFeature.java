@@ -23,7 +23,7 @@ import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,7 +37,7 @@ import java.util.Map;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerMetadata;
 
-public class SwiftMetadataFeature implements Headers {
+public class SwiftMetadataFeature implements Metadata {
     private static final Logger log = LogManager.getLogger(SwiftMetadataFeature.class);
 
     private final SwiftSession session;
@@ -55,7 +55,11 @@ public class SwiftMetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Path file) {
-        return HostPreferencesFactory.get(session.getHost()).getMap("openstack.metadata.default");
+        final Map<String, String> metadata = HostPreferencesFactory.get(session.getHost()).getMap("openstack.metadata.default");
+        if(metadata.isEmpty()) {
+            return Metadata.EMPTY;
+        }
+        return metadata;
     }
 
     @Override

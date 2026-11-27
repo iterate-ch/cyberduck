@@ -11,7 +11,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -46,6 +45,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", Checksum.parse(attributes.getETag()).hash);
         assertNotEquals(-1L, attributes.getModificationDate());
+        // Response to PUT request has no modification date
+        test.attributes().setModificationDate(attributes.getModificationDate());
         assertEquals(test.attributes(), attributes);
         // Test wrong type
         try {
@@ -110,6 +111,9 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
         assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
+        assertNotEquals(-1L, attr.getModificationDate());
+        // Response to PUT request has no modification date
+        testWithVersionId.attributes().setModificationDate(attr.getModificationDate());
         assertEquals(testWithVersionId.attributes(), attr);
         assertFalse(attr.isDuplicate());
         // Set delete marker
@@ -221,7 +225,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), lookup.getSize());
             assertEquals(test.attributes().getChecksum(), lookup.getChecksum());
             assertEquals(test.attributes().getVersionId(), lookup.getVersionId());
-            assertEquals(Timestamp.toSeconds(test.attributes().getModificationDate()), Timestamp.toSeconds(lookup.getModificationDate()));
         }
         // Add delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());

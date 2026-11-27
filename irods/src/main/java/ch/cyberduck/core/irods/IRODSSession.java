@@ -41,8 +41,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -53,12 +51,15 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.irods.irods4j.authentication.AuthPlugin;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.connection.QualifiedUsername;
 import org.irods.irods4j.low_level.api.IRODSApi;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IRODSSession extends SSLSession<IRODSConnection> {
 
@@ -67,10 +68,6 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     }
 
     private static final Logger log = LogManager.getLogger(IRODSSession.class);
-
-    public IRODSSession(final Host h) {
-        super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
 
     public IRODSSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, trust, key);
@@ -132,7 +129,10 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
             final Credentials credentials = host.getCredentials();
             final String password = credentials.getPassword();
 
-            client.authenticate(IRODSConnectionUtils.newAuthPlugin(this), password);
+            Map<String, Object> authInput = new HashMap<>();
+            authInput.put(AuthPlugin.AUTH_PASSWORD_KEY, password);
+
+            client.authenticate(IRODSConnectionUtils.newAuthPlugin(this), authInput);
             log.debug("authenticated with iRODS server successfully.");
         }
         catch(Exception e) {
@@ -147,7 +147,6 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
         try {
             if(null != client) {
                 client.disconnect();
-                client = null;
                 log.debug("disconnected from iRODS server.");
             }
         }

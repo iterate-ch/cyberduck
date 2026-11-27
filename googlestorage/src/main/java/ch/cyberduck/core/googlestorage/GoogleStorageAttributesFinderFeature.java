@@ -200,9 +200,8 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
             // MD5 hash of the data encoded using base64
             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(object.getMd5Hash()))));
         }
-        if(object.getMetadata() != null) {
-            attributes.setMetadata(object.getMetadata());
-        }
+        // Metadata is omitted in response when not set
+        attributes.setMetadata(null != object.getMetadata() ? object.getMetadata() : Collections.emptyMap());
         return attributes;
     }
 }

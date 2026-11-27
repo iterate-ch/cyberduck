@@ -24,15 +24,12 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import com.github.sardine.impl.SardineException;
@@ -50,16 +47,8 @@ public class DAVMoveFeature implements Move {
         try {
             final String target = String.format("%s%s", new HostUrlProvider().withUsername(false).get(session.getHost()),
                     new DAVPathEncoder(session).encode(renamed));
-            if(status.getLockId() != null && session.getFeature(Lock.class) != null) {
-                // Indicate that the client has knowledge of that state token
-                session.getClient().move(new DAVPathEncoder(session).encode(file), target,
-                        status.isExists(),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("<%s> (<%s>)", new DAVPathEncoder(session).encode(file), status.getLockId())));
-            }
-            else {
-                session.getClient().move(new DAVPathEncoder(session).encode(file), target,
-                        status.isExists());
-            }
+            session.getClient().move(new DAVPathEncoder(session).encode(file), target,
+                    status.isExists(), DAVLockFeature.toHeaders(session, file, status));
             // Copy original file attributes
             return new Path(renamed).withAttributes(new DefaultPathAttributes(file.attributes())
                     .setDisplayname(null)

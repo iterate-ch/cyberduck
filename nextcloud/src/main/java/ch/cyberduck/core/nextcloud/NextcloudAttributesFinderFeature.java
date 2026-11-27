@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVMetadataFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -106,7 +107,8 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
         return session.getClient().list(path, 0,
                 Stream.of(OC_FILEID_CUSTOM_NAMESPACE, OC_CHECKSUMS_CUSTOM_NAMESPACE, OC_SIZE_CUSTOM_NAMESPACE,
                         DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
+                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
+                        DAVMetadataFeature.METADATA_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
     }
 
     @Override
@@ -125,15 +127,21 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
                 }
             }
             if(properties.containsKey(OC_CHECKSUMS_CUSTOM_NAMESPACE)) {
+                // Multiple checksums may be listed, e.g. SHA1:... MD5:... ADLER32:... Keep SHA-1 if listed
+                Checksum checksum = Checksum.NONE;
                 for(String v : StringUtils.split(properties.get(OC_CHECKSUMS_CUSTOM_NAMESPACE), StringUtils.SPACE)) {
                     try {
-                        attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(StringUtils.lowerCase(StringUtils.split(v, ":")[0])),
-                                StringUtils.lowerCase(StringUtils.split(v, ":")[1])));
+                        final Checksum parsed = new Checksum(HashAlgorithm.valueOf(StringUtils.lowerCase(StringUtils.split(v, ":")[0])),
+                                StringUtils.lowerCase(StringUtils.split(v, ":")[1]));
+                        if(HashAlgorithm.sha1 != checksum.algorithm) {
+                            checksum = parsed;
+                        }
                     }
                     catch(IllegalArgumentException e) {
                         log.warn("Unsupported checksum {}", v);
                     }
                 }
+                attributes.setChecksum(checksum);
             }
         }
         return attributes;
