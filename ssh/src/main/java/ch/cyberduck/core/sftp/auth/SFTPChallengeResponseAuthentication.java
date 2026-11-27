@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -40,6 +41,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.Buffer;
+import net.schmizz.sshj.common.Message;
+import net.schmizz.sshj.common.SSHPacket;
+import net.schmizz.sshj.transport.TransportException;
+import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
@@ -79,12 +85,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                 @Override
                 public void init(final Resource resource, final String name, final String instruction) {
                     log.debug("Initialize with name '{}' and instruction '{}'", name, instruction);
-                    if(StringUtils.isNotBlank(instruction)) {
-                        this.instruction = instruction;
-                    }
-                    if(StringUtils.isNotBlank(name)) {
-                        this.name = name;
-                    }
+                    // Values are specific to a single information request
+                    this.instruction = StringUtils.trimToEmpty(instruction);
+                    this.name = StringUtils.trimToEmpty(name);
                 }
 
                 @Override
@@ -154,7 +157,32 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                 public boolean shouldRetry() {
                     return false;
                 }
-            }));
+            }) {
+                @Override
+                public void handle(final Message cmd, final SSHPacket buf) throws UserAuthException, TransportException {
+                    if(cmd == Message.USERAUTH_60) {
+                        final InformationRequest request = InformationRequest.parse(buf);
+                        if(0 == request.prompts && StringUtils.isNotBlank(request.instruction)) {
+                            // Information request without prompts must still display name and instruction to the user
+                            log.debug("Display instruction '{}' for information request without prompts", request.instruction);
+                            try {
+                                callback.warn(bookmark,
+                                        StringUtils.isNotBlank(request.name) ? request.name :
+                                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                        request.instruction,
+                                        LocaleFactory.localizedString("Continue", "Credentials"),
+                                        LocaleFactory.localizedString("Cancel", "Localizable"),
+                                        null);
+                            }
+                            catch(ConnectionCanceledException e) {
+                                canceled.set(true);
+                                throw new UserAuthException(e);
+                            }
+                        }
+                    }
+                    super.handle(cmd, buf);
+                }
+            });
         }
         catch(IOException e) {
             if(publickey.get()) {
@@ -166,6 +194,40 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             throw new SFTPExceptionMappingService().map(e);
         }
         return client.isAuthenticated();
+    }
+
+    /**
+     * Name, instruction and number of prompts of SSH_MSG_USERAUTH_INFO_REQUEST
+     */
+    static final class InformationRequest {
+        final String name;
+        final String instruction;
+        final int prompts;
+
+        private InformationRequest(final String name, final String instruction, final int prompts) {
+            this.name = name;
+            this.instruction = instruction;
+            this.prompts = prompts;
+        }
+
+        /**
+         * Read header of information request without consuming buffer
+         */
+        static InformationRequest parse(final Buffer<?> buf) throws UserAuthException {
+            final int rpos = buf.rpos();
+            try {
+                final String name = buf.readString();
+                final String instruction = buf.readString();
+                buf.readString(); // lang-tag
+                return new InformationRequest(name, instruction, buf.readUInt32AsInt());
+            }
+            catch(Buffer.BufferException e) {
+                throw new UserAuthException(e);
+            }
+            finally {
+                buf.rpos(rpos);
+            }
+        }
     }
 
     @Override
