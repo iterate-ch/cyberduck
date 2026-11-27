@@ -15,20 +15,19 @@ package ch.cyberduck.ui.cocoa.datasource;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
-import ch.cyberduck.binding.application.NSDraggingSource;
-import ch.cyberduck.binding.application.NSEvent;
+import ch.cyberduck.binding.application.NSFilePromiseProvider;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.foundation.ErrorCompletionHandler;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSFileManager;
-import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.binding.foundation.UTType;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
@@ -45,7 +44,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Move;
@@ -53,10 +51,8 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
-import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -67,6 +63,7 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
@@ -80,25 +77,25 @@ import ch.cyberduck.ui.cocoa.controller.ReloadCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
+public abstract class BrowserTableDataSource extends ProxyController {
     private static final Logger log = LogManager.getLogger(BrowserTableDataSource.class);
 
     private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
@@ -317,39 +314,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * Sets whether the use of modifier keys should have an effect on the type of operation performed.
-     *
-     * @return Always false
-     * @see NSDraggingSource
-     */
-    @Override
-    public boolean ignoreModifierKeysWhileDragging() {
-        // If this method is not implemented or returns false, the user can tailor the drag operation by
-        // holding down a modifier key during the drag.
-        return false;
-    }
-
-    /**
-     * @param local indicates that the candidate destination object (the window or view over which the dragged image is
-     *              currently poised) is in the same application as the source, while a NO value indicates that the
-     *              destination object is in a different application
-     * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit any dragging
-     * operations, it should return NSDragOperationNone.
-     * @see NSDraggingSource
-     */
-    @Override
-    public NSUInteger draggingSourceOperationMaskForLocal(final boolean local) {
-        log.debug("Request dragging source operation mask for local {}", local);
-        if(local) {
-            // Move or copy within the browser
-            return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
-        }
-        // Copy to a thirdparty application or drag to trash to delete
-        return new NSUInteger(NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
-    }
-
-    /**
      * @param view        Table
      * @param destination A directory or null to mount an URL
      * @param info        Dragging pasteboard
@@ -544,60 +508,72 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
     }
 
-    public boolean writeItemsToPasteBoard(final NSTableView view, final List<Path> selected, final NSPasteboard pboard) {
-        log.debug("Write items to pasteboard {}", pboard);
-        if(controller.isMounted()) {
-            if(selected.size() > 0) {
-                // The fileTypes argument is the list of fileTypes being promised.
-                // The array elements can consist of file extensions and HFS types encoded
-                // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
-                // of files, only include the top directory in the array.
-                final Set<String> fileTypes = new LinkedHashSet<>();
-                final PathPasteboard pasteboard = controller.getPasteboard();
-                for(final Path f : selected) {
-                    if(f.isFile()) {
-                        if(StringUtils.isNotBlank(f.getExtension())) {
-                            fileTypes.add(f.getExtension());
-                        }
-                        else {
-                            fileTypes.add(NSFileManager.NSFileTypeRegular);
-                        }
-                    }
-                    else if(f.isDirectory()) {
-                        fileTypes.add("'fldr'"); //NSFileTypeForHFSTypeCode('fldr')
-                    }
-                    else {
-                        fileTypes.add(NSFileManager.NSFileTypeUnknown);
-                    }
-                    // Writing data for private use when the item gets dragged to the transfer queue.
-                    pasteboard.add(f);
-                }
-                NSEvent event = NSApplication.sharedApplication().currentEvent();
-                if(event != null) {
-                    NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
-                    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
-                    if(!view.dragPromisedFilesOfTypes(NSMutableArray.arrayWithObject(fileTypes.iterator().next()), imageRect, this.id(), true, event)) {
-                        log.warn("Failure for drag promise operation of {}", event);
-                        return false;
-                    }
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    /**
+     * Move or copy within the browser
+     */
+    public static final NSUInteger DRAG_OPERATION_MASK_LOCAL = new NSUInteger(
+            NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
+    /**
+     * Copy to a thirdparty application or drag to trash to delete
+     */
+    public static final NSUInteger DRAG_OPERATION_MASK_EXTERNAL = new NSUInteger(
+            NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
 
-    @Override
-    public void draggedImage_beganAt(final NSImage image, final NSPoint point) {
-        log.trace("draggedImage_beganAt:{}", point);
+    /**
+     * Delegates for file promises of the drag session in progress. The file promise provider only keeps a weak
+     * reference to its delegate.
+     */
+    private Set<FilePromiseProviderDelegate> promised = new HashSet<>();
+    /**
+     * Delegates for file promises of the previous drag session. Kept until the next drag session ends as a drop
+     * target may request the promised files after the drag session has ended.
+     */
+    private Set<FilePromiseProviderDelegate> ended = new HashSet<>();
+    /**
+     * Delegates with promised file currently written
+     */
+    private final Set<FilePromiseProviderDelegate> writing = ConcurrentHashMap.newKeySet();
+
+    /**
+     * @param file Dragged file
+     * @return File promise to write to dragging pasteboard or null to exclude file from drag
+     */
+    protected NSObject pasteboardWriter(final Path file) {
+        if(null == file) {
+            return null;
+        }
+        if(!controller.isMounted()) {
+            return null;
+        }
+        final FilePromiseProviderDelegate delegate = new FilePromiseProviderDelegate(file);
+        promised.add(delegate);
+        return delegate.provider;
     }
 
     /**
-     * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
+     * Invoked after pasteboard writers have been created for all dragged items
+     *
+     * @param selected Dragged files
      */
-    @Override
-    public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
-        log.trace("draggedImage_endedAt_operation:{}", operation);
+    protected void draggingSessionWillBegin(final List<Path> selected) {
+        log.debug("Dragging session will begin for {}", selected);
+        final PathPasteboard pasteboard = controller.getPasteboard();
+        // Writing data for private use when the item gets dragged to the transfer queue or another browser window
+        for(Path file : selected) {
+            if(null == file) {
+                continue;
+            }
+            pasteboard.add(file);
+        }
+    }
+
+    /**
+     * @param operation Drag operation performed by drop target
+     */
+    protected void draggingSessionEnded(final NSUInteger operation) {
+        log.debug("Dragging session ended with operation {}", operation);
+        ended = promised;
+        promised = new HashSet<>();
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             new DeleteController(controller, controller.getSession(), controller.getCache()).delete(pasteboard, new ReloadCallback() {
@@ -610,75 +586,74 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         pasteboard.clear();
     }
 
-    @Override
-    public void draggedImage_movedTo(final NSImage image, final NSPoint point) {
-        log.trace("draggedImage_movedTo:{}", point);
+    /**
+     * @param file Remote file
+     * @return Uniform type identifier of promised file
+     */
+    private static String toFileType(final Path file) {
+        if(file.isDirectory()) {
+            return UTType.UTTypeFolder;
+        }
+        if(StringUtils.isNotBlank(file.getExtension())) {
+            final UTType type = UTType.typeWithFilenameExtension(file.getExtension());
+            if(type != null) {
+                return type.identifier();
+            }
+        }
+        return UTType.UTTypeData;
     }
 
     /**
-     * @return the names (not full paths) of the files that the receiver promises to create at dropDestination. This
-     * method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long
-     * operations, you can cache dropDestination and defer the creation of the files until the finishedDraggingImage
-     * method to avoid blocking the destination application.
+     * Writes the promised file when requested by the drop target. The file is downloaded to the destination given
+     * by the drop target and the completion handler is only invoked after the transfer has finished. The receiving
+     * application waits for the completion handler before reading the file.
      */
-    @Override
-    public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
-        log.debug("Return names of promised files dropped at {}", url);
-        NSMutableArray promisedDragNames = NSMutableArray.array();
-        if(null != url) {
-            final Local destination = LocalFactory.get(url.path());
-            final DownloadFilterOptions options = new DownloadFilterOptions(controller.getSession().getHost());
-            if(destination.isChild(new TemporarySupportDirectoryFinder().find())) {
+    private final class FilePromiseProviderDelegate extends Proxy implements NSFilePromiseProvider.Delegate {
+        private final Path file;
+        private final NSFilePromiseProvider provider;
+
+        public FilePromiseProviderDelegate(final Path file) {
+            this.file = file;
+            this.provider = NSFilePromiseProvider.create(toFileType(file), this.id());
+        }
+
+        @Override
+        public String filePromiseProvider_fileNameForType(final NSFilePromiseProvider provider, final String fileType) {
+            return file.getName();
+        }
+
+        @Override
+        public void filePromiseProvider_writePromiseToURL_completionHandler(final NSFilePromiseProvider provider, final NSURL url, final ID completionHandler) {
+            final ErrorCompletionHandler handler = new ErrorCompletionHandler(completionHandler);
+            final Local local = LocalFactory.get(url.path());
+            log.debug("Write promised file {} to {}", file, local);
+            if(!controller.isMounted()) {
+                log.warn("Fail to write promised file {} with no session", file);
+                handler.failure(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()));
+                return;
+            }
+            writing.add(this);
+            final Host host = controller.getSession().getHost();
+            final DownloadFilterOptions options = new DownloadFilterOptions(host);
+            if(local.isChild(new TemporarySupportDirectoryFinder().find())) {
                 options.segments = false;
             }
-            final PathPasteboard pasteboard = controller.getPasteboard();
-            final List<TransferItem> downloads = new ArrayList<TransferItem>();
-            for(Path p : pasteboard) {
-                downloads.add(new TransferItem(p, LocalFactory.get(destination, p.getName())));
-                // Add to returned path names
-                promisedDragNames.addObject(p.getName());
-            }
-            if(downloads.size() == 1) {
-                if(downloads.iterator().next().remote.isFile()) {
-                    final Local file = downloads.iterator().next().local;
-                    if(!file.exists()) {
-                        try {
-                            LocalTouchFactory.get().touch(file);
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn("Failure creating file {} {}", file, e.getMessage());
-                        }
-                    }
+            controller.transfer(new DownloadTransfer(host, Collections.singletonList(new TransferItem(file, local)))
+                    .withOptions(options), new TransferCallback() {
+                @Override
+                public void complete(final Transfer transfer) {
+                    log.debug("Promised file {} written to {}", file, local);
+                    writing.remove(FilePromiseProviderDelegate.this);
+                    handler.success();
                 }
-                if(downloads.iterator().next().remote.isDirectory()) {
-                    final Local file = downloads.iterator().next().local;
-                    if(!file.exists()) {
-                        try {
-                            new DefaultLocalDirectoryFeature().mkdir(file);
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn(e.getMessage());
-                        }
-                    }
+
+                @Override
+                public void incomplete(final Transfer transfer) {
+                    log.warn("Failure writing promised file {} to {}", file, local);
+                    writing.remove(FilePromiseProviderDelegate.this);
+                    handler.failure(MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()));
                 }
-            }
-            // kTemporaryFolderType
-            final boolean dock = destination.equals(LocalFactory.get("~/Library/Caches/TemporaryItems"));
-            if(dock) {
-                for(Path p : pasteboard) {
-                    // Drag to application icon in dock.
-                    controller.edit(p);
-                }
-            }
-            else {
-                final Transfer transfer = new DownloadTransfer(controller.getSession().getHost(), downloads)
-                        .withOptions(options);
-                controller.transfer(transfer, Collections.emptyList());
-            }
-            pasteboard.clear();
+            });
         }
-        // Filenames
-        return promisedDragNames;
     }
 }

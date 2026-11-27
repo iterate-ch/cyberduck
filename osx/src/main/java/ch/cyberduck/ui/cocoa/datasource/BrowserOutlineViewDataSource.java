@@ -35,6 +35,7 @@ import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
@@ -230,18 +231,47 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
         return super.acceptDrop(view, destination, info);
     }
 
+    /**
+     * Not called as superseded by outlineView:pasteboardWriterForItem:
+     */
     @Override
     public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(final NSURL dropDestination, final NSArray items) {
-        return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
+        return NSArray.array();
     }
 
+    /**
+     * Not called as superseded by outlineView:pasteboardWriterForItem:
+     */
     @Override
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items,
                                                        final NSPasteboard pboard) {
-        final List<Path> selected = new ArrayList<Path>();
+        return false;
+    }
+
+    /**
+     * Implemented to support dragging multiple items with a file promise for each item.
+     *
+     * @param item Dragged item
+     * @return File promise or null to exclude item from drag
+     */
+    public NSObject outlineView_pasteboardWriterForItem(final NSOutlineView view, final NSObject item) {
+        if(controller.isMounted()) {
+            return this.pasteboardWriter(cache.lookup(new NSObjectPathReference(item)));
+        }
+        return null;
+    }
+
+    public void outlineView_draggingSession_willBeginAtPoint_forItems(final NSOutlineView view, final NSObject session,
+                                                                      final NSPoint screenPoint, final NSArray items) {
+        final List<Path> selected = new ArrayList<>();
         for(int i = 0; i < items.count().intValue(); i++) {
             selected.add(cache.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i)))));
         }
-        return super.writeItemsToPasteBoard(outlineView, selected, pboard);
+        this.draggingSessionWillBegin(selected);
+    }
+
+    public void outlineView_draggingSession_endedAtPoint_operation(final NSOutlineView view, final NSObject session,
+                                                                   final NSPoint screenPoint, final NSUInteger operation) {
+        this.draggingSessionEnded(operation);
     }
 }

@@ -488,13 +488,14 @@ public abstract class NSTableView extends NSControl {
      * - (NSImage*)dragImageForRowsWithIndexes:(NSIndexSet*)dragRows tableColumns:(NSArray*)tableColumns event:(NSEvent*)dragEvent offset:(null)dragImageOffset; (Argument dragImageOffset cannot be converted)
      */
     /**
-     * <i>native declaration : :216</i><br>
-     * Conversion Error : /**<br>
-     *  * Configures the default value returned from -draggingSourceOperationMaskForLocal:.  An isLocal value of YES indicates that 'mask' applies when the destination object is in the same application.  A isLocal value of NO indicates that 'mask' applies when the destination object in an application outside the receiver's application.  NSTableView will archive the values you set for each isLocal setting.<br>
-     *  * Original signature : <code>void setDraggingSourceOperationMask(null, BOOL)</code><br>
-     *  * /<br>
-     * - (void)setDraggingSourceOperationMask:(null)mask forLocal:(BOOL)isLocal; (Argument mask cannot be converted)
+     * Configures the default value returned from -draggingSourceOperationMaskForLocal:.  An isLocal value of YES
+     * indicates that 'mask' applies when the destination object is in the same application.  A isLocal value of NO
+     * indicates that 'mask' applies when the destination object in an application outside the receiver's application.
+     * <p>
+     * Original signature : <code>- (void)setDraggingSourceOperationMask:(NSDragOperation)mask forLocal:(BOOL)isLocal</code>
      */
+    public abstract void setDraggingSourceOperationMask_forLocal(NSUInteger mask, boolean isLocal);
+
     /**
      * To be used from validateDrop: if you wish to "re-target" the proposed drop. To specify a drop on the second row,
      * one would specify row=2, and op=NSTableViewDropOn. To specify a drop below the last row, one would specify
