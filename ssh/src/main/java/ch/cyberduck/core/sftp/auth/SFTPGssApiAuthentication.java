@@ -15,28 +15,23 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 
 import javax.security.auth.Subject;
@@ -46,9 +41,6 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -91,86 +83,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         log.debug("Login using GSS-API/Kerberos authentication with credentials {}", credentials);
-        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
-        final String defaultRealm = StringUtils.trim(preferences.getProperty(KERBEROS_REALM_PROPERTY));
-        if(StringUtils.isBlank(defaultRealm)) {
-            return this.login(this.configure(bookmark));
-        }
-        // Default realm configured for this bookmark only. Only a configuration file allows setting the default
-        // realm without also specifying the KDC. Restore JVM-wide settings afterward.
-        final List<String> keys = Arrays.asList("java.security.krb5.conf", "java.security.krb5.realm", "java.security.krb5.kdc");
-        final Map<String, String> saved = new HashMap<>();
-        keys.forEach(key -> saved.put(key, System.getProperty(key)));
-        try {
-            final Local temporary = TemporaryFileServiceFactory.get().create(String.format("%s.conf",
-                    new AlphanumericRandomStringService().random()));
-            final String kdc = preferences.getProperty("java.security.krb5.kdc");
-            final String content = String.format("[libdefaults]\n    default_realm = %s\n%s",
-                    defaultRealm,
-                    StringUtils.isNotBlank(kdc) ?
-                            String.format("[realms]\n    %s = {\n        kdc = %s\n    }\n", defaultRealm, kdc) :
-                            "    dns_lookup_kdc = true\n");
-            try {
-                // Close before use to make sure the content is flushed and any failure writing is detected
-                try(final OutputStream out = temporary.getOutputStream(false)) {
-                    IOUtils.write(content, out, StandardCharsets.UTF_8);
-                }
-                catch(IOException | LocalAccessDeniedException e) {
-                    log.warn("Failed to write temporary Kerberos configuration for realm {}: {}", defaultRealm, e.getMessage());
-                    return this.login(this.configure(bookmark));
-                }
-                log.debug("Use Kerberos default realm {} from temporary configuration {}", defaultRealm, temporary);
-                System.setProperty("java.security.krb5.conf", temporary.getAbsolute());
-                // Would override configuration file
-                System.clearProperty("java.security.krb5.realm");
-                System.clearProperty("java.security.krb5.kdc");
-                return this.login(bookmark);
-            }
-            finally {
-                if(temporary.exists()) {
-                    try {
-                        temporary.delete();
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn("Failure deleting temporary Kerberos configuration {}: {}", temporary, e.getMessage());
-                    }
-                }
-            }
-        }
-        finally {
-            saved.forEach((key, value) -> {
-                if(null == value) {
-                    System.clearProperty(key);
-                }
-                else {
-                    System.setProperty(key, value);
-                }
-            });
-        }
-    }
-
-    /**
-     * Apply JVM wide settings read by Krb5LoginModule with refreshKrb5Config
-     */
-    private Host configure(final Host bookmark) {
-        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
-        final String conf = preferences.getProperty("java.security.krb5.conf");
-        if(StringUtils.isNotBlank(conf)) {
-            final String path = LocalFactory.get(conf).getAbsolute();
-            log.debug("Use Kerberos configuration {}", path);
-            System.setProperty("java.security.krb5.conf", path);
-        }
-        final String realm = preferences.getProperty("java.security.krb5.realm");
-        final String kdc = preferences.getProperty("java.security.krb5.kdc");
-        if(StringUtils.isNotBlank(realm) && StringUtils.isNotBlank(kdc)) {
-            log.debug("Use Kerberos realm {} with KDC {}", realm, kdc);
-            System.setProperty("java.security.krb5.realm", realm);
-            System.setProperty("java.security.krb5.kdc", kdc);
-        }
-        else if(StringUtils.isNotBlank(realm) || StringUtils.isNotBlank(kdc)) {
-            log.warn("Ignore Kerberos realm {} and KDC {} not both set", realm, kdc);
-        }
-        return bookmark;
+        return this.login(bookmark);
     }
 
     /**
@@ -267,7 +180,10 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         try {
             final List<Oid> mechanisms = Collections.singletonList(KRB5_MECH);
             // Security context is established with the credentials of the subject of the login context
-            client.auth(credentials.getUsername(), new AuthGssApiWithMic(loginContext, mechanisms));
+            // Realm of the server is set per connection without changing the JVM-wide Kerberos configuration
+            final GSSManager manager = new KerberosRealmGSSManager(GSSManager.getInstance(),
+                    HostPreferencesFactory.get(bookmark).getProperty(KERBEROS_REALM_PROPERTY), loginContext.getSubject());
+            client.auth(credentials.getUsername(), new AuthGssApiWithMic(loginContext, mechanisms, manager));
             final boolean authenticated = client.isAuthenticated();
             log.debug("GSS-API authentication result: authenticated={}, partialSuccess={}", authenticated,
                     client.getUserAuth().hadPartialSuccess());
