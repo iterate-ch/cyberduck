@@ -192,6 +192,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedConnectModeEvent = delegate { };
         public event VoidHandler ChangedTransferEvent = delegate { };
         public event VoidHandler ChangedWebURLEvent = delegate { };
+        public event VoidHandler ChangedKerberosRealmEvent = delegate { };
         public event VoidHandler ChangedCommentEvent = delegate { };
         public event VoidHandler ChangedBrowserDownloadPathEvent = delegate { };
         public event VoidHandler OpenWebUrl = delegate { };
@@ -378,6 +379,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { textBoxWebUrl.Text = value; }
         }
 
+        public string KerberosRealm
+        {
+            get { return textBoxKerberosRealm.Text; }
+            set { textBoxKerberosRealm.Text = value; }
+        }
+
+        public bool KerberosRealmFieldEnabled
+        {
+            set { textBoxKerberosRealm.Enabled = value; }
+        }
+
         public string Notes
         {
             get { return richTextBoxNotes.Text; }
@@ -476,6 +488,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void textBoxWebUrl_TextChanged(object sender, EventArgs e)
         {
             ChangedWebURLEvent();
+        }
+
+        private void textBoxKerberosRealm_TextChanged(object sender, EventArgs e)
+        {
+            ChangedKerberosRealmEvent();
         }
 
         private void richTextBoxNotes_TextChanged(object sender, EventArgs e)

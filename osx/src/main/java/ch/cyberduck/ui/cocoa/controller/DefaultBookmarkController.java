@@ -145,6 +145,12 @@ public abstract class DefaultBookmarkController extends BookmarkController {
     }
 
     @Override
+    public void setKerberosRealmField(final NSTextField field) {
+        this.addObserver(host -> field.superview().setHidden(!host.getProtocol().isKerberosConfigurable()));
+        super.setKerberosRealmField(field);
+    }
+
+    @Override
     public void setCommentField(final NSTextView f) {
         f.enclosingScrollView().superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.comment.configurable"));
         super.setCommentField(f);
