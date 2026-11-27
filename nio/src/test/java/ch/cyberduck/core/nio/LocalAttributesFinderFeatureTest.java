@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
@@ -83,6 +84,23 @@ public class LocalAttributesFinderFeatureTest {
         assertEquals(posixAttributes.creationTime().toMillis(), finder.find(file).getCreationDate());
         assertEquals(posixAttributes.lastAccessTime().toMillis(), finder.find(file).getAccessedDate());
         new LocalDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindSnapshotAfterMove() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
+        final Path file = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
+        Files.write(session.toPath(file), new byte[13]);
+        final PathAttributes attr = new LocalAttributesFinderFeature(session).find(file);
+        final long modified = attr.getModificationDate();
+        final Path renamed = new Path(file.getParent(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalMoveFeature(session).move(file, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(13L, attr.getSize());
+        assertEquals(modified, attr.getModificationDate());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
