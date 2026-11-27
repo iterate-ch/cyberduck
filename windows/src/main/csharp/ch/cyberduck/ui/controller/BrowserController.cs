@@ -3611,6 +3611,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller.invoke(new ReloadAction(_controller, _changed));
             }
 
+            public void incomplete(Transfer t)
+            {
+                //
+            }
+
             private class ReloadAction : WindowMainAction
             {
                 private readonly IList<Path> _changed;
