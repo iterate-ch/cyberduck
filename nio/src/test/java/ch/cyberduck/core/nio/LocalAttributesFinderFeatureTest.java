@@ -21,6 +21,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.PathAttributesDictionary;
@@ -49,6 +50,14 @@ public class LocalAttributesFinderFeatureTest {
         final LocalAttributesFinderFeature f = new LocalAttributesFinderFeature(session);
         assertNotNull(f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         assertNotEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testFindNotFound() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
+        new LocalAttributesFinderFeature(session).find(new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test

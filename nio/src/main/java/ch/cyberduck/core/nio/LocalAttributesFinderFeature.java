@@ -24,11 +24,15 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProxyPathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 
 public class LocalAttributesFinderFeature implements AttributesFinder, AttributesAdapter<java.nio.file.Path> {
 
@@ -40,7 +44,13 @@ public class LocalAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return this.toAttributes(session.toPath(file));
+        final java.nio.file.Path path = session.toPath(file);
+        if(!file.isRoot()) {
+            if(!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+        }
+        return this.toAttributes(path);
     }
 
     @Override
