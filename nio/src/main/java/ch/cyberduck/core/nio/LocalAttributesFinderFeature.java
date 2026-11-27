@@ -50,8 +50,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder, Attribute
                 throw new NotfoundException(file.getAbsolute());
             }
         }
-        // Snapshot of current attributes not changing when file is modified or moved
-        return new DefaultPathAttributes(this.toAttributes(path));
+        return this.toAttributes(path);
     }
 
     @Override
