@@ -1347,6 +1347,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType
         ));
+        // Move or copy within the browser
+        browserOutlineView.setDraggingSourceOperationMask_forLocal(BrowserTableDataSource.DRAG_OPERATION_MASK_LOCAL, true);
+        // Copy to a thirdparty application or drag to trash to delete
+        browserOutlineView.setDraggingSourceOperationMask_forLocal(BrowserTableDataSource.DRAG_OPERATION_MASK_EXTERNAL, false);
         // selection properties
         browserOutlineView.setAllowsMultipleSelection(true);
         browserOutlineView.setAllowsEmptySelection(true);
@@ -1495,6 +1499,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType
         ));
+        // Move or copy within the browser
+        browserListView.setDraggingSourceOperationMask_forLocal(BrowserTableDataSource.DRAG_OPERATION_MASK_LOCAL, true);
+        // Copy to a thirdparty application or drag to trash to delete
+        browserListView.setDraggingSourceOperationMask_forLocal(BrowserTableDataSource.DRAG_OPERATION_MASK_EXTERNAL, false);
         // selection properties
         browserListView.setAllowsMultipleSelection(true);
         browserListView.setAllowsEmptySelection(true);
@@ -2972,7 +2980,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param browser  Transfer in browser window
      */
     public void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
-        final TransferCallback callback = transfer.getType() == Transfer.Type.download ? TransferCallback.disabled : new TransferCallback() {
+        this.transfer(transfer, browser, transfer.getType() == Transfer.Type.download ? TransferCallback.disabled : new TransferCallback() {
             @Override
             public void complete(final Transfer transfer) {
                 invoke(new WindowMainAction(BrowserController.this) {
@@ -2982,7 +2990,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                 });
             }
-        };
+        });
+    }
+
+    /**
+     * Transfers the files either using the queue or using the browser session if #connection.pool.max is 1
+     *
+     * @param transfer Transfer Operation
+     * @param callback Notified when transfer has finished
+     */
+    public void transfer(final Transfer transfer, final TransferCallback callback) {
+        this.transfer(transfer, Host.TransferType.getType(transfer.getSource()).equals(Host.TransferType.browser), callback);
+    }
+
+    private void transfer(final Transfer transfer, final boolean browser, final TransferCallback callback) {
         if(browser) {
             this.background(new BrowserTransferBackgroundAction(this, pool, queue, transfer, callback));
         }

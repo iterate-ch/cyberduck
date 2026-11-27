@@ -27,4 +27,11 @@ public interface TransferCallback {
     };
 
     void complete(Transfer transfer);
+
+    /**
+     * Transfer stopped before all items have been transferred because of a failure or cancellation by the user
+     */
+    default void incomplete(Transfer transfer) {
+        //
+    }
 }

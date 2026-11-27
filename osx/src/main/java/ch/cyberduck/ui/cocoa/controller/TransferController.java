@@ -587,6 +587,9 @@ public class TransferController extends WindowController implements TransferList
                 if(transfer.isComplete()) {
                     callback.complete(transfer);
                 }
+                else {
+                    callback.incomplete(transfer);
+                }
             }
 
             @Override

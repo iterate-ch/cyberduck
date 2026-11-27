@@ -51,6 +51,9 @@ public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
         if(transfer.isComplete()) {
             callback.complete(transfer);
         }
+        else {
+            callback.incomplete(transfer);
+        }
         super.finish();
     }
 

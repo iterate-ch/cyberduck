@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
@@ -123,31 +124,54 @@ public class BrowserListViewDataSource extends BrowserTableDataSource implements
     // ----------------------------------------------------------
 
     /**
-     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
-     * The drag image and other drag-related information will be set up and provided by the table view once this call
-     * returns with true.
-     *
-     * @param rowIndexes is the list of row numbers that will be participating in the drag.
-     * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
+     * Not called as superseded by tableView:pasteboardWriterForRow:
      */
     @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(final NSTableView view, final NSIndexSet rowIndexes,
                                                                final NSPasteboard pboard) {
-        if(controller.isMounted()) {
-            final AttributedList<Path> children = this.get(controller.workdir());
-            final List<Path> selected = new ArrayList<Path>();
-            for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
-                selected.add(children.get(index.intValue()));
-            }
-            return super.writeItemsToPasteBoard(view, selected, pboard);
-        }
         return false;
     }
 
+    /**
+     * Not called as superseded by tableView:pasteboardWriterForRow:
+     */
     @Override
     public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(final NSTableView view,
                                                                                                 final NSURL dropDestination,
                                                                                                 final NSIndexSet rowIndexes) {
-        return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
+        return NSArray.array();
+    }
+
+    /**
+     * Implemented to support dragging multiple items with a file promise for each row.
+     *
+     * @param row Dragged row
+     * @return File promise or null to exclude row from drag
+     */
+    public NSObject tableView_pasteboardWriterForRow(final NSTableView view, final NSInteger row) {
+        if(controller.isMounted()) {
+            final AttributedList<Path> children = this.get(controller.workdir());
+            if(row.intValue() < children.size()) {
+                return this.pasteboardWriter(children.get(row.intValue()));
+            }
+        }
+        return null;
+    }
+
+    public void tableView_draggingSession_willBeginAtPoint_forRowIndexes(final NSTableView view, final NSObject session,
+                                                                         final NSPoint screenPoint, final NSIndexSet rowIndexes) {
+        if(controller.isMounted()) {
+            final AttributedList<Path> children = this.get(controller.workdir());
+            final List<Path> selected = new ArrayList<>();
+            for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
+                selected.add(children.get(index.intValue()));
+            }
+            this.draggingSessionWillBegin(selected);
+        }
+    }
+
+    public void tableView_draggingSession_endedAtPoint_operation(final NSTableView view, final NSObject session,
+                                                                 final NSPoint screenPoint, final NSUInteger operation) {
+        this.draggingSessionEnded(operation);
     }
 }
