@@ -23,7 +23,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.net.ftp.FTPCmd;
+
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class FTPDeleteFeature implements Delete {
@@ -45,12 +48,20 @@ public class FTPDeleteFeature implements Delete {
                     }
                 }
                 else if(file.isDirectory()) {
-                    // Change working directory to parent
+                    // Change working directory to parent to not remain within the deleted directory tree
                     if(!session.getClient().changeWorkingDirectory(file.getParent().getAbsolute())) {
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
-                    if(!session.getClient().removeDirectory(file.getAbsolute())) {
-                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                    if(this.isRecursive()) {
+                        // Remove directory including its contents with SITE RMDIR from ProFTPD mod_site_misc
+                        if(!session.getClient().sendSiteCommand(String.format("RMDIR %s", file.getAbsolute()))) {
+                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                        }
+                    }
+                    else {
+                        if(!session.getClient().removeDirectory(file.getAbsolute())) {
+                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                        }
                     }
                 }
             }
@@ -59,6 +70,21 @@ public class FTPDeleteFeature implements Delete {
 
             }
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        if(this.isRecursive()) {
+            return EnumSet.of(Flags.recursive);
+        }
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    /**
+     * @return True if server advertises SITE RMDIR to remove directories recursively
+     */
+    private boolean isRecursive() {
+        return session.getClient().hasFeature(FTPCmd.SITE.getCommand(), "RMDIR");
     }
 
     @Override
